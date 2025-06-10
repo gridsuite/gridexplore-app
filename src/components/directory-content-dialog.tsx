@@ -25,6 +25,7 @@ import {
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
     ShortCircuitParametersEditionDialog,
+    VoltageInitParametersEditionDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -209,6 +210,7 @@ function DirectoryContentDialog(
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                         case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                        case ElementType.VOLTAGE_INIT_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
                             setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
@@ -361,7 +363,20 @@ function DirectoryContentDialog(
                     titleId="editParameters"
                     name={elementName}
                     description={activeElement.description}
-                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+            return (
+                <VoltageInitParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                 />
