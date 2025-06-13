@@ -363,6 +363,7 @@ function DirectoryContentDialog(
                     titleId="editParameters"
                     name={elementName}
                     description={activeElement.description}
+                    user={user}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                 />
@@ -377,6 +378,7 @@ function DirectoryContentDialog(
                     titleId="editParameters"
                     name={elementName}
                     description={activeElement.description}
+                    user={user}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                 />
