@@ -82,6 +82,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [deleteError, setDeleteError] = useState('');
     const [directoryWritable, setDirectoryWritable] = useState(false);
     const [directoryReadable, setDirectoryReadable] = useState(false);
+    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const { snackError } = useSnackMessage();
@@ -349,12 +350,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     useEffect(() => {
         if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
-                setDirectoryReadable(b);
-            });
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                setDirectoryWritable(b);
-            });
+            Promise.all([
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then(setDirectoryReadable),
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then(setDirectoryWritable),
+            ]).finally(() => setPermissionsLoaded(true));
         }
     }, [selectedDirectory]);
 
@@ -574,7 +573,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     };
     return (
         <>
-            {open && (
+            {open && permissionsLoaded && (
                 <CommonContextualMenu {...others} menuItems={buildMenu} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}
