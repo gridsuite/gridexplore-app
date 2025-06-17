@@ -31,14 +31,17 @@ import { setItemSelectionForCopy } from '../../../../redux/actions';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.DESCRIPTION]: yup.string().trim(),
 });
 
-const emptyFormData = (name?: string) => ({
+const emptyFormData = (name?: string, description?: string) => ({
     [FieldConstants.NAME]: name,
+    [FieldConstants.DESCRIPTION]: description,
 });
 
 interface FormData {
     [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
 }
 
 interface CompositeModificationDialogProps {
@@ -47,6 +50,7 @@ interface CompositeModificationDialogProps {
     onClose: () => void;
     titleId: string;
     name: string;
+    description: string;
     broadcastChannel: BroadcastChannel;
 }
 
@@ -56,6 +60,7 @@ export default function CompositeModificationDialog({
     onClose,
     titleId,
     name,
+    description,
     broadcastChannel,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
@@ -67,7 +72,7 @@ export default function CompositeModificationDialog({
     const dispatch = useDispatch();
 
     const methods = useForm<FormData>({
-        defaultValues: emptyFormData(name),
+        defaultValues: emptyFormData(name, description),
         resolver: yupResolver(schema),
     });
 
@@ -123,7 +128,13 @@ export default function CompositeModificationDialog({
     }, [compositeModificationId, name, snackError]);
 
     const onSubmit = (formData: FormData) => {
-        saveCompositeModification(compositeModificationId, formData[FieldConstants.NAME])
+        const modificationUuids = modifications.map((modification) => modification.uuid);
+        saveCompositeModification(
+            compositeModificationId,
+            modificationUuids,
+            formData[FieldConstants.NAME],
+            formData[FieldConstants.DESCRIPTION]
+        )
             .then(() => {
                 if (itemSelectionForCopy.sourceItemUuid === compositeModificationId) {
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
