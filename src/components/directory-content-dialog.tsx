@@ -77,6 +77,7 @@ function DirectoryContentDialog(
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [elementName, setElementName] = useState('');
+    const [elementDescription, setElementDescription] = useState('');
 
     const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
     const getStudyUrl = useCallback(
@@ -165,6 +166,7 @@ function DirectoryContentDialog(
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
                     setActiveElement(event.data);
                     setElementName(childrenMetadata[event.data.elementUuid].elementName);
+                    setElementDescription(childrenMetadata[event.data.elementUuid].description);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
@@ -253,6 +255,7 @@ function DirectoryContentDialog(
                 compositeModificationId={currentNetworkModificationId}
                 onClose={handleCloseCompositeModificationDialog}
                 name={elementName}
+                description={elementDescription}
                 broadcastChannel={broadcastChannel}
             />
         );
