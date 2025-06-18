@@ -25,6 +25,7 @@ import {
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
     ShortCircuitParametersEditionDialog,
+    VoltageInitParametersEditionDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -76,6 +77,7 @@ function DirectoryContentDialog(
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [elementName, setElementName] = useState('');
+    const [elementDescription, setElementDescription] = useState('');
 
     const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
     const getStudyUrl = useCallback(
@@ -164,6 +166,7 @@ function DirectoryContentDialog(
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
                     setActiveElement(event.data);
                     setElementName(childrenMetadata[event.data.elementUuid].elementName);
+                    setElementDescription(childrenMetadata[event.data.elementUuid].description);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
@@ -209,6 +212,7 @@ function DirectoryContentDialog(
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                         case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                        case ElementType.VOLTAGE_INIT_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
                             setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
@@ -251,6 +255,7 @@ function DirectoryContentDialog(
                 compositeModificationId={currentNetworkModificationId}
                 onClose={handleCloseCompositeModificationDialog}
                 name={elementName}
+                description={elementDescription}
                 broadcastChannel={broadcastChannel}
             />
         );
@@ -355,6 +360,21 @@ function DirectoryContentDialog(
         if (currentParametersType === ElementType.SHORT_CIRCUIT_PARAMETERS) {
             return (
                 <ShortCircuitParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+            return (
+                <VoltageInitParametersEditionDialog
                     id={currentParametersId}
                     open
                     onClose={handleCloseParametersDialog}
