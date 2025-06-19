@@ -46,6 +46,7 @@ export default function CreateDirectoryDialog({
         style: {
             width: '90%',
         },
+        dataTestId: 'CreateDirectory.NameField',
     });
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {
@@ -60,8 +61,8 @@ export default function CreateDirectoryDialog({
     };
 
     return (
-        <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
-            <DialogTitle>{title}</DialogTitle>
+        <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="create-directory-dialog">
+            <DialogTitle data-testid="CreateDirectoryDialogTitle">{title}</DialogTitle>
             <DialogContent>
                 {nameField}
                 <br />
@@ -70,7 +71,12 @@ export default function CreateDirectoryDialog({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button disabled={!nameOk} onClick={handleClick} variant="outlined">
+                <Button
+                    disabled={!nameOk}
+                    onClick={handleClick}
+                    variant="outlined"
+                    dataTestId="CreateDirectory.ValidationButton"
+                >
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
