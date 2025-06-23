@@ -44,7 +44,7 @@ export type KeyOfWithoutIndexSignature<T> = {
     [K in keyof T as string extends K ? never : number extends K ? never : K]: T[K];
 };
 
-export type HttpMethod = 'GET' | 'HEAD' | 'POST' | 'PUT' | 'DELETE' | 'CONNECT' | 'OPTIONS' | 'TRACE' | 'PATCH';
+export type HttpMethod = 'GET' | 'POST' | 'HEAD' | 'OPTIONS' | 'PUT' | 'DELETE' | 'TRACE'; // Limited by HttpURLConnection in JDK
 type StandardHeader = keyof KeyOfWithoutIndexSignature<IncomingHttpHeaders>;
 export type HttpHeaderName = LiteralUnion<StandardHeader, string>;
 type HeadersInitExt = [HttpHeaderName, string][] | Partial<Record<HttpHeaderName, string>> | Headers;
@@ -588,15 +588,17 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
-export function saveCompositeModification(id: string, name: string) {
+export function saveCompositeModification(id: string, moidificationUuids: UUID[], name: string, description?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description ?? '');
 
-    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modification/${id}?${urlSearchParams.toString()}`;
+    const url: string = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${id}?${urlSearchParams.toString()}`;
 
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(moidificationUuids),
     });
 }
 
