@@ -102,7 +102,6 @@ export function useDownloadUtils() {
             formatParameters: {
                 [parameterName: string]: any;
             },
-            abortController2: AbortController,
             fileName?: string
         ): Promise<void> => {
             try {
@@ -110,8 +109,7 @@ export function useDownloadUtils() {
                     caseElement.elementUuid,
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
-                    formatParameters,
-                    abortController2
+                    formatParameters
                 );
 
                 let downloadFileName =
@@ -266,7 +264,7 @@ export function useDownloadUtils() {
                 // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                 for (const c of cases) {
                     // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
-                    await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
+                    await exportCase(c, format, formatParameters, caseUuidFileNameMap?.get(c.elementUuid));
                 }
             } catch (error: any) {
                 if (error.name === 'AbortError') {
