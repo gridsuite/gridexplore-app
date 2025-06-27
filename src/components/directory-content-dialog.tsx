@@ -27,6 +27,7 @@ import {
     ShortCircuitParametersEditionDialog,
     VoltageInitParametersEditionDialog,
     useSnackMessage,
+    SecurityAnalysisParametersDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -212,6 +213,7 @@ function DirectoryContentDialog(
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                         case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                        case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
                             setCurrentParametersType(event.data.type);
@@ -375,6 +377,21 @@ function DirectoryContentDialog(
         if (currentParametersType === ElementType.VOLTAGE_INIT_PARAMETERS) {
             return (
                 <VoltageInitParametersEditionDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.SECURITY_ANALYSIS_PARAMETERS) {
+            return (
+                <SecurityAnalysisParametersDialog
                     id={currentParametersId}
                     open
                     onClose={handleCloseParametersDialog}
