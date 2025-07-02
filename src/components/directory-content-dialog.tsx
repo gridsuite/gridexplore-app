@@ -28,6 +28,7 @@ import {
     VoltageInitParametersEditionDialog,
     useSnackMessage,
     SecurityAnalysisParametersDialog,
+    SensitivityAnalysisParametersDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -215,6 +216,7 @@ function DirectoryContentDialog(
                         case ElementType.SHORT_CIRCUIT_PARAMETERS:
                         case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
+                        case ElementType.SENSITIVITY_PARAMETERS:
                             setCurrentParametersId(event.data.elementUuid);
                             setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
@@ -401,6 +403,22 @@ function DirectoryContentDialog(
                     user={user}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
+                />
+            );
+        }
+        if (currentParametersType === ElementType.SENSITIVITY_PARAMETERS) {
+            return (
+                <SensitivityAnalysisParametersDialog
+                    id={currentParametersId}
+                    open
+                    onClose={handleCloseParametersDialog}
+                    titleId="editParameters"
+                    name={elementName}
+                    description={activeElement.description}
+                    user={user}
+                    activeDirectory={activeDirectory}
+                    language={languageLocal}
+                    enableDeveloperMode={enableDeveloperMode}
                 />
             );
         }
