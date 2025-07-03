@@ -90,11 +90,6 @@ export const getExplicitNamingFormDataFromFetchedElement = (response: any, name:
     };
 };
 
-export const getScriptFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
-    [FieldConstants.NAME]: name,
-    [FieldConstants.DESCRIPTION]: description,
-});
-
 export const getFormContent = (
     contingencyListId: string | null,
     contingencyList: ContingencyListFormDataWithRequiredCriteria

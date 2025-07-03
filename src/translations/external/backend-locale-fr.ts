@@ -18,8 +18,6 @@ const BackendLocaleFr = {
     FORM_FILTER: 'Filtre (Formulaire)',
     IDENTIFIERS_CONTINGENCY_LIST: "Liste d'aléas (Par nommage)",
     FORM_CONTINGENCY_LIST: "Liste d'aléas (Par critères)",
-    SCRIPT_FILTER: 'Filtre (Script)',
-    SCRIPT_CONTINGENCY_LIST: "Liste d'aléas (Script)",
     IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
 
     // spreadsheet config metadata
