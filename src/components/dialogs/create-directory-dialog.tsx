@@ -61,7 +61,7 @@ export default function CreateDirectoryDialog({
 
     return (
         <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
-            <DialogTitle data-testid="DialogTitle">
+            <DialogTitle  data-testid="DialogTitle">
                 {title}</DialogTitle>
             <DialogContent>
                 {nameField}
