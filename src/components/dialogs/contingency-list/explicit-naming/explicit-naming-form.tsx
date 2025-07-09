@@ -13,6 +13,7 @@ import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
+import { manageContingencyName } from './explicit-naming-utils';
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const { key } = params.event;
@@ -23,14 +24,6 @@ export default function ExplicitNamingForm() {
     const intl = useIntl();
     const columnDefs = useMemo<ColDef[]>(
         () => [
-            {
-                headerName: intl.formatMessage({ id: 'elementName' }),
-                field: FieldConstants.CONTINGENCY_NAME,
-                editable: true,
-                rowDrag: true,
-                singleClickEdit: true,
-                flex: 1,
-            },
             {
                 headerName: intl.formatMessage({ id: 'equipments' }),
                 field: FieldConstants.EQUIPMENT_IDS,
@@ -43,8 +36,17 @@ export default function ExplicitNamingForm() {
                 cellRenderer: ChipsArrayEditor,
                 cellRendererParams: {
                     name: FieldConstants.EQUIPMENT_TABLE,
+                    sideActionCallback: manageContingencyName,
                 },
                 cellStyle: { padding: 0 },
+                flex: 1,
+            },
+            {
+                headerName: intl.formatMessage({ id: 'elementName' }),
+                field: FieldConstants.CONTINGENCY_NAME,
+                editable: true,
+                rowDrag: true,
+                singleClickEdit: true,
                 flex: 1,
             },
         ],
@@ -55,19 +57,19 @@ export default function ExplicitNamingForm() {
         if (csvData) {
             return csvData.map((value) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
-                [FieldConstants.CONTINGENCY_NAME]: value[0]?.trim() || '',
                 [FieldConstants.EQUIPMENT_IDS]:
-                    value[1]
+                    value[0]
                         ?.split('|')
                         .map((n) => n.trim())
                         .filter((n) => n) || undefined,
+                [FieldConstants.CONTINGENCY_NAME]: value[1]?.trim() || '',
             }));
         }
         return [];
     }, []);
 
     const csvFileHeaders = useMemo(
-        () => [intl.formatMessage({ id: 'elementName' }), intl.formatMessage({ id: 'equipments' })],
+        () => [intl.formatMessage({ id: 'equipments' }), intl.formatMessage({ id: 'elementName' })],
         [intl]
     );
 
