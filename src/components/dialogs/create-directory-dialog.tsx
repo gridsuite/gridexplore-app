@@ -75,7 +75,7 @@ export default function CreateDirectoryDialog({
                     disabled={!nameOk}
                     onClick={handleClick}
                     variant="outlined"
-                    dataTestId="CreateDirectory.ValidationButton"
+                    data-testid="CreateDirectory.ValidationButton"
                 >
                     <FormattedMessage id="validate" />
                 </Button>
