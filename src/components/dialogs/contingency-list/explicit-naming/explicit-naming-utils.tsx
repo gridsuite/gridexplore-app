@@ -45,3 +45,23 @@ export const getExplicitNamingEditSchema = () => {
         [FieldConstants.EQUIPMENT_TABLE]: getExplicitNamingConditionSchema(getSchema()),
     };
 };
+
+export const manageContingencyName = (...props: any[]) => {
+    const [api, node] = props;
+    if (api && node && node.data && node.data[FieldConstants.EQUIPMENT_IDS]) {
+        const [first, ...others] = node.data[FieldConstants.EQUIPMENT_IDS] as String[];
+        if (
+            node.displayed && // to prevent error trace in console when deleting the row
+            first &&
+            (node.data[FieldConstants.CONTINGENCY_NAME] == null ||
+                node.data[FieldConstants.CONTINGENCY_NAME] === '' ||
+                (node.data[FieldConstants.CONTINGENCY_NAME] != null &&
+                    node.data[FieldConstants.CONTINGENCY_NAME].startsWith(first)))
+        ) {
+            // define the first equipment id as default equipment name
+            const suffix = others.length > 0 ? '...' : '';
+            node.data[FieldConstants.CONTINGENCY_NAME] = first + suffix;
+            api.applyTransaction({ update: [node.data] });
+        }
+    }
+};
