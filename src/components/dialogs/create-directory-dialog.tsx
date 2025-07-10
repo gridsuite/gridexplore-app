@@ -46,6 +46,7 @@ export default function CreateDirectoryDialog({
         style: {
             width: '90%',
         },
+        inputProps: { 'data-testid': 'NameInputField' }
     });
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {
@@ -61,7 +62,7 @@ export default function CreateDirectoryDialog({
 
     return (
         <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
-            <DialogTitle  data-testid="DialogTitle">
+            <DialogTitle data-testid="DialogTitle">
                 {title}</DialogTitle>
             <DialogContent>
                 {nameField}
@@ -70,8 +71,8 @@ export default function CreateDirectoryDialog({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} />
-                <Button disabled={!nameOk} onClick={handleClick} variant="outlined">
+                <CancelButton data-testid="CancelButton" onClick={handleClose} />
+                <Button data-testid="ValidateButton" disabled={!nameOk} onClick={handleClick} variant="outlined">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>
