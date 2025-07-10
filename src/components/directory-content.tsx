@@ -280,7 +280,8 @@ export default function DirectoryContent() {
                     </Box>
                 )
             }
-            <Box data-testid="DirectoryContent"
+            <Box
+                data-testid="DirectoryContent"
                 width="100%"
                 flexGrow={1}
                 minHeight={0}
