@@ -19,6 +19,11 @@ export interface ChipsArrayEditorProps {
     sideActionCallback: Function;
 }
 
+export interface SideActionProps {
+    api: GridApi;
+    node: IRowNode<AgGridData>;
+}
+
 type AgGridData = {
     [FieldConstants.AG_GRID_ROW_UUID]: string;
     [key: string]: any;
@@ -37,7 +42,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
     if (sideActionCallback && api && node && node.data) {
-        sideActionCallback(api, node);
+        sideActionCallback({ api, node });
     }
 
     return (

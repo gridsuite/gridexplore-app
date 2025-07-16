@@ -7,6 +7,7 @@
 
 import { FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
 import { ContingencyListType } from '../../../../utils/elementType';
+import { SideActionProps } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
 const getExplicitNamingConditionSchema = (schema: yup.ArraySchema<any, any, any, any>) =>
     schema
@@ -46,8 +47,8 @@ export const getExplicitNamingEditSchema = () => {
     };
 };
 
-export const manageContingencyName = (...props: any[]) => {
-    const [api, node] = props;
+export const manageContingencyName = ({ ...props }: SideActionProps) => {
+    const { api, node } = props;
     if (api && node && node.data && node.data[FieldConstants.EQUIPMENT_IDS]) {
         const [first, ...others] = node.data[FieldConstants.EQUIPMENT_IDS] as String[];
         if (
