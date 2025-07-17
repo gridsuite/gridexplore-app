@@ -687,20 +687,13 @@ export function deleteCase(caseUuid: UUID) {
     });
 }
 
-export const fetchConvertedCase = (
-    caseUuid: UUID,
-    fileName: string,
-    format: string,
-    formatParameters: unknown,
-    abortController: AbortController
-) =>
+export const fetchConvertedCase = (caseUuid: UUID, fileName: string, format: string, formatParameters: unknown) =>
     backendFetch(
         `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formatParameters),
-            signal: abortController.signal,
         }
     );
 
