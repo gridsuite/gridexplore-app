@@ -60,8 +60,10 @@ export const manageContingencyName = ({ ...props }: SideActionProps) => {
         ) {
             // define the first equipment id as default equipment name
             const suffix = others.length > 0 ? '...' : '';
-            node.data[FieldConstants.CONTINGENCY_NAME] = first + suffix;
-            api.applyTransaction({ update: [node.data] });
+            if (node.data[FieldConstants.CONTINGENCY_NAME] !== first + suffix) {
+                node.data[FieldConstants.CONTINGENCY_NAME] = first + suffix;
+                api.applyTransaction({ update: [node.data] });
+            }
         }
     }
 };
