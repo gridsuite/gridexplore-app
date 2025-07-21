@@ -49,15 +49,14 @@ export const getExplicitNamingEditSchema = () => {
 
 export const manageContingencyName = ({ ...props }: SideActionProps) => {
     const { api, node } = props;
-    if (api && node && node.data && node.data[FieldConstants.EQUIPMENT_IDS]) {
-        const [first, ...others] = node.data[FieldConstants.EQUIPMENT_IDS] as String[];
+    if (api && node?.data && node.data[FieldConstants.EQUIPMENT_IDS]) {
+        const [first, ...others] = node.data[FieldConstants.EQUIPMENT_IDS] as string[];
         if (
             node.displayed && // to prevent error trace in console when deleting the row
             first &&
             (node.data[FieldConstants.CONTINGENCY_NAME] == null ||
                 node.data[FieldConstants.CONTINGENCY_NAME] === '' ||
-                (node.data[FieldConstants.CONTINGENCY_NAME] != null &&
-                    node.data[FieldConstants.CONTINGENCY_NAME].startsWith(first)))
+                node.data[FieldConstants.CONTINGENCY_NAME]?.startsWith(first))
         ) {
             // define the first equipment id as default equipment name
             const suffix = others.length > 0 ? '...' : '';

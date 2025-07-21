@@ -41,7 +41,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
-    if (sideActionCallback && api && node && node.data) {
+    if (sideActionCallback && api && node?.data) {
         sideActionCallback({ api, node });
     }
 
