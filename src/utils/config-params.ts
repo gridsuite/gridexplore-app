@@ -11,8 +11,9 @@ export const APP_NAME = 'Explore';
 export const PARAM_THEME = 'theme';
 export const PARAM_LANGUAGE = 'language';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
+export const LAST_SELECTED_DIRECTORY = 'lastSelectedDirectory';
 
-const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
+const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE, LAST_SELECTED_DIRECTORY]);
 
 export function getAppName(paramName: string) {
     return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
