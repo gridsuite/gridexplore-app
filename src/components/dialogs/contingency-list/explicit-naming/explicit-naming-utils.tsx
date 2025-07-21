@@ -49,7 +49,7 @@ export const getExplicitNamingEditSchema = () => {
 
 export const manageContingencyName = ({ ...props }: SideActionProps) => {
     const { api, node } = props;
-    if (api && node?.data && node.data[FieldConstants.EQUIPMENT_IDS]) {
+    if (api && node?.data?.[FieldConstants.EQUIPMENT_IDS]) {
         const [first, ...others] = node.data[FieldConstants.EQUIPMENT_IDS] as string[];
         if (
             node.displayed && // to prevent error trace in console when deleting the row
