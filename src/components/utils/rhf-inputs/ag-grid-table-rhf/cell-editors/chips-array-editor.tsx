@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef } from 'react';
+import { forwardRef, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 import { ColDef, GridApi, IRowNode } from 'ag-grid-community';
@@ -41,9 +41,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
-    if (sideActionCallback && api && node?.data) {
-        sideActionCallback({ api, node });
-    }
+    useEffect(() => {
+        if (sideActionCallback && api && node?.data) {
+            sideActionCallback({ api, node });
+        }
+    });
 
     return (
         <TableCellWrapper ref={ref} name={cellName}>
