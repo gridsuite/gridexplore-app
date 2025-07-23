@@ -118,12 +118,12 @@ export default function UploadNewCase({
                 <Button variant="contained" color="primary" component="label">
                     <FormattedMessage id="uploadCase" />
                     <Input
-                        data-testid="newCaseUpload"
                         ref={ref}
                         type="file"
                         name="file"
                         onChange={onChange}
                         sx={{ display: 'none' }}
+                        data-testid="NewCaseUpload"
                     />
                 </Button>
             </Grid>

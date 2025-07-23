@@ -70,7 +70,7 @@ export default function CreateDirectoryDialog({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton data-testid="CancelButton" onClick={handleClose} />
+                <CancelButton onClick={handleClose} data-testid="CancelButton"/>
                 <Button disabled={!nameOk} onClick={handleClick} variant="outlined" data-testid="ValidateButton">
                     <FormattedMessage id="validate" />
                 </Button>
