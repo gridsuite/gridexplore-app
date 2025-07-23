@@ -6,7 +6,7 @@
  */
 
 import { forwardRef, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FieldConstants, MultipleAutocompleteInput } from '@gridsuite/commons-ui';
 import { ColDef, GridApi, IRowNode } from 'ag-grid-community';
 import TableCellWrapper from './table-cell-wrapper';
@@ -31,7 +31,7 @@ type AgGridData = {
 
 const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) => {
     const { name, node, colDef, api, sideActionCallback } = props;
-    const { getValues } = useFormContext();
+    const { control, getValues } = useFormContext();
 
     const getIndexInFormData = (nodeData: AgGridData | undefined) =>
         getValues(name).findIndex(
@@ -41,11 +41,11 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
 
     const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
 
+    const valuesInChips = useWatch({ control, name: cellName, exact: true });
+
     useEffect(() => {
-        if (sideActionCallback && api && node?.data) {
-            sideActionCallback({ api, node });
-        }
-    });
+        sideActionCallback({ api, node });
+    }, [valuesInChips, sideActionCallback, api, node]);
 
     return (
         <TableCellWrapper ref={ref} name={cellName}>
