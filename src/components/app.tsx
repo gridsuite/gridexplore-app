@@ -190,13 +190,7 @@ export default function App() {
                                         >
                                             <TreeViewsContainer />
                                         </Box>
-                                        <Box
-                                            width="70%"
-                                            height="100%"
-                                            display="flex"
-                                            flexDirection="column"
-                                            data-testid="DirectoryContent"
-                                        >
+                                        <Box width="70%" height="100%" display="flex" flexDirection="column">
                                             <Box width="100%" flexShrink={0}>
                                                 <DirectoryBreadcrumbs />
                                             </Box>

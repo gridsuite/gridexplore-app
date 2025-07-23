@@ -218,7 +218,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push({
                 messageDescriptorId: 'createRootFolder',
                 callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-                icon: <FolderSpecialIcon data-testid="createRootFolderIcon" fontSize="small" />,
+                icon: <FolderSpecialIcon data-testid="CreateRootFolderIcon" fontSize="small" />,
             });
             return menuItems;
         }
@@ -310,7 +310,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         menuItems.push({
             messageDescriptorId: 'createRootFolder',
             callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-            icon: <FolderSpecialIcon data-testid="createRootFolderIcon" fontSize="small" />,
+            icon: <FolderSpecialIcon data-testid="CreateRootFolderIcon" fontSize="small" />,
         });
 
         menuItems.push({ isDivider: true });

@@ -46,7 +46,7 @@ export default function CreateDirectoryDialog({
         style: {
             width: '90%',
         },
-        dataTestId: 'NameInputField',
+        inputProps: { 'data-testid': 'NameInputField' },
     });
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {

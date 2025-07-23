@@ -25,7 +25,6 @@ export interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defau
     id?: string;
     defaultValue?: string;
     adornment?: ReactNode;
-    dataTestId?: string;
 }
 
 export const useTextValue = ({
@@ -33,7 +32,6 @@ export const useTextValue = ({
     id = label,
     defaultValue = '',
     adornment,
-    dataTestId,
     ...formProps
 }: UseTextValueProps): [string, ReactNode, (value: string) => void, boolean] => {
     const [value, setValue] = useState(defaultValue);
@@ -50,7 +48,6 @@ export const useTextValue = ({
                 key={id}
                 margin="dense"
                 id={id}
-                data-testid={dataTestId}
                 label={id && <FormattedMessage id={label} />}
                 value={value}
                 style={{ width: '100%' }}
@@ -64,7 +61,7 @@ export const useTextValue = ({
                 }}
             />
         ),
-        [id, label, value, handleChangeValue, formProps, adornment, dataTestId]
+        [id, label, value, handleChangeValue, formProps, adornment]
     );
 
     useEffect(() => setValue(defaultValue), [defaultValue]);
@@ -77,7 +74,6 @@ export interface UseNameFieldProps extends UseTextValueProps {
     elementType: ElementType;
     active: boolean;
     alreadyExistingErrorMessage?: string;
-    dataTestId?: string;
 }
 
 export const useNameField = ({
@@ -85,7 +81,6 @@ export const useNameField = ({
     elementType,
     active,
     alreadyExistingErrorMessage,
-    dataTestId,
     ...props
 }: UseNameFieldProps): [string, ReactNode, string | undefined, boolean, (value: string) => void, boolean] => {
     const [error, setError] = useState<string | undefined>();
@@ -175,7 +170,6 @@ export const useNameField = ({
         ...props,
         error: !!error,
         adornment,
-        dataTestId,
     });
 
     useEffect(() => {
