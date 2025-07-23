@@ -45,7 +45,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
         if (sideActionCallback && api && node?.data) {
             sideActionCallback({ api, node });
         }
-    }, [sideActionCallback, api, node]);
+    });
 
     return (
         <TableCellWrapper ref={ref} name={cellName}>
