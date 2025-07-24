@@ -281,13 +281,13 @@ export default function DirectoryContent() {
                 )
             }
             <Box
-                data-testid="DirectoryContent"
                 width="100%"
                 flexGrow={1}
                 minHeight={0}
                 overflow="auto"
                 sx={styles.highlightedElementAnimation as SxProps}
                 onContextMenu={onContextMenu}
+                data-testid="DirectoryContent"
             >
                 {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
                 {
