@@ -25,7 +25,14 @@ import { FormattedMessage } from 'react-intl';
 import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchConfigParameter, fetchConfigParameters, fetchIdpSettings } from '../utils/rest-api';
-import { APP_NAME, COMMON_APP_NAME, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
+import {
+    APP_NAME,
+    COMMON_APP_NAME,
+    LAST_SELECTED_DIRECTORY,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
+} from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
@@ -68,6 +75,9 @@ export default function App() {
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(String(param.value) === 'true'));
+                        break;
+                    case LAST_SELECTED_DIRECTORY:
+                        localStorage.setItem(LAST_SELECTED_DIRECTORY, param.value as string);
                         break;
                     default:
                         break;
