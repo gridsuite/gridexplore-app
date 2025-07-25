@@ -287,6 +287,7 @@ export default function DirectoryContent() {
                 overflow="auto"
                 sx={styles.highlightedElementAnimation as SxProps}
                 onContextMenu={onContextMenu}
+                data-testid="DirectoryContent"
             >
                 {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
                 {

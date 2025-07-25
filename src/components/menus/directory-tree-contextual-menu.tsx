@@ -218,7 +218,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push({
                 messageDescriptorId: 'createRootFolder',
                 callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-                icon: <FolderSpecialIcon fontSize="small" />,
+                icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
             });
             return menuItems;
         }
@@ -228,17 +228,17 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 {
                     messageDescriptorId: 'createNewStudy',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
-                    icon: <AddIcon fontSize="small" />,
+                    icon: <AddIcon fontSize="small" data-testid="CreateNewStudyIcon" />,
                 },
                 {
                     messageDescriptorId: 'createNewContingencyList',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_CONTINGENCY_LIST),
-                    icon: <AddIcon fontSize="small" />,
+                    icon: <AddIcon fontSize="small" data-testid="CreateNewContingencyListIcon" />,
                 },
                 {
                     messageDescriptorId: 'createNewFilter',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER),
-                    icon: <AddIcon fontSize="small" />,
+                    icon: <AddIcon fontSize="small" data-testid="CreateNewFilterIcon" />,
                     subMenuItems: [
                         {
                             messageDescriptorId: FilterType.EXPLICIT_NAMING.label,
@@ -255,7 +255,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 {
                     messageDescriptorId: 'ImportNewCase',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
-                    icon: <AddIcon fontSize="small" />,
+                    icon: <AddIcon fontSize="small" data-testid="ImportNewCaseIcon" />,
                 }
             );
         }
@@ -268,19 +268,19 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     {
                         messageDescriptorId: 'renameFolder',
                         callback: () => handleOpenDialog(DialogsId.RENAME_DIRECTORY),
-                        icon: <CreateIcon fontSize="small" />,
+                        icon: <CreateIcon fontSize="small" data-testid="RenameIcon" />,
                     },
                     {
                         messageDescriptorId: 'deleteFolder',
                         callback: () => handleOpenDialog(DialogsId.DELETE_DIRECTORY),
-                        icon: <DeleteIcon fontSize="small" />,
+                        icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
                     }
                 );
                 menuItems.push(
                     {
                         messageDescriptorId: 'moveDirectory',
                         callback: () => handleOpenDialog(DialogsId.MOVE_DIRECTORY),
-                        icon: <DriveFileMoveIcon fontSize="small" />,
+                        icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
                     },
                     { isDivider: true }
                 );
@@ -292,7 +292,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 {
                     messageDescriptorId: 'paste',
                     callback: () => pasteElement(directory.elementUuid, itemSelectionForCopy),
-                    icon: <ContentPasteIcon fontSize="small" />,
+                    icon: <ContentPasteIcon fontSize="small" data-testid="PasteIcon" />,
                     disabled: !itemSelectionForCopy.sourceItemUuid,
                 },
                 { isDivider: true }
@@ -303,14 +303,14 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push({
                 messageDescriptorId: 'createFolder',
                 callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
-                icon: <CreateNewFolderIcon fontSize="small" />,
+                icon: <CreateNewFolderIcon fontSize="small" data-testid="CreateFolderIcon" />,
             });
         }
 
         menuItems.push({
             messageDescriptorId: 'createRootFolder',
             callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-            icon: <FolderSpecialIcon fontSize="small" />,
+            icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
         });
 
         menuItems.push({ isDivider: true });
@@ -319,7 +319,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             menuItems.push({
                 messageDescriptorId: 'properties',
                 callback: () => handleOpenDialog(DialogsId.DIRECTORY_PROPERTIES),
-                icon: <SettingsIcon fontSize="small" />,
+                icon: <SettingsIcon fontSize="small" data-testid="PropertiesIcon" />,
             });
         }
 

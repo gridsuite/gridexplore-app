@@ -134,14 +134,16 @@ export default function DeleteDialog({
 
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
-            <DialogTitle style={{ display: 'flex' }}>{buildTitle()}</DialogTitle>
+            <DialogTitle style={{ display: 'flex' }} data-testid="DialogTitle">
+                {buildTitle()}
+            </DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(itemsState, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId)}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} disabled={loadingState} />
-                <Button onClick={handleClick} variant="outlined" disabled={loadingState}>
+                <CancelButton onClick={handleClose} disabled={loadingState} data-testid="CancelButton" />
+                <Button onClick={handleClick} variant="outlined" disabled={loadingState} data-testid="DeleteButton">
                     {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
                 </Button>
             </DialogActions>
