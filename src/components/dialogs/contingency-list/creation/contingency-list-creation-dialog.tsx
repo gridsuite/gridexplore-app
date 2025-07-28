@@ -13,6 +13,7 @@ import {
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     yupConfig as yup,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,7 +27,6 @@ import {
 } from '../contingency-list-utils';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';

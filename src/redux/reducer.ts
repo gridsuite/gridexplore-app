@@ -31,6 +31,8 @@ import {
     USER_VALIDATION_ERROR,
     UserAction,
     UserValidationErrorAction,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import {
     getLocalStorageComputedLanguage,
@@ -76,7 +78,6 @@ import {
     REMOVE_UPLOADING_ELEMENT,
     RemoveUploadingElementAction,
 } from './actions';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 import { AppState } from './types';
 
 const initialState: AppState = {
