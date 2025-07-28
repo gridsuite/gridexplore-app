@@ -20,7 +20,13 @@ import {
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { UUID } from 'crypto';
-import { getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
+import {
+    getAppName,
+    LAST_SELECTED_DIRECTORY,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
+} from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -188,6 +194,10 @@ export type ConfigParameter =
     | {
           readonly name: typeof PARAM_DEVELOPER_MODE;
           value: boolean;
+      }
+    | {
+          readonly name: typeof LAST_SELECTED_DIRECTORY;
+          value: UUID | null;
       };
 export type ConfigParameters = ConfigParameter[];
 
