@@ -9,9 +9,8 @@ import { type MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import { LIGHT_THEME } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, PARAM_THEME } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { PARAM_THEME } from 'utils/config-params';
 import { AppState } from '../redux/types';
 import CircleIcon from './icons/circleIcon';
 

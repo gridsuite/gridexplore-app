@@ -15,7 +15,7 @@ import {
     TableView as TableViewIcon,
     DownloadForOffline,
 } from '@mui/icons-material';
-import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, useSnackMessage, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
@@ -30,7 +30,6 @@ import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection
 import { checkPermissionOnDirectory } from '../menus/menus-utils';
 import { handleDeleteError, handleMoveError } from '../utils/rest-errors';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];

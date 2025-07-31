@@ -16,11 +16,15 @@ import {
     getUserToken,
     type GsLang,
     type GsTheme,
+    LAST_SELECTED_DIRECTORY,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { UUID } from 'crypto';
-import { getAppName, PARAM_DEVELOPER_MODE, PARAM_LANGUAGE, PARAM_THEME } from './config-params';
+import { getAppName } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -188,6 +192,10 @@ export type ConfigParameter =
     | {
           readonly name: typeof PARAM_DEVELOPER_MODE;
           value: boolean;
+      }
+    | {
+          readonly name: typeof LAST_SELECTED_DIRECTORY;
+          value: UUID | null;
       };
 export type ConfigParameters = ConfigParameter[];
 
@@ -304,15 +312,6 @@ export function renameElement(elementUuid: UUID, newElementName: string) {
             elementName: newElementName,
         }),
     });
-}
-
-export function updateConfigParameter(name: string, value: string | boolean) {
-    const appName = getAppName(name);
-    console.info("Updating config parameter '%s=%s' for app '%s' ", name, value, appName);
-    const updateParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters/${name}?value=${encodeURIComponent(
-        value
-    )}`;
-    return backendFetch(updateParams, { method: 'put' });
 }
 
 export function createStudy(
