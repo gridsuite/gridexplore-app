@@ -98,7 +98,9 @@ export const useNameField = ({
 
     const updateValidity = useCallback(
         (name: string, touched: boolean) => {
-            const nameFormatted = name.replace(/ /g, '');
+            const nameFormatted = name.trim();
+            const defaultFormatted = (props.defaultValue || '').trim();
+
             if (nameFormatted === '' && touched) {
                 setError(intl.formatMessage({ id: 'nameEmpty' }));
                 setChecking(false);
@@ -109,39 +111,32 @@ export const useNameField = ({
                 return;
             }
 
-            if (nameFormatted !== '' && name === props.defaultValue) {
-                setError(
-                    alreadyExistingErrorMessage ||
+            if (nameFormatted !== '' && nameFormatted === defaultFormatted) {
+                setChecking(undefined);
+                return;
+            }
+            // If the name is not only white spaces and not defaultValue
+            doesElementExist(nameFormatted)
+                .then((data) => {
+                    setError(
+                        data
+                            ? alreadyExistingErrorMessage ||
+                                  intl.formatMessage({
+                                      id: 'nameAlreadyUsed',
+                                  })
+                            : ''
+                    );
+                })
+                .catch((error2) => {
+                    setError(
                         intl.formatMessage({
-                            id: 'nameAlreadyUsed',
-                        })
-                );
-                setChecking(false);
-            }
-            if (nameFormatted !== '') {
-                // If the name is not only white spaces and not defaultValue
-                doesElementExist(name)
-                    .then((data) => {
-                        setError(
-                            data
-                                ? alreadyExistingErrorMessage ||
-                                      intl.formatMessage({
-                                          id: 'nameAlreadyUsed',
-                                      })
-                                : ''
-                        );
-                    })
-                    .catch((error2) => {
-                        setError(
-                            intl.formatMessage({
-                                id: 'nameValidityCheckErrorMsg',
-                            }) + error2.message
-                        );
-                    })
-                    .finally(() => {
-                        setChecking(false);
-                    });
-            }
+                            id: 'nameValidityCheckErrorMsg',
+                        }) + error2.message
+                    );
+                })
+                .finally(() => {
+                    setChecking(false);
+                });
         },
         [props.defaultValue, alreadyExistingErrorMessage, intl, doesElementExist]
     );
@@ -185,7 +180,7 @@ export const useNameField = ({
         name,
         field,
         error,
-        name !== props.defaultValue && name.replace(/ /g, '') !== '' && !error && !checking,
+        name.trim() !== (props.defaultValue || '').trim() && name.trim() !== '' && !error && !checking,
         setName,
         touched,
     ];
