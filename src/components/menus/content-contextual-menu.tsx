@@ -28,6 +28,8 @@ import {
     FilterCreationDialog,
     TreeViewFinderNodeProps,
     useSnackMessage,
+    PARAM_LANGUAGE,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -50,7 +52,6 @@ import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE, PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import {
     generateRenameErrorMessages,
     handleDeleteError,

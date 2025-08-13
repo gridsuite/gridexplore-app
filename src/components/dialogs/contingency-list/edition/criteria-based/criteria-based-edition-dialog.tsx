@@ -13,6 +13,7 @@ import {
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,7 +29,6 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
-import { PARAM_LANGUAGE } from '../../../../../utils/config-params';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),

@@ -6,7 +6,7 @@
  */
 
 import { Action } from 'redux';
-import { PARAM_LANGUAGE } from '../utils/config-params';
+import { PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import { AppState } from './types';
 
 export type AppActions =

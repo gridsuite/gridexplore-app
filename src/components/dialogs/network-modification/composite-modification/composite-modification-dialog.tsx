@@ -20,11 +20,11 @@ import {
     useModificationLabelComputer,
     useSnackMessage,
     yupConfig as yup,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
 import { useParameterState } from '../../use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../../../../utils/config-params';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';

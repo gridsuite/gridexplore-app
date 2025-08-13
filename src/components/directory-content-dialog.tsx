@@ -29,6 +29,7 @@ import {
     useSnackMessage,
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,7 +43,6 @@ import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import * as constants from '../utils/UIconstants';
 import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
-import { PARAM_LANGUAGE } from '../utils/config-params';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 
 export type DirectoryContentDialogApi = {

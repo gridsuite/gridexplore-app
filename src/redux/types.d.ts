@@ -17,8 +17,9 @@ import {
     GsTheme,
     type ItemSelectionForCopy,
     Metadata,
+    PARAM_LANGUAGE,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
-import { PARAM_LANGUAGE, PARAM_THEME } from '../utils/config-params';
 
 export type IDirectory = ElementAttributes & {
     type: ElementType.DIRECTORY;

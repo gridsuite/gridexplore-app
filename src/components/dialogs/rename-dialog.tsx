@@ -81,7 +81,7 @@ export default function RenameDialog({
 
     return (
         <Dialog fullWidth open={open} onClose={handleClose} aria-labelledby="dialog-title-rename">
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle data-testid="DialogTitle">{title}</DialogTitle>
             <DialogContent>
                 {newNameField}
                 <br />
@@ -90,8 +90,8 @@ export default function RenameDialog({
                 {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} />
-                <Button onClick={handleClick} disabled={!newNameOk} variant="outlined">
+                <CancelButton onClick={handleClose} data-testid="CancelButton" />
+                <Button onClick={handleClick} disabled={!newNameOk} variant="outlined" data-testid="ValidateButton">
                     <FormattedMessage id="validate" />
                 </Button>
             </DialogActions>

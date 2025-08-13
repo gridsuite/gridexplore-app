@@ -64,6 +64,7 @@ import {
     exportParamsEn,
     exportParamsFr,
     NotificationsProvider,
+    PARAM_THEME,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -77,7 +78,6 @@ import messages_plugins from '../plugins/translations';
 import backend_locale_fr from '../translations/external/backend-locale-fr';
 import backend_locale_en from '../translations/external/backend-locale-en';
 import { store } from '../redux/store';
-import { PARAM_THEME } from '../utils/config-params';
 import { AppState } from '../redux/types';
 
 // Register all community features (migration to V33)
