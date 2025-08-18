@@ -53,7 +53,7 @@ export default function CommonContextualMenu({ menuItems, ...menuProps }: Readon
         key: number,
         messageDescriptorId?: string,
         callback?: () => void,
-        icon: ReactNode = <EditIcon fontSize="small" />,
+        icon: ReactNode = <EditIcon fontSize="small" data-testid="RenameIcon" />,
         disabled: boolean = false
     ) {
         return (
