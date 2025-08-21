@@ -73,7 +73,7 @@ export default function App() {
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value as GsLang));
                         // TODO remove cast when prototype is fixed in commons-ui
-                        dispatch(selectComputedLanguage(getComputedLanguage(param.value as string) as GsLangUser));
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value as GsLang) as GsLangUser));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(String(param.value) === 'true'));
