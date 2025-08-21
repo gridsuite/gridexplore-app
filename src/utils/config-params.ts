@@ -5,4 +5,4 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const APP_NAME = 'explore';
+export const APP_NAME = 'Explore';
