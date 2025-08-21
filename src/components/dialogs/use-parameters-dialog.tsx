@@ -11,10 +11,11 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
-    useSnackMessage,
     updateConfigParameter,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { AppState } from '../../redux/types';
+import { APP_NAME } from '../../utils/config-params';
 
 type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE | typeof PARAM_DEVELOPER_MODE;
 
@@ -34,7 +35,7 @@ export function useParameterState<TParamName extends ParamName>(
     const handleChangeParamLocalState = useCallback(
         (value: AppState[TParamName]) => {
             setParamLocalState(value);
-            updateConfigParameter(paramName, String(value)).catch((error) => {
+            updateConfigParameter(APP_NAME, paramName, value.toString()).catch((error) => {
                 setParamLocalState(paramGlobalState);
                 snackError({
                     messageTxt: error.message,

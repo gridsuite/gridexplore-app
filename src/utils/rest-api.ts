@@ -24,7 +24,6 @@ import {
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import { UUID } from 'crypto';
-import { getAppName } from './config-params';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
@@ -34,7 +33,6 @@ import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
-const PREFIX_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/config`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_ACTIONS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/actions`;
 const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
@@ -198,23 +196,6 @@ export type ConfigParameter =
           value: UUID | null;
       };
 export type ConfigParameters = ConfigParameter[];
-
-export function fetchConfigParameters(appName: string) {
-    console.info(`Fetching UI configuration params for app : ${appName}`);
-    const fetchParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters`;
-    return backendFetchJson(fetchParams, {
-        method: 'get',
-    }) as Promise<ConfigParameters>;
-}
-
-export function fetchConfigParameter(name: string) {
-    const appName = getAppName(name);
-    console.info("Fetching UI config parameter '%s' for app '%s' ", name, appName);
-    const fetchParams = `${PREFIX_CONFIG_QUERIES}/v1/applications/${appName}/parameters/${name}`;
-    return backendFetchJson(fetchParams, {
-        method: 'get',
-    }) as Promise<ConfigParameter>;
-}
 
 export function deleteElement(elementUuid: UUID) {
     console.info("Deleting element %s'", elementUuid);
