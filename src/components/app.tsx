@@ -12,11 +12,11 @@ import {
     AnnouncementNotification,
     AuthenticationRouter,
     CardErrorBoundary,
+    COMMON_APP_NAME,
+    fetchConfigParameter,
+    fetchConfigParameters,
     getComputedLanguage,
     getPreLoginPath,
-    GsLang,
-    GsLangUser,
-    GsTheme,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
@@ -30,8 +30,8 @@ import {
 import { FormattedMessage } from 'react-intl';
 import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
-import { ConfigParameters, fetchConfigParameter, fetchConfigParameters, fetchIdpSettings } from '../utils/rest-api';
-import { APP_NAME, COMMON_APP_NAME } from '../utils/config-params';
+import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
+import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryContent from './directory-content';
@@ -65,12 +65,11 @@ export default function App() {
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
-                        dispatch(selectTheme(param.value as GsTheme));
+                        dispatch(selectTheme(param.value));
                         break;
                     case PARAM_LANGUAGE:
-                        dispatch(selectLanguage(param.value as GsLang));
-                        // TODO remove cast when prototype is fixed in commons-ui
-                        dispatch(selectComputedLanguage(getComputedLanguage(param.value as string) as GsLangUser));
+                        dispatch(selectLanguage(param.value));
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(String(param.value) === 'true'));
@@ -101,7 +100,7 @@ export default function App() {
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
             if (eventData.headers?.parameterName) {
-                fetchConfigParameter(eventData.headers.parameterName)
+                fetchConfigParameter(APP_NAME, eventData.headers.parameterName)
                     .then((param) => updateParams([param]))
                     .catch((error) =>
                         snackError({

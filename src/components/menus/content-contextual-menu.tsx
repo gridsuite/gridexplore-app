@@ -379,7 +379,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.MOVE);
                 },
-                icon: <DriveFileMoveIcon fontSize="small" />,
+                icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
                 withDivider: true,
             });
         }
@@ -390,7 +390,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.ADD_NEW_STUDY_FROM_CASE);
                 },
-                icon: <PhotoLibrary fontSize="small" />,
+                icon: <PhotoLibrary fontSize="small" data-testid="CreateNewStudyFromImportedCaseIcon" />,
             });
         }
 
@@ -398,7 +398,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             menuItems.push({
                 messageDescriptorId: 'duplicate',
                 callback: duplicateItem,
-                icon: <FileCopyTwoToneIcon fontSize="small" />,
+                icon: <FileCopyTwoToneIcon fontSize="small" data-testid="DuplicateIcon" />,
             });
         }
 
@@ -406,7 +406,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             menuItems.push({
                 messageDescriptorId: 'copy',
                 callback: copyItem,
-                icon: <ContentCopyRoundedIcon fontSize="small" />,
+                icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
             });
         }
 
@@ -416,7 +416,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.DELETE);
                 },
-                icon: <DeleteIcon fontSize="small" />,
+                icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
                 withDivider: true,
             });
         }
@@ -428,7 +428,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     await downloadElements(selectedElements);
                     handleCloseDialog();
                 },
-                icon: <FileDownload fontSize="small" />,
+                icon: <FileDownload fontSize="small" data-testid="DownloadIcon" />,
             });
         }
 
@@ -436,7 +436,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
-                icon: <DownloadForOffline fontSize="small" />,
+                icon: <DownloadForOffline fontSize="small" data-testid="ExportIcon" />,
             });
         }
 
@@ -446,7 +446,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.CREATE_SPREADSHEET_COLLECTION);
                 },
-                icon: <TableViewIcon fontSize="small" />,
+                icon: <TableViewIcon fontSize="small" data-testid="CreateSpreadsheetCollectionIcon" />,
             });
         }
 
@@ -456,7 +456,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.CONVERT_TO_EXPLICIT_NAMING_FILTER);
                 },
-                icon: <InsertDriveFileIcon fontSize="small" />,
+                icon: <InsertDriveFileIcon fontSize="small" data-testid="ConvertFilterIcon" />,
             });
         }
 

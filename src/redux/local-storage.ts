@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DARK_THEME, getComputedLanguage, GsLang, GsLangUser, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
+import { DARK_THEME, getComputedLanguage, GsLang, GsTheme, LANG_SYSTEM } from '@gridsuite/commons-ui';
 import { APP_NAME } from '../utils/config-params';
 
 const LOCAL_STORAGE_THEME_KEY = `${APP_NAME}_THEME`.toUpperCase();
@@ -28,6 +28,5 @@ export function saveLocalStorageLanguage(language: GsLang) {
 }
 
 export function getLocalStorageComputedLanguage() {
-    // TODO remove cast when prototype is fixed in commons-ui
-    return getComputedLanguage(getLocalStorageLanguage()) as GsLangUser;
+    return getComputedLanguage(getLocalStorageLanguage());
 }

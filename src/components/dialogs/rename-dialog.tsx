@@ -12,6 +12,7 @@ import { SyntheticEvent } from 'react';
 import { UUID } from 'crypto';
 import { useNameField } from './field-hook';
 import { AppState } from '../../redux/types';
+import { MAX_DIRECTORY_NAME_LENGTH } from '../../utils/UIconstants';
 
 export interface RenameDialogProps {
     /** Is the dialog open ? */
@@ -61,6 +62,7 @@ export default function RenameDialog({
             id: 'nameAlreadyUsed',
         }),
         style: { width: '90%' },
+        inputProps: type === ElementType.DIRECTORY ? { maxLength: MAX_DIRECTORY_NAME_LENGTH } : undefined,
     });
 
     const handleClick = () => {
