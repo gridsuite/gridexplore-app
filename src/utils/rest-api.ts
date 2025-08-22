@@ -557,6 +557,28 @@ export function createContingencyList(
     });
 }
 
+export function createFilterBasedContingency(
+    name: string,
+    description: string,
+    filtersUuids: string[],
+    parentDirectoryUuid: UUID | undefined
+) {
+    console.info('Creating a new filter based contingency list...');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid ?? '');
+
+    const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/${encodeURIComponent(
+        name
+    )}?${urlSearchParams.toString()}`;
+    console.debug(createContingencyListUrl);
+
+    return backendFetch(createContingencyListUrl, {
+        method: 'post',
+        body: JSON.stringify(filtersUuids),
+    });
+}
+
 /**
  * Get contingency list by type and id
  * @returns {Promise<Response>}

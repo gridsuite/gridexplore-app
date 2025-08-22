@@ -5,23 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomMuiDialog, FieldConstants, MAX_CHAR_DESCRIPTION, yupConfig as yup } from '@gridsuite/commons-ui';
+import {
+    CustomMuiDialog,
+    FieldConstants,
+    MAX_CHAR_DESCRIPTION,
+    useSnackMessage,
+    yupConfig as yup,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useSelector } from 'react-redux';
 import ContingencyListFilterBasedFrom from './contingency-list-filter-based-from';
+import { AppState } from '../../../../redux/types';
+import { createFilterBasedContingency } from '../../../../utils/rest-api';
+import { handleNotAllowedError } from '../../../utils/rest-errors';
 
 export interface FilterBasedContingencyListProps {
     titleId: string;
     open: boolean;
     onClose: () => void;
 }
-
-export type ContingencyBasedFilter = {
-    uuid: string;
-    name: string;
-    path: string;
-    equipmentType: string;
-};
 
 const schema: any = yup.object().shape({
     [FieldConstants.NAME]: yup.string().required(),
@@ -32,7 +35,7 @@ const schema: any = yup.object().shape({
 export interface ContingencyListFilterBasedFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
-    [FieldConstants.FILTERS]: ContingencyBasedFilter[];
+    [FieldConstants.FILTERS]: string[];
 }
 
 const getContingencyListEmptyFormData = (name = '') => ({
@@ -48,9 +51,8 @@ export default function FilterBasedContingencyListDialog({
     open,
     onClose,
 }: Readonly<FilterBasedContingencyListProps>) {
-    const onSubmit = () => {
-        // do something
-    };
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const { snackError } = useSnackMessage();
 
     const methods = useForm<ContingencyListFilterBasedFormData>({
         defaultValues: emptyFormData(),
@@ -64,6 +66,26 @@ export default function FilterBasedContingencyListDialog({
     const closeAndClear = () => {
         reset(emptyFormData());
         onClose();
+    };
+
+    const onSubmit = (data: ContingencyListFilterBasedFormData) => {
+        createFilterBasedContingency(
+            data[FieldConstants.NAME],
+            data[FieldConstants.DESCRIPTION] ?? '',
+            data[FieldConstants.FILTERS],
+            activeDirectory
+        )
+            .then(() => closeAndClear())
+            .catch((error) => {
+                if (handleNotAllowedError(error, snackError)) {
+                    return;
+                }
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'contingencyListCreationError',
+                    headerValues: { name: data[FieldConstants.NAME] },
+                });
+            });
     };
 
     const nameError = errors[FieldConstants.NAME];

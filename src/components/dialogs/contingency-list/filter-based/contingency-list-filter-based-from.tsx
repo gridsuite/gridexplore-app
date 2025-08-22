@@ -10,6 +10,7 @@ import {
     DirectoryItemSelector,
     DirectoryItemsInput,
     ElementType,
+    EquipmentType,
     FieldConstants,
     TreeViewFinderNodeProps,
     UniqueNameInput,
@@ -18,9 +19,10 @@ import {
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
+import { blue, brown, green, indigo, lime, red, teal } from '@mui/material/colors';
 import { AppState } from '../../../../redux/types';
 
 export interface ContingencyListFilterBasedFromProps {
@@ -56,6 +58,32 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
         },
     ];
 
+    const equipmentTypes: string[] = useMemo(() => {
+        return [
+            EquipmentType.TWO_WINDINGS_TRANSFORMER,
+            EquipmentType.LINE,
+            EquipmentType.LOAD,
+            EquipmentType.GENERATOR,
+            EquipmentType.GENERATOR,
+            EquipmentType.SHUNT_COMPENSATOR,
+            EquipmentType.STATIC_VAR_COMPENSATOR,
+            EquipmentType.HVDC_LINE,
+        ];
+    }, []);
+
+    // TODO basseche : should ask Stephane for final colors
+    const equipmentColorsMap: Map<string, string> = useMemo(() => {
+        const map = new Map();
+        map.set(EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]);
+        map.set(EquipmentType.LINE, indigo[700]);
+        map.set(EquipmentType.LOAD, brown[700]);
+        map.set(EquipmentType.GENERATOR, green[700]);
+        map.set(EquipmentType.SHUNT_COMPENSATOR, red[700]);
+        map.set(EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]);
+        map.set(EquipmentType.HVDC_LINE, teal[700]);
+        return map;
+    }, []);
+
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
@@ -76,6 +104,8 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
                     label=""
                     name={FieldConstants.FILTERS}
                     elementType={ElementType.FILTER}
+                    equipmentColorsMap={equipmentColorsMap}
+                    equipmentTypes={equipmentTypes}
                 />
             </Box>
             <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>
@@ -105,7 +135,6 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
                                 }
                                 setSelectedStudy(nodes[0].name);
                             }
-                            console.log('setisOpen false');
                             setIsOpen(false);
                         }}
                         multiSelect={false}
