@@ -11,6 +11,7 @@ import { FormattedMessage } from 'react-intl';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useNameField } from './field-hook';
+import { MAX_DIRECTORY_NAME_LENGTH } from '../../utils/UIconstants';
 
 export interface CreateDirectoryDialogProps {
     open: boolean;
@@ -46,7 +47,7 @@ export default function CreateDirectoryDialog({
         style: {
             width: '90%',
         },
-        inputProps: { 'data-testid': 'NameInputField' },
+        inputProps: { 'data-testid': 'NameInputField', maxLength: MAX_DIRECTORY_NAME_LENGTH },
     });
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {
