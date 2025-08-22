@@ -17,9 +17,6 @@ import {
     fetchConfigParameters,
     getComputedLanguage,
     getPreLoginPath,
-    GsLang,
-    GsLangUser,
-    GsTheme,
     initializeAuthenticationProd,
     LAST_SELECTED_DIRECTORY,
     NotificationsUrlKeys,
@@ -68,12 +65,11 @@ export default function App() {
             params.forEach((param) => {
                 switch (param.name) {
                     case PARAM_THEME:
-                        dispatch(selectTheme(param.value as GsTheme));
+                        dispatch(selectTheme(param.value));
                         break;
                     case PARAM_LANGUAGE:
-                        dispatch(selectLanguage(param.value as GsLang));
-                        // TODO remove cast when prototype is fixed in commons-ui
-                        dispatch(selectComputedLanguage(getComputedLanguage(param.value as GsLang) as GsLangUser));
+                        dispatch(selectLanguage(param.value));
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(String(param.value) === 'true'));
