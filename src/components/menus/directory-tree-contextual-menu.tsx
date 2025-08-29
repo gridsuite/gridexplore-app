@@ -57,6 +57,7 @@ import {
     handleGenericTxtError,
     handleMaxElementsExceededError,
     handleMoveDirectoryConflictError,
+    handleMoveNameConflictError,
     handleNotAllowedError,
     handlePasteError,
 } from '../utils/rest-errors';
@@ -334,6 +335,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         return;
                     }
                     if (handleNotAllowedError(error, snackError)) {
+                        return;
+                    }
+                    if (handleMoveNameConflictError(error, snackError)) {
                         return;
                     }
                     const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)

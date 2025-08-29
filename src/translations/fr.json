@@ -123,6 +123,7 @@
     "moveItemContentText": "Veuillez choisir un dossier",
     "moveElementNotFoundError": "L'élément ou le dossier cible n'a pas été trouvé",
     "moveElementNotAllowedError": "Vous ne pouvez pas déplacer cet élément dans le dossier cible. Action non autorisée",
+    "moveNameConflictError": "Un élément avec le même nom existe déjà dans le dossier cible.",
     "notElementCreator": "Vous n'êtes pas le créateur de l'élément",
     "elementCreationInProgress": "Création en cours : pas d'opération autorisée",
     "serverConnectionFailed": "Échec de connexion avec le serveur. Veuillez réessayer ultérieurement",
