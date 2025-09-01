@@ -15,6 +15,7 @@ import {
     TableView as TableViewIcon,
     DownloadForOffline,
 } from '@mui/icons-material';
+import { cleanLocalStorageForStudies } from 'utils/local-storage-utils';
 import { ElementAttributes, ElementType, useSnackMessage, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
@@ -103,12 +104,15 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             setDeleteError('');
             // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
-                .then(handleCloseDialog)
+                .then(() => {
+                    cleanLocalStorageForStudies(selectedElements);
+                    handleCloseDialog();
+                })
                 .catch((error) => {
                     handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
+        [selectedDirectory?.elementUuid, selectedElements, handleCloseDialog, intl, snackError]
     );
 
     const items = useMemo(() => {
