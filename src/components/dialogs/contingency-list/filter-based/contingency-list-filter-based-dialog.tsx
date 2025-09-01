@@ -11,6 +11,7 @@ import {
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     yupConfig as yup,
+    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -35,7 +36,7 @@ const schema: any = yup.object().shape({
 export interface ContingencyListFilterBasedFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
-    [FieldConstants.FILTERS]: string[];
+    [FieldConstants.FILTERS]: TreeViewFinderNodeProps[];
 }
 
 const getContingencyListEmptyFormData = (name = '') => ({
@@ -72,7 +73,7 @@ export default function FilterBasedContingencyListDialog({
         createFilterBasedContingency(
             data[FieldConstants.NAME],
             data[FieldConstants.DESCRIPTION] ?? '',
-            data[FieldConstants.FILTERS],
+            data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => item.id),
             activeDirectory
         )
             .then(() => closeAndClear())

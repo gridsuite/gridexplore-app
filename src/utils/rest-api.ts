@@ -549,14 +549,15 @@ export function createFilterBasedContingency(
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid ?? '');
 
-    const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/${encodeURIComponent(
+    console.log('filtersUuids : ', filtersUuids);
+    const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filter-based-contingency-lists/${encodeURIComponent(
         name
     )}?${urlSearchParams.toString()}`;
     console.debug(createContingencyListUrl);
 
     return backendFetch(createContingencyListUrl, {
         method: 'post',
-        body: JSON.stringify(filtersUuids),
+        body: JSON.stringify({ filterList: filtersUuids }),
     });
 }
 
