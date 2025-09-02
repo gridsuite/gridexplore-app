@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    HTTP_CONFLICT,
     HTTP_FORBIDDEN,
     HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
     HTTP_NOT_FOUND,
@@ -36,6 +37,7 @@ export const generateRenameErrorMessages = (intl: IntlShape): ErrorMessageByHttp
 export const generateMoveErrorMessages = (intl: IntlShape): ErrorMessageByHttpError => ({
     [HTTP_FORBIDDEN]: intl.formatMessage({ id: 'moveElementNotAllowedError' }),
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'moveElementNotFoundError' }),
+    [HTTP_CONFLICT]: intl.formatMessage({ id: 'moveNameConflictError' }),
 });
 
 export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpError => ({
@@ -79,6 +81,14 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
 export const handleMoveDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
         snackError({ messageId: 'moveConflictError' });
+        return true;
+    }
+    return false;
+};
+
+export const handleMoveNameConflictError = (error: CustomError, snackError: SnackError): boolean => {
+    if (error.status === HTTP_CONFLICT) {
+        snackError({ messageId: 'moveNameConflictError' });
         return true;
     }
     return false;

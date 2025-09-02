@@ -47,6 +47,7 @@ export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRe
                         intl
                     )}
                     tooltipSx={styles.tooltip}
+                    data-testid="ElementType"
                 />
             </Box>
         )

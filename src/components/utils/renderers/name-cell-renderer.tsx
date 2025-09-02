@@ -74,6 +74,7 @@ export function NameCellRenderer({ data, childrenMetadata }: Readonly<NameCellRe
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
                 style={styles.overflow}
+                data-testid="ElementName"
             />
         </Box>
     );

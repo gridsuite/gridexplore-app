@@ -43,6 +43,7 @@ export const HTTP_FORBIDDEN = 403;
 export const HTTP_NOT_FOUND = 404;
 export const HTTP_CONNECTION_FAILED_MESSAGE = 'failed: Connection refused';
 export const HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE = 'MAX_ELEMENTS_EXCEEDED';
+export const HTTP_CONFLICT = 409;
 
 export enum PermissionCheckResult {
     PARENT_PERMISSION_DENIED = 'PARENT_PERMISSION_DENIED',
