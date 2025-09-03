@@ -8,12 +8,13 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid4 } from 'uuid';
-import { CustomAgGridTable, FieldConstants } from '@gridsuite/commons-ui';
+import { CustomAgGridTable, FieldConstants, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { manageContingencyName } from './explicit-naming-utils';
+import { useParameterState } from '../../use-parameters-dialog';
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const { key } = params.event;
@@ -22,6 +23,7 @@ const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
 
 export default function ExplicitNamingForm() {
     const intl = useIntl();
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const columnDefs = useMemo<ColDef[]>(
         () => [
             {
@@ -112,6 +114,7 @@ export default function ExplicitNamingForm() {
                 fileHeaders: csvFileHeaders,
                 getDataFromCsv: getDataFromCsvFile,
                 csvData: csvInitialData,
+                language: languageLocal,
             }}
             cssProps={{
                 padding: 1,
