@@ -31,6 +31,7 @@ import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
+import { FilterMetaData } from './contingency-list-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -146,6 +147,8 @@ const getContingencyUriParamType = (contingencyListType: string | null | undefin
             return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
         case ContingencyListType.EXPLICIT_NAMING.id:
             return CONTINGENCY_ENDPOINTS.IDENTIFIER_CONTINGENCY_LISTS;
+        case ContingencyListType.FILTERS.id:
+            return CONTINGENCY_ENDPOINTS.FILTERS_CONTINGENCY_LISTS;
         default:
             return null;
     }
@@ -537,11 +540,10 @@ export function createContingencyList(
         body: JSON.stringify(formContent),
     });
 }
-
 export function createFilterBasedContingency(
     name: string,
     description: string,
-    filtersUuids: string[],
+    filtersUuids: FilterMetaData[],
     parentDirectoryUuid: UUID | undefined
 ) {
     console.info('Creating a new filter based contingency list...');
@@ -550,14 +552,14 @@ export function createFilterBasedContingency(
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid ?? '');
 
     console.log('filtersUuids : ', filtersUuids);
-    const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filter-based-contingency-lists/${encodeURIComponent(
+    const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${CONTINGENCY_ENDPOINTS.FILTERS_CONTINGENCY_LISTS}/${encodeURIComponent(
         name
     )}?${urlSearchParams.toString()}`;
     console.debug(createContingencyListUrl);
 
     return backendFetch(createContingencyListUrl, {
         method: 'post',
-        body: JSON.stringify({ filterList: filtersUuids }),
+        body: JSON.stringify({ filters: filtersUuids }),
     });
 }
 
@@ -625,6 +627,33 @@ export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBased
             ...criteriaBased,
             equipmentType,
             nominalVoltage1: criteriaBased?.nominalVoltage1 ?? -1,
+        }),
+    });
+}
+
+/**
+ * Saves a Filter contingency list
+ * @returns {Promise<Response>}
+ */
+export function saveFilterBasedContingencyList(
+    id: string,
+    name: string,
+    description: string,
+    filters: FilterMetaData[]
+) {
+    console.log('--------saving contingencyList--------');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('description', description ?? '');
+    urlSearchParams.append('contingencyListType', ContingencyListType.FILTERS.id);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${id}?${urlSearchParams.toString()}`;
+
+    return backendFetch(url, {
+        method: 'put',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            filters: [...filters],
         }),
     });
 }

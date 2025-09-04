@@ -244,7 +244,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         },
                         {
                             messageDescriptorId: 'contingencyList.filterBased',
-                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTER_BASED_CONTINGENCY_LIST),
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_FILTERS_CONTINGENCY_LIST),
                             icon: null,
                         },
                     ],
@@ -379,7 +379,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         onClose={handleCloseDialog}
                     />
                 );
-            case DialogsId.ADD_NEW_FILTER_BASED_CONTINGENCY_LIST:
+            case DialogsId.ADD_NEW_FILTERS_CONTINGENCY_LIST:
                 return (
                     <FilterBasedContingencyListDialog
                         titleId="createNewFilterBasedContingencyList"

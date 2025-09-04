@@ -16,15 +16,26 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
+import { useCallback, useEffect, useState } from 'react';
+import { UUID } from 'crypto';
 import ContingencyListFilterBasedFrom from './contingency-list-filter-based-from';
 import { AppState } from '../../../../redux/types';
-import { createFilterBasedContingency } from '../../../../utils/rest-api';
+import {
+    createFilterBasedContingency,
+    getContingencyList,
+    saveFilterBasedContingencyList,
+} from '../../../../utils/rest-api';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
+import { ContingencyListType } from '../../../../utils/elementType';
+import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
 
 export interface FilterBasedContingencyListProps {
     titleId: string;
     open: boolean;
     onClose: () => void;
+    name?: string;
+    description?: string;
+    id?: UUID;
 }
 
 const schema: any = yup.object().shape({
@@ -51,9 +62,13 @@ export default function FilterBasedContingencyListDialog({
     titleId,
     open,
     onClose,
+    name,
+    description,
+    id,
 }: Readonly<FilterBasedContingencyListProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
+    const [isFetching, setIsFetching] = useState(!!id);
 
     const methods = useForm<ContingencyListFilterBasedFormData>({
         defaultValues: emptyFormData(),
@@ -64,30 +79,88 @@ export default function FilterBasedContingencyListDialog({
         formState: { errors },
     } = methods;
 
-    const closeAndClear = () => {
+    // TODO basseche : try to type response
+    useEffect(() => {
+        if (id) {
+            setIsFetching(true);
+            getContingencyList(ContingencyListType.FILTERS.id, id?.toString())
+                .then((response) => {
+                    const formData: ContingencyListFilterBasedFormData = getFilterBasedFormDataFromFetchedElement(
+                        response,
+                        name ?? '',
+                        description ?? ''
+                    );
+                    reset({ ...formData });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'cannotRetrieveContingencyList',
+                    });
+                })
+                .finally(() => setIsFetching(false));
+        }
+    }, [id, name, reset, snackError, description]);
+
+    const closeAndClear = useCallback(() => {
         reset(emptyFormData());
         onClose();
-    };
+    }, [onClose, reset]);
 
-    const onSubmit = (data: ContingencyListFilterBasedFormData) => {
-        createFilterBasedContingency(
-            data[FieldConstants.NAME],
-            data[FieldConstants.DESCRIPTION] ?? '',
-            data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => item.id),
-            activeDirectory
-        )
-            .then(() => closeAndClear())
-            .catch((error) => {
-                if (handleNotAllowedError(error, snackError)) {
-                    return;
-                }
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'contingencyListCreationError',
-                    headerValues: { name: data[FieldConstants.NAME] },
-                });
-            });
-    };
+    const onSubmit = useCallback(
+        (data: ContingencyListFilterBasedFormData) => {
+            if (id) {
+                saveFilterBasedContingencyList(
+                    id,
+                    data[FieldConstants.NAME],
+                    data[FieldConstants.DESCRIPTION] ?? '',
+                    data[FieldConstants.FILTERS].map((item) => {
+                        return {
+                            id: item.id,
+                            name: item.name,
+                            equipmentType: item.specificMetadata?.equipmentType ?? '',
+                        };
+                    })
+                )
+                    .then(() => closeAndClear())
+                    .catch((error) => {
+                        if (handleNotAllowedError(error, snackError)) {
+                            return;
+                        }
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'contingencyListEditingError',
+                            headerValues: { name: data[FieldConstants.NAME] },
+                        });
+                    });
+            } else {
+                createFilterBasedContingency(
+                    data[FieldConstants.NAME],
+                    data[FieldConstants.DESCRIPTION] ?? '',
+                    data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => {
+                        return {
+                            id: item.id,
+                            name: item.name,
+                            equipmentType: item.specificMetadata?.equipmentType ?? '',
+                        };
+                    }),
+                    activeDirectory
+                )
+                    .then(() => closeAndClear())
+                    .catch((error) => {
+                        if (handleNotAllowedError(error, snackError)) {
+                            return;
+                        }
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'contingencyListCreationError',
+                            headerValues: { name: data[FieldConstants.NAME] },
+                        });
+                    });
+            }
+        },
+        [activeDirectory, closeAndClear, id, snackError]
+    );
 
     const nameError = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
@@ -102,6 +175,7 @@ export default function FilterBasedContingencyListDialog({
             formMethods={methods}
             unscrollableFullHeight
             disabledSave={Boolean(!!nameError || isValidating)}
+            isDataFetching={isFetching}
         >
             <ContingencyListFilterBasedFrom studyName="" />
         </CustomMuiDialog>

@@ -73,6 +73,7 @@
     "createNewFilterBasedContingencyList": "Create a filter based contingency list",
     "FORM": "Form",
     "editContingencyList": "Edit contingency list",
+    "editFilterBasedContingencyList": "Edit filter based contingency list",
     "editFilter": "Edit filter",
     "Filters": "Filters",
     "STUDY": "Study",
