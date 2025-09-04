@@ -16,6 +16,7 @@ import {
 import type { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
+import { FilterMetaData } from '../../../utils/contingency-list-types';
 
 export interface Identifier {
     type: 'ID_BASED';
@@ -69,6 +70,16 @@ export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: 
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
     [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
     ...getCriteriaBasedFormData(response),
+});
+
+// TODO basseche : try to type response
+export const getFilterBasedFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
+    [FieldConstants.NAME]: name,
+    [FieldConstants.DESCRIPTION]: description,
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.FILTERS.id,
+    [FieldConstants.FILTERS]: response.filters.map((filter: FilterMetaData) => {
+        return { id: filter.id, name: filter.name, specificMetadata: { equipmentType: filter.equipmentType } };
+    }),
 });
 
 export const getExplicitNamingFormDataFromFetchedElement = (response: any, name: string, description: string) => {
