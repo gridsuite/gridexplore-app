@@ -79,7 +79,6 @@ export default function FilterBasedContingencyListDialog({
         formState: { errors },
     } = methods;
 
-    // TODO basseche : try to type response
     useEffect(() => {
         if (id) {
             setIsFetching(true);

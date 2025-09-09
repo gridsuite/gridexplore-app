@@ -72,7 +72,6 @@ export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: 
     ...getCriteriaBasedFormData(response),
 });
 
-// TODO basseche : try to type response
 export const getFilterBasedFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: description,
