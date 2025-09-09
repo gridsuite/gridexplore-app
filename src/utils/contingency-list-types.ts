@@ -11,3 +11,9 @@ export interface FilterMetaData {
     name: string;
     equipmentType: string;
 }
+
+export interface IdentifiableAttributes {
+    id: string;
+    type: string;
+    distributionKey?: number;
+}

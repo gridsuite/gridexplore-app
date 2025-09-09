@@ -12,18 +12,23 @@ import {
     ElementType,
     EquipmentType,
     FieldConstants,
+    getBasicEquipmentLabel,
     TreeViewFinderNodeProps,
     UniqueNameInput,
     unscrollableDialogStyles,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
 import { blue, brown, green, indigo, lime, red, teal } from '@mui/material/colors';
+import { useFormContext } from 'react-hook-form';
 import { AppState } from '../../../../redux/types';
+import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
+import { FilterMetaData, IdentifiableAttributes } from '../../../../utils/contingency-list-types';
 
 export interface ContingencyListFilterBasedFromProps {
     studyName: string;
@@ -40,21 +45,24 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
     const [selectedStudy, setSelectedStudy] = useState<string>(studyName);
     const [selectedFolder, setSelectedFolder] = useState<string>('');
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [rowsData, setRowsData] = useState<IdentifiableAttributes[]>([]);
 
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
+    const { getValues } = useFormContext();
 
     const colDef: ColDef[] = [
         {
             headerName: intl.formatMessage({
-                id: 'equipmentID',
+                id: FieldConstants.EQUIPMENT_ID,
             }),
-            field: 'equipmentID',
+            field: FieldConstants.ID,
         },
         {
             headerName: intl.formatMessage({
-                id: 'type',
+                id: FieldConstants.TYPE,
             }),
-            field: 'type',
+            field: FieldConstants.TYPE,
         },
     ];
 
@@ -71,7 +79,6 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
         ];
     }, []);
 
-    // TODO basseche : should ask Stephane for final colors
     const equipmentColorsMap: Map<string, string> = useMemo(() => {
         const map = new Map();
         map.set(EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]);
@@ -83,6 +90,40 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
         map.set(EquipmentType.HVDC_LINE, teal[700]);
         return map;
     }, []);
+
+    const onNodeChanged = useCallback(
+        (nodes: TreeViewFinderNodeProps[]) => {
+            if (nodes.length > 0) {
+                if (nodes[0].parents && nodes[0].parents.length > 0) {
+                    setSelectedFolder(nodes[0].parents.map((entry) => entry.name).join(separator));
+                }
+                setSelectedStudy(nodes[0].name);
+                // call endpoint to update colDef
+                getIdentifiablesFromFitlers(
+                    nodes[0].id,
+                    getValues(FieldConstants.FILTERS).map((filter: FilterMetaData) => filter.id)
+                )
+                    .then((response: IdentifiableAttributes[]) => {
+                        const attributes: IdentifiableAttributes[] = response.map((element: IdentifiableAttributes) => {
+                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                            return {
+                                id: element.id,
+                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
+                            };
+                        });
+                        setRowsData(attributes);
+                    })
+                    .catch((error) =>
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'cannotComputeContingencyList',
+                        })
+                    );
+            }
+            setIsOpen(false);
+        },
+        [getValues, intl, snackError]
+    );
 
     return (
         <>
@@ -128,20 +169,12 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
                     <DirectoryItemSelector
                         open={isOpen}
                         types={[ElementType.STUDY]}
-                        onClose={(nodes: TreeViewFinderNodeProps[]) => {
-                            if (nodes.length > 0) {
-                                if (nodes[0].parents && nodes[0].parents.length > 0) {
-                                    setSelectedFolder(nodes[0].parents.map((entry) => entry.name).join(separator));
-                                }
-                                setSelectedStudy(nodes[0].name);
-                            }
-                            setIsOpen(false);
-                        }}
+                        onClose={onNodeChanged}
                         multiSelect={false}
                     />
                 </Box>
             </Box>
-            <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={[]} />
+            <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
         </>
     );
 }

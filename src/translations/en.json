@@ -116,6 +116,7 @@
     "Min": "Min",
     "Max": "Max",
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
+    "cannotComputeContingencyList" : "Could not compute contingency list",
     "retrieveCompositeModificationError": "Could not retrieve composite modification content: ",
     "PropertyName": "Property name",
     "getAppLinkError": "Error getting application link for type = {type}",

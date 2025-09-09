@@ -575,6 +575,18 @@ export function getContingencyList(type: string, id: string) {
     });
 }
 
+export function getIdentifiablesFromFitlers(studyUuid: UUID, filters: UUID[]) {
+    console.info('get identifiables resulting from application of filters list on study root network');
+
+    const filtersListsQueryParams = getRequestParamFromList('filtersUuid', filters);
+    const urlSearchParams = new URLSearchParams(filtersListsQueryParams);
+
+    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/filters/elements?${urlSearchParams}`, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
+}
+
 export interface CriteriaBasedEditionFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
