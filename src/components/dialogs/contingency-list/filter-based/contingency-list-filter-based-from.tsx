@@ -21,18 +21,15 @@ import {
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
 import { blue, brown, green, indigo, lime, red, teal } from '@mui/material/colors';
-import { useFormContext } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
+import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
 import { FilterMetaData, IdentifiableAttributes } from '../../../../utils/contingency-list-types';
-
-export interface ContingencyListFilterBasedFromProps {
-    studyName: string;
-}
 
 const separator = '/';
 const defaultDef: ColDef = {
@@ -40,16 +37,18 @@ const defaultDef: ColDef = {
     resizable: false,
 };
 
-export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<ContingencyListFilterBasedFromProps>) {
+export default function ContingencyListFilterBasedFrom() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
-    const [selectedStudy, setSelectedStudy] = useState<string>(studyName);
+    const [selectedStudy, setSelectedStudy] = useState<string>('');
+    const [selectedStudyId, setSelectedStudyId] = useState<UUID>();
     const [selectedFolder, setSelectedFolder] = useState<string>('');
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [rowsData, setRowsData] = useState<IdentifiableAttributes[]>([]);
 
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const { getValues } = useFormContext();
+    const filters = useWatch({ name: FieldConstants.FILTERS });
 
     const colDef: ColDef[] = [
         {
@@ -91,39 +90,47 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
         return map;
     }, []);
 
-    const onNodeChanged = useCallback(
-        (nodes: TreeViewFinderNodeProps[]) => {
-            if (nodes.length > 0) {
-                if (nodes[0].parents && nodes[0].parents.length > 0) {
-                    setSelectedFolder(nodes[0].parents.map((entry) => entry.name).join(separator));
-                }
-                setSelectedStudy(nodes[0].name);
-                // call endpoint to update colDef
-                getIdentifiablesFromFitlers(
-                    nodes[0].id,
-                    getValues(FieldConstants.FILTERS).map((filter: FilterMetaData) => filter.id)
-                )
-                    .then((response: IdentifiableAttributes[]) => {
-                        const attributes: IdentifiableAttributes[] = response.map((element: IdentifiableAttributes) => {
-                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
-                            return {
-                                id: element.id,
-                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                            };
-                        });
-                        setRowsData(attributes);
+    const onStudyChanged = useCallback(() => {
+        if (filters && selectedStudyId) {
+            setIsFetching(true);
+            getIdentifiablesFromFitlers(
+                selectedStudyId,
+                filters.map((filter: FilterMetaData) => filter.id)
+            )
+                .then((response: IdentifiableAttributes[]) => {
+                    const attributes: IdentifiableAttributes[] = response.map((element: IdentifiableAttributes) => {
+                        const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                        return {
+                            id: element.id,
+                            type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
+                        };
+                    });
+                    setRowsData(attributes);
+                })
+                .catch((error) =>
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'cannotComputeContingencyList',
                     })
-                    .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'cannotComputeContingencyList',
-                        })
-                    );
+                )
+                .finally(() => setIsFetching(false));
+        }
+    }, [filters, intl, selectedStudyId, snackError]);
+
+    useEffect(() => {
+        onStudyChanged();
+    }, [filters, onStudyChanged, selectedStudyId]);
+
+    const onNodeChanged = useCallback((nodes: TreeViewFinderNodeProps[]) => {
+        if (nodes.length > 0) {
+            if (nodes[0].parents && nodes[0].parents.length > 0) {
+                setSelectedFolder(nodes[0].parents.map((entry) => entry.name).join(separator));
             }
-            setIsOpen(false);
-        },
-        [getValues, intl, snackError]
-    );
+            setSelectedStudy(nodes[0].name);
+            setSelectedStudyId(nodes[0].id);
+        }
+        setIsOpen(false);
+    }, []);
 
     return (
         <>
@@ -147,6 +154,7 @@ export default function ContingencyListFilterBasedFrom({ studyName }: Readonly<C
                     elementType={ElementType.FILTER}
                     equipmentColorsMap={equipmentColorsMap}
                     equipmentTypes={equipmentTypes}
+                    disable={isFetching}
                 />
             </Box>
             <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>

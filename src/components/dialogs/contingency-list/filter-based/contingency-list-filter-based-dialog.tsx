@@ -176,7 +176,7 @@ export default function FilterBasedContingencyListDialog({
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
         >
-            <ContingencyListFilterBasedFrom studyName="" />
+            <ContingencyListFilterBasedFrom />
         </CustomMuiDialog>
     );
 }
