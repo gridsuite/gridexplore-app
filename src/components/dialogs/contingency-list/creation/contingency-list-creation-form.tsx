@@ -42,7 +42,7 @@ export default function ContingencyListCreationForm() {
     const contingencyListTypeField = (
         <RadioInput
             name={FieldConstants.CONTINGENCY_LIST_TYPE}
-            options={Object.values(ContingencyListType)}
+            options={[ContingencyListType.CRITERIA_BASED, ContingencyListType.EXPLICIT_NAMING]}
             formProps={{ onChange: handleChange }} // need to override this in order to do not activate the validate button when changing the filter type
         />
     );
