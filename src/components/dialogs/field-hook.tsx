@@ -9,7 +9,7 @@ import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } fro
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
-import { type ElementType, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 

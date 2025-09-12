@@ -81,7 +81,7 @@ const styles = {
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const dispatch = useDispatch();
-    const gridRef = useRef<AgGridReact | null>(null);
+    const gridRef = useRef<AgGridReact<ElementAttributes> | null>(null);
     const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
 
     const [broadcastChannel] = useState(() => {
