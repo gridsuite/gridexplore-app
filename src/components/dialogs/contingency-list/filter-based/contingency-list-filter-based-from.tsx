@@ -56,12 +56,14 @@ export default function ContingencyListFilterBasedFrom() {
                 id: FieldConstants.EQUIPMENT_ID,
             }),
             field: FieldConstants.ID,
+            filter: 'agTextColumnFilter',
         },
         {
             headerName: intl.formatMessage({
                 id: FieldConstants.TYPE,
             }),
             field: FieldConstants.TYPE,
+            filter: 'agTextColumnFilter',
         },
     ];
 
