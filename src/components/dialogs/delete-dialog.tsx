@@ -15,8 +15,8 @@ import {
     Grid,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { SyntheticEvent, useEffect, useRef, useState } from 'react';
-import { CancelButton, ElementAttributes, OverflowableText } from '@gridsuite/commons-ui';
+import { type CSSProperties, type SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { CancelButton, type ElementAttributes, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 
 export interface DeleteDialogProps {
     open: boolean;
@@ -32,7 +32,7 @@ const styles = {
     tooltip: {
         maxWidth: '1000px',
     },
-};
+} as const satisfies MuiStyles;
 
 /**
  * Dialog to delete an element
@@ -87,15 +87,17 @@ export default function DeleteDialog({
     const renderElement = (renderItems: ElementAttributes[]) => {
         const isBig = renderItems[0].elementName?.length > 72;
 
-        const style = isBig
-            ? { width: '100%', fontWeight: 'bold' }
-            : {
-                  fontWeight: 'bold',
-                  marginLeft: 'initial',
-                  marginRight: 'initial',
-                  verticalAlign: 'middle',
-                  display: 'inline-block',
-              };
+        const style = (
+            isBig
+                ? ({ width: '100%', fontWeight: 'bold' } as const)
+                : ({
+                      fontWeight: 'bold',
+                      marginLeft: 'initial',
+                      marginRight: 'initial',
+                      verticalAlign: 'middle',
+                      display: 'inline-block',
+                  } as const)
+        ) satisfies CSSProperties;
         return <OverflowableText text={renderItems[0].elementName} style={style} tooltipSx={styles.tooltip} />;
     };
 

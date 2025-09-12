@@ -7,6 +7,7 @@
 
 import { Box, Button } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 import { CreateNewFolderOutlined as CreateNewFolderOutlinedIcon } from '@mui/icons-material';
 import CircleIcon from './icons/circleIcon';
 
@@ -24,13 +25,13 @@ export interface NoContentDirectoryProps {
 
 export default function NoContentDirectory({ handleOpenDialog }: Readonly<NoContentDirectoryProps>) {
     const styles = {
-        noContentContainer: (theme: any) => ({
+        noContentContainer: (theme) => ({
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             marginTop: theme.spacing(20),
         }),
-        noContentText: (theme: any) => ({
+        noContentText: (theme) => ({
             color: theme.palette.text.disabled,
             textAlign: 'center',
             marginTop: theme.spacing(1),
@@ -41,7 +42,7 @@ export default function NoContentDirectory({ handleOpenDialog }: Readonly<NoCont
         iconSize: {
             fontSize: CIRCLE_SIZE / 2,
         },
-    };
+    } as const satisfies MuiStyles;
 
     return (
         <Box sx={styles.noContentContainer}>

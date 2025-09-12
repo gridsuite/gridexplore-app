@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { mergeSx } from '@gridsuite/commons-ui';
-import { Avatar, Box, Theme, Tooltip } from '@mui/material';
+import { mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
+import { Avatar, Box, Tooltip } from '@mui/material';
 
 const FERMAT_PRIME = 65537;
 // This function is a copy/paste of the MUI demo sample here :
@@ -36,14 +36,14 @@ function getAbbreviationFromUserName(name: string) {
 }
 
 const styles = {
-    avatar: (theme: Theme) => ({
+    avatar: (theme) => ({
         cursor: 'pointer',
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,
         backgroundColor: theme.row.hover as string,
     }),
-};
+} as const satisfies MuiStyles;
 
 export type UserCellRendererProps = { value: string };
 

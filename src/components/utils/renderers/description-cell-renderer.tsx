@@ -6,7 +6,7 @@
  */
 import { Box, Tooltip } from '@mui/material';
 import { Create as CreateIcon, StickyNote2Outlined as StickyNote2OutlinedIcon } from '@mui/icons-material';
-import { ElementAttributes } from '@gridsuite/commons-ui';
+import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     descriptionTooltip: {
@@ -18,7 +18,7 @@ const styles = {
         maxHeight: '50px',
         cursor: 'pointer',
     },
-};
+} as const satisfies MuiStyles;
 
 export type DescriptionCellRendererProps = { data: ElementAttributes };
 

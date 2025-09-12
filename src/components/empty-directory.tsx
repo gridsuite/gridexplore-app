@@ -9,7 +9,7 @@ import { type MouseEvent } from 'react';
 import { Box, Button, SvgIcon } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
-import { LIGHT_THEME, PARAM_THEME } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, type MuiStyles, PARAM_THEME } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import CircleIcon from './icons/circleIcon';
@@ -17,28 +17,28 @@ import CircleIcon from './icons/circleIcon';
 const CIRCLE_SIZE = 250;
 
 const styles = {
-    container: (theme: any) => ({
+    container: (theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         marginTop: theme.spacing(20), // TODO: replace by margin auto or flex to center in parent
     }),
-    button: (theme: any) => ({
+    button: (theme) => ({
         marginTop: theme.spacing(2),
         borderRadius: '30px',
     }),
     iconSize: {
         fontSize: CIRCLE_SIZE / 2,
     },
-    circle: (theme: any) => ({
+    circle: (theme) => ({
         backgroundColor: theme.palette.action.disabled,
     }),
-    text: (theme: any) => ({
+    text: (theme) => ({
         color: theme.palette.text.disabled,
         textAlign: 'center',
         marginTop: theme.spacing(1),
     }),
-};
+} as const satisfies MuiStyles;
 
 export type EmptyDirectoryProps = {
     onCreateElementButtonClick: (e: MouseEvent<HTMLElement>) => void;
