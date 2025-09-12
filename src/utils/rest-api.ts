@@ -551,7 +551,6 @@ export function createFilterBasedContingency(
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid ?? '');
 
-    console.log('filtersUuids : ', filtersUuids);
     const createContingencyListUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${CONTINGENCY_ENDPOINTS.FILTERS_CONTINGENCY_LISTS}/${encodeURIComponent(
         name
     )}?${urlSearchParams.toString()}`;
@@ -653,7 +652,6 @@ export function saveFilterBasedContingencyList(
     description: string,
     filters: FilterMetaData[]
 ) {
-    console.log('--------saving contingencyList--------');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description ?? '');
