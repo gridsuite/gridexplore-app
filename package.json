@@ -22,7 +22,7 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.0",
-        "@gridsuite/commons-ui": "0.124.0",
+        "@gridsuite/commons-ui": "file:../commons-ui/gridsuite-commons-ui-0.124.0.tgz",
         "@hookform/resolvers": "^4.0.0",
         "@mui/icons-material": "^5.16.14",
         "@mui/lab": "5.0.0-alpha.175",
@@ -48,7 +48,7 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
-        "uuid": "^11.0.5",
+        "uuid": "^13.0.0",
         "yup": "^1.6.1"
     },
     "devDependencies": {
