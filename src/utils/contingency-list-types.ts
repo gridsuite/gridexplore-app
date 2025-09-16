@@ -17,3 +17,8 @@ export interface IdentifiableAttributes {
     type: string;
     distributionKey?: number;
 }
+
+export interface FilteredIdentifiables {
+    equipmentIds: IdentifiableAttributes[];
+    notFoundIds: IdentifiableAttributes[];
+}

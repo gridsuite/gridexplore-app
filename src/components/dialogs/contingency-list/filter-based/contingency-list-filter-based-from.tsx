@@ -29,7 +29,11 @@ import { useWatch } from 'react-hook-form';
 import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
-import { FilterMetaData, IdentifiableAttributes } from '../../../../utils/contingency-list-types';
+import {
+    FilteredIdentifiables,
+    FilterMetaData,
+    IdentifiableAttributes,
+} from '../../../../utils/contingency-list-types';
 
 const separator = '/';
 const defaultDef: ColDef = {
@@ -73,7 +77,6 @@ export default function ContingencyListFilterBasedFrom() {
             EquipmentType.LINE,
             EquipmentType.LOAD,
             EquipmentType.GENERATOR,
-            EquipmentType.GENERATOR,
             EquipmentType.SHUNT_COMPENSATOR,
             EquipmentType.STATIC_VAR_COMPENSATOR,
             EquipmentType.HVDC_LINE,
@@ -99,14 +102,16 @@ export default function ContingencyListFilterBasedFrom() {
                 selectedStudyId,
                 filters.map((filter: FilterMetaData) => filter.id)
             )
-                .then((response: IdentifiableAttributes[]) => {
-                    const attributes: IdentifiableAttributes[] = response.map((element: IdentifiableAttributes) => {
-                        const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
-                        return {
-                            id: element.id,
-                            type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                        };
-                    });
+                .then((response: FilteredIdentifiables) => {
+                    const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
+                        (element: IdentifiableAttributes) => {
+                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                            return {
+                                id: element.id,
+                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
+                            };
+                        }
+                    );
                     setRowsData(attributes);
                 })
                 .catch((error) =>
