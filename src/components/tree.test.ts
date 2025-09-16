@@ -7,8 +7,9 @@
 
 import { ElementType } from '@gridsuite/commons-ui';
 import { updatedTree } from './treeview-utils';
+import { NIL as NIL_UUID } from 'uuid';
 
-jest.mock('uuid', () => ({ v4: () => '00000000-0000-0000-0000-000000000000' }));
+jest.mock('uuid', () => ({ v4: () => NIL_UUID }));
 
 const otherProperties = {
     description: 'desc',
