@@ -41,7 +41,6 @@ const defaultDef: ColDef = {
     flex: 1,
     resizable: false,
     sortable: false,
-    filter:
 };
 
 export default function ContingencyListFilterBasedFrom() {
