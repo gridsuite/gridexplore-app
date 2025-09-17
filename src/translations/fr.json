@@ -122,6 +122,7 @@
     "missingEquipmentsIdsError": "L'ID est un champ obligatoire pour tous les ouvrages",
     "contingencyTablePartiallyDefinedError": "Au moins un des aléas est défini de manière incomplète",
     "contingencyTableContainAtLeastOneRowError": "La liste d'aléas doit contenir au moins un aléa",
+    "missingFromStudy": "Absents de l'étude",
     "moveItemTitle": "Déplacer élément vers un autre dossier",
     "moveDirectoryTitle": "Déplacer le dossier ''{directoryName}'' vers un autre dossier",
     "moveItemValidate": "{nbElements, plural, =0 {Veuillez sélectionner un dossier} =1 {Déplacer l'élément} other {Déplacer # éléments}}",

@@ -34,6 +34,7 @@ import {
     FilterMetaData,
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list-types';
+import SeparatorCellRenderer from './separator-cell-renderer';
 
 const separator = '/';
 const defaultDef: ColDef = {
@@ -61,6 +62,14 @@ export default function ContingencyListFilterBasedFrom() {
             }),
             field: FieldConstants.ID,
             filter: 'agTextColumnFilter',
+            cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
+                if (data.id === 'SEPARATOR') {
+                    return SeparatorCellRenderer({
+                        value: intl.formatMessage({ id: 'missingFromStudy' }),
+                    });
+                }
+                return data.id;
+            },
         },
         {
             headerName: intl.formatMessage({
@@ -103,6 +112,7 @@ export default function ContingencyListFilterBasedFrom() {
                 filters.map((filter: FilterMetaData) => filter.id)
             )
                 .then((response: FilteredIdentifiables) => {
+                    const SEPARATOR_TYPE = 'SEPARATOR';
                     const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
                         (element: IdentifiableAttributes) => {
                             const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
@@ -112,6 +122,16 @@ export default function ContingencyListFilterBasedFrom() {
                             };
                         }
                     );
+                    if (response.notFoundIds?.length > 0) {
+                        attributes.push({ id: SEPARATOR_TYPE, type: '' });
+                        response.notFoundIds.forEach((element: IdentifiableAttributes) => {
+                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                            attributes.push({
+                                id: element.id,
+                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
+                            });
+                        });
+                    }
                     setRowsData(attributes);
                 })
                 .catch((error) =>
