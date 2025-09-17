@@ -40,6 +40,8 @@ const separator = '/';
 const defaultDef: ColDef = {
     flex: 1,
     resizable: false,
+    sortable: false,
+    filter:
 };
 
 export default function ContingencyListFilterBasedFrom() {
@@ -61,7 +63,6 @@ export default function ContingencyListFilterBasedFrom() {
                 id: FieldConstants.EQUIPMENT_ID,
             }),
             field: FieldConstants.ID,
-            filter: 'agTextColumnFilter',
             cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
                 if (data.id === 'SEPARATOR') {
                     return SeparatorCellRenderer({
@@ -76,7 +77,6 @@ export default function ContingencyListFilterBasedFrom() {
                 id: FieldConstants.TYPE,
             }),
             field: FieldConstants.TYPE,
-            filter: 'agTextColumnFilter',
         },
     ];
 
