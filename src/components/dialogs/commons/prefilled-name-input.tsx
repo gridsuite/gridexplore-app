@@ -57,6 +57,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
             activeDirectory={activeDirectory}
             autoFocus={!caseFile}
             onManualChangeCallback={() => setModifiedByUser(true)}
+            isPrefilled
         />
     );
 }
