@@ -7,10 +7,10 @@
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Box, PopoverReference, SxProps, Theme, Tooltip, Typography, Zoom } from '@mui/material';
+import { Box, type PopoverReference, Tooltip, Typography, Zoom } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView } from '@mui/x-tree-view';
-import { ElementAttributes } from '@gridsuite/commons-ui';
+import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
 import CustomTreeItem from './custom-tree-item';
@@ -71,7 +71,7 @@ const styles = {
         width: '18px',
         height: '18px',
     }),
-} satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 function CustomEndIcon() {
     return <ChevronRightIcon sx={styles.icon} />;

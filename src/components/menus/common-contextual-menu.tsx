@@ -9,7 +9,7 @@ import { ReactNode, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
 import { Divider, ListItemIcon, ListItemText, Menu, MenuProps, styled } from '@mui/material';
-import { CustomMenuItem, CustomNestedMenuItem } from '@gridsuite/commons-ui';
+import { CustomMenuItem, CustomNestedMenuItem, type MuiStyles } from '@gridsuite/commons-ui';
 
 const StyledMenu = styled((props: MenuProps) => <Menu elevation={0} {...props} />)({
     '.MuiMenu-paper': {
@@ -27,7 +27,7 @@ const styles = {
         },
         paddingLeft: 2, // customize padding for the whole menu item
     },
-};
+} as const satisfies MuiStyles;
 
 export type MenuItemType =
     | {
