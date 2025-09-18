@@ -14,9 +14,8 @@ import { createTheme, CssBaseline, StyledEngineProvider, ThemeProvider } from '@
 import { SnackbarProvider } from '@gridsuite/commons-ui';
 import { store } from '../redux/store';
 import App from './app';
-import { NIL as NIL_UUID } from 'uuid';
 
-jest.mock('uuid', () => ({ v4: () => NIL_UUID }));
+jest.mock('uuid', () => ({ v4: () => '00000000-0000-0000-0000-000000000000' }));
 
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
