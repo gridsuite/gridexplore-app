@@ -25,8 +25,8 @@ const BackendLocaleFr = {
     Generator: 'Groupe',
     Battery: 'Batterie',
     Line: 'Ligne',
-    Two_windings_transformer: 'Transfo à 2 enroulements',
-    Three_windings_transformer: 'Transfo à 3 enroulements',
+    Two_windings_transformer: 'Transformateur à 2 enroulements',
+    Three_windings_transformer: 'Transformateur à 3 enroulements',
     Busbar_section: 'Section de jeux de barre',
     Bus: 'Noeud électrique',
     Dangling_line: 'Ligne frontière',
@@ -35,9 +35,10 @@ const BackendLocaleFr = {
     Vsc_converter_station: 'Station de conversion VSC',
     Static_var_compensator: 'CSPR',
     Voltage_level: 'Poste',
-    Tie_line: 'Interconnexion',
+    Tie_line: "Ligne d'interconnexion",
     Shunt_compensator: 'Moyen de compensation',
     Substation: 'Site',
+    Branch: 'Quadripôle',
 };
 
 export default BackendLocaleFr;
