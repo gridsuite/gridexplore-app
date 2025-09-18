@@ -6,7 +6,7 @@
  */
 
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import { GridApi, GridReadyEvent, RowClassParams, RowStyle } from 'ag-grid-community';
+import { GridApi, GridOptions, RowStyle } from 'ag-grid-community';
 import { useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearchedElement } from '../../redux/actions';
@@ -15,7 +15,7 @@ import { AppState } from '../../redux/types';
 
 const SEARCH_HIGHLIGHT_DURATION_S = 4;
 
-export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
+export function useHighlightSearchedElement(gridApi: GridApi<ElementAttributes> | null) {
     const searchedElement = useSelector((state: AppState) => state.searchedElement);
     const dispatch = useDispatch<AppDispatch>();
     const timeout = useRef<ReturnType<typeof setTimeout>>();
@@ -38,8 +38,8 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
         [searchedElement, dispatch]
     );
 
-    const onGridReady = useCallback(
-        ({ api }: GridReadyEvent<ElementAttributes>) => {
+    const onGridReady = useCallback<NonNullable<GridOptions<ElementAttributes>['onGridReady']>>(
+        ({ api }) => {
             highlightElement(api);
         },
         [highlightElement]
@@ -51,8 +51,8 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
         }
     }, [highlightElement, gridApi]);
 
-    const getRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes, unknown>) => {
+    const getRowStyle = useCallback<NonNullable<GridOptions<ElementAttributes>['getRowStyle']>>(
+        (cellData) => {
             const style: RowStyle = { fontSize: '1rem' };
             if (cellData?.data?.elementUuid === searchedElement?.id) {
                 // keyframe "highlighted-element" has to be defined in css containing highlighted element
@@ -64,4 +64,4 @@ export const useHighlightSearchedElement = (gridApi: GridApi | null) => {
     );
 
     return [onGridReady, getRowStyle] as const;
-};
+}

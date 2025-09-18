@@ -8,16 +8,17 @@
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-    ElementAttributes,
+    type ElementAttributes,
     ElementType,
     fetchDirectoryContent,
     fetchRootFolders,
+    type MuiStyles,
     NotificationsUrlKeys,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { Box, BoxProps, PopoverOrigin, PopoverPosition, PopoverReference, SxProps, Theme } from '@mui/material';
+import { Box, type BoxProps, type PopoverOrigin, type PopoverPosition, type PopoverReference } from '@mui/material';
 import {
     directoryUpdated,
     setActiveDirectory,
@@ -52,7 +53,7 @@ const styles = {
         width: '100%',
         flexGrow: 1,
     },
-} as const satisfies Record<string, SxProps<Theme>>;
+} as const satisfies MuiStyles;
 
 function flattenDownNodes(n: IDirectory, cef: (arg: IDirectory) => any[]): IDirectory[] {
     const subs = cef(n);
