@@ -8,15 +8,16 @@
 import { ReactNode } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Edit as EditIcon } from '@mui/icons-material';
-import { IconButton, Theme, Toolbar, Tooltip } from '@mui/material';
+import { IconButton, Toolbar, Tooltip } from '@mui/material';
+import { type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
         height: '18px',
     }),
-};
+} as const satisfies MuiStyles;
 
 export type ToolbarItem = {
     tooltipTextId: string;

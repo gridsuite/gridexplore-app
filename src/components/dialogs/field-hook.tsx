@@ -9,7 +9,7 @@ import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } fro
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
-import { ElementType, useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
@@ -18,7 +18,7 @@ const styles = {
         margin: 0,
         marginTop: 4,
     },
-};
+} as const satisfies MuiStyles;
 
 export interface UseTextValueProps extends Omit<TextFieldProps, 'label' | 'defaultValue'> {
     label: string;

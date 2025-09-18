@@ -8,16 +8,13 @@
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Box, type BoxProps, Button, type ButtonProps, CircularProgress } from '@mui/material';
 import {
-    Box,
-    type BoxProps,
-    Button,
-    type ButtonProps,
-    CircularProgress,
-    type SxProps,
-    type Theme,
-} from '@mui/material';
-import { type ElementAttributes, type ItemSelectionForCopy, NO_ITEM_SELECTION_FOR_COPY } from '@gridsuite/commons-ui';
+    type ElementAttributes,
+    type ItemSelectionForCopy,
+    type MuiStyles,
+    NO_ITEM_SELECTION_FOR_COPY,
+} from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
 import * as constants from '../utils/UIconstants';
@@ -43,7 +40,7 @@ import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
 const circularProgressSize = '70px';
 
 const styles = {
-    link: (theme: Theme) => ({
+    link: (theme) => ({
         color: theme.link.color,
         textDecoration: 'none',
     }),
@@ -59,17 +56,17 @@ const styles = {
     centeredCircularProgress: {
         alignSelf: 'center',
     },
-    highlightedElementAnimation: (theme: Theme) => ({
+    highlightedElementAnimation: (theme) => ({
         '@keyframes highlighted-element': {
             'from, 24%': {
                 backgroundColor: 'inherit',
             },
             '12%, 36%, to': {
-                backgroundColor: theme.row.hover,
+                backgroundColor: theme.row.hover as string,
             },
         },
     }),
-    button: (theme: Theme) => ({
+    button: (theme) => ({
         marginRight: theme.spacing(9),
         borderRadius: '20px',
     }),
@@ -79,12 +76,12 @@ const styles = {
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-};
+} as const satisfies MuiStyles;
 
 export default function DirectoryContent() {
     const treeData = useSelector((state: AppState) => state.treeData);
     const dispatch = useDispatch();
-    const gridRef = useRef<AgGridReact | null>(null);
+    const gridRef = useRef<AgGridReact<ElementAttributes> | null>(null);
     const [onGridReady, getRowStyle] = useHighlightSearchedElement(gridRef?.current?.api ?? null);
 
     const [broadcastChannel] = useState(() => {
@@ -285,7 +282,7 @@ export default function DirectoryContent() {
                 flexGrow={1}
                 minHeight={0}
                 overflow="auto"
-                sx={styles.highlightedElementAnimation as SxProps}
+                sx={styles.highlightedElementAnimation}
                 onContextMenu={onContextMenu}
                 data-testid="DirectoryContent"
             >

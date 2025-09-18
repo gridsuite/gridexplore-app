@@ -7,13 +7,14 @@
 
 import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
-import {
+import type {
     AgGridEvent,
     CellClickedEvent,
     CellContextMenuEvent,
     ColDef,
     GetRowIdParams,
     RowClassParams,
+    RowStyle,
 } from 'ag-grid-community';
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -40,7 +41,7 @@ const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
 const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
-    const style: Record<string, string> = { fontSize: '1rem' };
+    const style: RowStyle = { fontSize: '1rem' };
     if (
         cellData.data &&
         ![

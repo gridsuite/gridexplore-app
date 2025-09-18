@@ -6,14 +6,14 @@
  */
 
 import { useMemo } from 'react';
-import { getFileIcon } from '@gridsuite/commons-ui';
-import { Grid, Theme, Typography } from '@mui/material';
+import { getFileIcon, type MuiStyles } from '@gridsuite/commons-ui';
+import { Grid, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { ElementAttributesES } from '../../redux/types';
 import cyrb53 from '../../utils/cyrb53';
 
 const styles = {
-    icon: (theme: Theme) => ({
+    icon: (theme) => ({
         marginRight: theme.spacing(2),
         width: '18px',
         height: '18px',
@@ -23,14 +23,14 @@ const styles = {
         textOverflow: 'ellipsis',
         display: 'inline-block',
     },
-    grid2: (theme: Theme) => ({
+    grid2: (theme) => ({
         marginRight: theme.spacing(2),
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: 'inline-block',
         color: 'grey',
     }),
-};
+} as const satisfies MuiStyles;
 
 export interface HighlightedTextProps {
     text: string;
