@@ -31,7 +31,7 @@ import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
 import {
     FilteredIdentifiables,
-    FilterMetaData,
+    FilterAttributes,
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list-types';
 import SeparatorCellRenderer from './separator-cell-renderer';
@@ -108,7 +108,7 @@ export default function ContingencyListFilterBasedFrom() {
             setIsFetching(true);
             getIdentifiablesFromFitlers(
                 selectedStudyId,
-                filters.map((filter: FilterMetaData) => filter.id)
+                filters.map((filter: FilterAttributes) => filter.id)
             )
                 .then((response: FilteredIdentifiables) => {
                     const SEPARATOR_TYPE = 'SEPARATOR';

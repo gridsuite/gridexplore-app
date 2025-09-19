@@ -31,7 +31,7 @@ import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
-import { FilterMetaData } from './contingency-list-types';
+import { FilterAttributes } from './contingency-list-types';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -543,7 +543,7 @@ export function createContingencyList(
 export function createFilterBasedContingency(
     name: string,
     description: string,
-    filtersUuids: FilterMetaData[],
+    filtersUuids: FilterAttributes[],
     parentDirectoryUuid: UUID | undefined
 ) {
     console.info('Creating a new filter based contingency list...');
@@ -650,7 +650,7 @@ export function saveFilterBasedContingencyList(
     id: string,
     name: string,
     description: string,
-    filters: FilterMetaData[]
+    filters: FilterAttributes[]
 ) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);

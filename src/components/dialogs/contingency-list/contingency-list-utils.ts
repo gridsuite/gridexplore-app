@@ -16,7 +16,7 @@ import {
 import type { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
-import { FilterMetaData } from '../../../utils/contingency-list-types';
+import { FilterAttributes } from '../../../utils/contingency-list-types';
 
 export interface Identifier {
     type: 'ID_BASED';
@@ -76,7 +76,7 @@ export const getFilterBasedFormDataFromFetchedElement = (response: any, name: st
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: description,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.FILTERS.id,
-    [FieldConstants.FILTERS]: response.filters.map((filter: FilterMetaData) => {
+    [FieldConstants.FILTERS]: response.filters.map((filter: FilterAttributes) => {
         return { id: filter.id, name: filter.name, specificMetadata: { equipmentType: filter.equipmentType } };
     }),
 });

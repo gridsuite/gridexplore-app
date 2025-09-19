@@ -6,10 +6,11 @@
  */
 import { UUID } from 'crypto';
 
-export interface FilterMetaData {
+// reproduce partially dto from Filter-server
+export interface FilterAttributes {
     id: UUID;
-    name: string;
-    equipmentType: string;
+    name?: string;
+    equipmentType?: string;
 }
 
 export interface IdentifiableAttributes {

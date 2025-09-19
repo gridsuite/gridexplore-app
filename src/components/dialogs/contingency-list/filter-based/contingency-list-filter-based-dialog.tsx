@@ -116,8 +116,6 @@ export default function FilterBasedContingencyListDialog({
                     data[FieldConstants.FILTERS].map((item) => {
                         return {
                             id: item.id,
-                            name: item.name,
-                            equipmentType: item.specificMetadata?.equipmentType ?? '',
                         };
                     })
                 )
@@ -139,8 +137,6 @@ export default function FilterBasedContingencyListDialog({
                     data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => {
                         return {
                             id: item.id,
-                            name: item.name,
-                            equipmentType: item.specificMetadata?.equipmentType ?? '',
                         };
                     }),
                     activeDirectory
