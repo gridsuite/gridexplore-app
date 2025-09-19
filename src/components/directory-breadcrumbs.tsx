@@ -20,16 +20,16 @@ const styles = {
         textAlign: 'center',
         color: theme.link.color,
 
-        backgroundColor: theme.row.primary as string,
+        backgroundColor: theme.row.primary,
         padding: theme.spacing(0.5, 2, 0.5),
         borderRadius: theme.spacing(2),
 
         '&:hover, &:focus': {
-            backgroundColor: theme.row.hover as string,
+            backgroundColor: theme.row.hover,
             textDecoration: 'none',
         },
         '&:active': {
-            backgroundColor: emphasize(theme.row.hover as string, 0.15),
+            backgroundColor: emphasize(theme.row.hover, 0.15),
         },
     }),
     directory: (theme) => ({
@@ -37,7 +37,7 @@ const styles = {
         alignItems: 'center',
         textAlign: 'center',
 
-        backgroundColor: theme.row.hover as string,
+        backgroundColor: theme.row.hover,
         padding: theme.spacing(0.5, 2, 0.5),
         borderRadius: theme.spacing(2),
 

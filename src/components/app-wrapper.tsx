@@ -90,36 +90,17 @@ const lightTheme = createTheme({
     palette: {
         mode: 'light',
     },
-    arrow: {
-        fill: '#212121',
-        stroke: '#212121',
-    },
-    arrow_hover: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    circle: {
-        stroke: 'white',
-        fill: 'white',
-    },
-    circle_hover: {
-        stroke: '#212121',
-        fill: '#212121',
-    },
     link: {
         color: 'black',
     },
     row: {
         primary: '#E8E8E8',
-        secondary: '#F4F4F4',
         hover: '#8E9C9B',
     },
-    aggrid: {
+    agGrid: {
         theme: 'ag-theme-alpine',
         highlightColor: '#CFDFFB',
-    },
-    agGridBackground: {
-        color: 'white',
+        backgroundColor: 'white',
     },
     typography: {
         button: {
@@ -132,36 +113,17 @@ const darkTheme = createTheme({
     palette: {
         mode: 'dark',
     },
-    arrow: {
-        fill: 'white',
-        stroke: 'white',
-    },
-    arrow_hover: {
-        fill: '#424242',
-        stroke: '#424242',
-    },
-    circle: {
-        stroke: '#424242',
-        fill: '#424242',
-    },
-    circle_hover: {
-        stroke: 'white',
-        fill: 'white',
-    },
     link: {
         color: 'white',
     },
     row: {
         primary: '#272727',
-        secondary: '#323232',
         hover: '#545C5B',
     },
-    aggrid: {
+    agGrid: {
         theme: 'ag-theme-alpine-dark',
         highlightColor: '#1F3B5B',
-    },
-    agGridBackground: {
-        color: '#383838',
+        backgroundColor: '#383838',
     },
     typography: {
         button: {

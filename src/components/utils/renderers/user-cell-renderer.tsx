@@ -41,7 +41,7 @@ const styles = {
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,
-        backgroundColor: theme.row.hover as string,
+        backgroundColor: theme.row.hover,
     }),
 } as const satisfies MuiStyles;
 

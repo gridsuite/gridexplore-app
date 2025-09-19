@@ -25,7 +25,7 @@ const styles = {
         userSelect: 'none',
         '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
             borderRadius: theme.spacing(2),
-            backgroundColor: theme.aggrid.highlightColor,
+            backgroundColor: theme.agGrid?.highlightColor,
         },
         '&:hover': {
             borderRadius: theme.spacing(2),
@@ -34,7 +34,7 @@ const styles = {
     }),
     treeItemSelected: (theme) => ({
         borderRadius: `${theme.spacing(2)}!important`,
-        backgroundColor: theme.aggrid.highlightColor,
+        backgroundColor: theme.agGrid?.highlightColor,
     }),
     treeItemContent: (theme) => ({
         paddingRight: theme.spacing(1),
@@ -54,7 +54,7 @@ const styles = {
         color: 'inherit',
     }),
     treeItemHovered: (theme) => ({
-        backgroundColor: `${theme.aggrid.highlightColor}!important`,
+        backgroundColor: `${theme.agGrid?.highlightColor}!important`,
         borderRadius: theme.spacing(2),
     }),
     treeItemLabelRoot: (theme) => ({
