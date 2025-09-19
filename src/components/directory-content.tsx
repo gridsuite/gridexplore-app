@@ -62,7 +62,7 @@ const styles = {
                 backgroundColor: 'inherit',
             },
             '12%, 36%, to': {
-                backgroundColor: theme.row.hover as string,
+                backgroundColor: theme.row.hover,
             },
         },
     }),
