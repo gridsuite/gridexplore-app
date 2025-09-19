@@ -462,7 +462,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: noCreationInProgress() ? 'notElementCreator' : 'elementCreationInProgress',
+                messageDescriptorId: noCreationInProgress() ? 'noActionAvailable' : 'elementCreationInProgress',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });
