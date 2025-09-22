@@ -43,7 +43,7 @@ const defaultDef: ColDef = {
     sortable: false,
 };
 
-export default function ContingencyListFilterBasedFrom() {
+export default function ContingencyListFilterBasedForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [selectedStudy, setSelectedStudy] = useState<string>('');
     const [selectedStudyId, setSelectedStudyId] = useState<UUID>();
@@ -103,7 +103,7 @@ export default function ContingencyListFilterBasedFrom() {
         return map;
     }, []);
 
-    const onStudyChanged = useCallback(() => {
+    useEffect(() => {
         if (filters && selectedStudyId) {
             setIsFetching(true);
             getIdentifiablesFromFitlers(
@@ -114,7 +114,7 @@ export default function ContingencyListFilterBasedFrom() {
                     const SEPARATOR_TYPE = 'SEPARATOR';
                     const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
                         (element: IdentifiableAttributes) => {
-                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                            const equipmentType: string = getBasicEquipmentLabel(element?.type);
                             return {
                                 id: element.id,
                                 type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
@@ -124,7 +124,7 @@ export default function ContingencyListFilterBasedFrom() {
                     if (response.notFoundIds?.length > 0) {
                         attributes.push({ id: SEPARATOR_TYPE, type: '' });
                         response.notFoundIds.forEach((element: IdentifiableAttributes) => {
-                            const equipmentType: string = getBasicEquipmentLabel(element?.type) ?? null;
+                            const equipmentType: string = getBasicEquipmentLabel(element?.type);
                             attributes.push({
                                 id: element.id,
                                 type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
@@ -142,10 +142,6 @@ export default function ContingencyListFilterBasedFrom() {
                 .finally(() => setIsFetching(false));
         }
     }, [filters, intl, selectedStudyId, snackError]);
-
-    useEffect(() => {
-        onStudyChanged();
-    }, [filters, onStudyChanged, selectedStudyId]);
 
     const onNodeChanged = useCallback((nodes: TreeViewFinderNodeProps[]) => {
         if (nodes.length > 0) {

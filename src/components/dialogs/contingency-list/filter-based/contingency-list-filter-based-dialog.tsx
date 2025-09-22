@@ -18,7 +18,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'crypto';
-import ContingencyListFilterBasedFrom from './contingency-list-filter-based-from';
+import { ObjectSchema } from 'yup';
+import ContingencyListFilterBasedForm from './contingency-list-filter-based-form';
 import { AppState } from '../../../../redux/types';
 import {
     createFilterBasedContingency,
@@ -38,7 +39,7 @@ export interface FilterBasedContingencyListProps {
     id?: UUID;
 }
 
-const schema: any = yup.object().shape({
+const schema: ObjectSchema<ContingencyListFilterBasedFormData> = yup.object().shape({
     [FieldConstants.NAME]: yup.string().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.FILTERS]: yup.array().required(),
@@ -172,7 +173,7 @@ export default function FilterBasedContingencyListDialog({
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
         >
-            <ContingencyListFilterBasedFrom />
+            <ContingencyListFilterBasedForm />
         </CustomMuiDialog>
     );
 }
