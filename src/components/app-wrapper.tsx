@@ -63,6 +63,8 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    useUniqueNameValidationEn,
+    useUniqueNameValidationFr,
     NotificationsProvider,
     PARAM_THEME,
 } from '@gridsuite/commons-ui';
@@ -203,6 +205,7 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
+        ...useUniqueNameValidationEn,
         ...messages_en,
         ...networkModificationsEn,
         ...importParamsEn,
@@ -228,6 +231,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
+        ...useUniqueNameValidationFr,
         ...messages_fr,
         ...networkModificationsFr,
         ...importParamsFr,
