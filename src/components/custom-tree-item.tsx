@@ -6,7 +6,7 @@
  */
 
 import { forwardRef, MouseEvent, MouseEventHandler, useCallback, useEffect } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Box, BoxProps, IconButton, PopoverReference, Typography, TypographyProps } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
 import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItemState } from '@mui/x-tree-view';
