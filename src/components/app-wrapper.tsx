@@ -205,7 +205,6 @@ function getMuiTheme(theme: GsTheme, locale: GsLangUser) {
 
 const messages: Record<GsLangUser, IntlConfig['messages']> = {
     en: {
-        ...useUniqueNameValidationEn,
         ...messages_en,
         ...networkModificationsEn,
         ...importParamsEn,
@@ -228,10 +227,10 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...equipmentsEn,
         ...csvEn,
         ...parametersEn,
+        ...useUniqueNameValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
-        ...useUniqueNameValidationFr,
         ...messages_fr,
         ...networkModificationsFr,
         ...importParamsFr,
@@ -254,6 +253,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...equipmentsFr,
         ...csvFr,
         ...parametersFr,
+        ...useUniqueNameValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
