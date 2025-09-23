@@ -12,7 +12,7 @@ import {
     ElementType,
     EquipmentType,
     FieldConstants,
-    getBasicEquipmentLabel,
+    getFilterEquipmentTypeLabel,
     TreeViewFinderNodeProps,
     UniqueNameInput,
     unscrollableDialogStyles,
@@ -114,7 +114,7 @@ export default function ContingencyListFilterBasedForm() {
                     const SEPARATOR_TYPE = 'SEPARATOR';
                     const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
                         (element: IdentifiableAttributes) => {
-                            const equipmentType: string = getBasicEquipmentLabel(element?.type);
+                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
                             return {
                                 id: element.id,
                                 type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
@@ -124,7 +124,7 @@ export default function ContingencyListFilterBasedForm() {
                     if (response.notFoundIds?.length > 0) {
                         attributes.push({ id: SEPARATOR_TYPE, type: '' });
                         response.notFoundIds.forEach((element: IdentifiableAttributes) => {
-                            const equipmentType: string = getBasicEquipmentLabel(element?.type);
+                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
                             attributes.push({
                                 id: element.id,
                                 type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
