@@ -540,6 +540,11 @@ export function createContingencyList(
         body: JSON.stringify(formContent),
     });
 }
+
+export interface FilterBasedContingencyList {
+    filters: FilterAttributes[];
+}
+
 export function createFilterBasedContingency(
     name: string,
     description: string,
@@ -650,7 +655,7 @@ export function saveFilterBasedContingencyList(
     id: string,
     name: string,
     description: string,
-    filters: FilterAttributes[]
+    contingencyList: FilterBasedContingencyList
 ) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
@@ -662,9 +667,7 @@ export function saveFilterBasedContingencyList(
     return backendFetch(url, {
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            filters: [...filters],
-        }),
+        body: JSON.stringify(contingencyList),
     });
 }
 

@@ -23,6 +23,7 @@ import ContingencyListFilterBasedForm from './contingency-list-filter-based-form
 import { AppState } from '../../../../redux/types';
 import {
     createFilterBasedContingency,
+    FilterBasedContingencyList,
     getContingencyList,
     saveFilterBasedContingencyList,
 } from '../../../../utils/rest-api';
@@ -109,16 +110,20 @@ export default function FilterBasedContingencyListDialog({
 
     const onSubmit = useCallback(
         (data: ContingencyListFilterBasedFormData) => {
+            const filterBaseContingencyList: FilterBasedContingencyList = {
+                filters: data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => {
+                    return {
+                        id: item.id,
+                    };
+                }),
+            };
+
             if (id) {
                 saveFilterBasedContingencyList(
                     id,
                     data[FieldConstants.NAME],
                     data[FieldConstants.DESCRIPTION] ?? '',
-                    data[FieldConstants.FILTERS].map((item) => {
-                        return {
-                            id: item.id,
-                        };
-                    })
+                    filterBaseContingencyList
                 )
                     .then(() => closeAndClear())
                     .catch((error) => {
@@ -135,11 +140,7 @@ export default function FilterBasedContingencyListDialog({
                 createFilterBasedContingency(
                     data[FieldConstants.NAME],
                     data[FieldConstants.DESCRIPTION] ?? '',
-                    data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => {
-                        return {
-                            id: item.id,
-                        };
-                    }),
+                    filterBaseContingencyList,
                     activeDirectory
                 )
                     .then(() => closeAndClear())
