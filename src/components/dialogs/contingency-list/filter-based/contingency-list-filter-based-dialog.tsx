@@ -9,9 +9,9 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    TreeViewFinderNodeProps,
     useSnackMessage,
     yupConfig as yup,
-    TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -23,13 +23,13 @@ import ContingencyListFilterBasedForm from './contingency-list-filter-based-form
 import { AppState } from '../../../../redux/types';
 import {
     createFilterBasedContingency,
-    FilterBasedContingencyList,
     getContingencyList,
     saveFilterBasedContingencyList,
 } from '../../../../utils/rest-api';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
+import { FilterBasedContingencyList } from '../../../../utils/contingency-list.type';
 
 const schema: ObjectSchema<ContingencyListFilterBasedFormData> = yup.object().shape({
     [FieldConstants.NAME]: yup.string().required(),

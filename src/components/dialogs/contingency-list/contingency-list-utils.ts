@@ -16,7 +16,7 @@ import {
 import type { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
-import { FilterAttributes } from '../../../utils/contingency-list-type';
+import { FilterAttributes } from '../../../utils/contingency-list.type';
 
 export interface Identifier {
     type: 'ID_BASED';

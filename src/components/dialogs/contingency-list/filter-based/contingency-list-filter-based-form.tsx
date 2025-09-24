@@ -34,7 +34,7 @@ import {
     FilteredIdentifiables,
     FilterAttributes,
     IdentifiableAttributes,
-} from '../../../../utils/contingency-list-type';
+} from '../../../../utils/contingency-list.type';
 
 const separator = '/';
 const defaultDef: ColDef = {

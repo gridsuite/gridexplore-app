@@ -23,3 +23,8 @@ export interface FilteredIdentifiables {
     equipmentIds: IdentifiableAttributes[];
     notFoundIds: IdentifiableAttributes[];
 }
+
+// type taken from actions-server
+export interface FilterBasedContingencyList {
+    filters: FilterAttributes[];
+}

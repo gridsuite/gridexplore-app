@@ -31,7 +31,7 @@ import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
-import { FilterAttributes } from './contingency-list-type';
+import { FilterBasedContingencyList, FilteredIdentifiables } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -541,10 +541,6 @@ export function createContingencyList(
     });
 }
 
-export interface FilterBasedContingencyList {
-    filters: FilterAttributes[];
-}
-
 export function createFilterBasedContingency(
     name: string,
     description: string,
@@ -579,7 +575,7 @@ export function getContingencyList(type: string, id: string) {
     });
 }
 
-export function getIdentifiablesFromFitlers(studyUuid: UUID, filters: UUID[]) {
+export function getIdentifiablesFromFitlers(studyUuid: UUID, filters: UUID[]): Promise<FilteredIdentifiables> {
     console.info('get identifiables resulting from application of filters list on study root network');
 
     const filtersListsQueryParams = getRequestParamFromList('filtersUuid', filters);
