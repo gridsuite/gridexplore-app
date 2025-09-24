@@ -30,15 +30,6 @@ import { handleNotAllowedError } from '../../../utils/rest-errors';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
 
-export interface FilterBasedContingencyListProps {
-    titleId: string;
-    open: boolean;
-    onClose: () => void;
-    name?: string;
-    description?: string;
-    id?: UUID;
-}
-
 const schema: ObjectSchema<ContingencyListFilterBasedFormData> = yup.object().shape({
     [FieldConstants.NAME]: yup.string().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
@@ -58,6 +49,15 @@ const getContingencyListEmptyFormData = (name = '') => ({
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
+
+export interface FilterBasedContingencyListProps {
+    titleId: string;
+    open: boolean;
+    onClose: () => void;
+    name?: string;
+    description?: string;
+    id?: UUID;
+}
 
 export default function FilterBasedContingencyListDialog({
     titleId,

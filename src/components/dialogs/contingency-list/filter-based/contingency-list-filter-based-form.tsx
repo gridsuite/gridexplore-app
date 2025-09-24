@@ -13,6 +13,7 @@ import {
     EquipmentType,
     FieldConstants,
     getFilterEquipmentTypeLabel,
+    SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     UniqueNameInput,
     unscrollableDialogStyles,
@@ -21,7 +22,7 @@ import {
 import { Box, Button, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
 import { blue, brown, green, indigo, lime, red, teal } from '@mui/material/colors';
@@ -33,8 +34,7 @@ import {
     FilteredIdentifiables,
     FilterAttributes,
     IdentifiableAttributes,
-} from '../../../../utils/contingency-list-types';
-import SeparatorCellRenderer from './separator-cell-renderer';
+} from '../../../../utils/contingency-list-type';
 
 const separator = '/';
 const defaultDef: ColDef = {
@@ -42,6 +42,26 @@ const defaultDef: ColDef = {
     resizable: false,
     sortable: false,
 };
+
+const equipmentTypes: string[] = [
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.LINE,
+    EquipmentType.LOAD,
+    EquipmentType.GENERATOR,
+    EquipmentType.SHUNT_COMPENSATOR,
+    EquipmentType.STATIC_VAR_COMPENSATOR,
+    EquipmentType.HVDC_LINE,
+];
+
+const equipmentColorsMap: Map<string, string> = new Map([
+    [EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]],
+    [EquipmentType.LINE, indigo[700]],
+    [EquipmentType.LOAD, brown[700]],
+    [EquipmentType.GENERATOR, green[700]],
+    [EquipmentType.SHUNT_COMPENSATOR, red[700]],
+    [EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]],
+    [EquipmentType.HVDC_LINE, teal[700]],
+]);
 
 export default function ContingencyListFilterBasedForm() {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
@@ -78,30 +98,6 @@ export default function ContingencyListFilterBasedForm() {
             field: FieldConstants.TYPE,
         },
     ];
-
-    const equipmentTypes: string[] = useMemo(() => {
-        return [
-            EquipmentType.TWO_WINDINGS_TRANSFORMER,
-            EquipmentType.LINE,
-            EquipmentType.LOAD,
-            EquipmentType.GENERATOR,
-            EquipmentType.SHUNT_COMPENSATOR,
-            EquipmentType.STATIC_VAR_COMPENSATOR,
-            EquipmentType.HVDC_LINE,
-        ];
-    }, []);
-
-    const equipmentColorsMap: Map<string, string> = useMemo(() => {
-        const map = new Map();
-        map.set(EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]);
-        map.set(EquipmentType.LINE, indigo[700]);
-        map.set(EquipmentType.LOAD, brown[700]);
-        map.set(EquipmentType.GENERATOR, green[700]);
-        map.set(EquipmentType.SHUNT_COMPENSATOR, red[700]);
-        map.set(EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]);
-        map.set(EquipmentType.HVDC_LINE, teal[700]);
-        return map;
-    }, []);
 
     useEffect(() => {
         if (filters && selectedStudyId) {
