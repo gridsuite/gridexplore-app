@@ -44,6 +44,7 @@ import * as constants from '../utils/UIconstants';
 import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
+import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -122,6 +123,15 @@ function DirectoryContentDialog(
         setElementName('');
     }, [setActiveElement, setOpenDialog]);
 
+    /* Filter based contingency list dialog: window status value for editing a filter based contingency list */
+    const [currentFilterBasedContingencyListId, setcurrentFilterBasedContingencyListId] = useState<UUID>();
+    const handleCloseFilterBasedContingency = useCallback(() => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setcurrentFilterBasedContingencyListId(undefined);
+        setActiveElement(undefined);
+        setElementName('');
+    }, [setActiveElement, setOpenDialog]);
+
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState<UUID>();
     /* Filters dialog: window status value to edit ExplicitNaming filters */
     const handleCloseExplicitNamingFilterDialog = useCallback(() => {
@@ -193,6 +203,9 @@ function DirectoryContentDialog(
                                 setOpenDialog(subtype);
                             } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
                                 setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
+                                setOpenDialog(subtype);
+                            } else if (subtype === ContingencyListType.FILTERS.id) {
+                                setcurrentFilterBasedContingencyListId(event.data.elementUuid);
                                 setOpenDialog(subtype);
                             }
                             break;
@@ -290,6 +303,18 @@ function DirectoryContentDialog(
                 name={elementName}
                 broadcastChannel={broadcastChannel}
                 description={activeElement.description}
+            />
+        );
+    }
+    if (currentFilterBasedContingencyListId !== undefined && activeElement) {
+        return (
+            <FilterBasedContingencyListDialog
+                titleId="editFilterBasedContingencyList"
+                open
+                onClose={handleCloseFilterBasedContingency}
+                description={activeElement.description}
+                name={elementName}
+                id={currentFilterBasedContingencyListId}
             />
         );
     }
