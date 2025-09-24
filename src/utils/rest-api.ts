@@ -543,7 +543,7 @@ export function createContingencyList(
 export function createFilterBasedContingency(
     name: string,
     description: string,
-    filtersUuids: FilterAttributes[],
+    contingency: FilterBasedContingencyList,
     parentDirectoryUuid: UUID | undefined
 ) {
     console.info('Creating a new filter based contingency list...');
