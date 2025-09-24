@@ -5,6 +5,7 @@
         "lib": ["dom", "dom.iterable", "esnext"],
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
+        "skipLibCheck": true,
         "strict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,

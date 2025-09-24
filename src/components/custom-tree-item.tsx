@@ -7,29 +7,20 @@
 
 import { forwardRef, MouseEvent, MouseEventHandler, useCallback, useEffect } from 'react';
 import { UUID } from 'crypto';
-import {
-    Box,
-    BoxProps,
-    IconButton,
-    PopoverReference,
-    SxProps,
-    Theme,
-    Typography,
-    TypographyProps,
-} from '@mui/material';
+import { Box, BoxProps, IconButton, PopoverReference, Typography, TypographyProps } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
 import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItemState } from '@mui/x-tree-view';
-import { mergeSx, useStateBoolean } from '@gridsuite/commons-ui';
+import { mergeSx, type SxStyle, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 
 export interface TreeItemCustomContentProps {
     styles?: {
-        root?: SxProps<Theme>;
-        selected?: SxProps<Theme>;
-        hovered?: SxProps<Theme>;
-        label?: SxProps<Theme>;
-        iconContainer?: SxProps<Theme>;
+        root?: SxStyle;
+        selected?: SxStyle;
+        hovered?: SxStyle;
+        label?: SxStyle;
+        iconContainer?: SxStyle;
     };
     onExpand: (itemId: UUID) => void;
     onSelect: (itemId: UUID) => void;
