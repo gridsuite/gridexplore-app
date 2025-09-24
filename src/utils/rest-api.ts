@@ -558,7 +558,7 @@ export function createFilterBasedContingency(
 
     return backendFetch(createContingencyListUrl, {
         method: 'post',
-        body: JSON.stringify({ filters: filtersUuids }),
+        body: JSON.stringify(contingency),
     });
 }
 
