@@ -63,6 +63,8 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    useUniqueNameValidationEn,
+    useUniqueNameValidationFr,
     NotificationsProvider,
     PARAM_THEME,
 } from '@gridsuite/commons-ui';
@@ -225,6 +227,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...equipmentsEn,
         ...csvEn,
         ...parametersEn,
+        ...useUniqueNameValidationEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -250,6 +253,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...equipmentsFr,
         ...csvFr,
         ...parametersFr,
+        ...useUniqueNameValidationFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
