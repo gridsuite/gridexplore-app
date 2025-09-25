@@ -25,7 +25,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
-import { blue, brown, green, indigo, lime, red, teal } from '@mui/material/colors';
+import { blue, brown, cyan, green, indigo, lime, red, teal } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
@@ -51,6 +51,7 @@ const equipmentTypes: string[] = [
     EquipmentType.SHUNT_COMPENSATOR,
     EquipmentType.STATIC_VAR_COMPENSATOR,
     EquipmentType.HVDC_LINE,
+    EquipmentType.DANGLING_LINE,
 ];
 
 const equipmentColorsMap: Map<string, string> = new Map([
@@ -61,6 +62,7 @@ const equipmentColorsMap: Map<string, string> = new Map([
     [EquipmentType.SHUNT_COMPENSATOR, red[700]],
     [EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]],
     [EquipmentType.HVDC_LINE, teal[700]],
+    [EquipmentType.DANGLING_LINE, cyan[700]],
 ]);
 
 export default function ContingencyListFilterBasedForm() {
