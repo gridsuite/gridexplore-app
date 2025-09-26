@@ -25,7 +25,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
-import { blue, brown, cyan, green, indigo, lime, red, teal } from '@mui/material/colors';
+import { blue, brown, cyan, green, indigo, lightBlue, lime, red, teal } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
@@ -45,6 +45,7 @@ const defaultDef: ColDef = {
 
 const equipmentTypes: string[] = [
     EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.THREE_WINDINGS_TRANSFORMER,
     EquipmentType.LINE,
     EquipmentType.LOAD,
     EquipmentType.GENERATOR,
@@ -56,6 +57,7 @@ const equipmentTypes: string[] = [
 
 const equipmentColorsMap: Map<string, string> = new Map([
     [EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]],
+    [EquipmentType.THREE_WINDINGS_TRANSFORMER, lightBlue[700]],
     [EquipmentType.LINE, indigo[700]],
     [EquipmentType.LOAD, brown[700]],
     [EquipmentType.GENERATOR, green[700]],
