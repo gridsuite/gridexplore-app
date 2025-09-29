@@ -106,7 +106,7 @@ export default function ContingencyListFilterBasedForm() {
     ];
 
     useEffect(() => {
-        if (filters && selectedStudyId) {
+        if (filters?.length && selectedStudyId) {
             setIsFetching(true);
             getIdentifiablesFromFitlers(
                 selectedStudyId,
