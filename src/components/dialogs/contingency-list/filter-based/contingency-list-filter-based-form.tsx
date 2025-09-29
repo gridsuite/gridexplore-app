@@ -165,48 +165,46 @@ export default function ContingencyListFilterBasedForm() {
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                 />
-            </Box>
-            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
                 <DescriptionField />
             </Box>
-            <Box>
-                <FormattedMessage id="Filters" />
-                <DirectoryItemsInput
-                    titleId="FiltersListsSelection"
-                    label=""
-                    name={FieldConstants.FILTERS}
-                    elementType={ElementType.FILTER}
-                    equipmentColorsMap={equipmentColorsMap}
-                    equipmentTypes={equipmentTypes}
-                    disable={isFetching}
-                />
-            </Box>
-            <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>
-                <Box margin={1}>
-                    <FolderOutlined />
-                </Box>
-                <Box margin={1}>
-                    {selectedStudy.length > 0 ? (
-                        <Typography>
-                            {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
-                        </Typography>
-                    ) : (
-                        <FormattedMessage id="noSelectedStudyText" />
-                    )}
-                </Box>
+            <Box sx={unscrollableDialogStyles.scrollableContent}>
                 <Box>
-                    <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                        <FormattedMessage id="selectStudyDialogButton" />
-                    </Button>
-                    <DirectoryItemSelector
-                        open={isOpen}
-                        types={[ElementType.STUDY]}
-                        onClose={onNodeChanged}
-                        multiSelect={false}
+                    <FormattedMessage id="Filters" />
+                    <DirectoryItemsInput
+                        titleId="FiltersListsSelection"
+                        label=""
+                        name={FieldConstants.FILTERS}
+                        elementType={ElementType.FILTER}
+                        equipmentColorsMap={equipmentColorsMap}
+                        equipmentTypes={equipmentTypes}
+                        disable={isFetching}
                     />
                 </Box>
+                <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>
+                    <FolderOutlined />
+                    <Box margin={1}>
+                        {selectedStudy.length > 0 ? (
+                            <Typography>
+                                {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
+                            </Typography>
+                        ) : (
+                            <FormattedMessage id="noSelectedStudyText" />
+                        )}
+                    </Box>
+                    <Box>
+                        <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
+                            <FormattedMessage id="selectStudyDialogButton" />
+                        </Button>
+                        <DirectoryItemSelector
+                            open={isOpen}
+                            types={[ElementType.STUDY]}
+                            onClose={onNodeChanged}
+                            multiSelect={false}
+                        />
+                    </Box>
+                </Box>
+                <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
             </Box>
-            <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
         </>
     );
 }
