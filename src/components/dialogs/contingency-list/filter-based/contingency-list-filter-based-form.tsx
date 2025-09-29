@@ -27,7 +27,7 @@ import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
 import { blue, brown, cyan, green, indigo, lightBlue, lightGreen, lime, red, teal } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
 import {
