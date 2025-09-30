@@ -19,7 +19,7 @@ import {
     unscrollableDialogStyles,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useEffect, useState } from 'react';
@@ -31,8 +31,8 @@ import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
 import {
-    FilteredIdentifiables,
     FilterAttributes,
+    FilteredIdentifiables,
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 
@@ -98,7 +98,7 @@ export default function ContingencyListFilterBasedForm() {
             }),
             field: FieldConstants.ID,
             cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                if (data.id === 'SEPARATOR') {
+                if (data.id === 'SEPARATOR' && data.type === '') {
                     return SeparatorCellRenderer({
                         value: intl.formatMessage({ id: 'missingFromStudy' }),
                     });
@@ -148,7 +148,7 @@ export default function ContingencyListFilterBasedForm() {
                 )
                 .finally(() => setIsFetching(false));
         }
-    }, [filters, getTranslatedEquipmentType, intl, selectedStudyId, snackError]);
+    }, [filters, getTranslatedEquipmentType, selectedStudyId, snackError]);
 
     const onNodeChanged = useCallback((nodes: TreeViewFinderNodeProps[]) => {
         if (nodes.length > 0) {
@@ -164,13 +164,19 @@ export default function ContingencyListFilterBasedForm() {
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                <UniqueNameInput
-                    name={FieldConstants.NAME}
-                    label="nameProperty"
-                    elementType={ElementType.CONTINGENCY_LIST}
-                    activeDirectory={activeDirectory}
-                />
-                <DescriptionField />
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <UniqueNameInput
+                            name={FieldConstants.NAME}
+                            label="nameProperty"
+                            elementType={ElementType.CONTINGENCY_LIST}
+                            activeDirectory={activeDirectory}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <DescriptionField />
+                    </Grid>
+                </Grid>
             </Box>
             <Box sx={{ p: 1 }}>
                 <Box>
@@ -185,11 +191,11 @@ export default function ContingencyListFilterBasedForm() {
                         disable={isFetching}
                     />
                 </Box>
-                <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ fontWeight: 'bold', p: 1, display: 'flex', alignItems: 'center' }}>
                     <FolderOutlined />
                     <Box margin={1}>
                         {selectedStudy.length > 0 ? (
-                            <Typography>
+                            <Typography fontWeight="bold">
                                 {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
                             </Typography>
                         ) : (
