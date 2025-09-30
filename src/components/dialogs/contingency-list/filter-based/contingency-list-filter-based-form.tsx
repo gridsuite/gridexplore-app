@@ -148,7 +148,7 @@ export default function ContingencyListFilterBasedForm() {
                 )
                 .finally(() => setIsFetching(false));
         }
-    }, [filters, getTranslatedEquipmentType, selectedStudyId, snackError]);
+    }, [filters, getTranslatedEquipmentType, intl, selectedStudyId, snackError]);
 
     const onNodeChanged = useCallback((nodes: TreeViewFinderNodeProps[]) => {
         if (nodes.length > 0) {
