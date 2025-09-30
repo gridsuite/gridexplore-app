@@ -78,9 +78,18 @@ export default function ContingencyListFilterBasedForm() {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [rowsData, setRowsData] = useState<IdentifiableAttributes[]>([]);
 
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const filters = useWatch({ name: FieldConstants.FILTERS });
+
+    const intl = useIntl();
+
+    const getTranslatedEquipmentType = useCallback(
+        (type: string | undefined) => {
+            const equipmentType = getFilterEquipmentTypeLabel(type);
+            return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
+        },
+        [intl]
+    );
 
     const colDef: ColDef[] = [
         {
@@ -114,10 +123,6 @@ export default function ContingencyListFilterBasedForm() {
             )
                 .then((response: FilteredIdentifiables) => {
                     const SEPARATOR_TYPE = 'SEPARATOR';
-                    function getTranslatedEquipmentType(type: string | undefined): string {
-                        const equipmentType = getFilterEquipmentTypeLabel(type);
-                        return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
-                    }
                     const attributes: IdentifiableAttributes[] = [
                         ...response.equipmentIds.map((element: IdentifiableAttributes) => ({
                             id: element.id,
