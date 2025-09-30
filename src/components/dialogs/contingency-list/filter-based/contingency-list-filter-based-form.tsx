@@ -114,25 +114,25 @@ export default function ContingencyListFilterBasedForm() {
             )
                 .then((response: FilteredIdentifiables) => {
                     const SEPARATOR_TYPE = 'SEPARATOR';
-                    const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
-                        (element: IdentifiableAttributes) => {
-                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
-                            return {
-                                id: element.id,
-                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                            };
-                        }
-                    );
-                    if (response.notFoundIds?.length > 0) {
-                        attributes.push({ id: SEPARATOR_TYPE, type: '' });
-                        response.notFoundIds.forEach((element: IdentifiableAttributes) => {
-                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
-                            attributes.push({
-                                id: element.id,
-                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                            });
-                        });
+                    function getTranslatedEquipmentType(type: string | undefined): string {
+                        const equipmentType = getFilterEquipmentTypeLabel(type);
+                        return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
                     }
+                    const attributes: IdentifiableAttributes[] = [
+                        ...response.equipmentIds.map((element: IdentifiableAttributes) => ({
+                            id: element.id,
+                            type: getTranslatedEquipmentType(element?.type),
+                        })),
+                        ...(response.notFoundIds?.length > 0
+                            ? [
+                                  { id: SEPARATOR_TYPE, type: '' },
+                                  ...response.notFoundIds.map((element: IdentifiableAttributes) => ({
+                                      id: element.id,
+                                      type: getTranslatedEquipmentType(element?.type),
+                                  })),
+                              ]
+                            : []),
+                    ];
                     setRowsData(attributes);
                 })
                 .catch((error) =>
@@ -167,7 +167,7 @@ export default function ContingencyListFilterBasedForm() {
                 />
                 <DescriptionField />
             </Box>
-            <Box sx={unscrollableDialogStyles.scrollableContent}>
+            <Box sx={{ p: 1, flex: 1 }}>
                 <Box>
                     <FormattedMessage id="Filters" />
                     <DirectoryItemsInput
