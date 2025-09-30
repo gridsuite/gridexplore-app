@@ -14,8 +14,10 @@ import {
     updateConfigParameter,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 import { AppState } from '../../redux/types';
 import { APP_NAME } from '../../utils/config-params';
+import { snackErrorWithBackendFallback } from '../utils/rest-errors';
 
 type ParamName = typeof PARAM_THEME | typeof PARAM_LANGUAGE | typeof PARAM_DEVELOPER_MODE;
 
@@ -23,6 +25,7 @@ export function useParameterState<TParamName extends ParamName>(
     paramName: TParamName
 ): [AppState[TParamName], (value: AppState[TParamName]) => void] {
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const paramGlobalState = useSelector((state: AppState) => state[paramName]);
 
@@ -35,15 +38,14 @@ export function useParameterState<TParamName extends ParamName>(
     const handleChangeParamLocalState = useCallback(
         (value: AppState[TParamName]) => {
             setParamLocalState(value);
-            updateConfigParameter(APP_NAME, paramName, value.toString()).catch((error) => {
+            updateConfigParameter(APP_NAME, paramName, value.toString()).catch((error: unknown) => {
                 setParamLocalState(paramGlobalState);
-                snackError({
-                    messageTxt: error.message,
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'paramsChangingError',
                 });
             });
         },
-        [paramName, snackError, setParamLocalState, paramGlobalState]
+        [paramName, snackError, setParamLocalState, paramGlobalState, intl]
     );
 
     return [paramLocalState, handleChangeParamLocalState];

@@ -35,6 +35,7 @@ import {
     FilterAttributes,
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
+import { snackErrorWithBackendFallback } from '../../../utils/rest-errors';
 
 const separator = '/';
 const defaultDef: ColDef = {
@@ -131,9 +132,8 @@ export default function ContingencyListFilterBasedForm() {
                     }
                     setRowsData(attributes);
                 })
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
+                .catch((error: unknown) =>
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'cannotComputeContingencyList',
                     })
                 )

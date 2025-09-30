@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, CircularProgress } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     ElementAttributes,
     useSnackMessage,
@@ -26,6 +26,7 @@ import {
     PermissionDTO,
     PermissionType,
 } from '../../../utils/rest-api';
+import { snackErrorWithBackendFallback } from '../../utils/rest-errors';
 import {
     Group,
     PermissionForm,
@@ -46,6 +47,7 @@ interface DirectoryPropertiesDialogProps {
 
 function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<DirectoryPropertiesDialogProps>) {
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<Group[]>([]);
@@ -109,15 +111,14 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
             });
 
             reset(formData);
-        } catch (error: any) {
-            snackError({
-                messageTxt: error.message,
+        } catch (error: unknown) {
+            snackErrorWithBackendFallback(error, snackError, intl, {
                 headerId: 'directoryPermissionsFetchError',
             });
         } finally {
             setLoading(false);
         }
-    }, [directory?.elementUuid, snackError, reset]);
+    }, [directory?.elementUuid, snackError, reset, intl]);
 
     useEffect(() => {
         if (open && directory) {
@@ -150,14 +151,13 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
 
                 handleClose();
                 updateDirectoryPermissions(directory.elementUuid, permissions);
-            } catch (error: any) {
-                snackError({
-                    messageTxt: error.message,
+            } catch (error: unknown) {
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'directoryPermissionsUpdateError',
                 });
             }
         },
-        [directory?.elementUuid, handleClose, snackError]
+        [directory?.elementUuid, handleClose, snackError, intl]
     );
 
     const isFormDisabled = !canManage;

@@ -11,9 +11,71 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import {
+    BackendErrorSnackbarContent,
+    type BackendErrorSnackbarContentProps,
+    ElementAttributes,
+    UseSnackMessageReturn,
+    createBackendErrorDetails,
+    extractBackendErrorPayload,
+    type BackendErrorPayload,
+    type BackendErrorDetails,
+    type SnackInputs,
+} from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
-import { type Dispatch, SetStateAction } from 'react';
+import { type Dispatch, SetStateAction, createElement } from 'react';
+
+const BACKEND_DETAIL_FALLBACK = '-';
+
+const formatBackendDetailValue = (value: string): string => (value.trim().length > 0 ? value : BACKEND_DETAIL_FALLBACK);
+
+const getBackendErrorDetails = (error: unknown): BackendErrorDetails | undefined => {
+    const backendPayload = extractBackendErrorPayload(error);
+    if (!backendPayload) {
+        return undefined;
+    }
+    return createBackendErrorDetails(backendPayload);
+};
+
+interface BackendErrorPresentation {
+    message: string;
+    detailsLabel: string;
+    detailLabels: BackendErrorSnackbarContentProps['detailLabels'];
+    formattedDetails: BackendErrorDetails;
+    showDetailsLabel: string;
+    hideDetailsLabel: string;
+}
+
+const createBackendErrorPresentation = (
+    intl: IntlShape,
+    details: BackendErrorDetails,
+    firstLine?: string
+): BackendErrorPresentation => {
+    const message = firstLine ?? intl.formatMessage({ id: 'backendError.genericMessage' });
+    const detailsLabel = intl.formatMessage({ id: 'backendError.detailsLabel' });
+    const serverLabel = intl.formatMessage({ id: 'backendError.serverLabel' });
+    const messageLabel = intl.formatMessage({ id: 'backendError.messageLabel' });
+    const pathLabel = intl.formatMessage({ id: 'backendError.pathLabel' });
+    const showDetailsLabel = intl.formatMessage({ id: 'backendError.showDetails' });
+    const hideDetailsLabel = intl.formatMessage({ id: 'backendError.hideDetails' });
+
+    return {
+        message,
+        detailsLabel,
+        detailLabels: {
+            service: serverLabel,
+            message: messageLabel,
+            path: pathLabel,
+        },
+        formattedDetails: {
+            service: formatBackendDetailValue(details.service),
+            message: formatBackendDetailValue(details.message),
+            path: formatBackendDetailValue(details.path),
+        },
+        showDetailsLabel,
+        hideDetailsLabel,
+    };
+};
 
 export interface ErrorMessageByHttpError {
     [httpCode: string]: string;
@@ -21,6 +83,7 @@ export interface ErrorMessageByHttpError {
 
 export interface CustomError extends Error {
     status: number;
+    backendError?: BackendErrorPayload;
 }
 
 export type SnackError = UseSnackMessageReturn['snackError'];
@@ -45,9 +108,76 @@ export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpE
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'elementPasteFailed404' }),
 });
 
-export const handleGenericTxtError = (error: string, snackError: SnackError) => {
+export const handleGenericTxtError = (error: string | Error, snackError: SnackError) => {
+    const message = typeof error === 'string' ? error : error.message;
     snackError({
-        messageTxt: error,
+        messageTxt: message,
+    });
+};
+
+export const snackErrorWithBackendFallback = (
+    error: unknown,
+    snackError: SnackError,
+    intl: IntlShape,
+    additionalSnack?: Partial<SnackInputs>
+) => {
+    const backendDetails = getBackendErrorDetails(error);
+    if (backendDetails) {
+        const { headerId, headerTxt, headerValues, persist, messageId, messageTxt, messageValues, ...rest } =
+            additionalSnack ?? {};
+        const otherSnackProps: Partial<SnackInputs> = rest ? { ...(rest as Partial<SnackInputs>) } : {};
+
+        const firstLine = messageTxt ?? (messageId ? intl.formatMessage({ id: messageId }, messageValues) : undefined);
+
+        const presentation = createBackendErrorPresentation(intl, backendDetails, firstLine);
+
+        const snackInputs: SnackInputs = {
+            ...(otherSnackProps as SnackInputs),
+            messageTxt: presentation.message,
+            persist: persist ?? true,
+            content: (_, snackMessage) =>
+                createElement(BackendErrorSnackbarContent, {
+                    message:
+                        typeof snackMessage === 'string' && snackMessage.length > 0
+                            ? snackMessage
+                            : presentation.message,
+                    detailsLabel: presentation.detailsLabel,
+                    detailLabels: presentation.detailLabels,
+                    details: presentation.formattedDetails,
+                    showDetailsLabel: presentation.showDetailsLabel,
+                    hideDetailsLabel: presentation.hideDetailsLabel,
+                }),
+        };
+
+        if (headerId !== undefined) {
+            snackInputs.headerId = headerId;
+        }
+        if (headerTxt !== undefined) {
+            snackInputs.headerTxt = headerTxt;
+        }
+        if (headerValues !== undefined) {
+            snackInputs.headerValues = headerValues;
+        }
+
+        snackError(snackInputs);
+        return;
+    }
+    if (additionalSnack) {
+        const { messageTxt: additionalMessageTxt, messageId: additionalMessageId } = additionalSnack;
+        if (additionalMessageTxt !== undefined || additionalMessageId !== undefined) {
+            snackError(additionalSnack as SnackInputs);
+            return;
+        }
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    const restSnackInputs: Partial<SnackInputs> = additionalSnack ? { ...additionalSnack } : {};
+    delete restSnackInputs.messageId;
+    delete restSnackInputs.messageTxt;
+    delete restSnackInputs.messageValues;
+    snackError({
+        ...(restSnackInputs as SnackInputs),
+        messageTxt: message,
     });
 };
 
@@ -122,13 +252,11 @@ export const handleDeleteError = (
         return;
     }
 
-    let message = generateGenericPermissionErrorMessages(intl)[error.status];
-    if (message) {
-        snackError({ messageId: message });
-    } else {
-        message = error.message;
-        handleGenericTxtError(message, snackError);
-    }
+    const permissionMessage = generateGenericPermissionErrorMessages(intl)[error.status];
+    const message = permissionMessage ?? error.message;
+
+    snackErrorWithBackendFallback(error, snackError, intl, { messageTxt: message });
+
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
 };

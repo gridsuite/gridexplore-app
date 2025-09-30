@@ -15,6 +15,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIntl } from 'react-intl';
 import { TextFieldProps } from '@mui/material';
 import { searchElementsInfos } from '../../utils/rest-api';
 import { setSearchedElement, setSelectedDirectory, setTreeData } from '../../redux/actions';
@@ -24,6 +25,7 @@ import { AppState, ElementAttributesES, IDirectory, ITreeData } from '../../redu
 import { SearchBarRenderInput } from './search-bar-render-input';
 import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
+import { snackErrorWithBackendFallback } from '../utils/rest-errors';
 
 export interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
@@ -32,6 +34,7 @@ export interface SearchBarProps {
 export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const treeData = useSelector((state: AppState) => state.treeData);
     const treeDataRef = useRef<ITreeData>();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -101,9 +104,8 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
                             resources.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]
                         );
                     }
-                } catch (error: any) {
-                    snackError({
-                        messageTxt: error.message,
+                } catch (error: unknown) {
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'pathRetrievingError',
                     });
                 }
@@ -115,7 +117,15 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
                 }
             }
         },
-        [selectedDirectory?.elementUuid, handleDispatchDirectory, updateMapData, snackError, dispatch, elementsFound]
+        [
+            selectedDirectory?.elementUuid,
+            handleDispatchDirectory,
+            updateMapData,
+            snackError,
+            dispatch,
+            elementsFound,
+            intl,
+        ]
     );
 
     const displayComponent = useCallback<NonNullable<ElementSearchInputProps<ElementAttributesES>['PaperComponent']>>(
