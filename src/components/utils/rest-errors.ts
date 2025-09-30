@@ -19,7 +19,6 @@ import {
     createBackendErrorDetails,
     extractBackendErrorPayload,
     type BackendErrorPayload,
-    type BackendErrorDetails,
     type SnackInputs,
 } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
@@ -28,6 +27,8 @@ import { type Dispatch, SetStateAction, createElement } from 'react';
 const BACKEND_DETAIL_FALLBACK = '-';
 
 const formatBackendDetailValue = (value: string): string => (value.trim().length > 0 ? value : BACKEND_DETAIL_FALLBACK);
+
+type BackendErrorDetails = BackendErrorSnackbarContentProps['details'];
 
 const getBackendErrorDetails = (error: unknown): BackendErrorDetails | undefined => {
     const backendPayload = extractBackendErrorPayload(error);
@@ -135,8 +136,9 @@ export const snackErrorWithBackendFallback = (
             ...(otherSnackProps as SnackInputs),
             messageTxt: presentation.message,
             persist: persist ?? true,
-            content: (_, snackMessage) =>
+            content: (snackbarKey, snackMessage) =>
                 createElement(BackendErrorSnackbarContent, {
+                    snackbarKey,
                     message:
                         typeof snackMessage === 'string' && snackMessage.length > 0
                             ? snackMessage
