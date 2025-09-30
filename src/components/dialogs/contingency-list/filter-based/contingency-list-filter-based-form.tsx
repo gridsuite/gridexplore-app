@@ -204,7 +204,7 @@ export default function ContingencyListFilterBasedForm() {
                     </Box>
                 </Box>
             </Box>
-            <CustomAGGrid sx={{ p: 1, flex: 1 }} columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
+            <CustomAGGrid sx={{ p: 1 }} columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
         </>
     );
 }
