@@ -167,7 +167,7 @@ export default function ContingencyListFilterBasedForm() {
                 />
                 <DescriptionField />
             </Box>
-            <Box sx={{ p: 1, flex: 1 }}>
+            <Box sx={{ p: 1 }}>
                 <Box>
                     <FormattedMessage id="Filters" />
                     <DirectoryItemsInput
@@ -203,8 +203,8 @@ export default function ContingencyListFilterBasedForm() {
                         />
                     </Box>
                 </Box>
-                <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
             </Box>
+            <CustomAGGrid sx={{ p:1, flex: 1 }} columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
         </>
     );
 }
