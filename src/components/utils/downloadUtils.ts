@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     downloadCase,
     downloadSpreadsheetConfig,

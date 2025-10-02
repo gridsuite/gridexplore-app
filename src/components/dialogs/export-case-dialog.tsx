@@ -26,7 +26,7 @@ import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { CancelButton, ElementAttributes, FlatParameters } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { getExportFormats } from '../../utils/rest-api';
 
 type ExportFormats =

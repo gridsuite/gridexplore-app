@@ -9,7 +9,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
 import { SyntheticEvent } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useNameField } from './field-hook';
 import { AppState } from '../../redux/types';
 import { MAX_DIRECTORY_NAME_LENGTH } from '../../utils/UIconstants';
