@@ -8,7 +8,7 @@
 import { useSelector } from 'react-redux';
 import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { UsersIdentities, UsersIdentitiesMap } from 'utils/user-identities.type';
 import { fetchUsersIdentities } from '../utils/rest-api';
 import { AppState } from '../redux/types';

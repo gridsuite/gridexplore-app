@@ -12,7 +12,7 @@ import {
     Parameter,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const getCreateStudyDialogFormDefaultValues = ({
     // @ts-expect-error how react-hook-form manage strings like UUIDs?

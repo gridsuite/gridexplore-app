@@ -25,7 +25,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
