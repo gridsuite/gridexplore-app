@@ -10,7 +10,6 @@
     },
     "scripts": {
         "start": "vite",
-        "start:lint": "vite --config vite.config-lint.ts",
         "start:open": "vite --open",
         "build": "tsc && vite build",
         "serve": "vite preview",
