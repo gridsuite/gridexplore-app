@@ -11,9 +11,16 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
+import {
+    ElementAttributes,
+    UseSnackMessageReturn,
+    snackErrorWithBackendFallback,
+    type BackendErrorPayload,
+} from '@gridsuite/commons-ui';
+
+export { snackErrorWithBackendFallback };
 
 export interface ErrorMessageByHttpError {
     [httpCode: string]: string;
@@ -21,6 +28,7 @@ export interface ErrorMessageByHttpError {
 
 export interface CustomError extends Error {
     status: number;
+    backendError?: BackendErrorPayload;
 }
 
 export type SnackError = UseSnackMessageReturn['snackError'];
@@ -45,9 +53,10 @@ export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpE
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'elementPasteFailed404' }),
 });
 
-export const handleGenericTxtError = (error: string, snackError: SnackError) => {
+export const handleGenericTxtError = (error: string | Error, snackError: SnackError) => {
+    const message = typeof error === 'string' ? error : error.message;
     snackError({
-        messageTxt: error,
+        messageTxt: message,
     });
 };
 
@@ -122,13 +131,11 @@ export const handleDeleteError = (
         return;
     }
 
-    let message = generateGenericPermissionErrorMessages(intl)[error.status];
-    if (message) {
-        snackError({ messageId: message });
-    } else {
-        message = error.message;
-        handleGenericTxtError(message, snackError);
-    }
+    const permissionMessage = generateGenericPermissionErrorMessages(intl)[error.status];
+    const message = permissionMessage ?? error.message;
+
+    snackErrorWithBackendFallback(error, snackError, intl, { messageTxt: message });
+
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
 };

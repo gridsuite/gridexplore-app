@@ -37,7 +37,12 @@ import {
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
+import {
+    CustomError,
+    handleMaxElementsExceededError,
+    handleNotAllowedError,
+    snackErrorWithBackendFallback,
+} from '../../utils/rest-errors';
 import { AppState, UploadingElement } from '../../../redux/types';
 
 const STRING_LIST = 'STRING_LIST';
@@ -210,7 +215,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                     onClose();
                 })
-                .catch((error) => {
+                .catch((error: CustomError) => {
                     dispatch(removeUploadingElement(uploadingStudy));
                     if (handleMaxElementsExceededError(error, snackError)) {
                         return;
@@ -218,8 +223,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     if (handleNotAllowedError(error, snackError)) {
                         return;
                     }
-                    snackError({
-                        messageTxt: error.message,
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'studyCreationError',
                         headerValues: {
                             studyName,

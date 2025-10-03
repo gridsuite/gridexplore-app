@@ -15,10 +15,12 @@ import {
     type IElementUpdateDialog,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
 import {
     createSpreadsheetConfigCollectionFromConfigIds,
     replaceAllSpreadsheetConfigsInCollection,
 } from '../../utils/rest-api';
+import { snackErrorWithBackendFallback } from '../utils/rest-errors';
 
 export interface CreateSpreadsheetCollectionProps {
     open: boolean;
@@ -34,6 +36,7 @@ function CreateSpreadsheetCollectionDialog({
     spreadsheetConfigIds,
 }: Readonly<CreateSpreadsheetCollectionProps>) {
     const { snackError, snackInfo } = useSnackMessage();
+    const intl = useIntl();
 
     const createCollection = useCallback(
         (element: IElementCreationDialog) => {
@@ -52,15 +55,14 @@ function CreateSpreadsheetCollectionDialog({
                         },
                     });
                 })
-                .catch((error) => {
+                .catch((error: unknown) => {
                     console.error(error);
-                    snackError({
-                        messageTxt: error.message,
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'createCollectionError',
                     });
                 });
         },
-        [snackError, snackInfo, spreadsheetConfigIds]
+        [snackError, snackInfo, spreadsheetConfigIds, intl]
     );
 
     const updateCollection = useCallback(
@@ -80,10 +82,9 @@ function CreateSpreadsheetCollectionDialog({
                         },
                     });
                 })
-                .catch((error) => {
+                .catch((error: unknown) => {
                     console.error(error);
-                    snackError({
-                        messageTxt: error.message,
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'updateCollectionError',
                         headerValues: {
                             item: element.elementFullPath,
@@ -91,7 +92,7 @@ function CreateSpreadsheetCollectionDialog({
                     });
                 });
         },
-        [snackError, snackInfo, spreadsheetConfigIds]
+        [snackError, snackInfo, spreadsheetConfigIds, intl]
     );
 
     return (

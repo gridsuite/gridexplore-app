@@ -27,7 +27,7 @@ import {
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
@@ -38,9 +38,11 @@ import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
+import { snackErrorWithBackendFallback } from './utils/rest-errors';
 
 export default function App() {
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const user = useSelector((state: AppState) => state.user);
 
@@ -102,15 +104,14 @@ export default function App() {
             if (eventData.headers?.parameterName) {
                 fetchConfigParameter(APP_NAME, eventData.headers.parameterName)
                     .then((param) => updateParams([param]))
-                    .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
+                    .catch((error: unknown) =>
+                        snackErrorWithBackendFallback(error, snackError, intl, {
                             headerId: 'paramsRetrievingError',
                         })
                     );
             }
         },
-        [updateParams, snackError]
+        [updateParams, snackError, intl]
     );
 
     useNotificationsListener(NotificationsUrlKeys.CONFIG, {
@@ -154,24 +155,22 @@ export default function App() {
         if (user !== null) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
+                .catch((error: unknown) =>
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'paramsRetrievingError',
                     })
                 );
 
             fetchConfigParameters(APP_NAME)
                 .then((params) => updateParams(params))
-                .catch((error) =>
-                    snackError({
-                        messageTxt: error.message,
+                .catch((error: unknown) =>
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'paramsRetrievingError',
                     })
                 );
         }
         return undefined;
-    }, [user, dispatch, updateParams, snackError]);
+    }, [user, dispatch, updateParams, snackError, intl]);
 
     // We use <Box flex=.../> instead of <Grid/> because flex rules were too complexes or conflicts with MUI grid rules
     return (

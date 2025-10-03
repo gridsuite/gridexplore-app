@@ -28,6 +28,7 @@ import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
+import { snackErrorWithBackendFallback } from '../../../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -118,14 +119,13 @@ export default function CompositeModificationDialog({
                     setModifications(response);
                 }
             })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+            .catch((error: unknown) => {
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'retrieveCompositeModificationError',
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [compositeModificationId, name, snackError]);
+    }, [compositeModificationId, name, snackError, intl]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -143,8 +143,7 @@ export default function CompositeModificationDialog({
                 onClose();
             })
             .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+                snackErrorWithBackendFallback(errorMessage, snackError, intl, {
                     headerId: 'compositeModificationEditingError',
                     headerValues: { name },
                 });

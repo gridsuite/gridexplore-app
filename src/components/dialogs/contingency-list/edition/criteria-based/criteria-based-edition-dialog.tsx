@@ -18,6 +18,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../../../redux/types';
@@ -29,6 +30,7 @@ import CriteriaBasedEditionForm from './criteria-based-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { useParameterState } from '../../../use-parameters-dialog';
 import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
+import { snackErrorWithBackendFallback } from '../../../../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -61,6 +63,7 @@ export default function CriteriaBasedEditionDialog({
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm<CriteriaBasedEditionFormData>({
@@ -87,14 +90,13 @@ export default function CriteriaBasedEditionDialog({
                     });
                 }
             })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+            .catch((error: unknown) => {
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'cannotRetrieveContingencyList',
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError, description, intl]);
 
     const closeAndClear = () => {
         reset(getContingencyListEmptyFormData());
@@ -111,8 +113,7 @@ export default function CriteriaBasedEditionDialog({
                 closeAndClear();
             })
             .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+                snackErrorWithBackendFallback(errorMessage, snackError, intl, {
                     headerId: 'contingencyListEditingError',
                     headerValues: { name },
                 });

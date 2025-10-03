@@ -16,6 +16,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,6 +28,7 @@ import ExplicitNamingEditionForm from './explicit-naming-edition-form';
 import { setItemSelectionForCopy } from '../../../../../redux/actions';
 import { AppState } from '../../../../../redux/types';
 import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-utils';
+import { snackErrorWithBackendFallback } from '../../../../utils/rest-errors';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
@@ -70,6 +72,7 @@ export default function ExplicitNamingEditionDialog({
 }: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
     const methods = useForm({
@@ -93,14 +96,13 @@ export default function ExplicitNamingEditionDialog({
                     reset({ ...formData });
                 }
             })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
+            .catch((error: unknown) => {
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'cannotRetrieveContingencyList',
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
+    }, [contingencyListId, contingencyListType, name, reset, snackError, description, intl]);
 
     const closeAndClear = () => {
         reset(emptyFormData());
@@ -126,8 +128,7 @@ export default function ExplicitNamingEditionDialog({
                 closeAndClear();
             })
             .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+                snackErrorWithBackendFallback(errorMessage, snackError, intl, {
                     headerId: 'contingencyListEditingError',
                     headerValues: { name },
                 });
