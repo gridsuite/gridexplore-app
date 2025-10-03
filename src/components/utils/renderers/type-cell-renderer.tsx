@@ -6,7 +6,7 @@
  */
 import { type ElementAttributes, ElementType, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Box } from '@mui/material';
 import { getElementTypeTranslation } from '../translation-utils';
 

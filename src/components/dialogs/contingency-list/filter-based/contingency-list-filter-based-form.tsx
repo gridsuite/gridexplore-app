@@ -19,20 +19,20 @@ import {
     unscrollableDialogStyles,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Grid, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { FolderOutlined } from '@mui/icons-material';
 import { ColDef } from 'ag-grid-community';
-import { blue, brown, cyan, green, indigo, lime, red, teal } from '@mui/material/colors';
+import { blue, brown, cyan, green, indigo, lightBlue, lightGreen, lime, red, teal } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import { UUID } from 'crypto';
 import { AppState } from '../../../../redux/types';
 import { getIdentifiablesFromFitlers } from '../../../../utils/rest-api';
 import {
-    FilteredIdentifiables,
     FilterAttributes,
+    FilteredIdentifiables,
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 
@@ -44,10 +44,12 @@ const defaultDef: ColDef = {
 };
 
 const equipmentTypes: string[] = [
-    EquipmentType.TWO_WINDINGS_TRANSFORMER,
     EquipmentType.LINE,
-    EquipmentType.LOAD,
+    EquipmentType.TWO_WINDINGS_TRANSFORMER,
+    EquipmentType.THREE_WINDINGS_TRANSFORMER,
     EquipmentType.GENERATOR,
+    EquipmentType.BATTERY,
+    EquipmentType.LOAD,
     EquipmentType.SHUNT_COMPENSATOR,
     EquipmentType.STATIC_VAR_COMPENSATOR,
     EquipmentType.HVDC_LINE,
@@ -55,10 +57,12 @@ const equipmentTypes: string[] = [
 ];
 
 const equipmentColorsMap: Map<string, string> = new Map([
-    [EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]],
     [EquipmentType.LINE, indigo[700]],
-    [EquipmentType.LOAD, brown[700]],
+    [EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]],
+    [EquipmentType.THREE_WINDINGS_TRANSFORMER, lightBlue[700]],
     [EquipmentType.GENERATOR, green[700]],
+    [EquipmentType.BATTERY, lightGreen[700]],
+    [EquipmentType.LOAD, brown[700]],
     [EquipmentType.SHUNT_COMPENSATOR, red[700]],
     [EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]],
     [EquipmentType.HVDC_LINE, teal[700]],
@@ -74,9 +78,18 @@ export default function ContingencyListFilterBasedForm() {
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [rowsData, setRowsData] = useState<IdentifiableAttributes[]>([]);
 
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const filters = useWatch({ name: FieldConstants.FILTERS });
+
+    const intl = useIntl();
+
+    const getTranslatedEquipmentType = useCallback(
+        (type: string | undefined) => {
+            const equipmentType = getFilterEquipmentTypeLabel(type);
+            return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
+        },
+        [intl]
+    );
 
     const colDef: ColDef[] = [
         {
@@ -85,7 +98,7 @@ export default function ContingencyListFilterBasedForm() {
             }),
             field: FieldConstants.ID,
             cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                if (data.id === 'SEPARATOR') {
+                if (data.id === 'SEPARATOR' && data.type === '') {
                     return SeparatorCellRenderer({
                         value: intl.formatMessage({ id: 'missingFromStudy' }),
                     });
@@ -102,7 +115,7 @@ export default function ContingencyListFilterBasedForm() {
     ];
 
     useEffect(() => {
-        if (filters && selectedStudyId) {
+        if (filters?.length && selectedStudyId) {
             setIsFetching(true);
             getIdentifiablesFromFitlers(
                 selectedStudyId,
@@ -110,25 +123,21 @@ export default function ContingencyListFilterBasedForm() {
             )
                 .then((response: FilteredIdentifiables) => {
                     const SEPARATOR_TYPE = 'SEPARATOR';
-                    const attributes: IdentifiableAttributes[] = response.equipmentIds.map(
-                        (element: IdentifiableAttributes) => {
-                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
-                            return {
-                                id: element.id,
-                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                            };
-                        }
-                    );
-                    if (response.notFoundIds?.length > 0) {
-                        attributes.push({ id: SEPARATOR_TYPE, type: '' });
-                        response.notFoundIds.forEach((element: IdentifiableAttributes) => {
-                            const equipmentType: string = getFilterEquipmentTypeLabel(element?.type);
-                            attributes.push({
-                                id: element.id,
-                                type: equipmentType ? intl.formatMessage({ id: equipmentType }) : '',
-                            });
-                        });
-                    }
+                    const attributes: IdentifiableAttributes[] = [
+                        ...response.equipmentIds.map((element: IdentifiableAttributes) => ({
+                            id: element.id,
+                            type: getTranslatedEquipmentType(element?.type),
+                        })),
+                        ...(response.notFoundIds?.length > 0
+                            ? [
+                                  { id: SEPARATOR_TYPE, type: '' },
+                                  ...response.notFoundIds.map((element: IdentifiableAttributes) => ({
+                                      id: element.id,
+                                      type: getTranslatedEquipmentType(element?.type),
+                                  })),
+                              ]
+                            : []),
+                    ];
                     setRowsData(attributes);
                 })
                 .catch((error) =>
@@ -139,7 +148,7 @@ export default function ContingencyListFilterBasedForm() {
                 )
                 .finally(() => setIsFetching(false));
         }
-    }, [filters, intl, selectedStudyId, snackError]);
+    }, [filters, getTranslatedEquipmentType, selectedStudyId, snackError]);
 
     const onNodeChanged = useCallback((nodes: TreeViewFinderNodeProps[]) => {
         if (nodes.length > 0) {
@@ -155,54 +164,58 @@ export default function ContingencyListFilterBasedForm() {
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                <UniqueNameInput
-                    name={FieldConstants.NAME}
-                    label="nameProperty"
-                    elementType={ElementType.CONTINGENCY_LIST}
-                    activeDirectory={activeDirectory}
-                />
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <UniqueNameInput
+                            name={FieldConstants.NAME}
+                            label="nameProperty"
+                            elementType={ElementType.CONTINGENCY_LIST}
+                            activeDirectory={activeDirectory}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <DescriptionField />
+                    </Grid>
+                </Grid>
             </Box>
-            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                <DescriptionField />
-            </Box>
-            <Box>
-                <FormattedMessage id="Filters" />
-                <DirectoryItemsInput
-                    titleId="FiltersListsSelection"
-                    label=""
-                    name={FieldConstants.FILTERS}
-                    elementType={ElementType.FILTER}
-                    equipmentColorsMap={equipmentColorsMap}
-                    equipmentTypes={equipmentTypes}
-                    disable={isFetching}
-                />
-            </Box>
-            <Box sx={{ fontWeight: 'bold', p: 2, display: 'flex', alignItems: 'center' }}>
-                <Box margin={1}>
-                    <FolderOutlined />
-                </Box>
-                <Box margin={1}>
-                    {selectedStudy.length > 0 ? (
-                        <Typography>
-                            {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
-                        </Typography>
-                    ) : (
-                        <FormattedMessage id="noSelectedStudyText" />
-                    )}
-                </Box>
+            <Box sx={{ p: 1 }}>
                 <Box>
-                    <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                        <FormattedMessage id="selectStudyDialogButton" />
-                    </Button>
-                    <DirectoryItemSelector
-                        open={isOpen}
-                        types={[ElementType.STUDY]}
-                        onClose={onNodeChanged}
-                        multiSelect={false}
+                    <FormattedMessage id="Filters" />
+                    <DirectoryItemsInput
+                        titleId="FiltersListsSelection"
+                        label=""
+                        name={FieldConstants.FILTERS}
+                        elementType={ElementType.FILTER}
+                        equipmentColorsMap={equipmentColorsMap}
+                        equipmentTypes={equipmentTypes}
+                        disable={isFetching}
                     />
                 </Box>
+                <Box sx={{ fontWeight: 'bold', p: 1, display: 'flex', alignItems: 'center' }}>
+                    <FolderOutlined />
+                    <Box margin={1}>
+                        {selectedStudy.length > 0 ? (
+                            <Typography fontWeight="bold">
+                                {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
+                            </Typography>
+                        ) : (
+                            <FormattedMessage id="noSelectedStudyText" />
+                        )}
+                    </Box>
+                    <Box>
+                        <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
+                            <FormattedMessage id="selectStudyDialogButton" />
+                        </Button>
+                        <DirectoryItemSelector
+                            open={isOpen}
+                            types={[ElementType.STUDY]}
+                            onClose={onNodeChanged}
+                            multiSelect={false}
+                        />
+                    </Box>
+                </Box>
             </Box>
-            <CustomAGGrid columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
+            <CustomAGGrid sx={{ p: 1 }} columnDefs={colDef} defaultColDef={defaultDef} rowData={rowsData} />
         </>
     );
 }

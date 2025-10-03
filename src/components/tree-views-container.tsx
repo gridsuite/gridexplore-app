@@ -17,7 +17,7 @@ import {
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { Box, type BoxProps, type PopoverOrigin, type PopoverPosition, type PopoverReference } from '@mui/material';
 import {
     directoryUpdated,
