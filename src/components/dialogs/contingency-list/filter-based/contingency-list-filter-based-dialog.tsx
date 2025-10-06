@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 import { UUID } from 'crypto';
 import { ObjectSchema } from 'yup';
 import ContingencyListFilterBasedForm from './contingency-list-filter-based-form';
@@ -26,7 +27,7 @@ import {
     getContingencyList,
     saveFilterBasedContingencyList,
 } from '../../../../utils/rest-api';
-import { handleNotAllowedError } from '../../../utils/rest-errors';
+import { CustomError, handleNotAllowedError, snackErrorWithBackendFallback } from '../../../utils/rest-errors';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
 import { FilterBasedContingencyList } from '../../../../utils/contingency-list.type';
@@ -71,6 +72,7 @@ export default function FilterBasedContingencyListDialog({
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
     const [isFetching, setIsFetching] = useState(!!id);
+    const intl = useIntl();
 
     const methods = useForm<ContingencyListFilterBasedFormData>({
         defaultValues: emptyFormData(),
@@ -93,15 +95,14 @@ export default function FilterBasedContingencyListDialog({
                     );
                     reset({ ...formData });
                 })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
+                .catch((error: unknown) => {
+                    snackErrorWithBackendFallback(error, snackError, intl, {
                         headerId: 'cannotRetrieveContingencyList',
                     });
                 })
                 .finally(() => setIsFetching(false));
         }
-    }, [id, name, reset, snackError, description]);
+    }, [id, name, reset, snackError, description, intl]);
 
     const closeAndClear = useCallback(() => {
         reset(emptyFormData());
@@ -126,12 +127,11 @@ export default function FilterBasedContingencyListDialog({
                     filterBaseContingencyList
                 )
                     .then(() => closeAndClear())
-                    .catch((error) => {
+                    .catch((error: CustomError) => {
                         if (handleNotAllowedError(error, snackError)) {
                             return;
                         }
-                        snackError({
-                            messageTxt: error.message,
+                        snackErrorWithBackendFallback(error, snackError, intl, {
                             headerId: 'contingencyListEditingError',
                             headerValues: { name: data[FieldConstants.NAME] },
                         });
@@ -144,19 +144,18 @@ export default function FilterBasedContingencyListDialog({
                     activeDirectory
                 )
                     .then(() => closeAndClear())
-                    .catch((error) => {
+                    .catch((error: CustomError) => {
                         if (handleNotAllowedError(error, snackError)) {
                             return;
                         }
-                        snackError({
-                            messageTxt: error.message,
+                        snackErrorWithBackendFallback(error, snackError, intl, {
                             headerId: 'contingencyListCreationError',
                             headerValues: { name: data[FieldConstants.NAME] },
                         });
                     });
             }
         },
-        [activeDirectory, closeAndClear, id, snackError]
+        [activeDirectory, closeAndClear, id, snackError, intl]
     );
 
     const nameError = errors[FieldConstants.NAME];

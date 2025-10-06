@@ -17,6 +17,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useIntl } from 'react-intl';
 import { createContingencyList } from '../../../../utils/rest-api';
 import ContingencyListCreationForm from './contingency-list-creation-form';
 import {
@@ -29,7 +30,7 @@ import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
-import { handleNotAllowedError } from '../../../utils/rest-errors';
+import { CustomError, handleNotAllowedError, snackErrorWithBackendFallback } from '../../../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -59,6 +60,7 @@ export default function ContingencyListCreationDialog({
 }: Readonly<ContingencyListCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -91,12 +93,11 @@ export default function ContingencyListCreationDialog({
             activeDirectory
         )
             .then(() => closeAndClear())
-            .catch((error) => {
+            .catch((error: CustomError) => {
                 if (handleNotAllowedError(error, snackError)) {
                     return;
                 }
-                snackError({
-                    messageTxt: error.message,
+                snackErrorWithBackendFallback(error, snackError, intl, {
                     headerId: 'contingencyListCreationError',
                     headerValues: { name: data[FieldConstants.NAME] },
                 });

@@ -42,8 +42,8 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                             shouldDirty: true,
                         });
                     })
-                    .catch((error) => {
-                        handleGenericTxtError(error.message, snackError);
+                    .catch((error: unknown) => {
+                        handleGenericTxtError(error instanceof Error ? error : String(error), snackError);
                     });
             }
         }
