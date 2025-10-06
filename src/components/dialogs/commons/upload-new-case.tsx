@@ -10,7 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import { FieldConstants } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 
 export interface UploadNewCaseProps {

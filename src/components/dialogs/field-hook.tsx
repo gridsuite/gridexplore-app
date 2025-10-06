@@ -10,7 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
 import { ElementType, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
 const styles = {

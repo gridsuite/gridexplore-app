@@ -17,7 +17,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     fetchDirectoryPermissions,
     updateDirectoryPermissions,

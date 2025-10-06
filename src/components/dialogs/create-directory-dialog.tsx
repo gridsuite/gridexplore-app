@@ -9,7 +9,7 @@ import { SyntheticEvent } from 'react';
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { CancelButton, ElementType } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useNameField } from './field-hook';
 import { MAX_DIRECTORY_NAME_LENGTH } from '../../utils/UIconstants';
 

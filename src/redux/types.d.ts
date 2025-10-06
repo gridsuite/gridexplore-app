@@ -6,7 +6,7 @@
  */
 
 // IDirectory is exactly an IElement, with a specific type value
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     AuthenticationRouterErrorState,
     CommonStoreState,

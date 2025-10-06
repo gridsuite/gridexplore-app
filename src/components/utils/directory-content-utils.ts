@@ -6,7 +6,7 @@
  */
 
 import { IntlShape } from 'react-intl';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { MutableRefObject } from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';

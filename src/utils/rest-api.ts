@@ -23,7 +23,7 @@ import {
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
