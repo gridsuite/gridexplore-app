@@ -28,7 +28,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import type { UUID } from 'node:crypto';
 import UploadNewCase from '../commons/upload-new-case';
 import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
-import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
@@ -102,31 +101,6 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
 
     const isFormValid = isObjectEmpty(errors) && isValid;
 
-    // callbacks
-    const handleApiCallError = useCallback(
-        (error: any) => {
-            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(`root.${FieldConstants.API_CALL}`, {
-                    type: 'invalidFormatOrName',
-                    message: intl.formatMessage({ id: 'invalidFormatOrName' }),
-                });
-            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(`root.${FieldConstants.API_CALL}`, {
-                    type: 'serverConnectionFailed',
-                    message: intl.formatMessage({
-                        id: 'serverConnectionFailed',
-                    }),
-                });
-            } else {
-                setError(`root.${FieldConstants.API_CALL}`, {
-                    type: 'apiCall',
-                    message: error.message,
-                });
-            }
-        },
-        [intl, setError]
-    );
-
     const getCurrentCaseImportParams = useCallback(
         (uuid: UUID) => {
             getCaseImportParameters(uuid)
@@ -158,7 +132,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
         const caseUuid = getValues(FieldConstants.CASE_UUID);
         // if we cancel case creation, we need to delete the associated newly created case (if we created one)
         if (caseUuid && !providedExistingCase) {
-            deleteCase(caseUuid).catch(handleApiCallError);
+            deleteCase(caseUuid);
         }
     };
 
@@ -277,16 +251,11 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     dialogMessageLabel="moveItemContentText"
                 />
             ) : (
-                <UploadNewCase
-                    isNewStudyCreation
-                    getCurrentCaseImportParams={getCurrentCaseImportParams}
-                    handleApiCallError={handleApiCallError}
-                />
+                <UploadNewCase isNewStudyCreation getCurrentCaseImportParams={getCurrentCaseImportParams} />
             )}
             <ImportParametersSection />
             <Grid pt={1}>
-                <ErrorInput name={FieldConstants.API_CALL} InputField={FieldErrorAlert} />
-                <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
+                <ErrorInput name={`root.${FieldConstants.API_CALL}`} InputField={FieldErrorAlert} />
             </Grid>
         </CustomMuiDialog>
     );

@@ -13,9 +13,7 @@ import {
     CustomMuiDialog,
     DescriptionField,
     ElementType,
-    ErrorInput,
     FieldConstants,
-    FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     useConfidentialityWarning,
@@ -130,7 +128,6 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
                     <DescriptionField />
                 </Grid>
             </Grid>
-            <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
             <UploadNewCase />
         </CustomMuiDialog>
     );
