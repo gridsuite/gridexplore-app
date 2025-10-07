@@ -6,7 +6,7 @@
  */
 
 import { Option, yupConfig as yup } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 
 export const READ_ALL_USERS = 'readAllUsers';
 export const READ_GROUPS = 'readGroups';
