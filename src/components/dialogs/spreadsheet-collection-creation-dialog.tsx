@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import {
     type ElementAttributes,
     ElementSaveDialog,

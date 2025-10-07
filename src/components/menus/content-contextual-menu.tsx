@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -287,8 +287,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
+    const isSingleElement = selectedElements.length === 1;
 
-    const allowsDuplicateAndCopy = useCallback(() => {
+    const allowsDuplicate = useCallback(() => {
         const allowedTypes = [
             ElementType.CASE,
             ElementType.STUDY,
@@ -307,11 +308,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         ];
 
         const hasMetadata = selectedElements[0]?.hasMetadata;
-        const isSingleElement = selectedElements.length === 1;
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
 
         return hasMetadata && isSingleElement && isAllowedType && directoryWritable;
-    }, [selectedElements, directoryWritable]);
+    }, [selectedElements, isSingleElement, directoryWritable]);
 
     const allowsCreateNewStudyFromCase = useCallback(
         () =>
@@ -394,7 +394,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsDuplicateAndCopy()) {
+        if (allowsDuplicate()) {
             menuItems.push({
                 messageDescriptorId: 'duplicate',
                 callback: duplicateItem,
@@ -402,7 +402,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (directoryReadable) {
+        if (directoryReadable && isSingleElement) {
             menuItems.push({
                 messageDescriptorId: 'copy',
                 callback: copyItem,
@@ -462,7 +462,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
         if (menuItems.length === 0) {
             menuItems.push({
-                messageDescriptorId: noCreationInProgress() ? 'notElementCreator' : 'elementCreationInProgress',
+                messageDescriptorId: noCreationInProgress() ? 'noActionAvailable' : 'elementCreationInProgress',
                 icon: <DoNotDisturbAltIcon fontSize="small" />,
                 disabled: true,
             });
@@ -470,22 +470,23 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
         return menuItems;
     }, [
-        allowsConvertFilterIntoExplicitNaming,
+        selectedElements,
+        directoryWritable,
         allowsCreateNewStudyFromCase,
+        allowsDuplicate,
+        directoryReadable,
+        isSingleElement,
         allowsDownload,
+        enableDeveloperMode,
+        allowsExportCase,
         allowsSpreadsheetCollection,
-        allowsDuplicateAndCopy,
+        allowsConvertFilterIntoExplicitNaming,
+        handleOpenDialog,
+        duplicateItem,
         copyItem,
         downloadElements,
-        duplicateItem,
         handleCloseDialog,
-        handleOpenDialog,
         noCreationInProgress,
-        selectedElements,
-        directoryReadable,
-        directoryWritable,
-        allowsExportCase,
-        enableDeveloperMode,
     ]);
 
     const renderDialog = () => {
