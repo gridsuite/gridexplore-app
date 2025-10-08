@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ChangeEvent, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { FieldConstants } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
 
 export interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
-    handleApiCallError?: ErrorCallback;
 }
 
 const MAX_FILE_SIZE_IN_MO = 100;
@@ -25,7 +25,6 @@ const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 export default function UploadNewCase({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
-    handleApiCallError,
 }: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
 
@@ -58,6 +57,27 @@ export default function UploadNewCase({
         return <FormattedMessage id="uploadMessage" />;
     }, [caseFileLoading, caseFileName]);
 
+    const handleUploadCaseError = useCallback(
+        (error: any) => {
+            if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                setError(FieldConstants.CASE_FILE, {
+                    message: intl.formatMessage({ id: 'invalidFormatOrName' }),
+                });
+            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
+                setError(FieldConstants.CASE_FILE, {
+                    message: intl.formatMessage({
+                        id: 'serverConnectionFailed',
+                    }),
+                });
+            } else {
+                setError(FieldConstants.CASE_FILE, {
+                    message: intl.formatMessage({ id: 'caseUploadError' }).concat(`: ${error?.message}`),
+                });
+            }
+        },
+        [intl, setError]
+    );
+
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
@@ -80,7 +100,7 @@ export default function UploadNewCase({
                             const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
 
                             if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid).catch(handleApiCallError);
+                                deleteCase(prevCaseUuid);
                             }
 
                             onCaseUuidChange(newCaseUuid);
@@ -89,7 +109,7 @@ export default function UploadNewCase({
                                 getCurrentCaseImportParams(newCaseUuid);
                             }
                         })
-                        .catch(handleApiCallError)
+                        .catch(handleUploadCaseError)
                         .finally(() => {
                             setCaseFileLoading(false);
                         });
@@ -113,23 +133,26 @@ export default function UploadNewCase({
     };
 
     return (
-        <Grid container alignItems="center" spacing={1} pt={1}>
-            <Grid item>
-                <Button variant="contained" color="primary" component="label">
-                    <FormattedMessage id="uploadCase" />
-                    <Input
-                        ref={ref}
-                        type="file"
-                        name="file"
-                        onChange={onChange}
-                        sx={{ display: 'none' }}
-                        data-testid="NewCaseUpload"
-                    />
-                </Button>
+        <>
+            <Grid container alignItems="center" spacing={1} pt={1}>
+                <Grid item>
+                    <Button variant="contained" color="primary" component="label">
+                        <FormattedMessage id="uploadCase" />
+                        <Input
+                            ref={ref}
+                            type="file"
+                            name="file"
+                            onChange={onChange}
+                            sx={{ display: 'none' }}
+                            data-testid="NewCaseUpload"
+                        />
+                    </Button>
+                </Grid>
+                <Grid item sx={{ fontWeight: 'bold' }}>
+                    <p>{gridValue}</p>
+                </Grid>
             </Grid>
-            <Grid item sx={{ fontWeight: 'bold' }}>
-                <p>{gridValue}</p>
-            </Grid>
-        </Grid>
+            <ErrorInput name={FieldConstants.CASE_FILE} InputField={FieldErrorAlert} />
+        </>
     );
 }
