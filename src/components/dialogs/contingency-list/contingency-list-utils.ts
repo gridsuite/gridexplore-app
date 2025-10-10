@@ -16,7 +16,12 @@ import {
 import type { SetRequired } from 'type-fest';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
-import { FilterAttributes } from '../../../utils/contingency-list.type';
+import {
+    ContingencyFieldConstants,
+    FilterAttributes,
+    FilterBasedContingencyList,
+    FilterElement,
+} from '../../../utils/contingency-list.type';
 
 export interface Identifier {
     type: 'ID_BASED';
@@ -72,13 +77,21 @@ export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: 
     ...getCriteriaBasedFormData(response),
 });
 
-export const getFilterBasedFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
+export const getFilterBasedFormDataFromFetchedElement = (
+    response: FilterBasedContingencyList,
+    name: string,
+    description: string
+) => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: description,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.FILTERS.id,
     [FieldConstants.FILTERS]: response.filters.map((filter: FilterAttributes) => {
-        return { id: filter.id, name: filter.name, specificMetadata: { equipmentType: filter.equipmentType } };
+        return { id: filter.id, name: filter.name!, specificMetadata: { equipmentType: filter.equipmentType! } };
     }),
+    [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]: response.selectedEquipmentTypesByFilter.map((value) => ({
+        [ContingencyFieldConstants.FILTER_ID]: value.id,
+        [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES]: value.equipmentTypes,
+    })),
 });
 
 export const getExplicitNamingFormDataFromFetchedElement = (response: any, name: string, description: string) => {
@@ -141,3 +154,10 @@ export const SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS = Object.fromEntries(
         ([key]) => !excludedEquipmentTypes.includes(key as EquipmentType)
     )
 );
+
+export function isSubstationOrVoltageLevelFilter(filter: FilterElement) {
+    return (
+        filter.specificMetadata.equipmentType === EquipmentType.SUBSTATION ||
+        filter.specificMetadata.equipmentType === EquipmentType.VOLTAGE_LEVEL
+    );
+}

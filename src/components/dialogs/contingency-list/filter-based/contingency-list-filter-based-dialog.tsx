@@ -9,7 +9,6 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
-    TreeViewFinderNodeProps,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -19,6 +18,12 @@ import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'crypto';
 import { ObjectSchema } from 'yup';
+import {
+    ContingencyFieldConstants,
+    FilterBasedContingencyList,
+    FilterElement,
+    FilterSubEquipments,
+} from '../../../../utils/contingency-list.type';
 import ContingencyListFilterBasedForm from './contingency-list-filter-based-form';
 import { AppState } from '../../../../redux/types';
 import {
@@ -29,24 +34,34 @@ import {
 import { handleNotAllowedError } from '../../../utils/rest-errors';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
-import { FilterBasedContingencyList } from '../../../../utils/contingency-list.type';
 
 const schema: ObjectSchema<ContingencyListFilterBasedFormData> = yup.object().shape({
     [FieldConstants.NAME]: yup.string().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.FILTERS]: yup.array().required(),
+    [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]: yup
+        .array()
+        .required()
+        .of(
+            yup.object().shape({
+                [ContingencyFieldConstants.FILTER_ID]: yup.string().required(),
+                [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES]: yup.array().required().of(yup.string().required()),
+            })
+        ),
 });
 
 export interface ContingencyListFilterBasedFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
-    [FieldConstants.FILTERS]: TreeViewFinderNodeProps[];
+    [FieldConstants.FILTERS]: FilterElement[];
+    [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]: FilterSubEquipments[];
 }
 
 const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: '',
     [FieldConstants.FILTERS]: [],
+    [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]: [],
 });
 
 const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
@@ -111,11 +126,17 @@ export default function FilterBasedContingencyListDialog({
     const onSubmit = useCallback(
         (data: ContingencyListFilterBasedFormData) => {
             const filterBaseContingencyList: FilterBasedContingencyList = {
-                filters: data[FieldConstants.FILTERS]?.map((item: TreeViewFinderNodeProps) => {
+                filters: data[FieldConstants.FILTERS]?.map((filter) => {
                     return {
-                        id: item.id,
+                        id: filter.id,
                     };
                 }),
+                selectedEquipmentTypesByFilter: data[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]?.map(
+                    (filterSubEquipments) => ({
+                        id: filterSubEquipments[ContingencyFieldConstants.FILTER_ID],
+                        equipmentTypes: filterSubEquipments[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES],
+                    })
+                ),
             };
 
             if (id) {
@@ -170,9 +191,13 @@ export default function FilterBasedContingencyListDialog({
             onSave={onSubmit}
             formSchema={schema}
             formMethods={methods}
-            unscrollableFullHeight
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
+            sx={{
+                '.MuiDialog-paper': {
+                    minWidth: '60vw',
+                },
+            }}
         >
             <ContingencyListFilterBasedForm />
         </CustomMuiDialog>

@@ -27,4 +27,27 @@ export interface FilteredIdentifiables {
 // type taken from actions-server
 export interface FilterBasedContingencyList {
     filters: FilterAttributes[];
+    selectedEquipmentTypesByFilter: Array<{
+        id: string;
+        equipmentTypes: string[];
+    }>;
+}
+
+export interface FilterElement {
+    id: UUID;
+    name: string;
+    specificMetadata: {
+        equipmentType: string;
+    };
+}
+
+export enum ContingencyFieldConstants {
+    SUB_EQUIPMENT_TYPES_BY_FILTER = 'subEquipmentTypesByFilter',
+    FILTER_ID = 'filterId',
+    SUB_EQUIPMENT_TYPES = 'subEquipmentTypes',
+}
+
+export interface FilterSubEquipments {
+    [ContingencyFieldConstants.FILTER_ID]: string;
+    [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES]: string[];
 }
