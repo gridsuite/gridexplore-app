@@ -90,6 +90,8 @@
     "contingencyList.explicitNaming": "Explicit naming",
     "contingencyList.criteriaBasedOrExplicitNaming": "Explicit naming or criteria based",
     "contingencyList.filterBased": "Filter based",
+    "contingencyList.filterBased.filtersTableColumn": "Voltage level / substation filter",
+    "contingencyList.filterBased.subEquipmentsTableColumn": "Equipment types",
     "distributionKey": "Distribution key",
     "CSVFileCommentContingencyList1": "# Use \"|\" as a separator if a contingency contains several equipments",
     "CSVFileCommentContingencyList2": "# ID_line1,Line 1",
@@ -194,5 +196,6 @@
     "read&Write": "Read / Write",
     "allUsers": "Anyone",
     "restricted": "Restricted",
-    "selectGroups": "Select one or more groups"
+    "selectGroups": "Select one or more groups",
+    "visualization": "Visualization"
 }

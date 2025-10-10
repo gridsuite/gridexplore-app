@@ -89,6 +89,8 @@
     "contingencyList.explicitNaming": "Par nommage",
     "contingencyList.criteriaBasedOrExplicitNaming": "Par nommage ou par critères",
     "contingencyList.filterBased": "Par filtres",
+    "contingencyList.filterBased.filtersTableColumn": "Voltage level / substation filter",
+    "contingencyList.filterBased.subEquipmentsTableColumn": "Equipment types",
     "distributionKey": "Clé de répartition",
     "CSVFileCommentContingencyList1": "# Si un aléa est associé à plusieurs ouvrages utiliser la barre verticale \"|\" comme séparateur",
     "CSVFileCommentContingencyList2": "# ID_ligne1;Ligne 1",
@@ -193,5 +195,6 @@
     "read&Write": "Lecture / Écriture",
     "allUsers": "Tout le monde",
     "restricted": "Restreint",
-    "selectGroups": "Sélectionner un ou plusieurs groupes"
+    "selectGroups": "Sélectionner un ou plusieurs groupes",
+    "visualization": "Visualisation"
 }
