@@ -26,10 +26,10 @@ import {
     ElementAttributes,
     ElementType,
     FilterCreationDialog,
+    PARAM_DEVELOPER_MODE,
+    PARAM_LANGUAGE,
     TreeViewFinderNodeProps,
     useSnackMessage,
-    PARAM_LANGUAGE,
-    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';

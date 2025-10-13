@@ -194,5 +194,8 @@
     "read&Write": "Lecture / Écriture",
     "allUsers": "Tout le monde",
     "restricted": "Restreint",
-    "selectGroups": "Sélectionner un ou plusieurs groupes"
+    "selectGroups": "Sélectionner un ou plusieurs groupes",
+    "export.message.started": "Vous serez notifié lorsque l'export sera prêt.",
+    "export.message.succeeded": "Téléchargement en cours",
+    "export.header.failed": "Échec du téléchargement du fichier"
 }

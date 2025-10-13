@@ -195,5 +195,8 @@
     "read&Write": "Read / Write",
     "allUsers": "Anyone",
     "restricted": "Restricted",
-    "selectGroups": "Select one or more groups"
+    "selectGroups": "Select one or more groups",
+    "export.message.started": "Export file started",
+    "export.message.succeeded": "Export file succeeded",
+    "export.header.failed": "export file failed"
 }

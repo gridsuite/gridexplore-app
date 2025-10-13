@@ -34,6 +34,7 @@ import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
+import { useExportNotification } from '../hooks/use-export-notification';
 
 const initialMousePosition = {
     mouseX: null,
@@ -114,6 +115,8 @@ export default function TreeViewsContainer() {
 
     const treeDataRef = useRef<ITreeData>();
     treeDataRef.current = treeData;
+
+    useExportNotification();
 
     const handleOpenDirectoryMenu = useCallback(
         (event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>) => {
