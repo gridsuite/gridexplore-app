@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 import { useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
@@ -19,7 +19,7 @@ import {
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
-    RefreshButton
+    RefreshButton,
 } from '@gridsuite/commons-ui';
 import { Button, ButtonProps, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
@@ -44,7 +44,7 @@ export type VisualizationPanelProps = {
     setIsDataOutdated: (value: boolean) => void;
 };
 
-export function FilterBasedContingencyListVisualizationPanel(props: VisualizationPanelProps) {
+export function FilterBasedContingencyListVisualizationPanel(props: Readonly<VisualizationPanelProps>) {
     const { isDataOutdated, setIsDataOutdated } = props;
 
     const intl = useIntl();

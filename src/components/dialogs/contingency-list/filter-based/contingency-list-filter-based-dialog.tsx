@@ -16,7 +16,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
-import { UUID } from 'crypto';
+import { UUID } from 'node:crypto';
 import { ObjectSchema } from 'yup';
 import {
     ContingencyFieldConstants,
