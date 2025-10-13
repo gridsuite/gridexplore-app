@@ -38,6 +38,7 @@
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
     "ImportNewCase": "Importer une situation",
     "caseCreationError": "Une erreur est survenue lors de la création de la situation : {name}",
+    "caseUploadError": "Échec du téléchargement du fichier de situation",
     "importParameters": "Paramètres d'import",
     "CASE": "Situation",
     "unsupportedItem": "Cet élément n'est pas supporté",

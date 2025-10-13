@@ -11,7 +11,7 @@ import { Box, type PopoverReference, Tooltip, Typography, Zoom } from '@mui/mate
 import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
-import { UUID } from 'crypto';
+import type { UUID } from 'node:crypto';
 // eslint-disable-next-line import/no-extraneous-dependencies -- lib from MUI
 import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';

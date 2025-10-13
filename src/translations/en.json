@@ -39,6 +39,7 @@
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "ImportNewCase": "Upload a case",
     "caseCreationError": "An error occurred while creating the case: {name}",
+    "caseUploadError": "Failed to upload case file",
     "importParameters": "Import parameters",
     "CASE": "Case",
     "unsupportedItem": "This element is not eligible",

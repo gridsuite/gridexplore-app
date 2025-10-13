@@ -8,6 +8,8 @@
 import { ElementType } from '@gridsuite/commons-ui';
 import { updatedTree } from './treeview-utils';
 
+jest.mock('uuid', () => ({ v4: () => '00000000-0000-0000-0000-000000000000' }));
+
 const otherProperties = {
     description: 'desc',
     accessRights: {

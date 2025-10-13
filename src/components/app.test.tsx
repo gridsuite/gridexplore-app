@@ -15,6 +15,8 @@ import { SnackbarProvider } from '@gridsuite/commons-ui';
 import { store } from '../redux/store';
 import App from './app';
 
+jest.mock('uuid', () => ({ v4: () => '00000000-0000-0000-0000-000000000000' }));
+
 let container: HTMLDivElement | null = null;
 beforeEach(() => {
     // setup a DOM element as a render target
