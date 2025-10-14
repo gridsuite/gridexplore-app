@@ -33,7 +33,7 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
     const treeData = useSelector((state: AppState) => state.treeData);
-    const treeDataRef = useRef<ITreeData>();
+    const treeDataRef = useRef<ITreeData>(null);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     treeDataRef.current = treeData;
 
