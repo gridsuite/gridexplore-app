@@ -33,6 +33,9 @@ export interface FilterBasedContingencyList {
     }>;
 }
 
+// type taken from filter-server, for now it's the same as FilterBasedContingencyList
+export type FiltersWithEquipmentTypes = FilterBasedContingencyList;
+
 export interface FilterElement {
     id: UUID;
     name: string;

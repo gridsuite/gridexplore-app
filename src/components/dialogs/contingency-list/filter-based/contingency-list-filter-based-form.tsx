@@ -47,7 +47,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
-import { FilterBasedContingencyListVisualizationPanel } from './FilterBasedContingencyListVisualizationPanel';
+import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
 import { isSubstationOrVoltageLevelFilter } from '../contingency-list-utils';
 
 const equipmentTypes: string[] = [

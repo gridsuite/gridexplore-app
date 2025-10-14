@@ -31,7 +31,7 @@ import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
-import { FilterBasedContingencyList, FilteredIdentifiables } from './contingency-list.type';
+import { FilterBasedContingencyList, FilteredIdentifiables, FiltersWithEquipmentTypes } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -577,14 +577,14 @@ export function getContingencyList(type: string, id: string) {
 
 export function getIdentifiablesFromFilters(
     studyUuid: UUID,
-    body: FilterBasedContingencyList
+    filters: FiltersWithEquipmentTypes
 ): Promise<FilteredIdentifiables> {
     console.info('get identifiables resulting from application of filters list on study root network');
 
     return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/filters/elements`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(filters),
     });
 }
 
