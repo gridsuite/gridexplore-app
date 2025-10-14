@@ -186,10 +186,10 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 })
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
-                    if (handleMaxElementsExceededError(error, snackError)) {
+                    if (handleMaxElementsExceededError(error, snackError, intl)) {
                         return;
                     }
-                    if (handleNotAllowedError(error, snackError)) {
+                    if (handleNotAllowedError(error, snackError, intl)) {
                         return;
                     }
                     snackError({

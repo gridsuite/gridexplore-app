@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useIntl } from 'react-intl';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -46,6 +47,7 @@ export interface CreateCaseDialogProps {
 export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseDialogProps>) {
     const dispatch = useDispatch<AppDispatch>();
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
     const confidentialityWarningKey = useConfidentialityWarning();
 
     const createCaseFormMethods = useForm<IFormData>({
@@ -79,10 +81,10 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
             .then(onClose)
             .catch((err) => {
                 dispatch(removeUploadingElement(uploadingCase));
-                if (handleMaxElementsExceededError(err, snackError)) {
+                if (handleMaxElementsExceededError(err, snackError, intl)) {
                     return;
                 }
-                if (handleNotAllowedError(err, snackError)) {
+                if (handleNotAllowedError(err, snackError, intl)) {
                     return;
                 }
 

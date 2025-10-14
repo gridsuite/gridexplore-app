@@ -6,6 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
+import { useIntl } from 'react-intl';
 import {
     CustomMuiDialog,
     FieldConstants,
@@ -59,6 +60,7 @@ export default function ContingencyListCreationDialog({
 }: Readonly<ContingencyListCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
+    const intl = useIntl();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -92,7 +94,7 @@ export default function ContingencyListCreationDialog({
         )
             .then(() => closeAndClear())
             .catch((error) => {
-                if (handleNotAllowedError(error, snackError)) {
+                if (handleNotAllowedError(error, snackError, intl)) {
                     return;
                 }
                 snackError({
