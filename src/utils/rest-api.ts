@@ -31,12 +31,7 @@ import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
-import {
-    FilterAttributes,
-    FilterBasedContingencyList,
-    FilteredIdentifiables,
-    FilterSubEquipments,
-} from './contingency-list.type';
+import { FilterBasedContingencyList, FilteredIdentifiables } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -582,18 +577,9 @@ export function getContingencyList(type: string, id: string) {
 
 export function getIdentifiablesFromFilters(
     studyUuid: UUID,
-    filters: FilterAttributes[],
-    equipmentTypesByFilter: FilterSubEquipments[]
+    body: FilterBasedContingencyList
 ): Promise<FilteredIdentifiables> {
     console.info('get identifiables resulting from application of filters list on study root network');
-
-    const body = {
-        filters: filters.map((value) => ({ id: value.id })),
-        selectedEquipmentTypesByFilter: equipmentTypesByFilter.map((value) => ({
-            id: value.filterId,
-            equipmentTypes: value.subEquipmentTypes,
-        })),
-    };
 
     return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/filters/elements`, {
         method: 'post',

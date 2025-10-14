@@ -95,8 +95,15 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                 const currentSubEquipments: FilterSubEquipments[] = getValues(
                     ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER
                 );
+                const body = {
+                    filters: currentFilters.map((value) => ({ id: value.id })),
+                    selectedEquipmentTypesByFilter: currentSubEquipments.map((value) => ({
+                        id: value.filterId,
+                        equipmentTypes: value.subEquipmentTypes,
+                    })),
+                };
                 setIsFetching(true);
-                getIdentifiablesFromFilters(studyId, currentFilters, currentSubEquipments)
+                getIdentifiablesFromFilters(studyId, body)
                     .then((response: FilteredIdentifiables) => {
                         const SEPARATOR_TYPE = 'SEPARATOR';
                         const attributes: IdentifiableAttributes[] = [

@@ -86,11 +86,11 @@ export default function ContingencyListFilterBasedForm() {
     const [selectedFilterId, setSelectedFilterId] = useState<string | null>(null);
     const [isDataOutdated, setIsDataOutdated] = useState<boolean>(false);
 
-    const filters: FilterElement[] = useWatch({ name: FieldConstants.FILTERS });
+    const filters: FilterElement[] = useWatch({ name: FieldConstants.FILTERS }) as FilterElement[];
     const substationAndVLFilters = filters.filter(isSubstationOrVoltageLevelFilter);
     const filtersSubEquipments: FilterSubEquipments[] = useWatch({
         name: ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER,
-    });
+    }) as FilterSubEquipments[];
 
     const handleFilterRowClick = useCallback((clickedFilterId: string, currentFilterId: string | null) => {
         if (clickedFilterId !== currentFilterId) {
