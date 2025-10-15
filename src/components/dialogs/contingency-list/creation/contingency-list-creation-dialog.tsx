@@ -14,6 +14,8 @@ import {
     useSnackMessage,
     yupConfig as yup,
     PARAM_LANGUAGE,
+    isProblemDetail,
+    isJsonSpringError,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -29,7 +31,7 @@ import { ContingencyListType } from '../../../../utils/elementType';
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
-import { handleNotAllowedError } from '../../../utils/rest-errors';
+import { CustomError } from '../../../utils/rest-errors';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -91,8 +93,22 @@ export default function ContingencyListCreationDialog({
             activeDirectory
         )
             .then(() => closeAndClear())
-            .catch((error) => {
-                if (handleNotAllowedError(error, snackError)) {
+            .catch((error: CustomError) => {
+                if (isProblemDetail(error)) {
+                    const problemDetailCode = error.businessErrorCode ?? error.problemDetail?.businessErrorCode;
+                    snackError({
+                        messageId: problemDetailCode,
+                        headerId: 'contingencyListCreationError',
+                        headerValues: { name: data[FieldConstants.NAME] },
+                    });
+                    return;
+                }
+                if (isJsonSpringError(error)) {
+                    snackError({
+                        messageTxt: error.springErrorPayload?.message ?? error.message,
+                        headerId: 'contingencyListCreationError',
+                        headerValues: { name: data[FieldConstants.NAME] },
+                    });
                     return;
                 }
                 snackError({
