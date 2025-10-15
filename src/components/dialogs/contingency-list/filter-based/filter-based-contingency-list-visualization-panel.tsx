@@ -166,14 +166,13 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
     const shouldDisplayRefreshButton = selectedStudy?.length > 0 && isDataOutdated && !isFetching;
 
     return (
-        <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
-            {/* ugly width fix for the grid layout */}
-            <Grid item xs={1}>
+        <Grid item container direction="column" xs>
+            <Grid item>
                 <Typography variant="h6">
                     <FormattedMessage id="visualization" />
                 </Typography>
             </Grid>
-            <Grid item container xs={2} paddingY={1} alignItems="center" justifyContent="center">
+            <Grid item container paddingY={1} alignItems="center" justifyContent="center">
                 <Grid item xs={1}>
                     <FolderOutlined />
                 </Grid>
