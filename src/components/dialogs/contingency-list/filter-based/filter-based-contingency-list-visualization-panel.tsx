@@ -16,10 +16,10 @@ import {
     ElementType,
     FieldConstants,
     getFilterEquipmentTypeLabel,
+    RefreshButton,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
-    RefreshButton,
 } from '@gridsuite/commons-ui';
 import { Button, ButtonProps, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
@@ -163,10 +163,11 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
         };
     }, [updateRowData, selectedStudyId]);
 
-    const shouldDisplayRefreshButton = selectedStudy?.length > 0 && isDataOutdated;
+    const shouldDisplayRefreshButton = selectedStudy?.length > 0 && isDataOutdated && !isFetching;
 
     return (
-        <Grid item container direction="column" xs={3} sx={{minWidth: '31%'}}> {/* ugly width fix for the grid layout */}
+        <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
+            {/* ugly width fix for the grid layout */}
             <Grid item xs={1}>
                 <Typography variant="h6">
                     <FormattedMessage id="visualization" />
