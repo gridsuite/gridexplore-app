@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'node:crypto';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ColDef } from 'ag-grid-community';
 import { useFormContext } from 'react-hook-form';
@@ -21,7 +21,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, ButtonProps, Grid, Typography } from '@mui/material';
+import { Button, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import {
     ContingencyFieldConstants,
@@ -154,16 +154,22 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
         [updateRowData, getValues]
     );
 
-    const loadingOverlayComponentParams = useMemo((): ButtonProps => {
-        return {
-            onClick: () => {
-                updateRowData(selectedStudyId);
-            },
-            size: 'large',
-        };
-    }, [updateRowData, selectedStudyId]);
-
     const shouldDisplayRefreshButton = selectedStudy?.length > 0 && isDataOutdated && !isFetching;
+
+    const overlay = shouldDisplayRefreshButton
+        ? {
+              loadingOverlayComponent: RefreshButton,
+              loadingOverlayComponentParams: {
+                  onClick: () => {
+                      updateRowData(selectedStudyId);
+                  },
+                  size: 'large',
+              },
+          }
+        : {
+              loadingOverlayComponentParams: { disabled: true }, // disable the button when loading
+              // rendering another loadingOverlayComponent does not work
+          };
 
     return (
         <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
@@ -204,10 +210,7 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                     defaultColDef={defaultDef}
                     rowData={rowsData}
                     loading={isFetching || shouldDisplayRefreshButton}
-                    {...(shouldDisplayRefreshButton && {
-                        loadingOverlayComponent: RefreshButton,
-                        loadingOverlayComponentParams,
-                    })}
+                    {...overlay}
                 />
             </Grid>
         </Grid>
