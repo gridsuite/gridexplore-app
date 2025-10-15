@@ -133,7 +133,7 @@ export default function FilterBasedContingencyListDialog({
                 }),
                 selectedEquipmentTypesByFilter: data[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]?.map(
                     (filterSubEquipments) => ({
-                        id: filterSubEquipments[ContingencyFieldConstants.FILTER_ID],
+                        filterId: filterSubEquipments[ContingencyFieldConstants.FILTER_ID],
                         equipmentTypes: filterSubEquipments[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES],
                     })
                 ),

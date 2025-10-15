@@ -28,7 +28,7 @@ export interface FilteredIdentifiables {
 export interface FilterBasedContingencyList {
     filters: FilterAttributes[];
     selectedEquipmentTypesByFilter: Array<{
-        id: string;
+        filterId: string;
         equipmentTypes: string[];
     }>;
 }
