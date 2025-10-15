@@ -197,7 +197,7 @@ export default function ContingencyListFilterBasedForm() {
                 </Grid>
                 {substationAndVLFilters.length > 0 && (
                     <Grid item container xs>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} marginRight={-0.1}>
                             <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
                                 <Table>
                                     <TableHead>
@@ -224,7 +224,7 @@ export default function ContingencyListFilterBasedForm() {
                                 </Table>
                             </TableContainer>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6} marginLeft={-0.1}>
                             <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
                                 <Table>
                                     <TableHead>
