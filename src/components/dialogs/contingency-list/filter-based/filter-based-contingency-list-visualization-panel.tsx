@@ -21,7 +21,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, Grid, Typography } from '@mui/material';
+import { Alert, Button, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import {
     ContingencyFieldConstants,
@@ -168,8 +168,10 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
           }
         : {
               loadingOverlayComponentParams: { disabled: true }, // disable the button when loading
-              // rendering another loadingOverlayComponent does not work
+              // rendering another loadingOverlayComponent or overlayLoadingTemplate does not work
           };
+
+    const hasMissingFromStudy = rowsData.some((row) => row.id === 'SEPARATOR' && row.type === '');
 
     return (
         <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
@@ -204,6 +206,9 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                     />
                 </Grid>
             </Grid>
+            {hasMissingFromStudy && (
+                <Alert severity="warning">{intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}</Alert>
+            )}
             <Grid item xs>
                 <CustomAGGrid
                     columnDefs={colDef}

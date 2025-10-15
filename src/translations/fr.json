@@ -197,5 +197,6 @@
     "allUsers": "Tout le monde",
     "restricted": "Restreint",
     "selectGroups": "Sélectionner un ou plusieurs groupes",
-    "visualization": "Visualisation"
+    "visualization": "Visualisation",
+    "missingEquipmentsFromStudy": "Ouvrages absents de l'étude"
 }

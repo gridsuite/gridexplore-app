@@ -198,5 +198,6 @@
     "allUsers": "Anyone",
     "restricted": "Restricted",
     "selectGroups": "Select one or more groups",
-    "visualization": "Visualization"
+    "visualization": "Visualization",
+    "missingEquipmentsFromStudy": "Equipments missing from study"
 }
