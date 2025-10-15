@@ -170,7 +170,7 @@ export default function ContingencyListFilterBasedForm() {
     );
 
     return (
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{ height: '100%' }}>
             <Grid item container direction="column" xs={8} spacing={2}>
                 <Grid item>
                     <UniqueNameInput

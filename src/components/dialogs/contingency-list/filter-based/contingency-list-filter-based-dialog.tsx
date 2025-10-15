@@ -196,6 +196,7 @@ export default function FilterBasedContingencyListDialog({
             sx={{
                 '.MuiDialog-paper': {
                     minWidth: '60vw',
+                    height: '95vh',
                 },
             }}
         >
