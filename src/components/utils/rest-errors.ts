@@ -16,21 +16,17 @@ import {
 import {
     ElementAttributes,
     UseSnackMessageReturn,
-    getErrorCatalogDefaultMessage,
-    isKnownErrorCatalogCode,
-    resolveErrorCatalogMessage,
+    CustomError as CommonsCustomError,
+    isProblemDetail,
+    isJsonSpringError,
 } from '@gridsuite/commons-ui';
 
 export interface ErrorMessageByHttpError {
     [httpCode: string]: string;
 }
 
-export interface CustomError extends Error {
+export interface CustomError extends CommonsCustomError {
     status: number;
-    businessErrorCode?: string;
-    problemDetail?: {
-        businessErrorCode?: string;
-    };
 }
 
 export type SnackError = UseSnackMessageReturn['snackError'];
@@ -45,29 +41,19 @@ const extractBusinessErrorCode = (error: CustomError): string | undefined => {
     if (typeof error.businessErrorCode === 'string' && error.businessErrorCode.trim().length > 0) {
         return error.businessErrorCode;
     }
-    const detailCode = error.problemDetail?.businessErrorCode;
-    if (typeof detailCode === 'string' && detailCode.trim().length > 0) {
-        return detailCode;
-    }
     return undefined;
 };
 
-const getBusinessErrorMessage = (error: CustomError, intl?: IntlShape): string | undefined => {
-    const businessErrorCode = extractBusinessErrorCode(error);
-    if (isKnownErrorCatalogCode(businessErrorCode)) {
-        return intl
-            ? resolveErrorCatalogMessage(intl.locale, businessErrorCode)
-            : getErrorCatalogDefaultMessage(businessErrorCode);
+const handleBusinessError = (error: CustomError, snackError: SnackError) => {
+    if (isProblemDetail(error)) {
+        snackError({ messageId: extractBusinessErrorCode(error) });
+        return true;
     }
-    return undefined;
-};
-
-const handleBusinessError = (error: CustomError, snackError: SnackError, intl?: IntlShape): string | undefined => {
-    const message = getBusinessErrorMessage(error, intl);
-    if (message) {
-        handleGenericTxtError(message, snackError);
+    if (isJsonSpringError(error)) {
+        snackError({ messageTxt: error.message });
+        return true;
     }
-    return message;
+    return false;
 };
 
 export const generateGenericPermissionErrorMessages = (intl: IntlShape): ErrorMessageByHttpError => ({
@@ -90,12 +76,8 @@ export const generatePasteErrorMessages = (intl: IntlShape): ErrorMessageByHttpE
     [HTTP_NOT_FOUND]: intl.formatMessage({ id: 'elementPasteFailed404' }),
 });
 
-export const handleMaxElementsExceededError = (
-    error: CustomError,
-    snackError: SnackError,
-    intl?: IntlShape
-): boolean => {
-    if (handleBusinessError(error, snackError, intl)) {
+export const handleMaxElementsExceededError = (error: CustomError, snackError: SnackError): boolean => {
+    if (handleBusinessError(error, snackError)) {
         return true;
     }
     if (error.status === HTTP_FORBIDDEN && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
@@ -111,8 +93,8 @@ export const handleMaxElementsExceededError = (
     return false;
 };
 
-export const handleNotAllowedError = (error: CustomError, snackError: SnackError, intl?: IntlShape): boolean => {
-    if (handleBusinessError(error, snackError, intl)) {
+export const handleNotAllowedError = (error: CustomError, snackError: SnackError): boolean => {
+    if (handleBusinessError(error, snackError)) {
         return true;
     }
     if (
@@ -127,12 +109,8 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
     return false;
 };
 
-export const handleMoveDirectoryConflictError = (
-    error: CustomError,
-    snackError: SnackError,
-    intl?: IntlShape
-): boolean => {
-    if (handleBusinessError(error, snackError, intl)) {
+export const handleMoveDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
+    if (handleBusinessError(error, snackError)) {
         return true;
     }
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
@@ -142,8 +120,8 @@ export const handleMoveDirectoryConflictError = (
     return false;
 };
 
-export const handleMoveNameConflictError = (error: CustomError, snackError: SnackError, intl?: IntlShape): boolean => {
-    if (handleBusinessError(error, snackError, intl)) {
+export const handleMoveNameConflictError = (error: CustomError, snackError: SnackError): boolean => {
+    if (handleBusinessError(error, snackError)) {
         return true;
     }
     if (error.status === HTTP_CONFLICT) {
@@ -153,12 +131,8 @@ export const handleMoveNameConflictError = (error: CustomError, snackError: Snac
     return false;
 };
 
-export const handleDeleteDirectoryConflictError = (
-    error: CustomError,
-    snackError: SnackError,
-    intl?: IntlShape
-): boolean => {
-    if (handleBusinessError(error, snackError, intl)) {
+export const handleDeleteDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
+    if (handleBusinessError(error, snackError)) {
         return true;
     }
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
@@ -169,7 +143,7 @@ export const handleDeleteDirectoryConflictError = (
 };
 
 export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: SnackError) => {
-    if (handleBusinessError(error, snackError, intl)) {
+    if (handleBusinessError(error, snackError)) {
         return;
     }
     const message = generatePasteErrorMessages(intl)[error.status];
@@ -186,14 +160,7 @@ export const handleDeleteError = (
     intl: IntlShape,
     snackError: SnackError
 ) => {
-    const businessMessage = getBusinessErrorMessage(error, intl);
-    if (businessMessage) {
-        handleGenericTxtError(businessMessage, snackError);
-        setDeleteError(businessMessage);
-        return;
-    }
-
-    if (handleDeleteDirectoryConflictError(error, snackError, intl)) {
+    if (handleDeleteDirectoryConflictError(error, snackError)) {
         setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
         return;
     }
@@ -215,7 +182,7 @@ export const handleMoveError = (
     intl: IntlShape,
     snackError: SnackError
 ) => {
-    if (errors.some((error) => handleBusinessError(error, snackError, intl))) {
+    if (errors.some((error) => handleBusinessError(error, snackError))) {
         return;
     }
     const predefinedMessages = generateMoveErrorMessages(intl);
@@ -243,10 +210,10 @@ export const handleDuplicateError = (
     intl: IntlShape,
     snackError: SnackError
 ) => {
-    if (handleBusinessError(error, snackError, intl)) {
+    if (handleBusinessError(error, snackError)) {
         return;
     }
-    if (handleNotAllowedError(error, snackError, intl)) {
+    if (handleNotAllowedError(error, snackError)) {
         return;
     }
     handleGenericTxtError(
