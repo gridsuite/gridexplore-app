@@ -196,7 +196,7 @@ export default function ContingencyListFilterBasedForm() {
                     />
                 </Grid>
                 {substationAndVLFilters.length > 0 && (
-                    <Grid item container>
+                    <Grid item container xs>
                         <Grid item xs={6}>
                             <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
                                 <Table>
