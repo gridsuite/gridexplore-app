@@ -95,15 +95,15 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                 const currentSubEquipments: FilterSubEquipments[] = getValues(
                     ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER
                 );
-                const body = {
+                const filtersWithSubEquipments = {
                     filters: currentFilters.map((value) => ({ id: value.id })),
                     selectedEquipmentTypesByFilter: currentSubEquipments.map((value) => ({
-                        id: value.filterId,
+                        filterId: value.filterId,
                         equipmentTypes: value.subEquipmentTypes,
                     })),
                 };
                 setIsFetching(true);
-                getIdentifiablesFromFilters(studyId, body)
+                getIdentifiablesFromFilters(studyId, filtersWithSubEquipments)
                     .then((response: FilteredIdentifiables) => {
                         const SEPARATOR_TYPE = 'SEPARATOR';
                         const attributes: IdentifiableAttributes[] = [
@@ -167,12 +167,12 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
 
     return (
         <Grid item container direction="column" xs={3}>
-            <Grid item>
+            <Grid item xs={1}>
                 <Typography variant="h6">
                     <FormattedMessage id="visualization" />
                 </Typography>
             </Grid>
-            <Grid item container xs={2} alignItems="center" justifyContent="center">
+            <Grid item container xs={2} paddingY={1} alignItems="center" justifyContent="center">
                 <Grid item xs={1}>
                     <FolderOutlined />
                 </Grid>
@@ -197,7 +197,7 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                     />
                 </Grid>
             </Grid>
-            <Grid item xs={9}>
+            <Grid item xs>
                 <CustomAGGrid
                     columnDefs={colDef}
                     defaultColDef={defaultDef}
