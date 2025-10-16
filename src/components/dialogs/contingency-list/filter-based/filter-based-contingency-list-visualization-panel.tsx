@@ -220,11 +220,24 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Button onClick={scrollOnRowById}>
-                    <Alert severity="warning" sx={{ width: '100%' }}>
-                        {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
-                    </Alert>
-                </Button>
+                <Grid item>
+                    <Button
+                        onClick={scrollOnRowById}
+                        fullWidth
+                        sx={{
+                            padding: 0,
+                        }}
+                    >
+                        <Alert
+                            severity="warning"
+                            sx={{
+                                width: '100%',
+                            }}
+                        >
+                            {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
+                        </Alert>
+                    </Button>
+                </Grid>
             )}
             <Grid item xs>
                 <CustomAGGrid
