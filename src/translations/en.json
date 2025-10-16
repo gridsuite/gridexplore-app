@@ -199,5 +199,7 @@
     "restricted": "Restricted",
     "selectGroups": "Select one or more groups",
     "visualization": "Visualization",
-    "missingEquipmentsFromStudy": "Equipments missing from study"
+    "missingEquipmentsFromStudy": "Equipments missing from study",
+    "equipmentTypesByFilters": "Contingencies per equipment types in voltage levels & substations",
+    "reload": "Reload"
 }

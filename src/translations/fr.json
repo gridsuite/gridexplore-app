@@ -198,5 +198,7 @@
     "restricted": "Restreint",
     "selectGroups": "Sélectionner un ou plusieurs groupes",
     "visualization": "Visualisation",
-    "missingEquipmentsFromStudy": "Ouvrages absents de l'étude"
+    "missingEquipmentsFromStudy": "Ouvrages absents de l'étude",
+    "equipmentTypesByFilters": "Aléas par types d'ouvrage dans les postes et sites",
+    "reload": "Rafraîchir"
 }

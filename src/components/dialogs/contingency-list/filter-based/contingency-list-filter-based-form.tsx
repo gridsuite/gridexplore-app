@@ -171,7 +171,7 @@ export default function ContingencyListFilterBasedForm() {
 
     return (
         <Grid container spacing={2} sx={{ height: '100%' }}>
-            <Grid item container direction="column" xs={8} spacing={2}>
+            <Grid item container direction="column" xs={8} spacing={1}>
                 <Grid item>
                     <UniqueNameInput
                         name={FieldConstants.NAME}
@@ -185,6 +185,8 @@ export default function ContingencyListFilterBasedForm() {
                 </Grid>
                 <Grid item>
                     <FormattedMessage id="Filters" />
+                </Grid>
+                <Grid item>
                     <DirectoryItemsInput
                         titleId="FiltersListsSelection"
                         label=""
@@ -196,77 +198,82 @@ export default function ContingencyListFilterBasedForm() {
                     />
                 </Grid>
                 {substationAndVLFilters.length > 0 && (
-                    <Grid item container xs>
-                        <Grid item xs={6} marginRight={-0.08}>
-                            <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>
-                                                <FormattedMessage id="contingencyList.filterBased.filtersTableColumn" />
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {substationAndVLFilters.map((filterRow) => (
-                                            <TableRow
-                                                key={filterRow.id}
-                                                hover
-                                                onClick={() => handleFilterRowClick(filterRow.id, selectedFilterId)}
-                                                selected={filterRow.id === selectedFilterId}
-                                            >
-                                                <TableCell component="th" scope="row">
-                                                    {filterRow.name}
+                    <>
+                        <Grid item>
+                            <FormattedMessage id="equipmentTypesByFilters" />
+                        </Grid>
+                        <Grid item container xs>
+                            <Grid item xs={6} marginRight={-0.08}>
+                                <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <FormattedMessage id="contingencyList.filterBased.filtersTableColumn" />
                                                 </TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                        </TableHead>
+                                        <TableBody>
+                                            {substationAndVLFilters.map((filterRow) => (
+                                                <TableRow
+                                                    key={filterRow.id}
+                                                    hover
+                                                    onClick={() => handleFilterRowClick(filterRow.id, selectedFilterId)}
+                                                    selected={filterRow.id === selectedFilterId}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        {filterRow.name}
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
+                            <Grid item xs={6} marginLeft={-0.08}>
+                                <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>
+                                                    <FormattedMessage id="contingencyList.filterBased.subEquipmentsTableColumn" />
+                                                </TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {filterEquipmentTypes &&
+                                                Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
+                                                    (equipmentRow: FormEquipment) => {
+                                                        const isEquipmentSelected = filterEquipmentTypes.includes(
+                                                            equipmentRow.id
+                                                        );
+                                                        return (
+                                                            <TableRow
+                                                                key={equipmentRow.id}
+                                                                hover
+                                                                onClick={() =>
+                                                                    handleEquipmentRowClick(
+                                                                        equipmentRow.id,
+                                                                        isEquipmentSelected,
+                                                                        selectedFilterId
+                                                                    )
+                                                                }
+                                                                selected={isEquipmentSelected}
+                                                            >
+                                                                <TableCell padding="checkbox">
+                                                                    <Checkbox checked={isEquipmentSelected} />
+                                                                    <FormattedMessage id={equipmentRow.label} />
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        );
+                                                    }
+                                                )}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={6} marginLeft={-0.08}>
-                            <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>
-                                                <FormattedMessage id="contingencyList.filterBased.subEquipmentsTableColumn" />
-                                            </TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {filterEquipmentTypes &&
-                                            Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
-                                                (equipmentRow: FormEquipment) => {
-                                                    const isEquipmentSelected = filterEquipmentTypes.includes(
-                                                        equipmentRow.id
-                                                    );
-                                                    return (
-                                                        <TableRow
-                                                            key={equipmentRow.id}
-                                                            hover
-                                                            onClick={() =>
-                                                                handleEquipmentRowClick(
-                                                                    equipmentRow.id,
-                                                                    isEquipmentSelected,
-                                                                    selectedFilterId
-                                                                )
-                                                            }
-                                                            selected={isEquipmentSelected}
-                                                        >
-                                                            <TableCell padding="checkbox">
-                                                                <Checkbox checked={isEquipmentSelected} />
-                                                                <FormattedMessage id={equipmentRow.label} />
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    );
-                                                }
-                                            )}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Grid>
-                    </Grid>
+                    </>
                 )}
             </Grid>
             <Grid item>

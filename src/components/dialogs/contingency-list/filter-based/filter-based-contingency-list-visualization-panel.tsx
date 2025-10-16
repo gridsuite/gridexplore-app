@@ -17,13 +17,13 @@ import {
     ElementType,
     FieldConstants,
     getFilterEquipmentTypeLabel,
-    RefreshButton,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Button, ButtonProps, CircularProgress, Grid, Typography } from '@mui/material';
+import { Alert, Button, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
+import { DataTableOverlay } from './data-table-overlay';
 import {
     ContingencyFieldConstants,
     FilteredIdentifiables,
@@ -37,7 +37,6 @@ const separator = '/';
 const SEPARATOR_TYPE = 'SEPARATOR';
 
 const defaultDef: ColDef = {
-    flex: 1,
     resizable: false,
     sortable: false,
 };
@@ -50,10 +49,6 @@ interface RowData {
 const getRowId = (params: GetRowIdParams<RowData>) => {
     return params.data.id;
 };
-
-function Overlay({ loading, ...buttonProps }: Readonly<{ loading: boolean } & ButtonProps>) {
-    return loading ? <CircularProgress /> : <RefreshButton {...buttonProps} />;
-}
 
 export type FilterBasedContingencyListVisualizationPanelProps = {
     isDataOutdated: boolean;
@@ -92,12 +87,14 @@ export function FilterBasedContingencyListVisualizationPanel(
             cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
                 return data.id;
             },
+            flex: 3,
         },
         {
             headerName: intl.formatMessage({
                 id: FieldConstants.TYPE,
             }),
             field: FieldConstants.TYPE,
+            flex: 2,
         },
     ];
 
@@ -247,11 +244,11 @@ export function FilterBasedContingencyListVisualizationPanel(
                             children: intl.formatMessage({ id: 'missingFromStudy' }),
                             sx: {
                                 paddingLeft: 3,
-                            }
+                            },
                         });
                     }}
                     loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
-                    loadingOverlayComponent={Overlay}
+                    loadingOverlayComponent={DataTableOverlay}
                     loadingOverlayComponentParams={{
                         onClick: () => {
                             updateRowData(selectedStudyId);
