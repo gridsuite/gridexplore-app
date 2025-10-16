@@ -171,7 +171,7 @@ export function FilterBasedContingencyListVisualizationPanel(
         [updateRowData, getValues]
     );
 
-    const focusOnRowById = useCallback(() => {
+    const scrollOnRowById = useCallback(() => {
         if (gridRef.current?.api) {
             const { api } = gridRef.current;
             const rowNode = api.getRowNode(SEPARATOR_TYPE);
@@ -220,7 +220,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Button onClick={focusOnRowById}>
+                <Button onClick={scrollOnRowById}>
                     <Alert severity="warning" sx={{ width: '100%' }}>
                         {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
                     </Alert>
