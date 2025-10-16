@@ -90,11 +90,6 @@ export function FilterBasedContingencyListVisualizationPanel(
             }),
             field: FieldConstants.ID,
             cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                if (data.id === 'SEPARATOR' && data.type === '') {
-                    return SeparatorCellRenderer({
-                        value: intl.formatMessage({ id: 'missingFromStudy' }),
-                    });
-                }
                 return data.id;
             },
         },
@@ -246,6 +241,15 @@ export function FilterBasedContingencyListVisualizationPanel(
                     defaultColDef={defaultDef}
                     rowData={rowsData}
                     getRowId={getRowId}
+                    isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
+                    fullWidthCellRenderer={() => {
+                        return SeparatorCellRenderer({
+                            children: intl.formatMessage({ id: 'missingFromStudy' }),
+                            sx: {
+                                paddingLeft: 3,
+                            }
+                        });
+                    }}
                     loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
                     loadingOverlayComponent={Overlay}
                     loadingOverlayComponentParams={{
