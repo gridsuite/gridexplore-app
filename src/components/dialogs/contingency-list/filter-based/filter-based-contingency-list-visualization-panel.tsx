@@ -6,9 +6,10 @@
  */
 
 import { UUID } from 'node:crypto';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ColDef } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef, GetRowIdParams } from 'ag-grid-community';
 import { useFormContext } from 'react-hook-form';
 import {
     CustomAGGrid,
@@ -21,7 +22,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Button, ButtonProps, CircularProgress, Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import {
     ContingencyFieldConstants,
@@ -33,20 +34,37 @@ import {
 import { getIdentifiablesFromFilters } from '../../../../utils/rest-api';
 
 const separator = '/';
+const SEPARATOR_TYPE = 'SEPARATOR';
+
 const defaultDef: ColDef = {
     flex: 1,
     resizable: false,
     sortable: false,
 };
 
-export type VisualizationPanelProps = {
+interface RowData {
+    id: string;
+    type?: string;
+}
+
+const getRowId = (params: GetRowIdParams<RowData>) => {
+    return params.data.id;
+};
+
+function Overlay({ loading, ...buttonProps }: Readonly<{ loading: boolean } & ButtonProps>) {
+    return loading ? <CircularProgress /> : <RefreshButton {...buttonProps} />;
+}
+
+export type FilterBasedContingencyListVisualizationPanelProps = {
     isDataOutdated: boolean;
     setIsDataOutdated: (value: boolean) => void;
 };
 
-export function FilterBasedContingencyListVisualizationPanel(props: Readonly<VisualizationPanelProps>) {
+export function FilterBasedContingencyListVisualizationPanel(
+    props: Readonly<FilterBasedContingencyListVisualizationPanelProps>
+) {
     const { isDataOutdated, setIsDataOutdated } = props;
-
+    const gridRef = useRef<AgGridReact>(null);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const { getValues } = useFormContext();
@@ -105,7 +123,6 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                 setIsFetching(true);
                 getIdentifiablesFromFilters(studyId, filtersWithSubEquipments)
                     .then((response: FilteredIdentifiables) => {
-                        const SEPARATOR_TYPE = 'SEPARATOR';
                         const attributes: IdentifiableAttributes[] = [
                             ...response.equipmentIds.map((element: IdentifiableAttributes) => ({
                                 id: element.id,
@@ -154,24 +171,20 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
         [updateRowData, getValues]
     );
 
-    const shouldDisplayRefreshButton = selectedStudy?.length > 0 && isDataOutdated && !isFetching;
+    const focusOnRowById = useCallback(() => {
+        if (gridRef.current?.api) {
+            const { api } = gridRef.current;
+            const rowNode = api.getRowNode(SEPARATOR_TYPE);
 
-    const overlay = shouldDisplayRefreshButton
-        ? {
-              loadingOverlayComponent: RefreshButton,
-              loadingOverlayComponentParams: {
-                  onClick: () => {
-                      updateRowData(selectedStudyId);
-                  },
-                  size: 'large',
-              },
-          }
-        : {
-              loadingOverlayComponentParams: { disabled: true }, // disable the button when loading
-              // rendering another loadingOverlayComponent or overlayLoadingTemplate does not work
-          };
+            if (rowNode) {
+                api.ensureNodeVisible(rowNode, 'middle');
+            }
+        }
+    }, []);
 
     const hasMissingFromStudy = rowsData.some((row) => row.id === 'SEPARATOR' && row.type === '');
+
+    const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
     return (
         <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
@@ -187,8 +200,8 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                 </Grid>
                 <Grid item xs={7} fontWeight="bold" padding={1}>
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap>
-                            {selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy}
+                        <Typography noWrap title={studyName}>
+                            {studyName}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
@@ -207,15 +220,28 @@ export function FilterBasedContingencyListVisualizationPanel(props: Readonly<Vis
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Alert severity="warning">{intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}</Alert>
+                <Button onClick={focusOnRowById}>
+                    <Alert severity="warning" sx={{ width: '100%' }}>
+                        {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
+                    </Alert>
+                </Button>
             )}
             <Grid item xs>
                 <CustomAGGrid
+                    ref={gridRef}
                     columnDefs={colDef}
                     defaultColDef={defaultDef}
                     rowData={rowsData}
-                    loading={isFetching || shouldDisplayRefreshButton}
-                    {...overlay}
+                    getRowId={getRowId}
+                    loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
+                    loadingOverlayComponent={Overlay}
+                    loadingOverlayComponentParams={{
+                        onClick: () => {
+                            updateRowData(selectedStudyId);
+                        },
+                        size: 'large',
+                        loading: isFetching,
+                    }}
                 />
             </Grid>
         </Grid>
