@@ -8,6 +8,7 @@
 import {
     backendFetch,
     backendFetchJson,
+    backendFetchText,
     type CriteriaBasedData,
     ElementType,
     fetchEnv,
@@ -24,10 +25,8 @@ import {
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import type { UUID } from 'node:crypto';
-import { store } from '../redux/store';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { AppState } from '../redux/types';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import { HTTP_OK } from './UIconstants';
@@ -90,55 +89,6 @@ export enum PermissionType {
     READ = 'READ',
     WRITE = 'WRITE',
     MANAGE = 'MANAGE',
-}
-
-export function getToken(): Token | null {
-    const state: AppState = store.getState();
-    return state.user?.id_token ?? null;
-}
-
-function parseError(text: string) {
-    try {
-        return JSON.parse(text);
-    } catch (err) {
-        return null;
-    }
-}
-
-function handleError(response: Response): Promise<never> {
-    return response.text().then((text) => {
-        const errorName = 'HttpResponseError : ';
-        let error: ErrorWithStatus;
-        const errorJson = parseError(text);
-        if (errorJson?.status && errorJson?.error && errorJson?.message) {
-            error = new Error(`${errorName + errorJson.status} ${errorJson.error}, message : ${errorJson.message}`);
-            error.status = errorJson.status;
-        } else {
-            error = new Error(`${errorName + response.status} ${response.statusText}`);
-            error.status = response.status;
-        }
-        throw error;
-    });
-}
-
-function prepareRequest(init: InitRequest, token?: Token) {
-    if (!(typeof init === 'undefined' || typeof init === 'object')) {
-        throw new TypeError(`Argument 2 of backendFetch is not an object${typeof init}`);
-    }
-    const initCopy = { ...init };
-    initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ?? getToken();
-    initCopy.headers.append('Authorization', `Bearer ${tokenCopy}`);
-    return initCopy;
-}
-
-function safeFetch(url: Url, initCopy: RequestInit) {
-    return fetch(url, initCopy).then((response) => (response.ok ? response : handleError(response)));
-}
-
-export function backendFetchText(url: Url, init: InitRequest) {
-    const initCopy = prepareRequest(init);
-    return safeFetch(url, initCopy).then((safeResponse) => safeResponse.text());
 }
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
