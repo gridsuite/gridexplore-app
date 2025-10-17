@@ -86,7 +86,11 @@ export const getFilterBasedFormDataFromFetchedElement = (
     [FieldConstants.DESCRIPTION]: description,
     [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.FILTERS.id,
     [FieldConstants.FILTERS]: response.filters.map((filter: FilterAttributes) => {
-        return { id: filter.id, name: filter.name!, specificMetadata: { equipmentType: filter.equipmentType! } };
+        return {
+            id: filter.id,
+            name: filter.name ?? '',
+            specificMetadata: { equipmentType: filter.equipmentType ?? '' },
+        };
     }),
     [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER]: response.selectedEquipmentTypesByFilter.map((value) => ({
         [ContingencyFieldConstants.FILTER_ID]: value.filterId,
