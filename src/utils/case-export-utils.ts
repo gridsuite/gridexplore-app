@@ -7,7 +7,7 @@
 import { UUID } from 'node:crypto';
 import { getExportState, saveExportState } from '../redux/export-network-state';
 
-export function buildExportIdentifier({ caseUuid, exportUuid }: { caseUuid: UUID; exportUuid: UUID }): string {
+export function buildExportIdentifier({ caseUuid, exportUuid }: { caseUuid: UUID; exportUuid: String }): string {
     return `${caseUuid}|${exportUuid}`;
 }
 
