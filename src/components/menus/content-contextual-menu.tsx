@@ -31,6 +31,7 @@ import {
     PARAM_LANGUAGE,
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
+import { cleanLocalStorageForStudies } from 'utils/local-storage-utils';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
@@ -253,13 +254,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             setDeleteError('');
             // @ts-expect-error TODO: manage null case
             deleteElements(elementsUuids, selectedDirectory?.elementUuid)
-                .then(() => handleCloseDialog())
+                .then(() => {
+                    cleanLocalStorageForStudies(selectedElements);
+                    handleCloseDialog();
+                })
                 // show the error message and don't close the dialog
                 .catch((error) => {
                     handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, selectedElements, intl, snackError]
     );
 
     const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
