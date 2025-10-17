@@ -169,7 +169,7 @@ export function FilterBasedContingencyListVisualizationPanel(
             const rowNode = api.getRowNode(SEPARATOR_TYPE);
 
             if (rowNode) {
-                api.ensureNodeVisible(rowNode, 'middle');
+                api.ensureNodeVisible(rowNode, 'top');
             }
         }
     }, []);
