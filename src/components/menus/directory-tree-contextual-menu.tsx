@@ -138,7 +138,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error: CustomError) => {
-                            if (handleMaxElementsExceededError(error, snackError, intl)) {
+                            if (handleMaxElementsExceededError(error, snackError)) {
                                 return;
                             }
                             handlePasteError(error, intl, snackError);
@@ -344,13 +344,13 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (handleMoveDirectoryConflictError(error, snackError, intl)) {
+                    if (handleMoveDirectoryConflictError(error, snackError)) {
                         return;
                     }
-                    if (handleNotAllowedError(error, snackError, intl)) {
+                    if (handleNotAllowedError(error, snackError)) {
                         return;
                     }
-                    if (handleMoveNameConflictError(error, snackError, intl)) {
+                    if (handleMoveNameConflictError(error, snackError)) {
                         return;
                     }
                     const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
@@ -364,7 +364,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             }
             handleCloseDialog();
         },
-        [directory, handleCloseDialog, intl, snackError, treeData.mapData]
+        [directory, handleCloseDialog, snackError, treeData.mapData]
     );
 
     const renderDialog = () => {

@@ -63,20 +63,6 @@ export type InitRequest = HttpMethod | Partial<RequestInitExt>;
 
 export interface ErrorWithStatus extends Error {
     status?: number;
-    businessErrorCode?: string;
-    problemDetail?: BackendProblemDetail;
-}
-
-interface BackendProblemDetail {
-    type?: string;
-    title?: string;
-    status?: number;
-    detail?: string;
-    instance?: string;
-    businessErrorCode?: string;
-    server?: string;
-    timestamp?: string;
-    path?: string;
 }
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
@@ -119,63 +105,19 @@ function parseError(text: string) {
     }
 }
 
-const firstNonEmpty = (...values: Array<string | undefined | null>): string | undefined =>
-    values.find((value): value is string => typeof value === 'string' && value.trim().length > 0);
-
-const isProblemDetail = (value: unknown): value is BackendProblemDetail => {
-    if (!value || typeof value !== 'object') {
-        return false;
-    }
-    const candidate = value as BackendProblemDetail;
-    return (
-        typeof candidate.detail === 'string' ||
-        typeof candidate.title === 'string' ||
-        typeof candidate.businessErrorCode === 'string' ||
-        typeof candidate.status === 'number'
-    );
-};
-
-const isSpringErrorPayload = (value: unknown): value is { status?: number; error?: string; message?: string } => {
-    if (!value || typeof value !== 'object') {
-        return false;
-    }
-    const candidate = value as { status?: number; error?: string; message?: string };
-    return typeof candidate.error === 'string' && typeof candidate.message === 'string';
-};
-
 function handleError(response: Response): Promise<never> {
     return response.text().then((text) => {
+        const errorName = 'HttpResponseError : ';
+        let error: ErrorWithStatus;
         const errorJson = parseError(text);
-        const fallbackStatus = response.status;
-
-        if (isProblemDetail(errorJson)) {
-            const message =
-                firstNonEmpty(errorJson.detail, errorJson.title, response.statusText) ?? `${fallbackStatus}`;
-            const problemDetailError: ErrorWithStatus = new Error(message);
-            problemDetailError.status = errorJson.status ?? fallbackStatus;
-            if (typeof errorJson.businessErrorCode === 'string') {
-                problemDetailError.businessErrorCode = errorJson.businessErrorCode;
-            }
-            problemDetailError.problemDetail = errorJson;
-            throw problemDetailError;
+        if (errorJson?.status && errorJson?.error && errorJson?.message) {
+            error = new Error(`${errorName + errorJson.status} ${errorJson.error}, message : ${errorJson.message}`);
+            error.status = errorJson.status;
+        } else {
+            error = new Error(`${errorName + response.status} ${response.statusText}`);
+            error.status = response.status;
         }
-
-        if (isSpringErrorPayload(errorJson)) {
-            const status = errorJson.status ?? fallbackStatus;
-            const springErrorMessage = firstNonEmpty(errorJson.message, response.statusText) ?? `${status}`;
-            const springError: ErrorWithStatus = new Error(springErrorMessage);
-            springError.status = status;
-            throw springError;
-        }
-
-        const rawMessage = text.trim();
-        const fallbackMessage =
-            rawMessage.length > 0
-                ? rawMessage
-                : (firstNonEmpty(response.statusText, `${fallbackStatus}`) ?? `${fallbackStatus}`);
-        const fallbackError: ErrorWithStatus = new Error(fallbackMessage);
-        fallbackError.status = fallbackStatus;
-        throw fallbackError;
+        throw error;
     });
 }
 

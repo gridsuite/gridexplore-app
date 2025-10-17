@@ -198,7 +198,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
-                        if (handleMaxElementsExceededError(error, snackError, intl)) {
+                        if (handleMaxElementsExceededError(error, snackError)) {
                             return;
                         }
                         handleDuplicateError(error, activeElement, intl, snackError);

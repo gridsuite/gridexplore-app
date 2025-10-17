@@ -16,7 +16,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
-import { useIntl } from 'react-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'crypto';
 import { ObjectSchema } from 'yup';
@@ -71,7 +70,6 @@ export default function FilterBasedContingencyListDialog({
 }: Readonly<FilterBasedContingencyListProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
-    const intl = useIntl();
     const [isFetching, setIsFetching] = useState(!!id);
 
     const methods = useForm<ContingencyListFilterBasedFormData>({
@@ -129,7 +127,7 @@ export default function FilterBasedContingencyListDialog({
                 )
                     .then(() => closeAndClear())
                     .catch((error) => {
-                        if (handleNotAllowedError(error, snackError, intl)) {
+                        if (handleNotAllowedError(error, snackError)) {
                             return;
                         }
                         snackError({
@@ -147,7 +145,7 @@ export default function FilterBasedContingencyListDialog({
                 )
                     .then(() => closeAndClear())
                     .catch((error) => {
-                        if (handleNotAllowedError(error, snackError, intl)) {
+                        if (handleNotAllowedError(error, snackError)) {
                             return;
                         }
                         snackError({
@@ -158,7 +156,7 @@ export default function FilterBasedContingencyListDialog({
                     });
             }
         },
-        [activeDirectory, closeAndClear, id, intl, snackError]
+        [activeDirectory, closeAndClear, id, snackError]
     );
 
     const nameError = errors[FieldConstants.NAME];
