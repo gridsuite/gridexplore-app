@@ -32,7 +32,7 @@ export function useExportNotification() {
 
                     if (error) {
                         snackError({
-                            messageTxt: error,
+                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }),
                         });
                     } else {
                         downloadExportFile(exportUuid);
