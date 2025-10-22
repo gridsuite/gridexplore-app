@@ -10,12 +10,12 @@ import { useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import {
     Delete as DeleteIcon,
+    DownloadForOffline,
     DriveFileMove as DriveFileMoveIcon,
     FileDownload,
     TableView as TableViewIcon,
-    DownloadForOffline,
 } from '@mui/icons-material';
-import { ElementAttributes, ElementType, useSnackMessage, PARAM_DEVELOPER_MODE } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, PARAM_DEVELOPER_MODE, useSnackMessage } from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
@@ -45,7 +45,6 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
     const [directoryWritable, setDirectoryWritable] = useState(false);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-
     useEffect(() => {
         if (selectedDirectory !== null) {
             checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
