@@ -50,6 +50,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import {
+    buildSnackMessage,
     CustomError,
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
@@ -357,7 +358,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         ?.map((el) => el.elementName)
                         .join('/');
                     snackError({
-                        messageId: 'MovingDirectoryError',
+                        messageId: buildSnackMessage(error, 'MovingDirectoryError'),
                         messageValues: { elementPath: path },
                     });
                 });

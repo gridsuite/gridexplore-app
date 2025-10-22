@@ -21,7 +21,11 @@ export interface ErrorMessageByHttpError {
 
 export interface CustomError extends Error {
     status: number;
+    businessErrorCode?: string;
 }
+
+export const buildSnackMessage = (error: CustomError, fallbackMessage: string): string =>
+    error.businessErrorCode != null ? error.businessErrorCode : fallbackMessage;
 
 export type SnackError = UseSnackMessageReturn['snackError'];
 
@@ -56,7 +60,7 @@ export const handleMaxElementsExceededError = (error: CustomError, snackError: S
         const limit = error.message.split(/[: ]+/).pop();
         if (limit) {
             snackError({
-                messageId: 'maxElementExceededError',
+                messageId: buildSnackMessage(error, 'maxElementExceededError'),
                 messageValues: { limit },
             });
             return true;
@@ -72,7 +76,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
             error.message.includes(permissionCheckResult)
         )
     ) {
-        snackError({ messageId: 'genericPermissionDeniedError' });
+        snackError({ messageId: buildSnackMessage(error, 'genericPermissionDeniedError') });
         return true;
     }
     return false;
@@ -80,7 +84,7 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
 
 export const handleMoveDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        snackError({ messageId: 'moveConflictError' });
+        snackError({ messageId: buildSnackMessage(error, 'moveConflictError') });
         return true;
     }
     return false;
@@ -88,7 +92,7 @@ export const handleMoveDirectoryConflictError = (error: CustomError, snackError:
 
 export const handleMoveNameConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_CONFLICT) {
-        snackError({ messageId: 'moveNameConflictError' });
+        snackError({ messageId: buildSnackMessage(error, 'moveNameConflictError') });
         return true;
     }
     return false;
@@ -96,7 +100,7 @@ export const handleMoveNameConflictError = (error: CustomError, snackError: Snac
 
 export const handleDeleteDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
     if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
-        snackError({ messageId: 'deleteConflictError' });
+        snackError({ messageId: buildSnackMessage(error, 'deleteConflictError') });
         return true;
     }
     return false;
@@ -107,7 +111,10 @@ export const handlePasteError = (error: CustomError, intl: IntlShape, snackError
     if (message) {
         handleGenericTxtError(message, snackError);
     } else {
-        handleGenericTxtError(intl.formatMessage({ id: 'elementPasteFailed' }) + (error?.message ?? ''), snackError);
+        handleGenericTxtError(
+            intl.formatMessage({ id: buildSnackMessage(error, 'elementPasteFailed') }) + (error?.message ?? ''),
+            snackError
+        );
     }
 };
 
@@ -118,13 +125,13 @@ export const handleDeleteError = (
     snackError: SnackError
 ) => {
     if (handleDeleteDirectoryConflictError(error, snackError)) {
-        setDeleteError(intl.formatMessage({ id: 'deleteConflictError' }));
+        setDeleteError(intl.formatMessage({ id: buildSnackMessage(error, 'deleteConflictError') }));
         return;
     }
 
     let message = generateGenericPermissionErrorMessages(intl)[error.status];
     if (message) {
-        snackError({ messageId: message });
+        snackError({ messageId: buildSnackMessage(error, message) });
     } else {
         message = error.message;
         handleGenericTxtError(message, snackError);
@@ -169,7 +176,7 @@ export const handleDuplicateError = (
     }
     handleGenericTxtError(
         intl.formatMessage(
-            { id: 'duplicateElementFailure' },
+            { id: buildSnackMessage(error, 'duplicateElementFailure') },
             {
                 itemName: activeElement.elementName,
                 errorMessage: error.message,
