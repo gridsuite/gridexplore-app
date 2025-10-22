@@ -8,7 +8,7 @@
 import { IntlShape } from 'react-intl';
 import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
@@ -28,7 +28,7 @@ export const formatMetadata = (
 });
 
 export const computeCheckedElements = (
-    gridRef: MutableRefObject<AgGridReact | null>,
+    gridRef: RefObject<AgGridReact | null>,
     childrenMetadata: Record<UUID, ElementAttributes>
 ): ElementAttributes[] =>
     gridRef.current?.api?.getSelectedRows().map((row: ElementAttributes) => formatMetadata(row, childrenMetadata)) ??

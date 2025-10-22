@@ -112,7 +112,7 @@ export default function TreeViewsContainer() {
 
     const treeData = useSelector((state: AppState) => state.treeData);
 
-    const treeDataRef = useRef<ITreeData>();
+    const treeDataRef = useRef<ITreeData>(null);
     treeDataRef.current = treeData;
 
     const handleOpenDirectoryMenu = useCallback(

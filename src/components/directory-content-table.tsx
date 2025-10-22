@@ -25,7 +25,7 @@ import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
 export interface DirectoryContentTableProps
     extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
-    gridRef: RefObject<AgGridReact<ElementAttributes>>;
+    gridRef: RefObject<AgGridReact<ElementAttributes> | null>;
     rows: ElementAttributes[];
     handleCellContextualMenu: (event: CellContextMenuEvent) => void;
     handleRowSelected: () => void;
