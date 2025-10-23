@@ -25,6 +25,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
     PARAM_LANGUAGE,
+    CustomError,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
@@ -51,7 +52,6 @@ import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import {
     buildSnackMessage,
-    CustomError,
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,

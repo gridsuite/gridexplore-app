@@ -11,17 +11,12 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import { CustomError, ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
 
 export interface ErrorMessageByHttpError {
     [httpCode: string]: string;
-}
-
-export interface CustomError extends Error {
-    status: number;
-    businessErrorCode?: string;
 }
 
 export const buildSnackMessage = (error: CustomError, fallbackMessage: string): string =>
