@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 import { useController, useWatch } from 'react-hook-form';
 import AdvancedParameterButton from './advancedParameterButton';
 
-// FIXME: To be removed when gridsuite supports subnetworks.
+// FIXME: To be removed when gridsuite supports subnetworks for cgmes params. To decide what we do with included vs excluded extensions.
 const IGNORED_PARAMS = [
     'iidm.import.cgmes.cgm-with-subnetworks',
     'iidm.import.cgmes.cgm-with-subnetworks-defined-by',
