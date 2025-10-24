@@ -44,20 +44,11 @@ const STRING_LIST = 'STRING_LIST';
 function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
     return params.reduce(
         (obj, parameter) => {
-            // we check if the parameter is for extensions. If so, we select by default :
-            // . all possible values, if this is the parameter for included extensions
-            // . no values, if this is the parameter for excluded extensions
-            // because these 2 parameters are exclusive and can't be used together (see getAndCheckExtensionsToInclude in powsybl-core)
+            // we check if the parameter is for extensions. If so, we select all possible values by default.
             // the only way for the moment to check if the parameter is for extension, is by checking his name.
             // TODO: implement a cleaner way to determine the extensions field
-            if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
-                return {
-                    ...obj,
-                    [parameter.name]:
-                        parameter.name === 'iidm.import.xml.included.extensions'
-                            ? parameter.possibleValues.toString()
-                            : '',
-                };
+            if (parameter.type === STRING_LIST && parameter.name?.endsWith('included.extensions')) {
+                return { ...obj, [parameter.name]: parameter.possibleValues.toString() };
             }
             return obj;
         },
