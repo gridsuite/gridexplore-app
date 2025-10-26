@@ -735,10 +735,11 @@ export const fetchConvertedCase = (
     format: string,
     formatParameters: unknown,
     abortController: AbortController
-) =>
-    backendFetchText(
+): Promise<UUID> =>
+    backendFetchJson(
         `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
         {
+            method: 'post',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(formatParameters),
             signal: abortController.signal,

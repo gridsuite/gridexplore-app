@@ -115,10 +115,7 @@ export function useDownloadUtils() {
                     abortController2
                 );
 
-                const identifier = buildExportIdentifier({
-                    caseUuid: caseElement.elementUuid,
-                    exportUuid,
-                });
+                const identifier = buildExportIdentifier(exportUuid);
                 setExportSubscription(identifier);
                 snackInfo({
                     messageTxt: intl.formatMessage({ id: 'export.message.started' }),

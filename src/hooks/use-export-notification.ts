@@ -20,12 +20,9 @@ export function useExportNotification() {
     const handleExportNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            if (eventData?.headers?.notificationType === 'caseExportSucceeded') {
-                const { caseUuid, userId, exportUuid, error } = eventData.headers;
-                const exportIdentifierNotif = buildExportIdentifier({
-                    caseUuid,
-                    exportUuid,
-                });
+            if (eventData?.headers?.notificationType === 'caseExportFinished') {
+                const { userId, exportUuid, error } = eventData.headers;
+                const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
                 if (isSubscribed && userIdProfile === userId) {
                     unsetExportSubscription(exportIdentifierNotif);

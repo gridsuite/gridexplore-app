@@ -4,11 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'node:crypto';
 import { getExportState, saveExportState } from '../redux/export-network-state';
 
-export function buildExportIdentifier({ caseUuid, exportUuid }: { caseUuid: UUID; exportUuid: String }): string {
-    return `${caseUuid}|${exportUuid}`;
+export function buildExportIdentifier(exportUuid: string): string {
+    return `${exportUuid}`;
 }
 
 export function setExportSubscription(identifier: string): void {
