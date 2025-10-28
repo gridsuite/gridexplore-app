@@ -16,6 +16,7 @@ const IGNORED_PARAMS = [
     'iidm.import.cgmes.cgm-with-subnetworks',
     'iidm.import.cgmes.cgm-with-subnetworks-defined-by',
     'iidm.import.xml.excluded.extensions',
+    'iidm.die.excluded-extensions',
 ];
 
 export default function ImportParametersSection() {
