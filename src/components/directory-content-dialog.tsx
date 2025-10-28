@@ -37,7 +37,6 @@ import { useIntl } from 'react-intl';
 import { getFilterById, updateElement } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
-import CriteriaBasedEditionDialog from './dialogs/contingency-list/edition/criteria-based/criteria-based-edition-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming/explicit-naming-edition-dialog';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import * as constants from '../utils/UIconstants';
@@ -104,15 +103,6 @@ function DirectoryContentDialog(
         setActiveElement(undefined);
         setOpenDescModificationDialog(false);
     }, [setActiveElement]);
-
-    /* Filters contingency list dialog: window status value for editing a filters contingency list */
-    const [currentFiltersContingencyListId, setCurrentFiltersContingencyListId] = useState<UUID>();
-    const handleCloseFiltersContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setCurrentFiltersContingencyListId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
 
     /* Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list */
     const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState<UUID>();
@@ -198,10 +188,7 @@ function DirectoryContentDialog(
                             break;
                         }
                         case ElementType.CONTINGENCY_LIST:
-                            if (subtype === ContingencyListType.CRITERIA_BASED.id) {
-                                setCurrentFiltersContingencyListId(event.data.elementUuid);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
+                            if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
                                 setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
                                 setOpenDialog(subtype);
                             } else if (subtype === ContingencyListType.FILTERS.id) {
@@ -274,20 +261,6 @@ function DirectoryContentDialog(
                 name={elementName}
                 description={elementDescription}
                 broadcastChannel={broadcastChannel}
-            />
-        );
-    }
-    if (currentFiltersContingencyListId !== undefined && activeElement) {
-        return (
-            <CriteriaBasedEditionDialog
-                open
-                titleId="editContingencyList"
-                contingencyListId={currentFiltersContingencyListId}
-                contingencyListType={ContingencyListType.CRITERIA_BASED.id}
-                onClose={handleCloseFiltersContingency}
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                description={activeElement.description}
             />
         );
     }

@@ -238,9 +238,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     icon: <AddIcon fontSize="small" data-testid="CreateNewContingencyListIcon" />,
                     subMenuItems: [
                         {
-                            messageDescriptorId: 'contingencyList.criteriaBasedOrExplicitNaming',
-                            callback: () =>
-                                handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_OR_CRITERIA_BASED_CONTINGENCY_LIST),
+                            messageDescriptorId: 'contingencyList.explicitNaming',
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST),
                             icon: null,
                         },
                         {
@@ -372,7 +371,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
                 return <CreateStudyForm open onClose={handleCloseDialog} />;
-            case DialogsId.ADD_NEW_EXPLICIT_NAMING_OR_CRITERIA_BASED_CONTINGENCY_LIST:
+            case DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST:
                 return (
                     <ContingencyListCreationDialog
                         open

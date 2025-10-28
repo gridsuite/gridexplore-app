@@ -17,7 +17,6 @@ const BackendLocaleFr = {
     EXPERT_FILTER: 'Filtre (Par critères)',
     FORM_FILTER: 'Filtre (Formulaire)',
     IDENTIFIERS_CONTINGENCY_LIST: "Liste d'aléas (Par nommage)",
-    FORM_CONTINGENCY_LIST: "Liste d'aléas (Par critères)",
     FILTERS_CONTINGENCY_LIST: "Liste d'aléas (Par filtres)",
     IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
 

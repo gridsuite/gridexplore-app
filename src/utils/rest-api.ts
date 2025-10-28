@@ -9,10 +9,8 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    type CriteriaBasedData,
     ElementType,
     fetchEnv,
-    FieldConstants,
     getRequestParamFromList,
     getUserToken,
     type GsLang,
@@ -93,8 +91,6 @@ export enum PermissionType {
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
     switch (contingencyListType) {
-        case ContingencyListType.CRITERIA_BASED.id:
-            return CONTINGENCY_ENDPOINTS.FORM_CONTINGENCY_LISTS;
         case ContingencyListType.EXPLICIT_NAMING.id:
             return CONTINGENCY_ENDPOINTS.IDENTIFIER_CONTINGENCY_LISTS;
         case ContingencyListType.FILTERS.id:
@@ -538,13 +534,6 @@ export function getIdentifiablesFromFilters(
     });
 }
 
-export interface CriteriaBasedEditionFormData {
-    [FieldConstants.NAME]: string;
-    [FieldConstants.DESCRIPTION]?: string;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
-    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
-}
-
 /**
  * Get the basic data of the network modifications contained in a composite modification
  */
@@ -567,30 +556,6 @@ export function saveCompositeModification(id: string, moidificationUuids: UUID[]
         method: 'put',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(moidificationUuids),
-    });
-}
-
-/**
- * Saves a Filter contingency list
- * @returns {Promise<Response>}
- */
-export function saveCriteriaBasedContingencyList(id: string, form: CriteriaBasedEditionFormData) {
-    const { name, description, equipmentType, criteriaBased } = form;
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('description', description ?? '');
-    urlSearchParams.append('contingencyListType', ContingencyListType.CRITERIA_BASED.id);
-
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/contingency-lists/${id}?${urlSearchParams.toString()}`;
-
-    return backendFetch(url, {
-        method: 'put',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            ...criteriaBased,
-            equipmentType,
-            nominalVoltage1: criteriaBased?.nominalVoltage1 ?? -1,
-        }),
     });
 }
 
