@@ -25,6 +25,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
     PARAM_LANGUAGE,
+    CustomError,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
@@ -50,7 +51,7 @@ import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import {
-    CustomError,
+    buildSnackMessage,
     generateGenericPermissionErrorMessages,
     generateRenameErrorMessages,
     handleDeleteError,
@@ -357,7 +358,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         ?.map((el) => el.elementName)
                         .join('/');
                     snackError({
-                        messageId: 'MovingDirectoryError',
+                        messageId: buildSnackMessage(error, 'MovingDirectoryError'),
                         messageValues: { elementPath: path },
                     });
                 });
