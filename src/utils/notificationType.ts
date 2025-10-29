@@ -19,12 +19,12 @@ export interface ExportCaseEventData {
 }
 
 interface ExportCaseEventDataHeaders {
-    updateType: NotificationType.CASE_EXPORT_FINISHED;
+    notificationType: NotificationType.CASE_EXPORT_FINISHED;
     userId: string;
     exportUuid: UUID;
     error: string | null;
 }
 
 export function isExportCaseNotification(notif: unknown): notif is ExportCaseEventData {
-    return (notif as ExportCaseEventData).headers?.updateType === NotificationType.CASE_EXPORT_FINISHED;
+    return (notif as ExportCaseEventData).headers?.notificationType === NotificationType.CASE_EXPORT_FINISHED;
 }
