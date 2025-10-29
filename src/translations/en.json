@@ -202,7 +202,7 @@
     "missingEquipmentsFromStudy": "Equipments missing from study",
     "equipmentTypesByFilters": "Contingencies per equipment types in voltage levels & substations",
     "reload": "Reload",
-    "export.message.started": "Export file started",
-    "export.message.succeeded": "Export file succeeded",
-    "export.message.failed": "export file failed"
+    "export.message.started": "Export {fileName} started",
+    "export.message.succeeded": "Export {fileName} succeeded",
+    "export.message.failed": "Export file failed {error}"
 }

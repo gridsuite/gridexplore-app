@@ -10,10 +10,10 @@ import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/comm
 import { useCallback, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
+    convertedCase,
     downloadCase,
     downloadSpreadsheetConfig,
     downloadSpreadsheetConfigCollection,
-    fetchConvertedCase,
 } from '../../utils/rest-api';
 import { buildExportIdentifier, setExportSubscription } from '../../utils/case-export-utils';
 
@@ -107,7 +107,7 @@ export function useDownloadUtils() {
             fileName?: string
         ): Promise<void> => {
             try {
-                const exportUuid = await fetchConvertedCase(
+                const exportUuid = await convertedCase(
                     caseElement.elementUuid,
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
@@ -118,13 +118,16 @@ export function useDownloadUtils() {
                 const identifier = buildExportIdentifier(exportUuid);
                 setExportSubscription(identifier);
                 snackInfo({
-                    messageTxt: intl.formatMessage({ id: 'export.message.started' }),
+                    messageTxt: intl.formatMessage(
+                        { id: 'export.message.started' },
+                        { fileName: fileName || caseElement.elementName }
+                    ),
                 });
             } catch (error: any) {
                 if (error.name === 'AbortError') {
                     throw error;
                 }
-                handleDownloadError(caseElement, error.message || 'Export failed');
+                handleDownloadError(caseElement, error.message ?? String(error));
             }
         },
         [handleDownloadError, intl, snackInfo]

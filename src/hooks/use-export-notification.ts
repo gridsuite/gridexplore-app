@@ -11,16 +11,17 @@ import { useCallback } from 'react';
 import { AppState } from '../redux/types';
 import { buildExportIdentifier, isExportSubscribed, unsetExportSubscription } from '../utils/case-export-utils';
 import { useExportDownload } from './use-export-download';
+import { isExportCaseNotification } from '../utils/notificationType';
 
 export function useExportNotification() {
     const intl = useIntl();
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const { downloadExportFile } = useExportDownload();
     const userIdProfile = useSelector((state: AppState) => state.user?.profile.sub);
     const handleExportNotification = useCallback(
         (event: MessageEvent<string>) => {
             const eventData = JSON.parse(event.data);
-            if (eventData?.headers?.notificationType === 'caseExportFinished') {
+            if (isExportCaseNotification(eventData)) {
                 const { userId, exportUuid, error } = eventData.headers;
                 const exportIdentifierNotif = buildExportIdentifier(exportUuid);
                 const isSubscribed = isExportSubscribed(exportIdentifierNotif);
@@ -29,18 +30,15 @@ export function useExportNotification() {
 
                     if (error) {
                         snackError({
-                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }),
+                            messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error }),
                         });
                     } else {
                         downloadExportFile(exportUuid);
-                        snackInfo({
-                            messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }),
-                        });
                     }
                 }
             }
         },
-        [userIdProfile, snackError, downloadExportFile, snackInfo, intl]
+        [userIdProfile, snackError, downloadExportFile, intl]
     );
 
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, { listenerCallbackMessage: handleExportNotification });

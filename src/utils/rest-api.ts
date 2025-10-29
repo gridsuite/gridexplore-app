@@ -729,7 +729,7 @@ export function deleteCase(caseUuid: UUID) {
     });
 }
 
-export const fetchConvertedCase = (
+export const convertedCase = (
     caseUuid: UUID,
     fileName: string,
     format: string,

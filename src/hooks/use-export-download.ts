@@ -8,18 +8,20 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { UUID } from 'node:crypto';
+import { useIntl } from 'react-intl';
 import { triggerDownload } from '../components/utils/downloadUtils';
 import { fetchExportNetworkFile } from '../utils/rest-api';
 
 export function useExportDownload() {
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
+    const intl = useIntl();
 
     const downloadExportFile = useCallback(
         (exportUuid: UUID) => {
+            let filename = 'export.zip';
             fetchExportNetworkFile(exportUuid)
                 .then(async (response) => {
                     const contentDisposition = response.headers.get('Content-Disposition');
-                    let filename = 'export.zip';
                     if (contentDisposition?.includes('filename=')) {
                         const regex = /filename="?([^"]+)"?/;
                         const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
@@ -33,12 +35,16 @@ export function useExportDownload() {
                 })
                 .catch((error: Error) => {
                     snackError({
-                        messageTxt: error.message,
-                        headerId: 'export.message.failed',
+                        messageTxt: intl.formatMessage({ id: 'export.message.failed' }, { error: error.message }),
+                    });
+                })
+                .finally(() => {
+                    snackInfo({
+                        messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
                     });
                 });
         },
-        [snackError]
+        [intl, snackError, snackInfo]
     );
     return { downloadExportFile };
 }
