@@ -96,15 +96,11 @@ export const getExplicitNamingFormDataFromFetchedElement = (response: any, name:
 };
 
 export const getFormContent = (contingencyListId: string | null, contingencyList: ContingencyListFormData) => {
-    switch (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]) {
-        case ContingencyListType.EXPLICIT_NAMING.id: {
-            return prepareContingencyListForBackend(contingencyListId, contingencyList);
-        }
-        default: {
-            console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
-            return null;
-        }
+    if (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] === ContingencyListType.EXPLICIT_NAMING.id) {
+        return prepareContingencyListForBackend(contingencyListId, contingencyList);
     }
+    console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
+    return null;
 };
 
 export function isSubstationOrVoltageLevelFilter(filter: FilterElement) {
