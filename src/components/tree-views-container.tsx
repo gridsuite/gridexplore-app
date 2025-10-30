@@ -112,11 +112,10 @@ export default function TreeViewsContainer() {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
 
     const treeData = useSelector((state: AppState) => state.treeData);
+    const { handleExportNotification } = useExportNotification();
 
     const treeDataRef = useRef<ITreeData>();
     treeDataRef.current = treeData;
-
-    useExportNotification();
 
     const handleOpenDirectoryMenu = useCallback(
         (event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>) => {
@@ -444,10 +443,10 @@ export default function TreeViewsContainer() {
                 handleUserMessage(eventData);
                 return;
             }
-
+            handleExportNotification(eventData);
             dispatch(directoryUpdated(eventData));
         },
-        [dispatch, handleUserMessage]
+        [dispatch, handleUserMessage, handleExportNotification]
     );
 
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {

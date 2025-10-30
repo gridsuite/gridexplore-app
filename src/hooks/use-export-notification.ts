@@ -42,4 +42,6 @@ export function useExportNotification() {
     );
 
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, { listenerCallbackMessage: handleExportNotification });
+
+    return { handleExportNotification };
 }
