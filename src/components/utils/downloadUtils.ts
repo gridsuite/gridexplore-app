@@ -10,7 +10,7 @@ import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/comm
 import { useCallback, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
-    convertedCase,
+    convertCase,
     downloadCase,
     downloadSpreadsheetConfig,
     downloadSpreadsheetConfigCollection,
@@ -107,7 +107,7 @@ export function useDownloadUtils() {
             fileName?: string
         ): Promise<void> => {
             try {
-                const exportUuid = await convertedCase(
+                const exportUuid = await convertCase(
                     caseElement.elementUuid,
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
