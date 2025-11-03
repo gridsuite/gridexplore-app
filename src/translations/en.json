@@ -189,6 +189,7 @@
     "deleteConflictError": "You cannot delete this folder since it contains at least one subfolder for which you do not have write permission",
     "properties": "Properties",
     "directoryProperties": "Directory Properties: {name}",
+    "directoryOwner": "Owner: {owner}",
     "directoryPermissions": "Manage access",
     "directoryPermissionsViewOnly": "You can view but not modify the permissions of this directory",
     "directoryPermissionsFetchError": "Error while fetching directory permissions",
