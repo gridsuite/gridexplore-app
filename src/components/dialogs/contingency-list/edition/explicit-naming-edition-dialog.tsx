@@ -22,11 +22,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
     getContingencyListEmptyFormData,
     getExplicitNamingFormDataFromFetchedElement,
-} from '../../contingency-list-utils';
-import ExplicitNamingEditionForm from './explicit-naming-edition-form';
-import { setItemSelectionForCopy } from '../../../../../redux/actions';
-import { AppState } from '../../../../../redux/types';
-import { getExplicitNamingEditSchema } from '../../explicit-naming/explicit-naming-utils';
+} from '../contingency-list-utils';
+import { setItemSelectionForCopy } from '../../../../redux/actions';
+import { AppState } from '../../../../redux/types';
+import { getExplicitNamingEditSchema } from '../explicit-naming/explicit-naming-utils';
+import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
@@ -147,7 +147,7 @@ export default function ExplicitNamingEditionDialog({
             isDataFetching={isFetching}
             unscrollableFullHeight
         >
-            {!isFetching && <ExplicitNamingEditionForm />}
+            {!isFetching && <ExplicitNamingForm />}
         </CustomMuiDialog>
     );
 }

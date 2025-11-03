@@ -17,12 +17,12 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import ContingencyListCreationForm from './contingency-list-creation-form';
 import { ContingencyListFormData, getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
+import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -34,17 +34,17 @@ const schema = yup.object().shape({
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-export interface ContingencyListCreationDialogProps {
+export interface ExplicitNamingCreationDialogProps {
     onClose: () => void;
     open: boolean;
     titleId: string;
 }
 
-export default function ContingencyListCreationDialog({
+export default function ExplicitNamingCreationDialog({
     onClose,
     open,
     titleId,
-}: Readonly<ContingencyListCreationDialogProps>) {
+}: Readonly<ExplicitNamingCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
@@ -103,7 +103,7 @@ export default function ContingencyListCreationDialog({
             language={languageLocal}
             unscrollableFullHeight
         >
-            <ContingencyListCreationForm />
+            <ExplicitNamingForm />
         </CustomMuiDialog>
     );
 }

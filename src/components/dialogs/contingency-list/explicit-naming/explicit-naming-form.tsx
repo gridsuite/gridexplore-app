@@ -8,13 +8,24 @@
 import { useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { v4 as uuid4 } from 'uuid';
-import { CustomAgGridTable, FieldConstants, PARAM_LANGUAGE } from '@gridsuite/commons-ui';
+import {
+    CustomAgGridTable,
+    DescriptionField,
+    ElementType,
+    FieldConstants,
+    PARAM_LANGUAGE,
+    UniqueNameInput,
+    unscrollableDialogStyles,
+} from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
+import { Box } from '@mui/material';
+import { useSelector } from 'react-redux';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
 import { AGGRID_LOCALES } from '../../../../translations/not-intl/aggrid-locales';
 import { manageContingencyName } from './explicit-naming-utils';
 import { useParameterState } from '../../use-parameters-dialog';
+import { AppState } from '../../../../redux/types';
 
 const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
     const { key } = params.event;
@@ -23,6 +34,7 @@ const suppressKeyboardEvent = (params: SuppressKeyboardEventParams) => {
 
 export default function ExplicitNamingForm() {
     const intl = useIntl();
+    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const columnDefs = useMemo<ColDef[]>(
         () => [
@@ -94,35 +106,46 @@ export default function ExplicitNamingForm() {
     );
 
     return (
-        <CustomAgGridTable
-            name={FieldConstants.EQUIPMENT_TABLE}
-            columnDefs={columnDefs}
-            makeDefaultRowData={makeDefaultRowData}
-            pagination
-            paginationPageSize={100}
-            rowSelection={{
-                mode: 'multiRow',
-                enableClickSelection: false,
-                checkboxes: true,
-                headerCheckbox: true,
-            }}
-            defaultColDef={defaultColDef}
-            alwaysShowVerticalScroll
-            stopEditingWhenCellsLoseFocus
-            csvProps={{
-                fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
-                fileHeaders: csvFileHeaders,
-                getDataFromCsv: getDataFromCsvFile,
-                csvData: csvInitialData,
-                language: languageLocal,
-            }}
-            cssProps={{
-                padding: 1,
-                '& .ag-root-wrapper-body': {
-                    maxHeight: 'unset',
-                },
-            }}
-            overrideLocales={AGGRID_LOCALES}
-        />
+        <>
+            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+                <UniqueNameInput
+                    name={FieldConstants.NAME}
+                    label="nameProperty"
+                    elementType={ElementType.CONTINGENCY_LIST}
+                    activeDirectory={activeDirectory}
+                />
+                <DescriptionField />
+            </Box>
+            <CustomAgGridTable
+                name={FieldConstants.EQUIPMENT_TABLE}
+                columnDefs={columnDefs}
+                makeDefaultRowData={makeDefaultRowData}
+                pagination
+                paginationPageSize={100}
+                rowSelection={{
+                    mode: 'multiRow',
+                    enableClickSelection: false,
+                    checkboxes: true,
+                    headerCheckbox: true,
+                }}
+                defaultColDef={defaultColDef}
+                alwaysShowVerticalScroll
+                stopEditingWhenCellsLoseFocus
+                csvProps={{
+                    fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
+                    fileHeaders: csvFileHeaders,
+                    getDataFromCsv: getDataFromCsvFile,
+                    csvData: csvInitialData,
+                    language: languageLocal,
+                }}
+                cssProps={{
+                    padding: 1,
+                    '& .ag-root-wrapper-body': {
+                        maxHeight: 'unset',
+                    },
+                }}
+                overrideLocales={AGGRID_LOCALES}
+            />
+        </>
     );
 }
