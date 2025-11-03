@@ -193,6 +193,10 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                     ) : (
                         <Box sx={{ mt: 2 }}>
                             <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                                <FormattedMessage id="directoryOwner" values={{ owner: directory?.owner }} />
+                            </Typography>
+
+                            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
                                 <FormattedMessage id="directoryPermissions" />
                             </Typography>
 

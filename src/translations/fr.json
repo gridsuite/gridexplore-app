@@ -186,6 +186,7 @@
     "deleteConflictError": "Vous ne pouvez pas supprimer ce dossier puisqu'il contient au moins un sous-dossier pour lequel vous n'avez pas les droits d'écriture.",
     "properties": "Propriétés",
     "directoryProperties": "Propriétés du dossier: {name}",
+    "directoryOwner": "Propriétaire: {owner}",
     "directoryPermissions": "Gestion d'accès",
     "directoryPermissionsViewOnly": "Vous pouvez voir mais pas modifier les permissions pour ce dossier",
     "directoryPermissionsFetchError": "Erreur lors de la récupération des permissions du dossier",
