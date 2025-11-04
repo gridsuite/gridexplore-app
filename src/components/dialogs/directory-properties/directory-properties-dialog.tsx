@@ -25,6 +25,7 @@ import {
     hasManagePermission,
     PermissionDTO,
     PermissionType,
+    fetchUsersIdentities,
 } from '../../../utils/rest-api';
 import {
     Group,
@@ -50,6 +51,7 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
     const [loading, setLoading] = useState(true);
     const [groups, setGroups] = useState<Group[]>([]);
     const [canManage, setCanManage] = useState(false);
+    const [directoryOwnerIdentity, setDirectoryOwnerIdentity] = useState<string | undefined>(directory?.owner);
 
     const methods = useForm<PermissionForm>({
         defaultValues: emptyForm,
@@ -119,11 +121,32 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
         }
     }, [directory?.elementUuid, snackError, reset]);
 
+    const fetchDirectoryOwnerIdentity = useCallback(async () => {
+        if (!directory?.owner || !directory?.elementUuid) return;
+
+        fetchUsersIdentities([directory.elementUuid])
+            .then((res) => {
+                if (res?.data?.[directory.owner]?.firstName && res?.data?.[directory.owner]?.lastName) {
+                    setDirectoryOwnerIdentity(
+                        `${res?.data?.[directory.owner]?.firstName} ${res?.data?.[directory.owner]?.lastName}`
+                    );
+                }
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'directoryOwnerIdentityFetchError',
+                });
+                setDirectoryOwnerIdentity(undefined);
+            });
+    }, [directory?.owner, directory?.elementUuid, snackError]);
+
     useEffect(() => {
         if (open && directory) {
             fetchData();
+            fetchDirectoryOwnerIdentity();
         }
-    }, [open, directory, fetchData]);
+    }, [open, directory, fetchData, fetchDirectoryOwnerIdentity]);
 
     const handleClose = useCallback(() => {
         reset(emptyForm);
@@ -193,7 +216,7 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                     ) : (
                         <Box sx={{ mt: 2 }}>
                             <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-                                <FormattedMessage id="directoryOwner" values={{ owner: directory?.owner }} />
+                                <FormattedMessage id="directoryOwner" values={{ owner: directoryOwnerIdentity }} />
                             </Typography>
 
                             <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
