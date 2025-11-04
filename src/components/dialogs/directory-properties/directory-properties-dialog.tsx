@@ -137,7 +137,6 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                     messageTxt: error.message,
                     headerId: 'directoryOwnerIdentityFetchError',
                 });
-                setDirectoryOwnerIdentity(undefined);
             });
     }, [directory?.owner, directory?.elementUuid, snackError]);
 
