@@ -122,6 +122,7 @@ export function useDownloadUtils() {
                         { id: 'export.message.started' },
                         { fileName: fileName || caseElement.elementName }
                     ),
+                    persist: true,
                 });
             } catch (error: any) {
                 if (error.name === 'AbortError') {
