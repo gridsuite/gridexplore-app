@@ -679,14 +679,14 @@ export function deleteCase(caseUuid: UUID) {
     });
 }
 
-export const fetchConvertedCase = (
+export const convertCase = (
     caseUuid: UUID,
     fileName: string,
     format: string,
     formatParameters: unknown,
     abortController: AbortController
-) =>
-    backendFetch(
+): Promise<UUID> =>
+    backendFetchJson(
         `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
         {
             method: 'post',
@@ -695,6 +695,12 @@ export const fetchConvertedCase = (
             signal: abortController.signal,
         }
     );
+
+export const fetchExportNetworkFile = (exportUuid: UUID) =>
+    backendFetch(`${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/download-file/${exportUuid}`, {
+        method: 'get',
+        headers: { 'Content-Type': 'application/json' },
+    });
 
 export const downloadCase = (caseUuid: string) =>
     backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
