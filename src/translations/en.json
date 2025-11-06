@@ -192,6 +192,7 @@
     "directoryPermissionsViewOnly": "You can view but not modify the permissions of this directory",
     "directoryPermissionsFetchError": "Error while fetching directory permissions",
     "directoryPermissionsUpdateError": "Error while updating directory permissions",
+    "directoryOwnerIdentityFetchError": "Error while fetching directory owner",
     "readOnly": "Read only",
     "read&Write": "Read / Write",
     "allUsers": "Anyone",
