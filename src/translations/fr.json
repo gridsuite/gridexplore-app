@@ -191,6 +191,7 @@
     "directoryPermissionsViewOnly": "Vous pouvez voir mais pas modifier les permissions pour ce dossier",
     "directoryPermissionsFetchError": "Erreur lors de la récupération des permissions du dossier",
     "directoryPermissionsUpdateError": "Erreur lors de la mise à jour des permissions du dossier",
+    "directoryOwnerIdentityFetchError": "Erreur lors de la récupération du créateur du dossier",
     "readOnly": "Lecture seule",
     "read&Write": "Lecture / Écriture",
     "allUsers": "Tout le monde",
