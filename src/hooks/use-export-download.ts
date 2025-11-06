@@ -34,6 +34,7 @@ export function useExportDownload() {
                     triggerDownload({ blob, filename });
                     snackInfo({
                         messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
+                        persist: true,
                     });
                 })
                 .catch((error: Error) => {
