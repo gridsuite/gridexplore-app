@@ -37,7 +37,7 @@ import { useIntl } from 'react-intl';
 import { getFilterById, updateElement } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
-import ExplicitNamingEditionDialog from './dialogs/contingency-list/edition/explicit-naming-edition-dialog';
+import ExplicitNamingEditionDialog from './dialogs/contingency-list/explicit-naming/explicit-naming-edition-dialog';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import * as constants from '../utils/UIconstants';
 import type { AppState } from '../redux/types';
@@ -271,7 +271,6 @@ function DirectoryContentDialog(
                 open
                 titleId="editContingencyList"
                 contingencyListId={currentExplicitNamingContingencyListId}
-                contingencyListType={ContingencyListType.EXPLICIT_NAMING.id}
                 onClose={handleCloseExplicitNamingContingency}
                 name={elementName}
                 broadcastChannel={broadcastChannel}

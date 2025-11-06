@@ -35,7 +35,6 @@ export type ContingencyListFormData = {
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
     }[];
     [FieldConstants.CONTINGENCY_LIST_TYPE]?: string | null;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
 };
 
 export const makeDefaultRowData = () => ({

@@ -46,22 +46,18 @@ export default function ExplicitNamingForm() {
                     suppressKeyboardEvent(params),
                 autoHeight: true,
                 wrapText: true,
-                singleClickEdit: true,
                 cellRenderer: ChipsArrayEditor,
                 cellRendererParams: {
                     name: FieldConstants.EQUIPMENT_TABLE,
                     sideActionCallback: manageContingencyName,
                 },
                 cellStyle: { padding: 0 },
-                flex: 1,
             },
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: FieldConstants.CONTINGENCY_NAME,
                 editable: true,
                 rowDrag: true,
-                singleClickEdit: true,
-                flex: 1,
             },
         ],
         [intl]
@@ -101,6 +97,7 @@ export default function ExplicitNamingForm() {
         () => ({
             flex: 1,
             suppressMovable: true,
+            singleClickEdit: true,
         }),
         []
     );

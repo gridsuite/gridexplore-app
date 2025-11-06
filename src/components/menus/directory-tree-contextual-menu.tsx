@@ -47,7 +47,7 @@ import {
 
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import ExplicitNamingCreationDialog from '../dialogs/contingency-list/creation/explicit-naming-creation-dialog';
+import ExplicitNamingCreationDialog from '../dialogs/contingency-list/explicit-naming/explicit-naming-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import {

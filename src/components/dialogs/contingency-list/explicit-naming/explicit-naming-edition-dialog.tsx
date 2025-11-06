@@ -25,13 +25,13 @@ import {
 } from '../contingency-list-utils';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { AppState } from '../../../../redux/types';
-import { getExplicitNamingEditSchema } from '../explicit-naming/explicit-naming-utils';
-import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
+import { getExplicitNamingEditSchema } from './explicit-naming-utils';
+import ExplicitNamingForm from './explicit-naming-form';
+import { ContingencyListType } from '../../../../utils/elementType';
 
 interface ExplicitNamingEditionFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
     [FieldConstants.EQUIPMENT_TABLE]?: {
         [FieldConstants.CONTINGENCY_NAME]?: string | null;
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
@@ -40,7 +40,6 @@ interface ExplicitNamingEditionFormData {
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
@@ -49,7 +48,6 @@ const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
 
 export interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
-    contingencyListType: string;
     open: boolean;
     onClose: () => void;
     titleId: string;
@@ -60,7 +58,6 @@ export interface ExplicitNamingEditionDialogProps {
 
 export default function ExplicitNamingEditionDialog({
     contingencyListId,
-    contingencyListType,
     open,
     onClose,
     titleId,
@@ -86,7 +83,7 @@ export default function ExplicitNamingEditionDialog({
 
     useEffect(() => {
         setIsFetching(true);
-        getContingencyList(contingencyListType, contingencyListId)
+        getContingencyList(ContingencyListType.EXPLICIT_NAMING.id, contingencyListId)
             .then((response) => {
                 if (response) {
                     const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description);
@@ -100,7 +97,7 @@ export default function ExplicitNamingEditionDialog({
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
+    }, [contingencyListId, name, reset, snackError, description]);
 
     const closeAndClear = () => {
         reset(emptyFormData());

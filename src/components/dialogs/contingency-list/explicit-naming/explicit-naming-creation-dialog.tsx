@@ -20,15 +20,14 @@ import { createContingencyList } from '../../../../utils/rest-api';
 import { ContingencyListFormData, getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
-import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
+import { getExplicitNamingSchema } from './explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
-import ExplicitNamingForm from '../explicit-naming/explicit-naming-form';
+import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().nullable(),
     ...getExplicitNamingSchema(),
 });
 
