@@ -13,7 +13,7 @@ import { triggerDownload } from '../components/utils/downloadUtils';
 import { fetchExportNetworkFile } from '../utils/rest-api';
 
 export function useExportDownload() {
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError, snackSuccess } = useSnackMessage();
     const intl = useIntl();
 
     const downloadExportFile = useCallback(
@@ -32,7 +32,7 @@ export function useExportDownload() {
 
                     const blob = await response.blob();
                     triggerDownload({ blob, filename });
-                    snackInfo({
+                    snackSuccess({
                         messageTxt: intl.formatMessage({ id: 'export.message.succeeded' }, { fileName: filename }),
                         persist: true,
                     });
@@ -43,7 +43,7 @@ export function useExportDownload() {
                     });
                 });
         },
-        [intl, snackError, snackInfo]
+        [intl, snackError, snackSuccess]
     );
     return { downloadExportFile };
 }
