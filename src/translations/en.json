@@ -87,9 +87,7 @@
     "SHORT_CIRCUIT_PARAMETERS": "Settings (Short circuit analysis)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Settings (Network visualizations)",
     "DIAGRAM_CONFIG": "Network area diagram",
-    "contingencyList.criteriaBased": "Criteria based",
     "contingencyList.explicitNaming": "Explicit naming",
-    "contingencyList.criteriaBasedOrExplicitNaming": "Explicit naming or criteria based",
     "contingencyList.filterBased": "Filter based",
     "contingencyList.filterBased.filtersTableColumn": "Voltage level / substation filters",
     "contingencyList.filterBased.subEquipmentsTableColumn": "Equipment types",
@@ -203,5 +201,8 @@
     "visualization": "Visualization",
     "missingEquipmentsFromStudy": "Equipments missing from study",
     "equipmentTypesByFilters": "Contingencies per equipment types in voltage levels & substations",
-    "reload": "Reload"
+    "reload": "Reload",
+    "export.message.started": "Export {fileName} started",
+    "export.message.succeeded": "Export {fileName} succeeded",
+    "export.message.failed": "Export file failed {error}"
 }

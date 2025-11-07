@@ -23,8 +23,7 @@ export const DialogsId = {
     GENERIC_FILTER: 'generic_filter',
     ADD_ROOT_DIRECTORY: 'add_root_directory',
     ADD_DIRECTORY: 'add_directory',
-    ADD_NEW_EXPLICIT_NAMING_OR_CRITERIA_BASED_CONTINGENCY_LIST:
-        'add_new_explicit_naming_or_criteria_based_contingency_list',
+    ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST: 'add_new_explicit_naming_contingency_list',
     ADD_NEW_FILTERS_CONTINGENCY_LIST: 'add_new_filter_based_contingency_list',
     ADD_NEW_FILTER: 'add_new_filter',
     ADD_NEW_CRITERIA_FILTER: 'add_new_criteria_filter',

@@ -47,7 +47,7 @@ import {
 
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch } from '../../utils/custom-hooks';
-import ContingencyListCreationDialog from '../dialogs/contingency-list/creation/contingency-list-creation-dialog';
+import ExplicitNamingCreationDialog from '../dialogs/contingency-list/explicit-naming/explicit-naming-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import {
@@ -238,9 +238,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     icon: <AddIcon fontSize="small" data-testid="CreateNewContingencyListIcon" />,
                     subMenuItems: [
                         {
-                            messageDescriptorId: 'contingencyList.criteriaBasedOrExplicitNaming',
-                            callback: () =>
-                                handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_OR_CRITERIA_BASED_CONTINGENCY_LIST),
+                            messageDescriptorId: 'contingencyList.explicitNaming',
+                            callback: () => handleOpenDialog(DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST),
                             icon: null,
                         },
                         {
@@ -372,13 +371,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
                 return <CreateStudyForm open onClose={handleCloseDialog} />;
-            case DialogsId.ADD_NEW_EXPLICIT_NAMING_OR_CRITERIA_BASED_CONTINGENCY_LIST:
+            case DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST:
                 return (
-                    <ContingencyListCreationDialog
-                        open
-                        titleId="createNewContingencyList"
-                        onClose={handleCloseDialog}
-                    />
+                    <ExplicitNamingCreationDialog open titleId="createNewContingencyList" onClose={handleCloseDialog} />
                 );
             case DialogsId.ADD_NEW_FILTERS_CONTINGENCY_LIST:
                 return (
