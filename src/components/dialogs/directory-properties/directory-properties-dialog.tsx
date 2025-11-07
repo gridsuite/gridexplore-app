@@ -214,7 +214,7 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                         </Box>
                     ) : (
                         <Box sx={{ mt: 2 }}>
-                            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+                            <Typography variant="subtitle1" gutterBottom sx={{ mb: 2 }}>
                                 <FormattedMessage id="directoryOwner" values={{ owner: directoryOwnerIdentity }} />
                             </Typography>
 
