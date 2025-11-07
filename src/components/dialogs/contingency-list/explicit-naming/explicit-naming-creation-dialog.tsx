@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 import {
     CustomMuiDialog,
     FieldConstants,
-    getCriteriaBasedSchema,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     yupConfig as yup,
@@ -18,45 +17,33 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
-import ContingencyListCreationForm from './contingency-list-creation-form';
-import {
-    ContingencyListFormData,
-    ContingencyListFormDataWithRequiredCriteria,
-    getContingencyListEmptyFormData,
-    getFormContent,
-} from '../contingency-list-utils';
-import { ContingencyListType } from '../../../../utils/elementType';
+import { ContingencyListFormData, getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
-import { getExplicitNamingSchema } from '../explicit-naming/explicit-naming-utils';
+import { getExplicitNamingSchema } from './explicit-naming-utils';
 import { handleNotAllowedError } from '../../../utils/rest-errors';
+import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().when([FieldConstants.CONTINGENCY_LIST_TYPE], {
-        is: ContingencyListType.CRITERIA_BASED.id,
-        then: (schemaThen) => schemaThen.required(),
-        otherwise: (schemaOtherwise) => schemaOtherwise.nullable(),
-    }),
     ...getExplicitNamingSchema(),
-    ...getCriteriaBasedSchema(),
 });
 
 const emptyFormData = getContingencyListEmptyFormData();
 
-export interface ContingencyListCreationDialogProps {
+export interface ExplicitNamingCreationDialogProps {
     onClose: () => void;
     open: boolean;
     titleId: string;
 }
 
-export default function ContingencyListCreationDialog({
+export default function ExplicitNamingCreationDialog({
     onClose,
     open,
     titleId,
-}: Readonly<ContingencyListCreationDialogProps>) {
+}: Readonly<ExplicitNamingCreationDialogProps>) {
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
 
@@ -80,7 +67,7 @@ export default function ContingencyListCreationDialog({
         onClose();
     };
 
-    const onSubmit = (data: ContingencyListFormDataWithRequiredCriteria) => {
+    const onSubmit = (data: ContingencyListFormData) => {
         const formContent = getFormContent(null, data);
         createContingencyList(
             data[FieldConstants.CONTINGENCY_LIST_TYPE],
@@ -108,7 +95,6 @@ export default function ContingencyListCreationDialog({
             onClose={closeAndClear}
             onSave={onSubmit}
             formSchema={schema}
-            // @ts-expect-error TODO: formSchema is of type ContingencyListFormDataWithRequiredCriteria but formMethods of type ContingencyListFormData
             formMethods={methods}
             titleId={titleId}
             removeOptional
@@ -116,7 +102,7 @@ export default function ContingencyListCreationDialog({
             language={languageLocal}
             unscrollableFullHeight
         >
-            <ContingencyListCreationForm />
+            <ExplicitNamingForm />
         </CustomMuiDialog>
     );
 }

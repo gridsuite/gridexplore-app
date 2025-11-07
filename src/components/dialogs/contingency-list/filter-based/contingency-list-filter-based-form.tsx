@@ -12,7 +12,7 @@ import {
     ElementType,
     EquipmentType,
     FieldConstants,
-    FormEquipment,
+    ContingencyListEquipment,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -243,7 +243,7 @@ export default function ContingencyListFilterBasedForm() {
                                         <TableBody>
                                             {filterEquipmentTypes &&
                                                 Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
-                                                    (equipmentRow: FormEquipment) => {
+                                                    (equipmentRow: ContingencyListEquipment) => {
                                                         const isEquipmentSelected = filterEquipmentTypes.includes(
                                                             equipmentRow.id
                                                         );

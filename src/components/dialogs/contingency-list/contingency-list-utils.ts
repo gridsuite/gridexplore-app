@@ -6,14 +6,7 @@
  */
 
 import { v4 as uuid4 } from 'uuid';
-import {
-    CONTINGENCY_LIST_EQUIPMENTS,
-    type CriteriaBasedData,
-    EquipmentType,
-    FieldConstants,
-    getCriteriaBasedFormData,
-} from '@gridsuite/commons-ui';
-import type { SetRequired } from 'type-fest';
+import { EquipmentType, FieldConstants } from '@gridsuite/commons-ui';
 import { prepareContingencyListForBackend } from '../contingency-list-helper';
 import { ContingencyListType } from '../../../utils/elementType';
 import {
@@ -42,14 +35,7 @@ export type ContingencyListFormData = {
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
     }[];
     [FieldConstants.CONTINGENCY_LIST_TYPE]?: string | null;
-    [FieldConstants.EQUIPMENT_TYPE]?: string | null;
-    [FieldConstants.CRITERIA_BASED]?: CriteriaBasedData;
 };
-
-export type ContingencyListFormDataWithRequiredCriteria = SetRequired<
-    ContingencyListFormData,
-    FieldConstants.CRITERIA_BASED
->;
 
 export const makeDefaultRowData = () => ({
     [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
@@ -64,17 +50,8 @@ export const getContingencyListEmptyFormData = (name = '') => ({
     [FieldConstants.NAME]: name,
     [FieldConstants.DESCRIPTION]: '',
     [FieldConstants.EQUIPMENT_TABLE]: makeDefaultTableRows(),
-    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
+    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.EXPLICIT_NAMING.id,
     [FieldConstants.EQUIPMENT_TYPE]: null,
-    ...getCriteriaBasedFormData(),
-});
-
-export const getCriteriaBasedFormDataFromFetchedElement = (response: any, name: string, description: string) => ({
-    [FieldConstants.NAME]: name,
-    [FieldConstants.DESCRIPTION]: description,
-    [FieldConstants.CONTINGENCY_LIST_TYPE]: ContingencyListType.CRITERIA_BASED.id,
-    [FieldConstants.EQUIPMENT_TYPE]: response.equipmentType,
-    ...getCriteriaBasedFormData(response),
 });
 
 export const getFilterBasedFormDataFromFetchedElement = (
@@ -117,47 +94,13 @@ export const getExplicitNamingFormDataFromFetchedElement = (response: any, name:
     };
 };
 
-export const getFormContent = (
-    contingencyListId: string | null,
-    contingencyList: ContingencyListFormDataWithRequiredCriteria
-) => {
-    switch (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]) {
-        case ContingencyListType.EXPLICIT_NAMING.id: {
-            return prepareContingencyListForBackend(contingencyListId, contingencyList);
-        }
-        case ContingencyListType.CRITERIA_BASED.id: {
-            const criteriaBaseForm = contingencyList[FieldConstants.CRITERIA_BASED];
-            return {
-                equipmentType: contingencyList[FieldConstants.EQUIPMENT_TYPE],
-                countries: criteriaBaseForm[FieldConstants.COUNTRIES],
-                countries1: criteriaBaseForm[FieldConstants.COUNTRIES_1],
-                countries2: criteriaBaseForm[FieldConstants.COUNTRIES_2],
-                nominalVoltage: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE],
-                nominalVoltage1: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_1],
-                nominalVoltage2: criteriaBaseForm[FieldConstants.NOMINAL_VOLTAGE_2],
-            };
-        }
-        default: {
-            console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
-            return null;
-        }
+export const getFormContent = (contingencyListId: string | null, contingencyList: ContingencyListFormData) => {
+    if (contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE] === ContingencyListType.EXPLICIT_NAMING.id) {
+        return prepareContingencyListForBackend(contingencyListId, contingencyList);
     }
+    console.info(`Unknown contingency list type '${contingencyList[FieldConstants.CONTINGENCY_LIST_TYPE]}'`);
+    return null;
 };
-
-// Not implemented yet for criteria based contingency lists.
-// TODO: Exclusions to remove when contingency lists implemented for those equipment types
-const excludedEquipmentTypes = [
-    EquipmentType.BATTERY,
-    EquipmentType.LOAD,
-    EquipmentType.THREE_WINDINGS_TRANSFORMER,
-    EquipmentType.STATIC_VAR_COMPENSATOR,
-];
-
-export const SUPPORTED_CONTINGENCY_LIST_EQUIPMENTS = Object.fromEntries(
-    Object.entries(CONTINGENCY_LIST_EQUIPMENTS).filter(
-        ([key]) => !excludedEquipmentTypes.includes(key as EquipmentType)
-    )
-);
 
 export function isSubstationOrVoltageLevelFilter(filter: FilterElement) {
     return (
