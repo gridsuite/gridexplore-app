@@ -8,38 +8,46 @@
 import {
     CustomMuiDialog,
     FieldConstants,
-    getCriteriaBasedSchema,
     MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
     yupConfig as yup,
-    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
-import { getContingencyList, saveCriteriaBasedContingencyList } from 'utils/rest-api';
+import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
+import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppState } from '../../../../../redux/types';
 import {
     getContingencyListEmptyFormData,
-    getCriteriaBasedFormDataFromFetchedElement,
-} from '../../contingency-list-utils';
-import CriteriaBasedEditionForm from './criteria-based-edition-form';
-import { setItemSelectionForCopy } from '../../../../../redux/actions';
-import { useParameterState } from '../../../use-parameters-dialog';
-import { CriteriaBasedEditionFormData } from '../../../../../utils/rest-api';
+    getExplicitNamingFormDataFromFetchedElement,
+} from '../contingency-list-utils';
+import { setItemSelectionForCopy } from '../../../../redux/actions';
+import { AppState } from '../../../../redux/types';
+import { getExplicitNamingEditSchema } from './explicit-naming-utils';
+import ExplicitNamingForm from './explicit-naming-form';
+import { ContingencyListType } from '../../../../utils/elementType';
+
+interface ExplicitNamingEditionFormData {
+    [FieldConstants.NAME]: string;
+    [FieldConstants.DESCRIPTION]?: string;
+    [FieldConstants.EQUIPMENT_TABLE]?: {
+        [FieldConstants.CONTINGENCY_NAME]?: string | null;
+        [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[];
+    }[];
+}
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
-    [FieldConstants.EQUIPMENT_TYPE]: yup.string().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
-    ...getCriteriaBasedSchema(),
+    ...getExplicitNamingEditSchema(),
 });
 
-export interface CriteriaBasedEditionDialogProps {
+const emptyFormData = (name?: string) => getContingencyListEmptyFormData(name);
+
+export interface ExplicitNamingEditionDialogProps {
     contingencyListId: string;
-    contingencyListType: string;
     open: boolean;
     onClose: () => void;
     titleId: string;
@@ -48,26 +56,23 @@ export interface CriteriaBasedEditionDialogProps {
     description: string;
 }
 
-export default function CriteriaBasedEditionDialog({
+export default function ExplicitNamingEditionDialog({
     contingencyListId,
-    contingencyListType,
     open,
     onClose,
     titleId,
     name,
     broadcastChannel,
     description,
-}: Readonly<CriteriaBasedEditionDialogProps>) {
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+}: Readonly<ExplicitNamingEditionDialogProps>) {
     const [isFetching, setIsFetching] = useState(!!contingencyListId);
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const dispatch = useDispatch();
-    const methods = useForm<CriteriaBasedEditionFormData>({
-        defaultValues: getContingencyListEmptyFormData(name),
-        resolver: yupResolver<CriteriaBasedEditionFormData>(schema),
+    const methods = useForm({
+        defaultValues: emptyFormData(name),
+        resolver: yupResolver(schema),
     });
-
     const {
         reset,
         formState: { errors },
@@ -78,13 +83,11 @@ export default function CriteriaBasedEditionDialog({
 
     useEffect(() => {
         setIsFetching(true);
-        getContingencyList(contingencyListType, contingencyListId)
+        getContingencyList(ContingencyListType.EXPLICIT_NAMING.id, contingencyListId)
             .then((response) => {
                 if (response) {
-                    const formData = getCriteriaBasedFormDataFromFetchedElement(response, name, description);
-                    reset({
-                        ...formData,
-                    });
+                    const formData = getExplicitNamingFormDataFromFetchedElement(response, name, description);
+                    reset({ ...formData });
                 }
             })
             .catch((error) => {
@@ -94,15 +97,24 @@ export default function CriteriaBasedEditionDialog({
                 });
             })
             .finally(() => setIsFetching(false));
-    }, [contingencyListId, contingencyListType, name, reset, snackError, description]);
+    }, [contingencyListId, name, reset, snackError, description]);
 
     const closeAndClear = () => {
-        reset(getContingencyListEmptyFormData());
+        reset(emptyFormData());
         onClose();
     };
 
-    const onSubmit = (contingencyList: CriteriaBasedEditionFormData) => {
-        saveCriteriaBasedContingencyList(contingencyListId, contingencyList)
+    const editContingencyList = (contingencyListId2: string, contingencyList: ExplicitNamingEditionFormData) => {
+        const equipments = prepareContingencyListForBackend(contingencyListId2, contingencyList);
+        return saveExplicitNamingContingencyList(
+            equipments,
+            contingencyList[FieldConstants.NAME],
+            contingencyList[FieldConstants.DESCRIPTION] ?? ''
+        );
+    };
+
+    const onSubmit = (contingencyList: ExplicitNamingEditionFormData) => {
+        editContingencyList(contingencyListId, contingencyList)
             .then(() => {
                 if (itemSelectionForCopy.sourceItemUuid === contingencyListId) {
                     dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
@@ -130,10 +142,9 @@ export default function CriteriaBasedEditionDialog({
             removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
-            language={languageLocal}
             unscrollableFullHeight
         >
-            {!isFetching && <CriteriaBasedEditionForm />}
+            {!isFetching && <ExplicitNamingForm />}
         </CustomMuiDialog>
     );
 }

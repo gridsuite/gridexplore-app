@@ -86,9 +86,7 @@
     "SHORT_CIRCUIT_PARAMETERS": "Paramètres (Analyse de court-circuit)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Paramètres (Images réseau)",
     "DIAGRAM_CONFIG": "Image nodale de zone",
-    "contingencyList.criteriaBased": "Par critères",
     "contingencyList.explicitNaming": "Par nommage",
-    "contingencyList.criteriaBasedOrExplicitNaming": "Par nommage ou par critères",
     "contingencyList.filterBased": "Par filtres",
     "contingencyList.filterBased.filtersTableColumn": "Filtres de postes / sites",
     "contingencyList.filterBased.subEquipmentsTableColumn": "Types d'ouvrages",
@@ -188,10 +186,12 @@
     "deleteConflictError": "Vous ne pouvez pas supprimer ce dossier puisqu'il contient au moins un sous-dossier pour lequel vous n'avez pas les droits d'écriture.",
     "properties": "Propriétés",
     "directoryProperties": "Propriétés du dossier: {name}",
+    "directoryOwner": "Propriétaire: {owner}",
     "directoryPermissions": "Gestion d'accès",
     "directoryPermissionsViewOnly": "Vous pouvez voir mais pas modifier les permissions pour ce dossier",
     "directoryPermissionsFetchError": "Erreur lors de la récupération des permissions du dossier",
     "directoryPermissionsUpdateError": "Erreur lors de la mise à jour des permissions du dossier",
+    "directoryOwnerIdentityFetchError": "Erreur lors de la récupération du créateur du dossier",
     "readOnly": "Lecture seule",
     "read&Write": "Lecture / Écriture",
     "allUsers": "Tout le monde",
@@ -200,5 +200,8 @@
     "visualization": "Visualisation",
     "missingEquipmentsFromStudy": "Ouvrages absents de l'étude",
     "equipmentTypesByFilters": "Aléas par types d'ouvrage dans les postes et sites",
-    "reload": "Rafraîchir"
+    "reload": "Rafraîchir",
+    "export.message.started": "Export du {fileName} a commencé",
+    "export.message.succeeded": "Téléchargement du {fileName} a réussi",
+    "export.message.failed": "Échec du téléchargement du fichier {error}"
 }

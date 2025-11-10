@@ -10,18 +10,19 @@ import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/comm
 import { useCallback, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
+    convertCase,
     downloadCase,
     downloadSpreadsheetConfig,
     downloadSpreadsheetConfigCollection,
-    fetchConvertedCase,
 } from '../../utils/rest-api';
+import { buildExportIdentifier, setExportSubscription } from '../../utils/case-export-utils';
 
 interface DownloadData {
     blob: Blob;
     filename: string;
 }
 
-const triggerDownload = ({ blob, filename }: DownloadData): void => {
+export const triggerDownload = ({ blob, filename }: DownloadData): void => {
     const href = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = href;
@@ -106,7 +107,7 @@ export function useDownloadUtils() {
             fileName?: string
         ): Promise<void> => {
             try {
-                const result = await fetchConvertedCase(
+                const exportUuid = await convertCase(
                     caseElement.elementUuid,
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
@@ -114,24 +115,22 @@ export function useDownloadUtils() {
                     abortController2
                 );
 
-                let downloadFileName =
-                    result.headers.get('Content-Disposition')?.split('filename=')[1] ??
-                    fileName ??
-                    caseElement.elementName;
-                // We remove quotes
-                downloadFileName = downloadFileName.substring(1, downloadFileName.length - 1);
-
-                const blob = await result.blob();
-
-                triggerDownload({ blob, filename: downloadFileName });
+                const identifier = buildExportIdentifier(exportUuid);
+                setExportSubscription(identifier);
+                snackInfo({
+                    messageTxt: intl.formatMessage(
+                        { id: 'export.message.started' },
+                        { fileName: fileName || caseElement.elementName }
+                    ),
+                });
             } catch (error: any) {
                 if (error.name === 'AbortError') {
                     throw error;
                 }
-                handleDownloadError(caseElement, error);
+                handleDownloadError(caseElement, error.message ?? String(error));
             }
         },
-        [handleDownloadError]
+        [handleDownloadError, intl, snackInfo]
     );
 
     const buildPartialDownloadMessage = useCallback(

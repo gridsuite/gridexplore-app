@@ -18,7 +18,6 @@ const BackendLocaleEn = {
     FORM_FILTER: 'Filter (Form)',
     IDENTIFIERS_CONTINGENCY_LIST: 'Contingency list (Explicit naming)',
     FILTERS_CONTINGENCY_LIST: 'Contingency list (Filter based)',
-    FORM_CONTINGENCY_LIST: 'Contingency list (Criteria based)',
     IDENTIFIER_LIST_FILTER: 'Filter (Explicit naming)',
 
     // spreadsheet config metadata

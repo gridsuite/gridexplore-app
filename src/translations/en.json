@@ -87,9 +87,7 @@
     "SHORT_CIRCUIT_PARAMETERS": "Settings (Short circuit analysis)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Settings (Network visualizations)",
     "DIAGRAM_CONFIG": "Network area diagram",
-    "contingencyList.criteriaBased": "Criteria based",
     "contingencyList.explicitNaming": "Explicit naming",
-    "contingencyList.criteriaBasedOrExplicitNaming": "Explicit naming or criteria based",
     "contingencyList.filterBased": "Filter based",
     "contingencyList.filterBased.filtersTableColumn": "Voltage level / substation filters",
     "contingencyList.filterBased.subEquipmentsTableColumn": "Equipment types",
@@ -189,10 +187,12 @@
     "deleteConflictError": "You cannot delete this folder since it contains at least one subfolder for which you do not have write permission",
     "properties": "Properties",
     "directoryProperties": "Directory Properties: {name}",
+    "directoryOwner": "Owner: {owner}",
     "directoryPermissions": "Manage access",
     "directoryPermissionsViewOnly": "You can view but not modify the permissions of this directory",
     "directoryPermissionsFetchError": "Error while fetching directory permissions",
     "directoryPermissionsUpdateError": "Error while updating directory permissions",
+    "directoryOwnerIdentityFetchError": "Error while fetching directory owner",
     "readOnly": "Read only",
     "read&Write": "Read / Write",
     "allUsers": "Anyone",
@@ -201,5 +201,8 @@
     "visualization": "Visualization",
     "missingEquipmentsFromStudy": "Equipments missing from study",
     "equipmentTypesByFilters": "Contingencies per equipment types in voltage levels & substations",
-    "reload": "Reload"
+    "reload": "Reload",
+    "export.message.started": "Export {fileName} started",
+    "export.message.succeeded": "Export {fileName} succeeded",
+    "export.message.failed": "Export file failed {error}"
 }
