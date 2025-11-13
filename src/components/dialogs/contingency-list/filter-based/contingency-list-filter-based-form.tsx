@@ -9,7 +9,7 @@ import {
     CONTINGENCY_LIST_EQUIPMENTS,
     ContingencyListEquipment,
     DescriptionField,
-    DirectoryItemChipWithHelperText,
+    OverflowableChipWithHelperText,
     DirectoryItemsInput,
     ElementType,
     EquipmentType,
@@ -166,7 +166,7 @@ export default function ContingencyListFilterBasedForm() {
                         elementType={ElementType.FILTER}
                         equipmentTypes={equipmentTypes}
                         onChange={handleFilterOnChange}
-                        ChipComponent={DirectoryItemChipWithHelperText}
+                        ChipComponent={OverflowableChipWithHelperText}
                         chipProps={{ variant: 'outlined' }}
                     />
                 </Grid>
