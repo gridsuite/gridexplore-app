@@ -7,12 +7,13 @@
 import {
     ArrayAction,
     CONTINGENCY_LIST_EQUIPMENTS,
+    ContingencyListEquipment,
     DescriptionField,
+    OverflowableChipWithHelperText,
     DirectoryItemsInput,
     ElementType,
     EquipmentType,
     FieldConstants,
-    ContingencyListEquipment,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import {
@@ -30,20 +31,6 @@ import {
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useCallback, useState } from 'react';
-import {
-    blue,
-    brown,
-    cyan,
-    green,
-    indigo,
-    lightBlue,
-    lightGreen,
-    lime,
-    orange,
-    pink,
-    red,
-    teal,
-} from '@mui/material/colors';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
@@ -64,21 +51,6 @@ const equipmentTypes: string[] = [
     EquipmentType.HVDC_LINE,
     EquipmentType.DANGLING_LINE,
 ];
-
-const equipmentColorsMap: Map<string, string> = new Map([
-    [EquipmentType.SUBSTATION, pink[700]],
-    [EquipmentType.VOLTAGE_LEVEL, orange[700]],
-    [EquipmentType.LINE, indigo[700]],
-    [EquipmentType.TWO_WINDINGS_TRANSFORMER, blue[700]],
-    [EquipmentType.THREE_WINDINGS_TRANSFORMER, lightBlue[700]],
-    [EquipmentType.GENERATOR, green[700]],
-    [EquipmentType.BATTERY, lightGreen[700]],
-    [EquipmentType.LOAD, brown[700]],
-    [EquipmentType.SHUNT_COMPENSATOR, red[700]],
-    [EquipmentType.STATIC_VAR_COMPENSATOR, lime[700]],
-    [EquipmentType.HVDC_LINE, teal[700]],
-    [EquipmentType.DANGLING_LINE, cyan[700]],
-]);
 
 export default function ContingencyListFilterBasedForm() {
     const { setValue, getValues } = useFormContext();
@@ -192,9 +164,10 @@ export default function ContingencyListFilterBasedForm() {
                         label=""
                         name={FieldConstants.FILTERS}
                         elementType={ElementType.FILTER}
-                        equipmentColorsMap={equipmentColorsMap}
                         equipmentTypes={equipmentTypes}
                         onChange={handleFilterOnChange}
+                        ChipComponent={OverflowableChipWithHelperText}
+                        chipProps={{ variant: 'outlined' }}
                     />
                 </Grid>
                 {substationAndVLFilters.length > 0 && (
