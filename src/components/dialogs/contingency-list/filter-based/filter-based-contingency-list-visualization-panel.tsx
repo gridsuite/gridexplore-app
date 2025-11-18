@@ -16,7 +16,7 @@ import {
     DirectoryItemSelector,
     ElementType,
     FieldConstants,
-    getFilterEquipmentTypeLabel,
+    getEquipmentTypeShortLabel,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -72,7 +72,7 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     const getTranslatedEquipmentType = useCallback(
         (type: string | undefined) => {
-            const equipmentType = getFilterEquipmentTypeLabel(type);
+            const equipmentType = getEquipmentTypeShortLabel(type);
             return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
         },
         [intl]
