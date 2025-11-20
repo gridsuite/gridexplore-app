@@ -55,6 +55,7 @@ export type DirectoryContentDialogProps = {
     activeElement?: ElementAttributes;
     setActiveElement: Dispatch<SetStateAction<ElementAttributes | undefined>>;
     selectedDirectoryElementUuid?: UUID;
+    selectedDirectoryWritable: boolean;
     childrenMetadata: ReturnType<typeof useDirectoryContent>[1];
 };
 
@@ -65,13 +66,14 @@ function DirectoryContentDialog(
         setActiveElement,
         broadcastChannel,
         selectedDirectoryElementUuid,
+        selectedDirectoryWritable,
         childrenMetadata,
     }: Readonly<DirectoryContentDialogProps>,
     refApi: ForwardedRef<DirectoryContentDialogApi>
 ) {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const { snackError } = useSnackMessage();
+    const { snackInfo, snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
@@ -176,7 +178,11 @@ function DirectoryContentDialog(
                         case ElementType.STUDY: {
                             const url = getStudyUrl(event.data.elementUuid);
                             if (url) {
-                                window.open(url, '_blank');
+                                if (selectedDirectoryWritable) {
+                                    window.open(url, '_blank');
+                                } else {
+                                    snackInfo({ headerId: 'spreadsheet/save/options/csv/clipboard/success' });
+                                }
                             } else {
                                 snackError({
                                     messageTxt: intl.formatMessage(
@@ -233,8 +239,10 @@ function DirectoryContentDialog(
             getStudyUrl,
             intl,
             selectedDirectoryElementUuid,
+            selectedDirectoryWritable,
             setActiveElement,
             setOpenDialog,
+            snackInfo,
             snackError,
         ]
     );
