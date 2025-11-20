@@ -334,6 +334,7 @@ export default function DirectoryContent() {
                             colDef={getColumnsDefinition(childrenMetadata, intl)}
                             getRowStyle={getRowStyle}
                             onGridReady={onGridReady}
+                            selectedDirectoryWritable={directoryWritable}
                         />
                     )
                 }

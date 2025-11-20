@@ -73,7 +73,7 @@ function DirectoryContentDialog(
 ) {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const { snackInfo, snackError } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
@@ -180,8 +180,6 @@ function DirectoryContentDialog(
                             if (url) {
                                 if (selectedDirectoryWritable) {
                                     window.open(url, '_blank');
-                                } else {
-                                    snackInfo({ headerId: 'spreadsheet/save/options/csv/clipboard/success' });
                                 }
                             } else {
                                 snackError({
@@ -242,7 +240,6 @@ function DirectoryContentDialog(
             selectedDirectoryWritable,
             setActiveElement,
             setOpenDialog,
-            snackInfo,
             snackError,
         ]
     );
