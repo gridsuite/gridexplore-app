@@ -32,6 +32,7 @@ import {
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 import { getIdentifiablesFromFilters } from '../../../../utils/rest-api';
+import { DefaultCellRenderer } from 'gridstudy-app/src/components/custom-aggrid/cell-renderers'; // TODO : move this to commons-ui
 
 const separator = '/';
 const SEPARATOR_TYPE = 'SEPARATOR';
@@ -39,6 +40,7 @@ const SEPARATOR_TYPE = 'SEPARATOR';
 const defaultDef: ColDef = {
     resizable: false,
     sortable: false,
+    cellRenderer: DefaultCellRenderer,
 };
 
 interface RowData {
@@ -84,9 +86,6 @@ export function FilterBasedContingencyListVisualizationPanel(
                 id: FieldConstants.EQUIPMENT_ID,
             }),
             field: FieldConstants.ID,
-            cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                return data.id;
-            },
             flex: 3,
         },
         {
@@ -95,6 +94,7 @@ export function FilterBasedContingencyListVisualizationPanel(
             }),
             field: FieldConstants.TYPE,
             flex: 2,
+            maxWidth: 120,
         },
     ];
 
@@ -179,18 +179,17 @@ export function FilterBasedContingencyListVisualizationPanel(
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
     return (
-        <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
-            {/* ugly width fix for the grid layout */}
+        <Grid container direction="column" rowSpacing={1} sx={{ height: '100%' }}>
             <Grid item>
                 <Typography variant="h6">
                     <FormattedMessage id="visualization" />
                 </Typography>
             </Grid>
-            <Grid item container paddingY={1} alignItems="center" justifyContent="center">
-                <Grid item xs={1}>
+            <Grid item container alignItems="center" justifyContent="space-between">
+                <Grid item>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={7} fontWeight="bold" padding={1}>
+                <Grid item xs fontWeight="bold" padding={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap title={studyName}>
                             {studyName}
@@ -199,7 +198,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item>
                     <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
                         <FormattedMessage id="selectStudyDialogButton" />
                     </Button>
