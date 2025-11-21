@@ -86,6 +86,7 @@ export default function FilterBasedContingencyListDialog({
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const { snackError } = useSnackMessage();
     const [isFetching, setIsFetching] = useState(!!id);
+    const [isSubOrVlFilterIncluded, setIsSubOrVlFilterIncluded] = useState<boolean>(false);
 
     const methods = useForm<ContingencyListFilterBasedFormData>({
         defaultValues: emptyFormData(),
@@ -195,12 +196,15 @@ export default function FilterBasedContingencyListDialog({
             isDataFetching={isFetching}
             sx={{
                 '.MuiDialog-paper': {
-                    minWidth: '60vw',
+                    minWidth: isSubOrVlFilterIncluded ? '80vw' : '50vw',
                     height: '95vh',
                 },
             }}
         >
-            <ContingencyListFilterBasedForm />
+            <ContingencyListFilterBasedForm
+                isSubOrVlFilterIncluded={isSubOrVlFilterIncluded}
+                setIsSubOrVlFilterIncluded={setIsSubOrVlFilterIncluded}
+            />
         </CustomMuiDialog>
     );
 }
