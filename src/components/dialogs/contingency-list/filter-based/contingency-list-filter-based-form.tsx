@@ -171,7 +171,7 @@ export default function ContingencyListFilterBasedForm({
                         <Grid item>
                             <DescriptionField />
                         </Grid>
-                        <Grid item>
+                        <Grid item component="h4">
                             <FormattedMessage id="Filters" />
                         </Grid>
                         <Grid item xs>

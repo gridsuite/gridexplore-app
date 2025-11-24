@@ -13,6 +13,7 @@ import { ColDef, GetRowIdParams } from 'ag-grid-community';
 import { useFormContext } from 'react-hook-form';
 import {
     CustomAGGrid,
+    DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
     FieldConstants,
@@ -32,7 +33,6 @@ import {
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 import { getIdentifiablesFromFilters } from '../../../../utils/rest-api';
-import { DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 const separator = '/';
 const SEPARATOR_TYPE = 'SEPARATOR';
@@ -179,19 +179,17 @@ export function FilterBasedContingencyListVisualizationPanel(
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
     return (
-        <Grid container direction="column" rowSpacing={1} sx={{ height: '100%' }}>
-            <Grid item>
-                <Typography variant="h6">
-                    <FormattedMessage id="visualization" />
-                </Typography>
+        <Grid container direction="column" sx={{ height: '100%' }}>
+            <Grid item component="h3">
+                <FormattedMessage id="visualization" />
             </Grid>
             <Grid item container alignItems="center" justifyContent="space-between">
                 <Grid item>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs fontWeight="bold" padding={1}>
+                <Grid item xs padding={1} marginY={1}>
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap title={studyName}>
+                        <Typography noWrap fontWeight="bold" title={studyName}>
                             {studyName}
                         </Typography>
                     ) : (

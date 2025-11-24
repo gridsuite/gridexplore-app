@@ -78,7 +78,7 @@ export function EquipmentTypesByFilters({
 
     return (
         <Grid item container direction="column" rowSpacing={0.5} md={8} xs={12}>
-            <Grid item>
+            <Grid item component="h4">
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
             <Grid item container xs>
