@@ -32,7 +32,7 @@ import {
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 import { getIdentifiablesFromFilters } from '../../../../utils/rest-api';
-import { DefaultCellRenderer } from 'gridstudy-app/src/components/custom-aggrid/cell-renderers'; // TODO : move this to commons-ui
+import { DefaultCellRenderer } from '@gridsuite/commons-ui';
 
 const separator = '/';
 const SEPARATOR_TYPE = 'SEPARATOR';
