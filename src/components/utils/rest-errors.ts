@@ -11,7 +11,7 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { CustomError, ElementAttributes, UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import { CustomError, ElementAttributes, snackWithFallback, UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
 
@@ -55,14 +55,8 @@ export const handleMaxElementsExceededError = (error: CustomError, snackError: S
         error.status === HTTP_FORBIDDEN &&
         error.businessErrorCode?.includes(HTTP_MAX_ELEMENTS_EXCEEDED_BUSINESS_CODE)
     ) {
-        const limit = error.message.split(/[: ]+/).pop();
-        if (limit) {
-            snackError({
-                messageId: buildSnackMessage(error, 'maxElementExceededError'),
-                messageValues: { limit },
-            });
-            return true;
-        }
+        snackWithFallback(snackError, error);
+        return true;
     }
     return false;
 };
