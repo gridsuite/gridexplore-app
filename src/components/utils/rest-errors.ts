@@ -7,7 +7,7 @@
 import {
     HTTP_CONFLICT,
     HTTP_FORBIDDEN,
-    HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE,
+    HTTP_MAX_ELEMENTS_EXCEEDED_BUSINESS_CODE,
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
@@ -51,7 +51,10 @@ export const handleGenericTxtError = (error: string, snackError: SnackError) => 
 };
 
 export const handleMaxElementsExceededError = (error: CustomError, snackError: SnackError): boolean => {
-    if (error.status === HTTP_FORBIDDEN && error.message.includes(HTTP_MAX_ELEMENTS_EXCEEDED_MESSAGE)) {
+    if (
+        error.status === HTTP_FORBIDDEN &&
+        error.businessErrorCode?.includes(HTTP_MAX_ELEMENTS_EXCEEDED_BUSINESS_CODE)
+    ) {
         const limit = error.message.split(/[: ]+/).pop();
         if (limit) {
             snackError({
