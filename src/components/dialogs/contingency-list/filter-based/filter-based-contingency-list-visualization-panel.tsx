@@ -10,13 +10,14 @@ import { useCallback, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, GetRowIdParams } from 'ag-grid-community';
-import { useFormContext } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import {
     CustomAGGrid,
     DirectoryItemSelector,
     ElementType,
     FieldConstants,
     getEquipmentTypeShortLabel,
+    GridSection,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -69,6 +70,7 @@ export function FilterBasedContingencyListVisualizationPanel(
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [rowsData, setRowsData] = useState<IdentifiableAttributes[]>([]);
+    const filters: FilterElement[] = useWatch({ name: FieldConstants.FILTERS }) as unknown as FilterElement[];
 
     const getTranslatedEquipmentType = useCallback(
         (type: string | undefined) => {
@@ -181,27 +183,35 @@ export function FilterBasedContingencyListVisualizationPanel(
     return (
         <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
             {/* ugly width fix for the grid layout */}
-            <Grid item>
-                <Typography variant="h6">
-                    <FormattedMessage id="visualization" />
-                </Typography>
-            </Grid>
+            <GridSection title="visualization" />
             <Grid item container paddingY={1} alignItems="center" justifyContent="center">
-                <Grid item xs={1}>
+                <Grid item display="flex" marginLeft={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={7} fontWeight="bold" padding={1}>
+                <Grid item xs={10} padding={1}>
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap title={studyName}>
+                        <Typography noWrap title={studyName} fontWeight="bold">
                             {studyName}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item xs={4}>
-                    <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                        <FormattedMessage id="selectStudyDialogButton" />
+            </Grid>
+            <Grid item container alignItems="center" justifyContent="center">
+                <Grid item xs={6} padding={2}>
+                    <Button
+                        disabled={filters === undefined || filters.length === 0}
+                        onClick={() => setIsOpen(true)}
+                        variant={selectedStudy.length > 0 ? 'contained' : undefined}
+                        color="primary"
+                        component="label"
+                    >
+                        {selectedStudy.length > 0 ? (
+                            <FormattedMessage id="edit" />
+                        ) : (
+                            <FormattedMessage id="selectStudyDialogTitle" />
+                        )}
                     </Button>
                     <DirectoryItemSelector
                         open={isOpen}

@@ -105,7 +105,6 @@
     "convertFilterIntoExplicitNaming": "Convertir",
     "convertIntoExplicitNamingFilter": "Convertir en filtre par nommage",
     "convertIntoExplicitNamingFilterError": "Une erreur est survenue lors de l'application du filtre sur l'étude choisie",
-    "selectStudyDialogButton": "Choisir étude",
     "selectStudyDialogTitle": "Choisir une étude",
     "selectStudyText": "Veuillez choisir une étude",
     "noSelectedStudyText": "Aucune étude sélectionnée.",

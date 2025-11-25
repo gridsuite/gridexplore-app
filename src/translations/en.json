@@ -106,7 +106,6 @@
     "convertFilterIntoExplicitNaming": "Convert",
     "convertIntoExplicitNamingFilter": "Convert to explicit naming",
     "convertIntoExplicitNamingFilterError": "An error occurred while applying the filter on the selected study",
-    "selectStudyDialogButton": "Choose study",
     "selectStudyDialogTitle": "Pick a study",
     "selectStudyText": "Please choose a study",
     "noSelectedStudyText": "No study selected.",

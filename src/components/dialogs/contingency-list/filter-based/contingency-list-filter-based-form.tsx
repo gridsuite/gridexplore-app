@@ -15,6 +15,7 @@ import {
     EquipmentType,
     FieldConstants,
     UniqueNameInput,
+    GridSection,
 } from '@gridsuite/commons-ui';
 import {
     Checkbox,
@@ -155,9 +156,7 @@ export default function ContingencyListFilterBasedForm() {
                 <Grid item>
                     <DescriptionField />
                 </Grid>
-                <Grid item>
-                    <FormattedMessage id="Filters" />
-                </Grid>
+                <GridSection title="Filters" />
                 <Grid item>
                     <DirectoryItemsInput
                         titleId="FiltersListsSelection"
@@ -172,9 +171,7 @@ export default function ContingencyListFilterBasedForm() {
                 </Grid>
                 {substationAndVLFilters.length > 0 && (
                     <>
-                        <Grid item>
-                            <FormattedMessage id="equipmentTypesByFilters" />
-                        </Grid>
+                        <GridSection title="equipmentTypesByFilters" />
                         <Grid item container xs>
                             <Grid item xs={6} marginRight={-0.08}>
                                 <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
