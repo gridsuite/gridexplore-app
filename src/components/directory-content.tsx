@@ -14,6 +14,7 @@ import {
     type ItemSelectionForCopy,
     type MuiStyles,
     NO_ITEM_SELECTION_FOR_COPY,
+    PermissionType,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
@@ -37,7 +38,6 @@ import { AppState } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
 import { checkPermissionOnDirectory } from './menus/menus-utils';
-import { PermissionType } from '../utils/rest-api';
 
 const circularProgressSize = '70px';
 

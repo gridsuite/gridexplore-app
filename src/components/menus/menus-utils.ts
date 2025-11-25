@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementAttributes, ElementType, hasElementPermission } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, hasElementPermission, PermissionType } from '@gridsuite/commons-ui';
 
-export function checkPermissionOnDirectory(element: ElementAttributes, permission: string) {
+export function checkPermissionOnDirectory(element: ElementAttributes, permission: PermissionType) {
     const directoryUuid = element.type === ElementType.DIRECTORY ? element.elementUuid : element.parentUuid;
     return hasElementPermission(directoryUuid!, permission);
 }

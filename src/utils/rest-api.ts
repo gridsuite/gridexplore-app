@@ -14,6 +14,7 @@ import {
     getRequestParamFromList,
     getUserToken,
     hasElementPermission,
+    PermissionType,
     type GsLang,
     type GsTheme,
     LAST_SELECTED_DIRECTORY,
@@ -81,12 +82,6 @@ export interface GroupDTO {
     id: UUID;
     name: string;
     users: string[];
-}
-
-export enum PermissionType {
-    READ = 'READ',
-    WRITE = 'WRITE',
-    MANAGE = 'MANAGE',
 }
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
@@ -745,5 +740,5 @@ export function fetchGroups(): Promise<GroupDTO[]> {
 
 // Function to check if user has MANAGE permission on directory
 export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
-    return hasElementPermission(directoryUuid, 'MANAGE');
+    return hasElementPermission(directoryUuid, PermissionType.MANAGE);
 }
