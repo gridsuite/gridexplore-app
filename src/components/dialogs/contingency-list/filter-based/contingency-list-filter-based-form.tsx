@@ -26,7 +26,7 @@ import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
 import { isSubstationOrVoltageLevelFilter } from '../contingency-list-utils';
-import EquipmentTypesByFilters from './equipment-types-by-filters';
+import { EquipmentTypesByFilters } from './equipment-types-by-filters';
 
 const equipmentTypes: string[] = [
     EquipmentType.SUBSTATION,
