@@ -49,8 +49,6 @@ const styles = {
         width: 15,
         marginLeft: 8,
         marginRight: 8,
-        borderLeft: `1px solid ${theme.palette.divider}`,
-        borderRight: `1px solid ${theme.palette.divider}`,
     }),
 } as const satisfies MuiStyles;
 
