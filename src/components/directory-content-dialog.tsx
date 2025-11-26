@@ -73,7 +73,7 @@ function DirectoryContentDialog(
 ) {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const { snackError } = useSnackMessage();
+    const { snackError, snackWarning } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
@@ -169,7 +169,8 @@ function DirectoryContentDialog(
                     setOpenDescModificationDialog(true);
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
                     setActiveElement(event.data);
-                    setElementName(childrenMetadata[event.data.elementUuid].elementName);
+                    const childName = childrenMetadata[event.data.elementUuid].elementName;
+                    setElementName(childName);
                     setElementDescription(childrenMetadata[event.data.elementUuid].description);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
@@ -180,6 +181,13 @@ function DirectoryContentDialog(
                             if (url) {
                                 if (selectedDirectoryWritable) {
                                     window.open(url, '_blank');
+                                } else {
+                                    snackWarning({
+                                        messageTxt: intl.formatMessage(
+                                            { id: 'noWritePermissionOnStudy' },
+                                            { studyName: childName }
+                                        ),
+                                    });
                                 }
                             } else {
                                 snackError({
@@ -241,6 +249,7 @@ function DirectoryContentDialog(
             setActiveElement,
             setOpenDialog,
             snackError,
+            snackWarning,
         ]
     );
 
@@ -251,7 +260,6 @@ function DirectoryContentDialog(
                 description={activeElement.description}
                 elementUuid={activeElement.elementUuid}
                 onClose={handleDescDialogClose}
-                // @ts-expect-error TODO: set UUID as parameter type in commons-ui
                 updateElement={updateElement}
             />
         );

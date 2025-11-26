@@ -121,6 +121,7 @@
     "retrieveCompositeModificationError": "Could not retrieve composite modification content: ",
     "PropertyName": "Property name",
     "getAppLinkError": "Error getting application link for type = {type}",
+    "noWritePermissionOnStudy": "No write permission on the study \"{studyName}\"",
     "missingEquipmentsIdsError": "ID is required field for all equipments",
     "contingencyTablePartiallyDefinedError": "At least one contingency is partially defined",
     "contingencyTableContainAtLeastOneRowError": "Contingency list should contain at least one contingency ",
