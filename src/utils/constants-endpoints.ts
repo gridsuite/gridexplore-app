@@ -6,7 +6,6 @@
  */
 
 export const CONTINGENCY_ENDPOINTS = {
-    FORM_CONTINGENCY_LISTS: '/form-contingency-lists',
     IDENTIFIER_CONTINGENCY_LISTS: '/identifier-contingency-lists',
     FILTERS_CONTINGENCY_LISTS: '/filters-contingency-lists',
 };

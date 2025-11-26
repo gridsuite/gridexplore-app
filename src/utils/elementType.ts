@@ -15,7 +15,6 @@ export const NetworkModificationType = {
 };
 
 export const ContingencyListType = {
-    CRITERIA_BASED: { id: 'FORM', label: 'contingencyList.criteriaBased' },
     EXPLICIT_NAMING: {
         id: 'IDENTIFIERS',
         label: 'contingencyList.explicitNaming',

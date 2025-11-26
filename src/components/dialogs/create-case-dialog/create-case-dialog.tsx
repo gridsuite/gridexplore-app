@@ -28,7 +28,7 @@ import {
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
+import { buildSnackMessage, handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
 import { AppState, UploadingElement } from '../../../redux/types';
 
@@ -88,7 +88,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
 
                 if (err.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                     snackError({
-                        messageId: 'invalidFormatOrName',
+                        messageId: buildSnackMessage(err, 'invalidFormatOrName'),
                         headerId: 'caseCreationError',
                         headerValues: { name: caseName },
                     });
