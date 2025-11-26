@@ -370,6 +370,7 @@ function DirectoryContentDialog(
                     user={user}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
+                    enableDeveloperMode={enableDeveloperMode}
                 />
             );
         }
