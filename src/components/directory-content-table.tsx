@@ -123,8 +123,8 @@ export function DirectoryContentTable({
             rowSelection={{
                 mode: 'multiRow',
                 enableClickSelection: false,
-                checkboxes: true,
-                headerCheckbox: true,
+                checkboxes: selectedDirectoryWritable,
+                headerCheckbox: selectedDirectoryWritable,
             }}
             selectionColumnDef={{ pinned: 'left' }}
             onGridReady={onGridReady}
