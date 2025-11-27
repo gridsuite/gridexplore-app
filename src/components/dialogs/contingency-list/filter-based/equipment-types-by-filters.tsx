@@ -10,7 +10,18 @@ import {
     OverflowableTableCell,
     OverflowableTableCellWithCheckbox,
 } from '@gridsuite/commons-ui';
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import {
+    Grid,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    useMediaQuery,
+    useTheme,
+} from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -25,6 +36,8 @@ export function EquipmentTypesByFilters({
     substationAndVLFilters,
     setIsDataOutdated,
 }: Readonly<EquipmentTypesByFiltersProps>) {
+    const theme = useTheme();
+    const vwBelow900px = useMediaQuery(theme.breakpoints.down('md'));
     const { setValue, getValues } = useFormContext();
     const [selectedFilterId, setSelectedFilterId] = useState<string | null>(null);
 
@@ -76,13 +89,15 @@ export function EquipmentTypesByFilters({
         [getValues, setValue, setIsDataOutdated]
     );
 
+    const containerProps = vwBelow900px ? { xs: true } : { xs: 8, sx: { height: '100%' } };
+
     return (
-        <Grid item container direction="column" rowSpacing={0.5} md={8} xs={12}>
+        <Grid item container direction="column" rowSpacing={0.5} {...containerProps}>
             <Grid item component="h4">
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
-            <Grid item container xs>
-                <Grid item xs={6} marginRight={-0.05}>
+            <Grid item container xs sx={{ height: 0, flex: 1 }}>
+                <Grid item xs={6} marginRight={-0.05} sx={{ height: '100%' }}>
                     <TableContainer
                         component={Paper}
                         sx={{
@@ -113,7 +128,7 @@ export function EquipmentTypesByFilters({
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={6} marginLeft={-0.05}>
+                <Grid item xs={6} marginLeft={-0.05} sx={{ height: '100%' }}>
                     <TableContainer
                         component={Paper}
                         sx={{

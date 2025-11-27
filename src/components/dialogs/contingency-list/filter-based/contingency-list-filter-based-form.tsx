@@ -16,7 +16,7 @@ import {
     ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { Grid } from '@mui/material';
+import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -66,6 +66,9 @@ export default function ContingencyListFilterBasedForm({
     isSubOrVlFilterIncluded,
     setIsSubOrVlFilterIncluded,
 }: Readonly<ContingencyListFilterBasedFormProps>) {
+    const theme = useTheme();
+    const vwBelow900px = useMediaQuery(theme.breakpoints.down('md'));
+
     const { setValue, getValues } = useFormContext();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [isDataOutdated, setIsDataOutdated] = useState<boolean>(false);
@@ -144,20 +147,13 @@ export default function ContingencyListFilterBasedForm({
         [setValue, getValues]
     );
 
+    const containerProps = vwBelow900px ? {} : { xs: 4, sx: { height: '100%', overflow: 'hidden' } };
+
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
             <Panel defaultSize={LEFT_PANEL_DEFAULT_SIZE} minSize={LEFT_PANEL_MIN_SIZE}>
-                <Grid
-                    container
-                    columnSpacing={1.5}
-                    sx={(theme) => ({
-                        height: '100%',
-                        [theme.breakpoints.up('md')]: {
-                            flexWrap: 'nowrap',
-                        },
-                    })}
-                >
-                    <Grid item container direction="column" rowSpacing={0.5} xs>
+                <Grid container columnSpacing={1.5} direction={vwBelow900px ? 'column' : 'row'} sx={{ height: '100%' }}>
+                    <Grid item container direction="column" rowSpacing={0.5} {...containerProps}>
                         <Grid item>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
