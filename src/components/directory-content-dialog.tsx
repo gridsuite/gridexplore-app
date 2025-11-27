@@ -73,7 +73,7 @@ function DirectoryContentDialog(
 ) {
     const intl = useIntl();
     const dispatch = useDispatch();
-    const { snackError, snackWarning } = useSnackMessage();
+    const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
@@ -169,8 +169,7 @@ function DirectoryContentDialog(
                     setOpenDescModificationDialog(true);
                 } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
                     setActiveElement(event.data);
-                    const childName = childrenMetadata[event.data.elementUuid].elementName;
-                    setElementName(childName);
+                    setElementName(childrenMetadata[event.data.elementUuid].elementName);
                     setElementDescription(childrenMetadata[event.data.elementUuid].description);
                     const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
                     /** set active directory on the store because it will be used while editing the contingency name */
@@ -181,13 +180,6 @@ function DirectoryContentDialog(
                             if (url) {
                                 if (selectedDirectoryWritable) {
                                     window.open(url, '_blank');
-                                } else {
-                                    snackWarning({
-                                        messageTxt: intl.formatMessage(
-                                            { id: 'noWritePermissionOnStudy' },
-                                            { studyName: childName }
-                                        ),
-                                    });
                                 }
                             } else {
                                 snackError({
@@ -249,7 +241,6 @@ function DirectoryContentDialog(
             setActiveElement,
             setOpenDialog,
             snackError,
-            snackWarning,
         ]
     );
 

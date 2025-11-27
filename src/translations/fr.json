@@ -120,7 +120,6 @@
     "retrieveCompositeModificationError": "Erreur d'accès au contenu de la modification composite : ",
     "PropertyName": "Nom de la propriété",
     "getAppLinkError": "Erreur lors de la récupération du lien vers l'application pour le type = {type}",
-    "noWritePermissionOnStudy": "Pas de droits en écriture sur l'étude \"{studyName}\"",
     "missingEquipmentsIdsError": "L'ID est un champ obligatoire pour tous les ouvrages",
     "contingencyTablePartiallyDefinedError": "Au moins un des aléas est défini de manière incomplète",
     "contingencyTableContainAtLeastOneRowError": "La liste d'aléas doit contenir au moins un aléa",
