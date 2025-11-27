@@ -180,7 +180,7 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     return (
         <Grid container direction="column" sx={{ height: '100%' }}>
-            <Grid item component="h3">
+            <Grid item component="h3" padding={0.5}>
                 <FormattedMessage id="visualization" />
             </Grid>
             <Grid item container alignItems="center" justifyContent="space-between">

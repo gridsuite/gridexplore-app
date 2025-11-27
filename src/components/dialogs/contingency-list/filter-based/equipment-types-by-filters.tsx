@@ -92,8 +92,8 @@ export function EquipmentTypesByFilters({
     const containerProps = vwBelow900px ? { xs: true } : { xs: 8, sx: { height: '100%' } };
 
     return (
-        <Grid item container direction="column" rowSpacing={0.5} {...containerProps}>
-            <Grid item component="h4">
+        <Grid item container direction="column" {...containerProps}>
+            <Grid item component="h4" padding={0.5}>
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
             <Grid item container xs sx={{ height: 0, flex: 1 }}>

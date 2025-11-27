@@ -156,7 +156,7 @@ export default function ContingencyListFilterBasedForm({
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
             <Panel defaultSize={LEFT_PANEL_DEFAULT_SIZE} minSize={LEFT_PANEL_MIN_SIZE}>
                 <Grid container columnSpacing={1.5} direction={vwBelow900px ? 'column' : 'row'} sx={{ height: '100%' }}>
-                    <Grid item container direction="column" rowSpacing={0.5} {...containerProps}>
+                    <Grid item container direction="column" {...containerProps}>
                         <Grid item>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
