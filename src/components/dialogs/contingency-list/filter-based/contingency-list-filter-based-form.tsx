@@ -147,7 +147,10 @@ export default function ContingencyListFilterBasedForm({
         [setValue, getValues]
     );
 
-    const containerProps = vwBelow900px ? {} : { xs: 4, sx: { height: '100%', overflow: 'hidden' } };
+    const containerProps =
+        vwBelow900px && isSubOrVlFilterIncluded
+            ? {}
+            : { xs: isSubOrVlFilterIncluded ? 4 : true, sx: { height: '100%', overflow: 'hidden' } };
 
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
