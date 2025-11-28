@@ -44,7 +44,7 @@ const equipmentTypes: string[] = [
 ];
 
 const styles = {
-    handle: (theme) => ({
+    handle: () => ({
         backgroundColor: 'inherit',
         width: 15,
         marginLeft: 8,

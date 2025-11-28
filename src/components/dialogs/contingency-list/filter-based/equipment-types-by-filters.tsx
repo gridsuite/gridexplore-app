@@ -32,7 +32,7 @@ interface EquipmentTypesByFiltersProps {
     setIsDataOutdated: (value: boolean) => void;
 }
 
-export function EquipmentTypesByFilters({
+function EquipmentTypesByFilters({
     substationAndVLFilters,
     setIsDataOutdated,
 }: Readonly<EquipmentTypesByFiltersProps>) {
