@@ -28,6 +28,7 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
+    PermissionType,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -41,7 +42,6 @@ import {
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
     moveElementsToDirectory,
-    PermissionType,
     renameElement,
 } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
