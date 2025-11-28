@@ -26,7 +26,7 @@ import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
 import { isSubstationOrVoltageLevelFilter } from '../contingency-list-utils';
-import { EquipmentTypesByFilters } from './equipment-types-by-filters';
+import EquipmentTypesByFilters from './equipment-types-by-filters';
 
 const equipmentTypes: string[] = [
     EquipmentType.SUBSTATION,
@@ -94,25 +94,6 @@ export default function ContingencyListFilterBasedForm({
             }
         }
     }, [substationAndVLFilters, setIsSubOrVlFilterIncluded, isSubOrVlFilterIncluded]);
-
-    // TODO : uncomment when useEffectEvent will be available
-    // const theme = useTheme();
-    // const isMdDown = useMediaQuery(theme.breakpoints.down('md'));
-    // const resizePanelsOnBreakpoint = useEffectEvent(isMdDown => {
-    // const panelGroup = panelGroupRef.current;
-    //     if (panelGroup) {
-    //         if (isMdDown) {
-    //             panelGroup.setLayout([50, 50]);
-    //         } else if (isSubOrVlFilterIncluded) {
-    //             panelGroup.setLayout([33, 67]);
-    //         } else {
-    //             panelGroup.setLayout([60, 40]);
-    //         }
-    //     }
-    // });
-    // useEffect(() => {
-    //  onMdDown(isMdDown);
-    // }, [isMdDown]);
 
     const handleFilterOnChange = useCallback(
         (_currentFilters: any, action?: ArrayAction, filter?: FilterElement) => {
