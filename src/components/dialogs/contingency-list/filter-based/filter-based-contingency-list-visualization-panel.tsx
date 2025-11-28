@@ -13,6 +13,7 @@ import { ColDef, GetRowIdParams } from 'ag-grid-community';
 import { useFormContext } from 'react-hook-form';
 import {
     CustomAGGrid,
+    DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
     FieldConstants,
@@ -39,6 +40,7 @@ const SEPARATOR_TYPE = 'SEPARATOR';
 const defaultDef: ColDef = {
     resizable: false,
     sortable: false,
+    cellRenderer: DefaultCellRenderer,
 };
 
 interface RowData {
@@ -84,9 +86,6 @@ export function FilterBasedContingencyListVisualizationPanel(
                 id: FieldConstants.EQUIPMENT_ID,
             }),
             field: FieldConstants.ID,
-            cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                return data.id;
-            },
             flex: 3,
         },
         {
@@ -95,6 +94,7 @@ export function FilterBasedContingencyListVisualizationPanel(
             }),
             field: FieldConstants.TYPE,
             flex: 2,
+            maxWidth: 120,
         },
     ];
 
@@ -179,27 +179,24 @@ export function FilterBasedContingencyListVisualizationPanel(
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
     return (
-        <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
-            {/* ugly width fix for the grid layout */}
-            <Grid item>
-                <Typography variant="h6">
-                    <FormattedMessage id="visualization" />
-                </Typography>
+        <Grid container direction="column" sx={{ height: '100%' }}>
+            <Grid item component="h3" padding={0.5}>
+                <FormattedMessage id="visualization" />
             </Grid>
-            <Grid item container paddingY={1} alignItems="center" justifyContent="center">
-                <Grid item xs={1}>
+            <Grid item container alignItems="center" justifyContent="space-between">
+                <Grid item>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={7} fontWeight="bold" padding={1}>
+                <Grid item xs padding={1} marginY={1}>
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap title={studyName}>
+                        <Typography noWrap fontWeight="bold" title={studyName}>
                             {studyName}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item>
                     <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
                         <FormattedMessage id="selectStudyDialogButton" />
                     </Button>
