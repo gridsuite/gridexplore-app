@@ -25,6 +25,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
     PARAM_LANGUAGE,
+    PermissionType,
     CustomError,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -41,7 +42,6 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
-    PermissionType,
     renameElement,
 } from '../../utils/rest-api';
 

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useCallback, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
     Delete as DeleteIcon,
@@ -16,7 +15,7 @@ import {
     TableView as TableViewIcon,
 } from '@mui/icons-material';
 import { ElementAttributes, ElementType, PARAM_DEVELOPER_MODE, useSnackMessage } from '@gridsuite/commons-ui';
-import { deleteElements, moveElementsToDirectory, PermissionType } from '../../utils/rest-api';
+import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
 import { useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -25,33 +24,24 @@ import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
-import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
-import { checkPermissionOnDirectory } from '../menus/menus-utils';
 import { handleDeleteError, handleMoveError } from '../utils/rest-errors';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
     selectedElements: ElementAttributes[];
+    selectedDirectory: ElementAttributes | null;
+    selectedDirectoryWritable: boolean;
 };
 
 export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
-    const { selectedElements, ...others } = props;
+    const { selectedElements, selectedDirectory, selectedDirectoryWritable, ...others } = props;
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
     const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
-    const [directoryWritable, setDirectoryWritable] = useState(false);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    useEffect(() => {
-        if (selectedDirectory !== null) {
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                setDirectoryWritable(b);
-            });
-        }
-    }, [selectedDirectory]);
 
     const handleOpenDialog = (DialogId: string) => {
         setOpenDialog(DialogId);
@@ -116,24 +106,25 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         if (selectedElements.length) {
             if (allowsDelete || allowsMove || allowsDownload || allowsExportCases) {
                 // actions callable for several element types
-                if (directoryWritable) {
-                    toolbarItems.push({
-                        tooltipTextId: 'delete',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.DELETE);
+                if (selectedDirectoryWritable) {
+                    toolbarItems.push(
+                        {
+                            tooltipTextId: 'delete',
+                            callback: () => {
+                                handleOpenDialog(DialogsId.DELETE);
+                            },
+                            icon: <DeleteIcon fontSize="small" />,
+                            disabled: !allowsDelete,
                         },
-                        icon: <DeleteIcon fontSize="small" />,
-                        disabled: !allowsDelete,
-                    });
-
-                    toolbarItems.push({
-                        tooltipTextId: 'move',
-                        callback: () => {
-                            handleOpenDialog(DialogsId.MOVE);
-                        },
-                        icon: <DriveFileMoveIcon fontSize="small" />,
-                        disabled: !allowsMove,
-                    });
+                        {
+                            tooltipTextId: 'move',
+                            callback: () => {
+                                handleOpenDialog(DialogsId.MOVE);
+                            },
+                            icon: <DriveFileMoveIcon fontSize="small" />,
+                            disabled: !allowsMove,
+                        }
+                    );
                 }
 
                 if (allowsDownload) {
@@ -174,7 +165,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         allowsSpreadsheetCollection,
         downloadElements,
         selectedElements,
-        directoryWritable,
+        selectedDirectoryWritable,
         enableDeveloperMode,
     ]);
 

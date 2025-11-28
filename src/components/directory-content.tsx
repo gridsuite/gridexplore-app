@@ -14,6 +14,7 @@ import {
     type ItemSelectionForCopy,
     type MuiStyles,
     NO_ITEM_SELECTION_FOR_COPY,
+    PermissionType,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
@@ -36,6 +37,7 @@ import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
+import { checkPermissionOnDirectory } from './menus/menus-utils';
 
 const circularProgressSize = '70px';
 
@@ -115,6 +117,17 @@ export default function DirectoryContent() {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
+    /** access write on current directory */
+    const [directoryWritable, setDirectoryWritable] = useState(false);
+
+    useEffect(() => {
+        if (selectedDirectory !== null) {
+            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
+                setDirectoryWritable(b);
+            });
+        }
+    }, [selectedDirectory]);
+
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
         event.stopPropagation();
@@ -155,11 +168,11 @@ export default function DirectoryContent() {
             }
             // We check if the context menu was triggered from a row to prevent displaying both the directory and the content context menus
             const isRow = !!(event.target as Element).closest(`.${CUSTOM_ROW_CLASS}`);
-            if (!isRow) {
+            if (isRow) {
+                handleOpenContentMenu(event);
+            } else {
                 dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                 handleOpenDirectoryMenu(event);
-            } else {
-                handleOpenContentMenu(event);
             }
         },
         [dispatch, handleOpenContentMenu, handleOpenDirectoryMenu, selectedDirectory?.elementUuid]
@@ -264,7 +277,11 @@ export default function DirectoryContent() {
                 // creates a visual offset rendering the last elements of a full table inaccessible
                 rows && rows.length > 0 && (
                     <Box flexShrink={0} sx={styles.toolBarContainer}>
-                        <ContentToolbar selectedElements={checkedRows} />
+                        <ContentToolbar
+                            selectedElements={checkedRows}
+                            selectedDirectory={selectedDirectory}
+                            selectedDirectoryWritable={directoryWritable}
+                        />
                         <Button
                             variant="contained"
                             endIcon={<AddIcon />}
@@ -317,6 +334,7 @@ export default function DirectoryContent() {
                             colDef={getColumnsDefinition(childrenMetadata, intl)}
                             getRowStyle={getRowStyle}
                             onGridReady={onGridReady}
+                            selectedDirectoryWritable={directoryWritable}
                         />
                     )
                 }
@@ -351,6 +369,7 @@ export default function DirectoryContent() {
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}
                 selectedDirectoryElementUuid={selectedDirectory?.elementUuid}
+                selectedDirectoryWritable={directoryWritable}
                 childrenMetadata={childrenMetadata}
             />
         </>

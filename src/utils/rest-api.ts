@@ -13,6 +13,8 @@ import {
     fetchEnv,
     getRequestParamFromList,
     getUserToken,
+    hasElementPermission,
+    PermissionType,
     type GsLang,
     type GsTheme,
     LAST_SELECTED_DIRECTORY,
@@ -27,7 +29,6 @@ import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
-import { HTTP_OK } from './UIconstants';
 import { FilterBasedContingencyList, FilteredIdentifiables, FiltersWithEquipmentTypes } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
@@ -81,12 +82,6 @@ export interface GroupDTO {
     id: UUID;
     name: string;
     users: string[];
-}
-
-export enum PermissionType {
-    READ = 'READ',
-    WRITE = 'WRITE',
-    MANAGE = 'MANAGE',
 }
 
 const getContingencyUriParamType = (contingencyListType: string | null | undefined) => {
@@ -715,17 +710,6 @@ export const getBaseName = (caseName: string) => {
     });
 };
 
-export function hasPermission(directoryUuid: UUID, permission: string) {
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}?permission=${permission}`;
-    console.debug(url);
-    return backendFetch(url, { method: 'head' })
-        .then((response) => response.status === HTTP_OK)
-        .catch(() => {
-            console.info(`Permission to ${permission} in directory ${directoryUuid} denied`);
-            return false;
-        });
-}
-
 export function fetchDirectoryPermissions(directoryUuid: UUID): Promise<PermissionDTO[]> {
     console.info(`Fetching permissions for directory ${directoryUuid}`);
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/permissions`;
@@ -756,5 +740,5 @@ export function fetchGroups(): Promise<GroupDTO[]> {
 
 // Function to check if user has MANAGE permission on directory
 export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
-    return hasPermission(directoryUuid, 'MANAGE');
+    return hasElementPermission(directoryUuid, PermissionType.MANAGE);
 }
