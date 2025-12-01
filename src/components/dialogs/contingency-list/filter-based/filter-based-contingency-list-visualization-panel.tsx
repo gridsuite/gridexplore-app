@@ -18,6 +18,7 @@ import {
     ElementType,
     FieldConstants,
     getEquipmentTypeShortLabel,
+    GridSection,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -55,12 +56,13 @@ const getRowId = (params: GetRowIdParams<RowData>) => {
 export type FilterBasedContingencyListVisualizationPanelProps = {
     isDataOutdated: boolean;
     setIsDataOutdated: (value: boolean) => void;
+    filters: FilterElement[];
 };
 
 export function FilterBasedContingencyListVisualizationPanel(
     props: Readonly<FilterBasedContingencyListVisualizationPanelProps>
 ) {
-    const { isDataOutdated, setIsDataOutdated } = props;
+    const { isDataOutdated, setIsDataOutdated, filters } = props;
     const gridRef = useRef<AgGridReact>(null);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -178,27 +180,50 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
+    const formatPathName = useCallback((name: string) => {
+        console.log(name.length);
+        if (name.length > 40) {
+            const splitNameList = name.split('/');
+            if (splitNameList.length > 2) {
+                if (splitNameList[0].length + splitNameList[splitNameList.length - 1].length < 40) {
+                    return `${splitNameList[0]}/.../${splitNameList[splitNameList.length - 1]}`;
+                }
+            }
+            return `.../${splitNameList[splitNameList.length - 1]}`;
+            // splitNameList length can not be equal to one because there is at least one root folder
+        }
+        return name;
+    }, []);
+
     return (
         <Grid container direction="column" sx={{ height: '100%' }}>
-            <Grid item component="h3" padding={0.5}>
-                <FormattedMessage id="visualization" />
-            </Grid>
+            <GridSection title="visualization" />
             <Grid item container alignItems="center" justifyContent="space-between">
-                <Grid item>
+                <Grid item xs={1} paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs padding={1} marginY={1}>
+                <Grid item xs={8} padding={1} marginY={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
-                            {studyName}
+                            {formatPathName(studyName)}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
                 <Grid item>
-                    <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                        <FormattedMessage id="selectStudyDialogButton" />
+                    <Button
+                        disabled={filters === undefined || filters.length === 0}
+                        onClick={() => setIsOpen(true)}
+                        variant={selectedStudy.length > 0 ? 'contained' : undefined}
+                        color="primary"
+                        component="label"
+                    >
+                        {selectedStudy.length > 0 ? (
+                            <FormattedMessage id="edit" />
+                        ) : (
+                            <FormattedMessage id="selectStudyDialogTitle" />
+                        )}
                     </Button>
                     <DirectoryItemSelector
                         open={isOpen}
