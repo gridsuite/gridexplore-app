@@ -44,6 +44,7 @@ import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
+import { DESCRIPTION_FILED } from './utils/directory-content-utils';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -164,19 +165,26 @@ function DirectoryContentDialog(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
-                if (event.colDef.field === 'description') {
+                const elementId = event.data.elementUuid;
+                const metadata = childrenMetadata[elementId];
+                if (!selectedDirectoryWritable || !metadata) {
+                    return;
+                }
+                if (event.colDef.field === DESCRIPTION_FILED) {
+                    /** change element description */
                     setActiveElement(event.data);
                     setOpenDescModificationDialog(true);
-                } else if (childrenMetadata[event.data.elementUuid] !== undefined) {
+                } else {
+                    /** open element */
                     setActiveElement(event.data);
-                    setElementName(childrenMetadata[event.data.elementUuid].elementName);
-                    setElementDescription(childrenMetadata[event.data.elementUuid].description);
-                    const subtype = childrenMetadata[event.data.elementUuid].specificMetadata.type as unknown as string;
+                    setElementName(metadata.elementName);
+                    setElementDescription(metadata.description);
+                    const subtype = metadata.specificMetadata.type;
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
                     switch (event.data.type) {
                         case ElementType.STUDY: {
-                            const url = getStudyUrl(event.data.elementUuid);
+                            const url = getStudyUrl(elementId);
                             if (url) {
                                 if (selectedDirectoryWritable) {
                                     window.open(url, '_blank');
@@ -193,25 +201,25 @@ function DirectoryContentDialog(
                         }
                         case ElementType.CONTINGENCY_LIST:
                             if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingContingencyListId(event.data.elementUuid);
+                                setCurrentExplicitNamingContingencyListId(elementId);
                                 setOpenDialog(subtype);
                             } else if (subtype === ContingencyListType.FILTERS.id) {
-                                setcurrentFilterBasedContingencyListId(event.data.elementUuid);
+                                setcurrentFilterBasedContingencyListId(elementId);
                                 setOpenDialog(subtype);
                             }
                             break;
                         case ElementType.FILTER:
                             if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingFilterId(event.data.elementUuid);
+                                setCurrentExplicitNamingFilterId(elementId);
                                 setOpenDialog(subtype);
                             } else if (subtype === FilterType.EXPERT.id) {
-                                setCurrentExpertFilterId(event.data.elementUuid);
+                                setCurrentExpertFilterId(elementId);
                                 setOpenDialog(subtype);
                             }
                             break;
                         case ElementType.MODIFICATION:
                             if (subtype === NetworkModificationType.COMPOSITE.id) {
-                                setCurrentNetworkModificationId(event.data.elementUuid);
+                                setCurrentNetworkModificationId(elementId);
                                 setOpenDialog(subtype);
                             }
                             break;
@@ -221,7 +229,7 @@ function DirectoryContentDialog(
                         case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
                         case ElementType.SENSITIVITY_PARAMETERS:
-                            setCurrentParametersId(event.data.elementUuid);
+                            setCurrentParametersId(elementId);
                             setCurrentParametersType(event.data.type);
                             setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
                             break;

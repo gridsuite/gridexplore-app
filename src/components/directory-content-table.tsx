@@ -68,18 +68,18 @@ export function DirectoryContentTable({
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
             const style: RowStyle = { fontSize: '1rem' };
-            const unEditableElements = [
-                ElementType.CASE,
-                ElementType.DIAGRAM_CONFIG,
-                ElementType.SPREADSHEET_CONFIG,
-                ElementType.SPREADSHEET_CONFIG_COLLECTION,
-            ];
-            if (cellData.data) {
-                if (cellData.data.type === ElementType.STUDY && !selectedDirectoryWritable) {
-                    style.cursor = 'not-allowed';
-                } else if (!unEditableElements.includes(cellData.data.type)) {
-                    style.cursor = 'pointer';
-                }
+            const editableElement = () => {
+                const READ_ONLY_ELEMENTS = [
+                    ElementType.CASE,
+                    ElementType.DIAGRAM_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG_COLLECTION,
+                ];
+                return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
+            };
+
+            if (selectedDirectoryWritable && editableElement()) {
+                style.cursor = 'pointer';
             }
             return {
                 ...style,

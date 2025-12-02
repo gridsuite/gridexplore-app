@@ -20,9 +20,9 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export type DescriptionCellRendererProps = { data: ElementAttributes };
+export type DescriptionCellRendererProps = { data: ElementAttributes; directoryWritable: boolean };
 
-export function DescriptionCellRenderer({ data }: Readonly<DescriptionCellRendererProps>) {
+export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<DescriptionCellRendererProps>) {
     const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
@@ -42,7 +42,7 @@ export function DescriptionCellRenderer({ data }: Readonly<DescriptionCellRender
             sx={{
                 display: 'inline-flex',
                 verticalAlign: 'middle',
-                cursor: 'pointer',
+                cursor: directoryWritable ? 'pointer' : undefined,
             }}
         >
             {icon}

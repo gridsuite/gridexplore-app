@@ -331,7 +331,7 @@ export default function DirectoryContent() {
                             handleCellContextualMenu={onCellContextMenu}
                             handleRowSelected={updateCheckedRows}
                             handleCellClick={handleCellClick}
-                            colDef={getColumnsDefinition(childrenMetadata, intl)}
+                            colDef={getColumnsDefinition(childrenMetadata, intl, directoryWritable)}
                             getRowStyle={getRowStyle}
                             onGridReady={onGridReady}
                             selectedDirectoryWritable={directoryWritable}

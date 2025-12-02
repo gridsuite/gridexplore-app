@@ -18,6 +18,8 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { getElementTypeTranslation } from './translation-utils';
 
+export const DESCRIPTION_FILED = 'description';
+
 export const formatMetadata = (
     data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>
@@ -56,7 +58,11 @@ export const defaultColumnDefinition: ColDef<unknown> = {
     },
 };
 
-export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttributes>, intl: IntlShape): ColDef[] => [
+export const getColumnsDefinition = (
+    childrenMetadata: Record<UUID, ElementAttributes>,
+    intl: IntlShape,
+    directoryWritable: boolean
+): ColDef[] => [
     {
         headerName: intl.formatMessage({
             id: 'elementName',
@@ -74,8 +80,11 @@ export const getColumnsDefinition = (childrenMetadata: Record<UUID, ElementAttri
         headerName: intl.formatMessage({
             id: 'description',
         }),
-        field: 'description',
+        field: DESCRIPTION_FILED,
         cellRenderer: DescriptionCellRenderer,
+        cellRendererParams: {
+            directoryWritable,
+        },
         sortable: false,
         minWidth: 110,
         flex: 1,
