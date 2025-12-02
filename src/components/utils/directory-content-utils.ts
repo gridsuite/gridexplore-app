@@ -72,8 +72,9 @@ export const getColumnsDefinition = (
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata,
+            directoryWritable,
         },
-        cellStyle: { display: 'flex' },
+        flex: 2,
         minWidth: 400,
     },
     {

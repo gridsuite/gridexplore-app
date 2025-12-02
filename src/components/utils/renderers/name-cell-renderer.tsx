@@ -6,11 +6,13 @@
  */
 import type { UUID } from 'node:crypto';
 import { IntlShape, useIntl } from 'react-intl';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Tooltip } from '@mui/material';
+import { Lock as LockIcon } from '@mui/icons-material';
 import {
     type ElementAttributes,
     ElementType,
     getFileIcon,
+    mergeSx,
     type MuiStyles,
     OverflowableText,
 } from '@gridsuite/commons-ui';
@@ -48,25 +50,21 @@ const styles = {
         width: '18px',
         height: '18px',
     }),
+    right: (theme) => ({
+        marginLeft: 'auto',
+    }),
     tooltip: {
         maxWidth: '1000px',
-    },
-    overflow: {
-        display: 'inline-block',
-        whiteSpace: 'pre',
-        textOverflow: 'ellipsis',
-        overflow: 'hidden',
-        lineHeight: 'initial',
-        verticalAlign: 'middle',
     },
 } as const satisfies MuiStyles;
 
 export type NameCellRendererProps = {
     data: ElementAttributes;
     childrenMetadata: Record<UUID, ElementAttributes>;
+    directoryWritable: boolean;
 };
 
-export function NameCellRenderer({ data, childrenMetadata }: Readonly<NameCellRendererProps>) {
+export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     return (
         <Box sx={styles.tableCell}>
@@ -79,9 +77,13 @@ export function NameCellRenderer({ data, childrenMetadata }: Readonly<NameCellRe
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
-                style={styles.overflow}
                 data-testid="ElementName"
             />
+            {!directoryWritable && (
+                <Tooltip title="Element protégé">
+                    <LockIcon sx={mergeSx(styles.icon, styles.right)} />
+                </Tooltip>
+            )}
         </Box>
     );
 }
