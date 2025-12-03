@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'node:crypto';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, GetRowIdParams } from 'ag-grid-community';
@@ -18,7 +18,6 @@ import {
     ElementType,
     FieldConstants,
     getEquipmentTypeShortLabel,
-    GridSection,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -56,13 +55,13 @@ const getRowId = (params: GetRowIdParams<RowData>) => {
 export type FilterBasedContingencyListVisualizationPanelProps = {
     isDataOutdated: boolean;
     setIsDataOutdated: (value: boolean) => void;
-    filters: FilterElement[];
+    hasFilters: boolean;
 };
 
 export function FilterBasedContingencyListVisualizationPanel(
     props: Readonly<FilterBasedContingencyListVisualizationPanelProps>
 ) {
-    const { isDataOutdated, setIsDataOutdated, filters } = props;
+    const { isDataOutdated, setIsDataOutdated, hasFilters } = props;
     const gridRef = useRef<AgGridReact>(null);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -180,32 +179,33 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
-    const formatPathName = useCallback((name: string) => {
-        console.log(name.length);
-        if (name.length > 40) {
-            const splitNameList = name.split('/');
+    const formatPathName = useMemo(() => {
+        if (studyName.length > 55) {
+            const splitNameList = studyName.split('/');
             if (splitNameList.length > 2) {
-                if (splitNameList[0].length + splitNameList[splitNameList.length - 1].length < 40) {
+                if (splitNameList[0].length + splitNameList[splitNameList.length - 1].length < 55) {
                     return `${splitNameList[0]}/.../${splitNameList[splitNameList.length - 1]}`;
                 }
             }
             return `.../${splitNameList[splitNameList.length - 1]}`;
             // splitNameList length can not be equal to one because there is at least one root folder
         }
-        return name;
-    }, []);
+        return studyName;
+    }, [studyName]);
 
     return (
         <Grid container direction="column" sx={{ height: '100%' }}>
-            <GridSection title="visualization" />
-            <Grid item container alignItems="center" justifyContent="space-between">
-                <Grid item xs={1} paddingTop={1}>
+            <Grid item component="h3">
+                <FormattedMessage id="visualization" />
+            </Grid>
+            <Grid item container alignItems="center" marginY={1}>
+                <Grid item paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={8} padding={1} marginY={1}>
+                <Grid item xs={9} paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
-                            {formatPathName(studyName)}
+                            {formatPathName}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
@@ -213,10 +213,9 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
                 <Grid item>
                     <Button
-                        disabled={filters === undefined || filters.length === 0}
+                        disabled={!hasFilters}
                         onClick={() => setIsOpen(true)}
                         variant={selectedStudy.length > 0 ? 'contained' : undefined}
-                        color="primary"
                         component="label"
                     >
                         {selectedStudy.length > 0 ? (

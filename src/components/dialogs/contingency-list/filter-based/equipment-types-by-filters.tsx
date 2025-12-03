@@ -7,7 +7,6 @@
 import {
     CONTINGENCY_LIST_EQUIPMENTS,
     ContingencyListEquipment,
-    GridSection,
     OverflowableTableCell,
     OverflowableTableCellWithCheckbox,
 } from '@gridsuite/commons-ui';
@@ -94,7 +93,9 @@ function EquipmentTypesByFilters({
 
     return (
         <Grid item container direction="column" {...containerProps}>
-            <GridSection title="equipmentTypesByFilters" />
+            <Grid item component="h3">
+                <FormattedMessage id="equipmentTypesByFilters" />
+            </Grid>
             <Grid item container xs sx={{ height: 0, flex: 1 }}>
                 <Grid item xs={6} marginRight={-0.05} sx={{ height: '100%' }}>
                     <TableContainer
