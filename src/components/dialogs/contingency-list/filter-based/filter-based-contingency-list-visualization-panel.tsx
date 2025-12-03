@@ -202,7 +202,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 <Grid item paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item paddingLeft={1}>
+                <Grid item xs paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
                             {formatPathName}
@@ -211,7 +211,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item paddingLeft={10}>
+                <Grid item>
                     <Button
                         disabled={!hasFilters}
                         onClick={() => setIsOpen(true)}
