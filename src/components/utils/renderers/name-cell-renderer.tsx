@@ -17,23 +17,23 @@ import {
     OverflowableText,
 } from '@gridsuite/commons-ui';
 
-const isElementCaseOrStudy = (objectType: ElementType) =>
-    objectType === ElementType.STUDY || objectType === ElementType.CASE;
+const waitingForAsyncCreation = (metadata: ElementAttributes, objectType: ElementType) =>
+    !metadata && (objectType === ElementType.STUDY || objectType === ElementType.CASE);
 
 function getDisplayedElementName(
     data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
 ) {
-    const { elementName, uploading, elementUuid } = data;
+    const { elementName, uploading, elementUuid, type } = data;
     const { formatMessage } = intl;
     if (uploading) {
         return `${elementName}\n${formatMessage({ id: 'uploading' })}`;
     }
-    if (!childrenMetadata[elementUuid]) {
+    if (waitingForAsyncCreation(childrenMetadata[elementUuid], type)) {
         return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
-    return childrenMetadata[elementUuid].elementName;
+    return childrenMetadata[elementUuid]?.elementName ?? elementName;
 }
 
 const styles = {
@@ -42,19 +42,28 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    circularRoot: (theme) => ({
-        marginRight: theme.spacing(1),
-    }),
     icon: (theme) => ({
         marginRight: theme.spacing(1),
         width: '18px',
+        minWidth: '18px',
         height: '18px',
+        minHeight: '18px',
     }),
     right: {
         marginLeft: 'auto',
     },
     tooltip: {
         maxWidth: '1000px',
+    },
+    waitingName: {
+        display: 'inline-block',
+        whiteSpace: 'pre',
+        overflow: 'hidden',
+        lineHeight: 'initial',
+        verticalAlign: 'middle',
+    },
+    singleName: {
+        marginTop: 1,
     },
 } as const satisfies MuiStyles;
 
@@ -66,17 +75,17 @@ export type NameCellRendererProps = {
 
 export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
+    const waiting = waitingForAsyncCreation(childrenMetadata[data.elementUuid], data.type);
     return (
         <Box sx={styles.tableCell}>
             {/*  Icon */}
-            {!childrenMetadata[data.elementUuid] && isElementCaseOrStudy(data.type) && (
-                <CircularProgress size={18} sx={styles.circularRoot} />
-            )}
+            {waiting && <CircularProgress size={18} sx={styles.icon} />}
             {childrenMetadata[data.elementUuid] && getFileIcon(data.type, styles.icon)}
             {/* Name */}
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
+                style={waiting ? styles.waitingName : styles.singleName}
                 data-testid="ElementName"
             />
             {!directoryWritable && (
