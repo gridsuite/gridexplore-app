@@ -180,10 +180,10 @@ export function FilterBasedContingencyListVisualizationPanel(
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
     const formatPathName = useMemo(() => {
-        if (studyName.length > 55) {
+        if (studyName.length > 48) {
             const splitNameList = studyName.split('/');
             if (splitNameList.length > 2) {
-                if (splitNameList[0].length + splitNameList[splitNameList.length - 1].length < 55) {
+                if (splitNameList[0].length + splitNameList[splitNameList.length - 1].length < 48) {
                     return `${splitNameList[0]}/.../${splitNameList[splitNameList.length - 1]}`;
                 }
             }
@@ -202,7 +202,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 <Grid item paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={9} paddingLeft={1}>
+                <Grid item xs={8} paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
                             {formatPathName}
