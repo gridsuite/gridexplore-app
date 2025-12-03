@@ -37,7 +37,6 @@ function getAbbreviationFromUserName(name: string) {
 
 const styles = {
     avatar: (theme) => ({
-        cursor: 'pointer',
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,

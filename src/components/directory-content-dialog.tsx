@@ -55,6 +55,7 @@ export type DirectoryContentDialogProps = {
     activeElement?: ElementAttributes;
     setActiveElement: Dispatch<SetStateAction<ElementAttributes | undefined>>;
     selectedDirectoryElementUuid?: UUID;
+    selectedDirectoryWritable: boolean;
     childrenMetadata: ReturnType<typeof useDirectoryContent>[1];
 };
 
@@ -65,6 +66,7 @@ function DirectoryContentDialog(
         setActiveElement,
         broadcastChannel,
         selectedDirectoryElementUuid,
+        selectedDirectoryWritable,
         childrenMetadata,
     }: Readonly<DirectoryContentDialogProps>,
     refApi: ForwardedRef<DirectoryContentDialogApi>
@@ -176,7 +178,9 @@ function DirectoryContentDialog(
                         case ElementType.STUDY: {
                             const url = getStudyUrl(event.data.elementUuid);
                             if (url) {
-                                window.open(url, '_blank');
+                                if (selectedDirectoryWritable) {
+                                    window.open(url, '_blank');
+                                }
                             } else {
                                 snackError({
                                     messageTxt: intl.formatMessage(
@@ -233,6 +237,7 @@ function DirectoryContentDialog(
             getStudyUrl,
             intl,
             selectedDirectoryElementUuid,
+            selectedDirectoryWritable,
             setActiveElement,
             setOpenDialog,
             snackError,
@@ -246,7 +251,6 @@ function DirectoryContentDialog(
                 description={activeElement.description}
                 elementUuid={activeElement.elementUuid}
                 onClose={handleDescDialogClose}
-                // @ts-expect-error TODO: set UUID as parameter type in commons-ui
                 updateElement={updateElement}
             />
         );
@@ -370,6 +374,7 @@ function DirectoryContentDialog(
                     user={user}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
+                    enableDeveloperMode={enableDeveloperMode}
                 />
             );
         }

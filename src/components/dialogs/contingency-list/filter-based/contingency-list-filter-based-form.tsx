@@ -6,36 +6,27 @@
  */
 import {
     ArrayAction,
-    CONTINGENCY_LIST_EQUIPMENTS,
-    ContingencyListEquipment,
     DescriptionField,
-    OverflowableChipWithHelperText,
     DirectoryItemsInput,
     ElementType,
     EquipmentType,
     FieldConstants,
+    MuiStyles,
+    OverflowableChipWithHelperText,
+    ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import {
-    Checkbox,
-    Divider,
-    Grid,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from '@mui/material';
+import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
+import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
 import { isSubstationOrVoltageLevelFilter } from '../contingency-list-utils';
+import EquipmentTypesByFilters from './equipment-types-by-filters';
 
 const equipmentTypes: string[] = [
     EquipmentType.SUBSTATION,
@@ -52,61 +43,57 @@ const equipmentTypes: string[] = [
     EquipmentType.DANGLING_LINE,
 ];
 
-export default function ContingencyListFilterBasedForm() {
+const styles = {
+    handle: () => ({
+        backgroundColor: 'inherit',
+        width: 15,
+        marginLeft: 8,
+        marginRight: 8,
+    }),
+} as const satisfies MuiStyles;
+
+// sizes in percent
+const LEFT_PANEL_MIN_SIZE = 25;
+const LEFT_PANEL_DEFAULT_SIZE = 33;
+const RIGHT_PANEL_MIN_SIZE = 25;
+
+interface ContingencyListFilterBasedFormProps {
+    isSubOrVlFilterIncluded: boolean;
+    setIsSubOrVlFilterIncluded: (value: boolean) => void;
+}
+
+export default function ContingencyListFilterBasedForm({
+    isSubOrVlFilterIncluded,
+    setIsSubOrVlFilterIncluded,
+}: Readonly<ContingencyListFilterBasedFormProps>) {
+    const theme = useTheme();
+    const vwBelow900px = useMediaQuery(theme.breakpoints.down('md'));
+
     const { setValue, getValues } = useFormContext();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
-    const [selectedFilterId, setSelectedFilterId] = useState<string | null>(null);
     const [isDataOutdated, setIsDataOutdated] = useState<boolean>(false);
 
-    const filters: FilterElement[] = useWatch({ name: FieldConstants.FILTERS }) as unknown as FilterElement[];
+    const filters: FilterElement[] = useWatch({
+        name: FieldConstants.FILTERS,
+    }) as unknown as FilterElement[];
     const substationAndVLFilters = filters.filter(isSubstationOrVoltageLevelFilter);
-    const filtersSubEquipments: FilterSubEquipments[] = useWatch({
-        name: ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER,
-    }) as unknown as FilterSubEquipments[];
 
-    const handleFilterRowClick = useCallback((clickedFilterId: string, currentFilterId: string | null) => {
-        if (clickedFilterId !== currentFilterId) {
-            setSelectedFilterId(clickedFilterId);
+    const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
+
+    useEffect(() => {
+        const panelGroup = panelGroupRef.current;
+        if (substationAndVLFilters.length > 0 && !isSubOrVlFilterIncluded) {
+            setIsSubOrVlFilterIncluded(true);
+            if (panelGroup) {
+                panelGroup.setLayout([60, 40]);
+            }
+        } else if (substationAndVLFilters.length === 0 && isSubOrVlFilterIncluded) {
+            setIsSubOrVlFilterIncluded(false);
+            if (panelGroup) {
+                panelGroup.setLayout([33, 67]);
+            }
         }
-    }, []);
-
-    const filterEquipmentTypes =
-        selectedFilterId &&
-        filtersSubEquipments?.find((value) => value[ContingencyFieldConstants.FILTER_ID] === selectedFilterId)?.[
-            ContingencyFieldConstants.SUB_EQUIPMENT_TYPES
-        ];
-
-    const handleEquipmentRowClick = useCallback(
-        (equipmentType: string, isEquipmentSelected: boolean, selectedFilterIdP: string | null) => {
-            const currentSubEquipmentsByFilters: FilterSubEquipments[] = getValues(
-                ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER
-            );
-            setValue(
-                ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER,
-                currentSubEquipmentsByFilters.map((value) => {
-                    if (value[ContingencyFieldConstants.FILTER_ID] === selectedFilterIdP) {
-                        // we either add or remove the clicked equipment from the list of subEquipments
-                        // depending on if the equipment is already selected or not
-                        const updatedSubEquipments = isEquipmentSelected
-                            ? value[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES].filter(
-                                  (subEquipment: string) => subEquipment !== equipmentType
-                              )
-                            : [...value[ContingencyFieldConstants.SUB_EQUIPMENT_TYPES], equipmentType];
-
-                        return {
-                            ...value,
-                            [ContingencyFieldConstants.SUB_EQUIPMENT_TYPES]: updatedSubEquipments,
-                        };
-                    }
-                    // for the other filters, we just return the value as is
-                    return value;
-                }),
-                { shouldDirty: true }
-            );
-            setIsDataOutdated(true);
-        },
-        [setValue, getValues]
-    );
+    }, [substationAndVLFilters, setIsSubOrVlFilterIncluded, isSubOrVlFilterIncluded]);
 
     const handleFilterOnChange = useCallback(
         (_currentFilters: any, action?: ArrayAction, filter?: FilterElement) => {
@@ -141,121 +128,59 @@ export default function ContingencyListFilterBasedForm() {
         [setValue, getValues]
     );
 
+    const containerProps =
+        vwBelow900px && isSubOrVlFilterIncluded
+            ? {}
+            : { xs: isSubOrVlFilterIncluded ? 4 : true, sx: { height: '100%', overflow: 'hidden' } };
+
     return (
-        <Grid container spacing={2} sx={{ height: '100%' }}>
-            <Grid item container direction="column" xs={8} spacing={1}>
-                <Grid item>
-                    <UniqueNameInput
-                        name={FieldConstants.NAME}
-                        label="nameProperty"
-                        elementType={ElementType.CONTINGENCY_LIST}
-                        activeDirectory={activeDirectory}
-                    />
-                </Grid>
-                <Grid item>
-                    <DescriptionField />
-                </Grid>
-                <Grid item>
-                    <FormattedMessage id="Filters" />
-                </Grid>
-                <Grid item>
-                    <DirectoryItemsInput
-                        titleId="FiltersListsSelection"
-                        label=""
-                        name={FieldConstants.FILTERS}
-                        elementType={ElementType.FILTER}
-                        equipmentTypes={equipmentTypes}
-                        onChange={handleFilterOnChange}
-                        ChipComponent={OverflowableChipWithHelperText}
-                        chipProps={{ variant: 'outlined' }}
-                    />
-                </Grid>
-                {substationAndVLFilters.length > 0 && (
-                    <>
+        <PanelGroup direction="horizontal" ref={panelGroupRef}>
+            <Panel defaultSize={LEFT_PANEL_DEFAULT_SIZE} minSize={LEFT_PANEL_MIN_SIZE}>
+                <Grid container columnSpacing={1.5} direction={vwBelow900px ? 'column' : 'row'} sx={{ height: '100%' }}>
+                    <Grid item container direction="column" {...containerProps}>
                         <Grid item>
-                            <FormattedMessage id="equipmentTypesByFilters" />
+                            <UniqueNameInput
+                                name={FieldConstants.NAME}
+                                label="nameProperty"
+                                elementType={ElementType.CONTINGENCY_LIST}
+                                activeDirectory={activeDirectory}
+                            />
                         </Grid>
-                        <Grid item container xs>
-                            <Grid item xs={6} marginRight={-0.08}>
-                                <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <FormattedMessage id="contingencyList.filterBased.filtersTableColumn" />
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {substationAndVLFilters.map((filterRow) => (
-                                                <TableRow
-                                                    key={filterRow.id}
-                                                    hover
-                                                    onClick={() => handleFilterRowClick(filterRow.id, selectedFilterId)}
-                                                    selected={filterRow.id === selectedFilterId}
-                                                >
-                                                    <TableCell component="th" scope="row">
-                                                        {filterRow.name}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Grid>
-                            <Grid item xs={6} marginLeft={-0.08}>
-                                <TableContainer component={Paper} sx={{ height: '100%', border: 0.5 }}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    <FormattedMessage id="contingencyList.filterBased.subEquipmentsTableColumn" />
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {filterEquipmentTypes &&
-                                                Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
-                                                    (equipmentRow: ContingencyListEquipment) => {
-                                                        const isEquipmentSelected = filterEquipmentTypes.includes(
-                                                            equipmentRow.id
-                                                        );
-                                                        return (
-                                                            <TableRow
-                                                                key={equipmentRow.id}
-                                                                hover
-                                                                onClick={() =>
-                                                                    handleEquipmentRowClick(
-                                                                        equipmentRow.id,
-                                                                        isEquipmentSelected,
-                                                                        selectedFilterId
-                                                                    )
-                                                                }
-                                                                selected={isEquipmentSelected}
-                                                            >
-                                                                <TableCell padding="checkbox">
-                                                                    <Checkbox checked={isEquipmentSelected} />
-                                                                    <FormattedMessage id={equipmentRow.label} />
-                                                                </TableCell>
-                                                            </TableRow>
-                                                        );
-                                                    }
-                                                )}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            </Grid>
+                        <Grid item>
+                            <DescriptionField />
                         </Grid>
-                    </>
-                )}
-            </Grid>
-            <Grid item>
-                <Divider orientation="vertical" />
-            </Grid>
-            <FilterBasedContingencyListVisualizationPanel
-                isDataOutdated={isDataOutdated}
-                setIsDataOutdated={setIsDataOutdated}
-            />
-        </Grid>
+                        <Grid item component="h4">
+                            <FormattedMessage id="Filters" />
+                        </Grid>
+                        <Grid item xs>
+                            <DirectoryItemsInput
+                                titleId="FiltersListsSelection"
+                                label=""
+                                name={FieldConstants.FILTERS}
+                                elementType={ElementType.FILTER}
+                                equipmentTypes={equipmentTypes}
+                                onChange={handleFilterOnChange}
+                                ChipComponent={OverflowableChipWithHelperText}
+                                chipProps={{ variant: 'outlined' }}
+                                fullHeight
+                            />
+                        </Grid>
+                    </Grid>
+                    {isSubOrVlFilterIncluded && (
+                        <EquipmentTypesByFilters
+                            substationAndVLFilters={substationAndVLFilters}
+                            setIsDataOutdated={setIsDataOutdated}
+                        />
+                    )}
+                </Grid>
+            </Panel>
+            <ResizeHandle style={styles.handle} />
+            <Panel minSize={RIGHT_PANEL_MIN_SIZE}>
+                <FilterBasedContingencyListVisualizationPanel
+                    isDataOutdated={isDataOutdated}
+                    setIsDataOutdated={setIsDataOutdated}
+                />
+            </Panel>
+        </PanelGroup>
     );
 }

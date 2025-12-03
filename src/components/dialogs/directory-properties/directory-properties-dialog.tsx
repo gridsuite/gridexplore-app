@@ -13,6 +13,7 @@ import {
     useSnackMessage,
     CancelButton,
     CustomFormProvider,
+    PermissionType,
     SubmitButton,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -24,7 +25,6 @@ import {
     fetchGroups,
     hasManagePermission,
     PermissionDTO,
-    PermissionType,
     fetchUsersIdentities,
 } from '../../../utils/rest-api';
 import {
