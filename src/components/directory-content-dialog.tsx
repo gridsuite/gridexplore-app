@@ -44,7 +44,7 @@ import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
-import { DESCRIPTION_FILED } from './utils/directory-content-utils';
+import { DESCRIPTION_FIELD } from './utils/directory-content-utils';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -107,121 +107,147 @@ function DirectoryContentDialog(
         setOpenDescModificationDialog(false);
     }, [setActiveElement]);
 
-    /* Explicit Naming contingency list dialog: window status value for editing an explicit naming contingency list */
+    const closeDialog = useCallback(() => {
+        setOpenDialog(constants.DialogsId.NONE);
+        setActiveElement(undefined);
+        setElementName('');
+    }, [setActiveElement, setOpenDialog]);
+
     const [currentExplicitNamingContingencyListId, setCurrentExplicitNamingContingencyListId] = useState<UUID>();
     const handleCloseExplicitNamingContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingContingencyListId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        closeDialog();
+    }, [closeDialog]);
 
-    /* Filter based contingency list dialog: window status value for editing a filter based contingency list */
-    const [currentFilterBasedContingencyListId, setcurrentFilterBasedContingencyListId] = useState<UUID>();
+    const [currentFilterBasedContingencyListId, setCurrentFilterBasedContingencyListId] = useState<UUID>();
     const handleCloseFilterBasedContingency = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
-        setcurrentFilterBasedContingencyListId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        setCurrentFilterBasedContingencyListId(undefined);
+        closeDialog();
+    }, [closeDialog]);
 
     const [currentExplicitNamingFilterId, setCurrentExplicitNamingFilterId] = useState<UUID>();
-    /* Filters dialog: window status value to edit ExplicitNaming filters */
     const handleCloseExplicitNamingFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
         setCurrentExplicitNamingFilterId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        closeDialog();
+    }, [closeDialog]);
 
     const [currentNetworkModificationId, setCurrentNetworkModificationId] = useState<UUID>();
     const handleCloseCompositeModificationDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
         setCurrentNetworkModificationId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        closeDialog();
+    }, [closeDialog]);
 
-    /* Filters dialog: window status value to edit Expert filters */
     const [currentExpertFilterId, setCurrentExpertFilterId] = useState<UUID>();
     const handleCloseExpertFilterDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
         setCurrentExpertFilterId(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        closeDialog();
+    }, [closeDialog]);
 
     const [currentParametersId, setCurrentParametersId] = useState<UUID>();
     const [currentParametersType, setCurrentParametersType] = useState<ElementType>();
     const handleCloseParametersDialog = useCallback(() => {
-        setOpenDialog(constants.DialogsId.NONE);
         setCurrentParametersId(undefined);
         setCurrentParametersType(undefined);
-        setActiveElement(undefined);
-        setElementName('');
-    }, [setActiveElement, setOpenDialog]);
+        closeDialog();
+    }, [closeDialog]);
+
+    const openStudyTab = useCallback(
+        (studyUuid: UUID) => {
+            const url = getStudyUrl(studyUuid);
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                snackError({
+                    messageTxt: intl.formatMessage({ id: 'getAppLinkError' }, { type: ElementType.STUDY }),
+                });
+            }
+        },
+        [getStudyUrl, intl, snackError]
+    );
+
+    const openContingencyListDialog = useCallback(
+        (elementId: UUID, subType: string) => {
+            if (subType === ContingencyListType.EXPLICIT_NAMING.id) {
+                setCurrentExplicitNamingContingencyListId(elementId);
+                setOpenDialog(subType);
+            } else if (subType === ContingencyListType.FILTERS.id) {
+                setCurrentFilterBasedContingencyListId(elementId);
+                setOpenDialog(subType);
+            }
+        },
+        [setOpenDialog]
+    );
+
+    const openFilterDialog = useCallback(
+        (elementId: UUID, subType: string) => {
+            if (subType === FilterType.EXPLICIT_NAMING.id) {
+                setCurrentExplicitNamingFilterId(elementId);
+                setOpenDialog(subType);
+            } else if (subType === FilterType.EXPERT.id) {
+                setCurrentExpertFilterId(elementId);
+                setOpenDialog(subType);
+            }
+        },
+        [setOpenDialog]
+    );
+
+    const openModificationDialog = useCallback(
+        (elementId: UUID, subType: string) => {
+            if (subType === NetworkModificationType.COMPOSITE.id) {
+                setCurrentNetworkModificationId(elementId);
+                setOpenDialog(subType);
+            }
+        },
+        [setOpenDialog]
+    );
+
+    const openParametersDialog = useCallback(
+        (elementId: UUID, parameterType: ElementType) => {
+            setCurrentParametersId(elementId);
+            setCurrentParametersType(parameterType);
+            setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
+        },
+        [setOpenDialog]
+    );
 
     useImperativeHandle(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
-                const elementId = event.data.elementUuid;
-                const metadata = childrenMetadata[elementId];
-                if (!selectedDirectoryWritable || !metadata) {
+                if (!selectedDirectoryWritable) {
+                    /** no element can be opened */
                     return;
                 }
-                if (event.colDef.field === DESCRIPTION_FILED) {
-                    /** change element description */
+                if (event.colDef.field === DESCRIPTION_FIELD) {
+                    /** open description dialog */
                     setActiveElement(event.data);
                     setOpenDescModificationDialog(true);
-                } else {
-                    /** open element */
+                    return;
+                }
+
+                /** open element */
+                const elementId = event.data.elementUuid;
+                const metadata = childrenMetadata[elementId];
+                if (metadata) {
                     setActiveElement(event.data);
                     setElementName(metadata.elementName);
                     setElementDescription(metadata.description);
                     const subtype = metadata.specificMetadata.type;
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
+
                     switch (event.data.type) {
-                        case ElementType.STUDY: {
-                            const url = getStudyUrl(elementId);
-                            if (url) {
-                                if (selectedDirectoryWritable) {
-                                    window.open(url, '_blank');
-                                }
-                            } else {
-                                snackError({
-                                    messageTxt: intl.formatMessage(
-                                        { id: 'getAppLinkError' },
-                                        { type: event.data.type }
-                                    ),
-                                });
-                            }
+                        case ElementType.STUDY:
+                            openStudyTab(elementId);
                             break;
-                        }
                         case ElementType.CONTINGENCY_LIST:
-                            if (subtype === ContingencyListType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingContingencyListId(elementId);
-                                setOpenDialog(subtype);
-                            } else if (subtype === ContingencyListType.FILTERS.id) {
-                                setcurrentFilterBasedContingencyListId(elementId);
-                                setOpenDialog(subtype);
-                            }
+                            openContingencyListDialog(elementId, subtype);
                             break;
                         case ElementType.FILTER:
-                            if (subtype === FilterType.EXPLICIT_NAMING.id) {
-                                setCurrentExplicitNamingFilterId(elementId);
-                                setOpenDialog(subtype);
-                            } else if (subtype === FilterType.EXPERT.id) {
-                                setCurrentExpertFilterId(elementId);
-                                setOpenDialog(subtype);
-                            }
+                            openFilterDialog(elementId, subtype);
                             break;
                         case ElementType.MODIFICATION:
-                            if (subtype === NetworkModificationType.COMPOSITE.id) {
-                                setCurrentNetworkModificationId(elementId);
-                                setOpenDialog(subtype);
-                            }
+                            openModificationDialog(elementId, subtype);
                             break;
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
@@ -229,9 +255,7 @@ function DirectoryContentDialog(
                         case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
                         case ElementType.SENSITIVITY_PARAMETERS:
-                            setCurrentParametersId(elementId);
-                            setCurrentParametersType(event.data.type);
-                            setOpenDialog(constants.DialogsId.EDIT_PARAMETERS);
+                            openParametersDialog(elementId, event.data.type);
                             break;
                         default:
                             break;
@@ -242,194 +266,196 @@ function DirectoryContentDialog(
         [
             childrenMetadata,
             dispatch,
-            getStudyUrl,
-            intl,
+            openStudyTab,
+            openContingencyListDialog,
+            openFilterDialog,
+            openModificationDialog,
+            openParametersDialog,
             selectedDirectoryElementUuid,
             selectedDirectoryWritable,
             setActiveElement,
-            setOpenDialog,
-            snackError,
         ]
     );
 
-    if (openDescModificationDialog && activeElement) {
-        return (
-            <DescriptionModificationDialog
-                open
-                description={activeElement.description}
-                elementUuid={activeElement.elementUuid}
-                onClose={handleDescDialogClose}
-                updateElement={updateElement}
-            />
-        );
-    }
-    if (currentNetworkModificationId !== undefined) {
-        return (
-            <CompositeModificationDialog
-                open
-                titleId="MODIFICATION"
-                compositeModificationId={currentNetworkModificationId}
-                onClose={handleCloseCompositeModificationDialog}
-                name={elementName}
-                description={elementDescription}
-                broadcastChannel={broadcastChannel}
-            />
-        );
-    }
-
-    if (currentExplicitNamingContingencyListId !== undefined && activeElement) {
-        return (
-            <ExplicitNamingEditionDialog
-                open
-                titleId="editContingencyList"
-                contingencyListId={currentExplicitNamingContingencyListId}
-                onClose={handleCloseExplicitNamingContingency}
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                description={activeElement.description}
-            />
-        );
-    }
-    if (currentFilterBasedContingencyListId !== undefined && activeElement) {
-        return (
-            <FilterBasedContingencyListDialog
-                titleId="editFilterBasedContingencyList"
-                open
-                onClose={handleCloseFilterBasedContingency}
-                description={activeElement.description}
-                name={elementName}
-                id={currentFilterBasedContingencyListId}
-            />
-        );
-    }
-    if (currentExplicitNamingFilterId !== undefined && activeElement) {
-        return (
-            <ExplicitNamingFilterEditionDialog
-                id={currentExplicitNamingFilterId}
-                open
-                onClose={handleCloseExplicitNamingFilterDialog}
-                titleId="editFilter"
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                itemSelectionForCopy={itemSelectionForCopy}
-                setItemSelectionForCopy={setItemSelectionForCopy}
-                getFilterById={getFilterById}
-                activeDirectory={activeDirectory}
-                language={languageLocal}
-                description={activeElement.description}
-            />
-        );
-    }
-    if (currentExpertFilterId !== undefined && activeElement) {
-        return (
-            <ExpertFilterEditionDialog
-                id={currentExpertFilterId}
-                open
-                onClose={handleCloseExpertFilterDialog}
-                titleId="editFilter"
-                name={elementName}
-                broadcastChannel={broadcastChannel}
-                itemSelectionForCopy={itemSelectionForCopy}
-                setItemSelectionForCopy={setItemSelectionForCopy}
-                getFilterById={getFilterById}
-                activeDirectory={activeDirectory}
-                language={languageLocal}
-                description={activeElement.description}
-            />
-        );
-    }
-    if (currentParametersId !== undefined && activeElement && activeDirectory) {
-        if (currentParametersType === ElementType.LOADFLOW_PARAMETERS) {
+    if (activeElement && activeDirectory) {
+        if (openDescModificationDialog) {
             return (
-                <LoadFlowParametersEditionDialog
-                    id={currentParametersId}
+                <DescriptionModificationDialog
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
-                    name={elementName}
                     description={activeElement.description}
-                    user={user}
-                    activeDirectory={activeDirectory}
-                    language={languageLocal}
-                    enableDeveloperMode={enableDeveloperMode}
+                    elementUuid={activeElement.elementUuid}
+                    onClose={handleDescDialogClose}
+                    updateElement={updateElement}
                 />
             );
         }
-        if (currentParametersType === ElementType.NETWORK_VISUALIZATIONS_PARAMETERS) {
+        if (currentNetworkModificationId) {
             return (
-                <NetworkVisualizationsParametersEditionDialog
-                    id={currentParametersId}
+                <CompositeModificationDialog
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
+                    titleId="MODIFICATION"
+                    compositeModificationId={currentNetworkModificationId}
+                    onClose={handleCloseCompositeModificationDialog}
                     name={elementName}
-                    description={activeElement.description}
-                    user={user}
-                    activeDirectory={activeDirectory}
-                    language={languageLocal}
+                    description={elementDescription}
+                    broadcastChannel={broadcastChannel}
                 />
             );
         }
-        if (currentParametersType === ElementType.SHORT_CIRCUIT_PARAMETERS) {
+        if (currentExplicitNamingContingencyListId) {
             return (
-                <ShortCircuitParametersEditionDialog
-                    id={currentParametersId}
+                <ExplicitNamingEditionDialog
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
+                    titleId="editContingencyList"
+                    contingencyListId={currentExplicitNamingContingencyListId}
+                    onClose={handleCloseExplicitNamingContingency}
                     name={elementName}
+                    broadcastChannel={broadcastChannel}
                     description={activeElement.description}
-                    user={user}
-                    activeDirectory={activeDirectory}
-                    language={languageLocal}
                 />
             );
         }
-        if (currentParametersType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+        if (currentFilterBasedContingencyListId) {
             return (
-                <VoltageInitParametersEditionDialog
-                    id={currentParametersId}
+                <FilterBasedContingencyListDialog
+                    titleId="editFilterBasedContingencyList"
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
-                    name={elementName}
+                    onClose={handleCloseFilterBasedContingency}
                     description={activeElement.description}
-                    user={user}
-                    activeDirectory={activeDirectory}
-                    language={languageLocal}
+                    name={elementName}
+                    id={currentFilterBasedContingencyListId}
                 />
             );
         }
-        if (currentParametersType === ElementType.SECURITY_ANALYSIS_PARAMETERS) {
+        if (currentExplicitNamingFilterId) {
             return (
-                <SecurityAnalysisParametersDialog
-                    id={currentParametersId}
+                <ExplicitNamingFilterEditionDialog
+                    id={currentExplicitNamingFilterId}
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
+                    onClose={handleCloseExplicitNamingFilterDialog}
+                    titleId="editFilter"
                     name={elementName}
-                    description={activeElement.description}
-                    user={user}
+                    broadcastChannel={broadcastChannel}
+                    itemSelectionForCopy={itemSelectionForCopy}
+                    setItemSelectionForCopy={setItemSelectionForCopy}
+                    getFilterById={getFilterById}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
+                    description={activeElement.description}
                 />
             );
         }
-        if (currentParametersType === ElementType.SENSITIVITY_PARAMETERS) {
+        if (currentExpertFilterId) {
             return (
-                <SensitivityAnalysisParametersDialog
-                    id={currentParametersId}
+                <ExpertFilterEditionDialog
+                    id={currentExpertFilterId}
                     open
-                    onClose={handleCloseParametersDialog}
-                    titleId="editParameters"
+                    onClose={handleCloseExpertFilterDialog}
+                    titleId="editFilter"
                     name={elementName}
-                    description={activeElement.description}
-                    user={user}
+                    broadcastChannel={broadcastChannel}
+                    itemSelectionForCopy={itemSelectionForCopy}
+                    setItemSelectionForCopy={setItemSelectionForCopy}
+                    getFilterById={getFilterById}
                     activeDirectory={activeDirectory}
                     language={languageLocal}
-                    enableDeveloperMode={enableDeveloperMode}
+                    description={activeElement.description}
                 />
             );
+        }
+        if (currentParametersId) {
+            if (currentParametersType === ElementType.LOADFLOW_PARAMETERS) {
+                return (
+                    <LoadFlowParametersEditionDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                        enableDeveloperMode={enableDeveloperMode}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.NETWORK_VISUALIZATIONS_PARAMETERS) {
+                return (
+                    <NetworkVisualizationsParametersEditionDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.SHORT_CIRCUIT_PARAMETERS) {
+                return (
+                    <ShortCircuitParametersEditionDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.VOLTAGE_INIT_PARAMETERS) {
+                return (
+                    <VoltageInitParametersEditionDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.SECURITY_ANALYSIS_PARAMETERS) {
+                return (
+                    <SecurityAnalysisParametersDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.SENSITIVITY_PARAMETERS) {
+                return (
+                    <SensitivityAnalysisParametersDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
+                        enableDeveloperMode={enableDeveloperMode}
+                    />
+                );
+            }
         }
     }
 }

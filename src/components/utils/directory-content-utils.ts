@@ -18,7 +18,7 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { getElementTypeTranslation } from './translation-utils';
 
-export const DESCRIPTION_FILED = 'description';
+export const DESCRIPTION_FIELD = 'description';
 
 export const formatMetadata = (
     data: ElementAttributes,
@@ -81,7 +81,7 @@ export const getColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'description',
         }),
-        field: DESCRIPTION_FILED,
+        field: DESCRIPTION_FIELD,
         cellRenderer: DescriptionCellRenderer,
         cellRendererParams: {
             directoryWritable,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { IntlShape, useIntl } from 'react-intl';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
 import {
@@ -50,9 +50,9 @@ const styles = {
         width: '18px',
         height: '18px',
     }),
-    right: (theme) => ({
+    right: {
         marginLeft: 'auto',
-    }),
+    },
     tooltip: {
         maxWidth: '1000px',
     },
@@ -80,7 +80,7 @@ export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: 
                 data-testid="ElementName"
             />
             {!directoryWritable && (
-                <Tooltip title="Element protégé">
+                <Tooltip title={<FormattedMessage id="protectedElement" />}>
                     <LockIcon sx={mergeSx(styles.icon, styles.right)} />
                 </Tooltip>
             )}

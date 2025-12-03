@@ -197,6 +197,7 @@
     "allUsers": "Tout le monde",
     "restricted": "Restreint",
     "selectGroups": "Sélectionner un ou plusieurs groupes",
+    "protectedElement": "Element protégé",
     "visualization": "Visualisation",
     "missingEquipmentsFromStudy": "Ouvrages absents de l'étude",
     "equipmentTypesByFilters": "Aléas par types d'ouvrage dans les postes et sites",
