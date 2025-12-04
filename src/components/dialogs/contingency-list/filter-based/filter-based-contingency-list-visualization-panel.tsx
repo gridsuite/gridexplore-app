@@ -182,15 +182,9 @@ export function FilterBasedContingencyListVisualizationPanel(
     const formatPathName = useMemo(() => {
         if (studyName.length > 48) {
             const splitNameList = studyName.split('/');
-            const lastFolder = splitNameList.at(-1);
-            if (lastFolder === undefined) {
-                return studyName;
-            }
+            const lastFolder = splitNameList.at(-1) as string;
             if (splitNameList.length > 2) {
-                const firstFolder = splitNameList.at(0);
-                if (firstFolder === undefined) {
-                    return studyName;
-                }
+                const firstFolder = splitNameList.at(0) as string;
                 if (firstFolder.length + lastFolder.length < 48) {
                     return `${firstFolder}/.../${lastFolder}`;
                 }
