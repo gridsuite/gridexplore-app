@@ -32,7 +32,7 @@ export function DateCellRenderer({ value }: Readonly<DateCellRendererProps>) {
 
         return (
             <Box>
-                <Tooltip title={fullDate} placement="right">
+                <Tooltip title={fullDate}>
                     <span>{cellText}</span>
                 </Tooltip>
             </Box>
