@@ -18,7 +18,15 @@ import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { getElementTypeTranslation } from './translation-utils';
 
-export const DESCRIPTION_FIELD = 'description';
+export enum DirectoryField {
+    NAME = 'elementName',
+    DESCRIPTION = 'description',
+    TYPE = 'type',
+    OWNER = 'ownerLabel',
+    CREATION_DATE = 'creationDate',
+    LAST_UPDATE_LABEL = 'lastModifiedByLabel',
+    LAST_UPDATE_DATE = 'lastModificationDate',
+}
 
 export const formatMetadata = (
     data: ElementAttributes,
@@ -65,9 +73,9 @@ export const getColumnsDefinition = (
 ): ColDef[] => [
     {
         headerName: intl.formatMessage({
-            id: 'elementName',
+            id: DirectoryField.NAME,
         }),
-        field: 'elementName',
+        field: DirectoryField.NAME,
         pinned: true,
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
@@ -79,9 +87,9 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'description',
+            id: DirectoryField.DESCRIPTION,
         }),
-        field: DESCRIPTION_FIELD,
+        field: DirectoryField.DESCRIPTION,
         cellRenderer: DescriptionCellRenderer,
         cellRendererParams: {
             directoryWritable,
@@ -92,9 +100,9 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'type',
+            id: DirectoryField.TYPE,
         }),
-        field: 'type',
+        field: DirectoryField.TYPE,
         sortable: true,
         cellRenderer: TypeCellRenderer,
         cellRendererParams: {
@@ -131,7 +139,7 @@ export const getColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'creator',
         }),
-        field: 'ownerLabel',
+        field: DirectoryField.OWNER,
         cellRenderer: UserCellRenderer,
         minWidth: 110,
         flex: 1,
@@ -140,7 +148,7 @@ export const getColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'created',
         }),
-        field: 'creationDate',
+        field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 130,
         flex: 2,
@@ -149,7 +157,7 @@ export const getColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'modifiedBy',
         }),
-        field: 'lastModifiedByLabel',
+        field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
         minWidth: 110,
         flex: 1,
@@ -158,7 +166,7 @@ export const getColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'modified',
         }),
-        field: 'lastModificationDate',
+        field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 130,
         flex: 2,

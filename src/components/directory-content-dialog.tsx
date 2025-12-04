@@ -44,7 +44,7 @@ import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
-import { DESCRIPTION_FIELD } from './utils/directory-content-utils';
+import { DirectoryField } from './utils/directory-content-utils';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -218,7 +218,7 @@ function DirectoryContentDialog(
                     /** no element can be opened */
                     return;
                 }
-                if (event.colDef.field === DESCRIPTION_FIELD) {
+                if (event.colDef.field === DirectoryField.DESCRIPTION) {
                     /** open description dialog */
                     setActiveElement(event.data);
                     setOpenDescModificationDialog(true);
@@ -277,7 +277,7 @@ function DirectoryContentDialog(
         ]
     );
 
-    if (activeElement && activeDirectory) {
+    if (activeElement) {
         if (openDescModificationDialog) {
             return (
                 <DescriptionModificationDialog
@@ -363,7 +363,8 @@ function DirectoryContentDialog(
                 />
             );
         }
-        if (currentParametersId) {
+
+        if (currentParametersId && activeDirectory) {
             if (currentParametersType === ElementType.LOADFLOW_PARAMETERS) {
                 return (
                     <LoadFlowParametersEditionDialog
