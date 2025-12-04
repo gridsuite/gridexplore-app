@@ -19,7 +19,7 @@ import {
 import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
 import { AppState } from '../../../../redux/types';
@@ -94,6 +94,23 @@ export default function ContingencyListFilterBasedForm({
             }
         }
     }, [substationAndVLFilters, setIsSubOrVlFilterIncluded, isSubOrVlFilterIncluded]);
+
+    const resizePanelsOnBreakpoint = useEffectEvent(() => {
+        const panelGroup = panelGroupRef.current;
+        if (panelGroup) {
+            if (vwBelow900px) {
+                panelGroup.setLayout([50, 50]);
+            } else if (isSubOrVlFilterIncluded) {
+                panelGroup.setLayout([60, 40]);
+            } else {
+                panelGroup.setLayout([33, 67]);
+            }
+        }
+    });
+
+    useEffect(() => {
+        resizePanelsOnBreakpoint();
+    }, [vwBelow900px]);
 
     const handleFilterOnChange = useCallback(
         (_currentFilters: any, action?: ArrayAction, filter?: FilterElement) => {
