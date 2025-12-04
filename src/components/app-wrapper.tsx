@@ -73,6 +73,8 @@ import {
     useUniqueNameValidationFr,
     NotificationsProvider,
     PARAM_THEME,
+    errorsEn,
+    errorsFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -228,6 +230,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...dndTableEn,
         ...elementSearchEn,
         ...businessErrorsEn,
+        ...errorsEn,
         ...filterEn,
         ...filterExpertEn,
         ...descriptionEn,
@@ -258,6 +261,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...dndTableFr,
         ...filterFr,
         ...businessErrorsFr,
+        ...errorsFr,
         ...filterExpertFr,
         ...descriptionFr,
         ...equipmentsFr,
