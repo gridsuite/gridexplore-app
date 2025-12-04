@@ -270,6 +270,49 @@ export default function DirectoryContent() {
         updateCheckedRows();
     }, [childrenMetadata, updateCheckedRows]); // this will change after switching selectedDirectory
 
+    const renderDirectoryContent = () => {
+        // Loading state - waiting for metadata
+        if (isMissingDataAfterDirChange) {
+            return (
+                <Box sx={styles.circularProgressContainer}>
+                    <CircularProgress
+                        size={circularProgressSize}
+                        color="inherit"
+                        sx={styles.centeredCircularProgress}
+                    />
+                </Box>
+            );
+        }
+
+        // No rows or directory selected
+        if (!rows || !selectedDirectory) {
+            if (treeData.rootDirectories.length === 0 && treeData.initialized) {
+                return <NoContentDirectory handleOpenDialog={handleOpenDialog} />;
+            }
+            return undefined;
+        }
+
+        // Empty directory then render a specific content
+        if (rows.length === 0) {
+            return <EmptyDirectory onCreateElementButtonClick={handleEmptyDirectoryClick} />;
+        }
+
+        // Finally, if we have some elements, then render the table
+        return (
+            <DirectoryContentTable
+                gridRef={gridRef}
+                rows={rows}
+                handleCellContextualMenu={onCellContextMenu}
+                handleRowSelected={updateCheckedRows}
+                handleCellClick={handleCellClick}
+                colDef={getColumnsDefinition(childrenMetadata, intl, directoryWritable)}
+                getRowStyle={getRowStyle}
+                onGridReady={onGridReady}
+                selectedDirectoryWritable={directoryWritable}
+            />
+        );
+    };
+
     return (
         <>
             {
@@ -303,41 +346,7 @@ export default function DirectoryContent() {
                 onContextMenu={onContextMenu}
                 data-testid="DirectoryContent"
             >
-                {/* eslint-disable no-nested-ternary -- TODO split into sub components */}
-                {
-                    // Here we wait for Metadata for the folder content
-                    isMissingDataAfterDirChange ? (
-                        // render loading content
-                        <Box sx={styles.circularProgressContainer}>
-                            <CircularProgress
-                                size={circularProgressSize}
-                                color="inherit"
-                                sx={styles.centeredCircularProgress}
-                            />
-                        </Box>
-                    ) : // If no selection or currentChildren = null (first time) render nothing
-                    !rows || !selectedDirectory ? (
-                        treeData.rootDirectories.length === 0 && treeData.initialized ? (
-                            <NoContentDirectory handleOpenDialog={handleOpenDialog} />
-                        ) : undefined
-                    ) : // If empty dir then render an appropriate content
-                    rows.length === 0 ? (
-                        <EmptyDirectory onCreateElementButtonClick={handleEmptyDirectoryClick} />
-                    ) : (
-                        // Finally if we have elements then render the table
-                        <DirectoryContentTable
-                            gridRef={gridRef}
-                            rows={rows}
-                            handleCellContextualMenu={onCellContextMenu}
-                            handleRowSelected={updateCheckedRows}
-                            handleCellClick={handleCellClick}
-                            colDef={getColumnsDefinition(childrenMetadata, intl, directoryWritable)}
-                            getRowStyle={getRowStyle}
-                            onGridReady={onGridReady}
-                            selectedDirectoryWritable={directoryWritable}
-                        />
-                    )
-                }
+                {renderDirectoryContent()}
             </Box>
             <Box onMouseDown={handleBoxDownClick}>
                 {activeElement && (
