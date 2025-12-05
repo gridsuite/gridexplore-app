@@ -21,7 +21,6 @@ import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
-import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
