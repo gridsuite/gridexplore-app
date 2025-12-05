@@ -136,7 +136,13 @@ export default function ContingencyListFilterBasedForm({
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
             <Panel defaultSize={LEFT_PANEL_DEFAULT_SIZE} minSize={LEFT_PANEL_MIN_SIZE}>
-                <Grid container columnSpacing={1.5} direction={vwBelow900px ? 'column' : 'row'} sx={{ height: '100%' }}>
+                <Grid
+                    container
+                    wrap="nowrap"
+                    columnSpacing={1.5}
+                    direction={vwBelow900px ? 'column' : 'row'}
+                    sx={{ height: '100%' }}
+                >
                     <Grid item container direction="column" {...containerProps}>
                         <Grid item>
                             <UniqueNameInput
@@ -146,7 +152,7 @@ export default function ContingencyListFilterBasedForm({
                                 activeDirectory={activeDirectory}
                             />
                         </Grid>
-                        <Grid item>
+                        <Grid item paddingY={1}>
                             <DescriptionField />
                         </Grid>
                         <Grid item component="h3">
@@ -155,7 +161,7 @@ export default function ContingencyListFilterBasedForm({
                         <Grid item xs>
                             <DirectoryItemsInput
                                 titleId="FiltersListsSelection"
-                                label=""
+                                label="Filters"
                                 name={FieldConstants.FILTERS}
                                 elementType={ElementType.FILTER}
                                 equipmentTypes={equipmentTypes}
