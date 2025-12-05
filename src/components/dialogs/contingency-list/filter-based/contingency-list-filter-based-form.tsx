@@ -178,9 +178,6 @@ export default function ContingencyListFilterBasedForm({
                         <Grid item paddingY={1}>
                             <DescriptionField />
                         </Grid>
-                        <Grid item component="h3">
-                            <FormattedMessage id="Filters" />
-                        </Grid>
                         <Grid item xs>
                             <DirectoryItemsInput
                                 titleId="FiltersListsSelection"
