@@ -86,20 +86,12 @@ export default function ContingencyListFilterBasedForm({
             if (_substationAndVLFilters.length > 0 && !_isSubOrVlFilterIncluded) {
                 setIsSubOrVlFilterIncluded(true);
                 if (panelGroup) {
-                    if (vwBelow900px) {
-                        panelGroup.setLayout([50, 50]);
-                    } else {
-                        panelGroup.setLayout([60, 40]);
-                    }
+                    panelGroup.setLayout(vwBelow900px ? [50, 50] : [60, 40]);
                 }
             } else if (_substationAndVLFilters.length === 0 && _isSubOrVlFilterIncluded) {
                 setIsSubOrVlFilterIncluded(false);
                 if (panelGroup) {
-                    if (vwBelow900px) {
-                        panelGroup.setLayout([50, 50]);
-                    } else {
-                        panelGroup.setLayout([33, 67]);
-                    }
+                    panelGroup.setLayout(vwBelow900px ? [50, 50] : [33, 67]);
                 }
             }
         }
