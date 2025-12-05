@@ -80,25 +80,39 @@ export default function ContingencyListFilterBasedForm({
 
     const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
 
-    useEffect(() => {
-        const panelGroup = panelGroupRef.current;
-        if (substationAndVLFilters.length > 0 && !isSubOrVlFilterIncluded) {
-            setIsSubOrVlFilterIncluded(true);
-            if (panelGroup) {
-                panelGroup.setLayout([60, 40]);
-            }
-        } else if (substationAndVLFilters.length === 0 && isSubOrVlFilterIncluded) {
-            setIsSubOrVlFilterIncluded(false);
-            if (panelGroup) {
-                panelGroup.setLayout([33, 67]);
+    const resizePanelsOnFiltersChange = useEffectEvent(
+        (_substationAndVLFilters: FilterElement[], _isSubOrVlFilterIncluded: boolean) => {
+            const panelGroup = panelGroupRef.current;
+            if (_substationAndVLFilters.length > 0 && !_isSubOrVlFilterIncluded) {
+                setIsSubOrVlFilterIncluded(true);
+                if (panelGroup) {
+                    if (vwBelow900px) {
+                        panelGroup.setLayout([50, 50]);
+                    } else {
+                        panelGroup.setLayout([60, 40]);
+                    }
+                }
+            } else if (_substationAndVLFilters.length === 0 && _isSubOrVlFilterIncluded) {
+                setIsSubOrVlFilterIncluded(false);
+                if (panelGroup) {
+                    if (vwBelow900px) {
+                        panelGroup.setLayout([50, 50]);
+                    } else {
+                        panelGroup.setLayout([33, 67]);
+                    }
+                }
             }
         }
-    }, [substationAndVLFilters, setIsSubOrVlFilterIncluded, isSubOrVlFilterIncluded]);
+    );
 
-    const resizePanelsOnBreakpoint = useEffectEvent(() => {
+    useEffect(() => {
+        resizePanelsOnFiltersChange(substationAndVLFilters, isSubOrVlFilterIncluded);
+    }, [substationAndVLFilters, isSubOrVlFilterIncluded]);
+
+    const resizePanelsOnBreakpoint = useEffectEvent((_vwBelow900px: boolean) => {
         const panelGroup = panelGroupRef.current;
         if (panelGroup) {
-            if (vwBelow900px) {
+            if (_vwBelow900px) {
                 panelGroup.setLayout([50, 50]);
             } else if (isSubOrVlFilterIncluded) {
                 panelGroup.setLayout([60, 40]);
@@ -109,7 +123,7 @@ export default function ContingencyListFilterBasedForm({
     });
 
     useEffect(() => {
-        resizePanelsOnBreakpoint();
+        resizePanelsOnBreakpoint(vwBelow900px);
     }, [vwBelow900px]);
 
     const handleFilterOnChange = useCallback(
