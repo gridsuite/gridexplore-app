@@ -93,7 +93,7 @@ function EquipmentTypesByFilters({
 
     return (
         <Grid item container direction="column" {...containerProps}>
-            <Grid item component="h4" padding={0.5}>
+            <Grid item component="h3">
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
             <Grid item container xs sx={{ height: 0, flex: 1 }}>
