@@ -18,10 +18,10 @@ import {
 } from '@gridsuite/commons-ui';
 import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { FormattedMessage } from 'react-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
+import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
@@ -149,7 +149,7 @@ export default function ContingencyListFilterBasedForm({
                         <Grid item>
                             <DescriptionField />
                         </Grid>
-                        <Grid item component="h4">
+                        <Grid item component="h3">
                             <FormattedMessage id="Filters" />
                         </Grid>
                         <Grid item xs>
@@ -179,6 +179,7 @@ export default function ContingencyListFilterBasedForm({
                 <FilterBasedContingencyListVisualizationPanel
                     isDataOutdated={isDataOutdated}
                     setIsDataOutdated={setIsDataOutdated}
+                    hasFilters={filters.length > 0}
                 />
             </Panel>
         </PanelGroup>
