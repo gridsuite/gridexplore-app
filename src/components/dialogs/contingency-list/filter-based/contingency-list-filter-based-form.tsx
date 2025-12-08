@@ -18,10 +18,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
-import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../../redux/types';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 import { FilterBasedContingencyListVisualizationPanel } from './filter-based-contingency-list-visualization-panel';
@@ -76,24 +75,47 @@ export default function ContingencyListFilterBasedForm({
     const filters: FilterElement[] = useWatch({
         name: FieldConstants.FILTERS,
     }) as unknown as FilterElement[];
-    const substationAndVLFilters = filters.filter(isSubstationOrVoltageLevelFilter);
+    const substationAndVLFilters = useMemo(() => filters.filter(isSubstationOrVoltageLevelFilter), [filters]);
 
     const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
 
-    useEffect(() => {
-        const panelGroup = panelGroupRef.current;
-        if (substationAndVLFilters.length > 0 && !isSubOrVlFilterIncluded) {
-            setIsSubOrVlFilterIncluded(true);
-            if (panelGroup) {
-                panelGroup.setLayout([60, 40]);
+    const resizePanelsOnFiltersChange = useEffectEvent(
+        (_substationAndVLFilters: FilterElement[], _isSubOrVlFilterIncluded: boolean) => {
+            const panelGroup = panelGroupRef.current;
+            if (_substationAndVLFilters.length > 0 && !_isSubOrVlFilterIncluded) {
+                setIsSubOrVlFilterIncluded(true);
+                if (panelGroup) {
+                    panelGroup.setLayout(vwBelow900px ? [50, 50] : [60, 40]);
+                }
+            } else if (_substationAndVLFilters.length === 0 && _isSubOrVlFilterIncluded) {
+                setIsSubOrVlFilterIncluded(false);
+                if (panelGroup) {
+                    panelGroup.setLayout(vwBelow900px ? [50, 50] : [33, 67]);
+                }
             }
-        } else if (substationAndVLFilters.length === 0 && isSubOrVlFilterIncluded) {
-            setIsSubOrVlFilterIncluded(false);
-            if (panelGroup) {
+        }
+    );
+
+    useEffect(() => {
+        resizePanelsOnFiltersChange(substationAndVLFilters, isSubOrVlFilterIncluded);
+    }, [substationAndVLFilters, isSubOrVlFilterIncluded]);
+
+    const resizePanelsOnBreakpoint = useEffectEvent((_vwBelow900px: boolean) => {
+        const panelGroup = panelGroupRef.current;
+        if (panelGroup) {
+            if (_vwBelow900px) {
+                panelGroup.setLayout([50, 50]);
+            } else if (isSubOrVlFilterIncluded) {
+                panelGroup.setLayout([60, 40]);
+            } else {
                 panelGroup.setLayout([33, 67]);
             }
         }
-    }, [substationAndVLFilters, setIsSubOrVlFilterIncluded, isSubOrVlFilterIncluded]);
+    });
+
+    useEffect(() => {
+        resizePanelsOnBreakpoint(vwBelow900px);
+    }, [vwBelow900px]);
 
     const handleFilterOnChange = useCallback(
         (_currentFilters: any, action?: ArrayAction, filter?: FilterElement) => {
@@ -154,9 +176,6 @@ export default function ContingencyListFilterBasedForm({
                         </Grid>
                         <Grid item paddingY={1}>
                             <DescriptionField />
-                        </Grid>
-                        <Grid item component="h3">
-                            <FormattedMessage id="Filters" />
                         </Grid>
                         <Grid item xs>
                             <DirectoryItemsInput
