@@ -75,12 +75,13 @@ export type NameCellRendererProps = {
 
 export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
-    const waiting = waitingForAsyncCreation(childrenMetadata[data.elementUuid], data.type);
+    const metadata = childrenMetadata[data.elementUuid];
+    const waiting = waitingForAsyncCreation(metadata, data.type);
     return (
         <Box sx={styles.tableCell}>
             {/*  Icon */}
             {waiting && <CircularProgress size={18} sx={styles.icon} />}
-            {childrenMetadata[data.elementUuid] && getFileIcon(data.type, styles.icon)}
+            {metadata && getFileIcon(data.type, styles.icon)}
             {/* Name */}
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
