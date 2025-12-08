@@ -270,11 +270,10 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     messageDescriptorId: 'ImportNewCase',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
                     icon: <AddIcon fontSize="small" data-testid="ImportNewCaseIcon" />,
-                }
+                },
+                { isDivider: true }
             );
         }
-
-        menuItems.push({ isDivider: true });
 
         if (!restrictMenuItems) {
             if (directory && directoryWritable) {
@@ -309,25 +308,23 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     icon: <ContentPasteIcon fontSize="small" data-testid="PasteIcon" />,
                     disabled: !itemSelectionForCopy.sourceItemUuid,
                 },
-                { isDivider: true }
+                { isDivider: true },
+                {
+                    messageDescriptorId: 'createFolder',
+                    callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
+                    icon: <CreateNewFolderIcon fontSize="small" data-testid="CreateFolderIcon" />,
+                }
             );
         }
 
-        if (directory && directoryWritable) {
-            menuItems.push({
-                messageDescriptorId: 'createFolder',
-                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
-                icon: <CreateNewFolderIcon fontSize="small" data-testid="CreateFolderIcon" />,
-            });
-        }
-
-        menuItems.push({
-            messageDescriptorId: 'createRootFolder',
-            callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-            icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
-        });
-
-        menuItems.push({ isDivider: true });
+        menuItems.push(
+            {
+                messageDescriptorId: 'createRootFolder',
+                callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
+                icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
+            },
+            { isDivider: true }
+        );
 
         if (directory) {
             menuItems.push({

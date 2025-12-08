@@ -197,6 +197,7 @@
     "allUsers": "Anyone",
     "restricted": "Restricted",
     "selectGroups": "Select one or more groups",
+    "protectedElement": "Protected element",
     "visualization": "Visualization",
     "missingEquipmentsFromStudy": "Equipments missing from study",
     "equipmentTypesByFilters": "Contingencies per equipment types in voltage levels & substations",
