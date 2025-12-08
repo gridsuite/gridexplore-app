@@ -12,6 +12,7 @@ import type {
     CellClickedEvent,
     CellContextMenuEvent,
     ColDef,
+    ColumnResizedEvent,
     GetRowIdParams,
     RowClassParams,
     RowStyle,
@@ -19,7 +20,7 @@ import type {
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReorderedColumns } from '../redux/actions';
-import { defaultColumnDefinition } from './utils/directory-content-utils';
+import { defaultColumnDefinition, DirectoryField } from './utils/directory-content-utils';
 import { AppState } from '../redux/types';
 import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
@@ -34,10 +35,18 @@ export interface DirectoryContentTableProps
     selectedDirectoryWritable: boolean;
 }
 
+const OVERFLOWABLE_COLUMNS = [DirectoryField.NAME.toString(), DirectoryField.TYPE.toString()];
+
 const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
-const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
-    api.refreshCells({ force: true, columns: ['elementName', 'type'] });
+const recomputeAllOverFlowableCells = ({ api }: AgGridEvent) =>
+    api.refreshCells({ force: true, columns: OVERFLOWABLE_COLUMNS });
+
+const recomputeOverFlowableColumnCells = (event: ColumnResizedEvent) => {
+    if (event.finished && event.column && OVERFLOWABLE_COLUMNS.includes(event.column.getColId())) {
+        event.api.refreshCells({ force: true, columns: [event.column.getColId()] });
+    }
+};
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
 
@@ -68,18 +77,18 @@ export function DirectoryContentTable({
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
             const style: RowStyle = { fontSize: '1rem' };
-            const unEditableElements = [
-                ElementType.CASE,
-                ElementType.DIAGRAM_CONFIG,
-                ElementType.SPREADSHEET_CONFIG,
-                ElementType.SPREADSHEET_CONFIG_COLLECTION,
-            ];
-            if (cellData.data) {
-                if (cellData.data.type === ElementType.STUDY && !selectedDirectoryWritable) {
-                    style.cursor = 'not-allowed';
-                } else if (!unEditableElements.includes(cellData.data.type)) {
-                    style.cursor = 'pointer';
-                }
+            const editableElement = () => {
+                const READ_ONLY_ELEMENTS = [
+                    ElementType.CASE,
+                    ElementType.DIAGRAM_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG_COLLECTION,
+                ];
+                return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
+            };
+
+            if (selectedDirectoryWritable && editableElement()) {
+                style.cursor = 'pointer';
             }
             return {
                 ...style,
@@ -131,7 +140,8 @@ export function DirectoryContentTable({
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
-            onGridSizeChanged={recomputeOverFlowableCells}
+            onGridSizeChanged={recomputeAllOverFlowableCells}
+            onColumnResized={recomputeOverFlowableColumnCells}
             onColumnMoved={onColumnMoved}
             animateRows
             columnDefs={columnDefs}

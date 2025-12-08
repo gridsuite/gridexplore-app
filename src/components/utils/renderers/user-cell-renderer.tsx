@@ -49,7 +49,7 @@ export type UserCellRendererProps = { value: string };
 export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-            <Tooltip title={value} placement="right">
+            <Tooltip title={value}>
                 <Avatar sx={mergeSx(styles.avatar, value ? { backgroundColor: stringToColor(value) } : null)}>
                     {getAbbreviationFromUserName(value)}
                 </Avatar>
