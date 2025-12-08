@@ -18,7 +18,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
-import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { ImperativePanelGroupHandle, Panel, PanelGroup } from 'react-resizable-panels';
 import { AppState } from '../../../../redux/types';
@@ -75,7 +75,7 @@ export default function ContingencyListFilterBasedForm({
     const filters: FilterElement[] = useWatch({
         name: FieldConstants.FILTERS,
     }) as unknown as FilterElement[];
-    const substationAndVLFilters = filters.filter(isSubstationOrVoltageLevelFilter);
+    const substationAndVLFilters = useMemo(() => filters.filter(isSubstationOrVoltageLevelFilter), [filters]);
 
     const panelGroupRef = useRef<ImperativePanelGroupHandle>(null);
 
