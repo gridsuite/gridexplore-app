@@ -131,7 +131,7 @@ export default function DeleteDialog({
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} disabled={loadingState} data-testid="CancelButton" />
+                <CancelButton onClick={handleClose} disabled={loadingState} />
                 <Button onClick={handleClick} variant="outlined" disabled={loadingState} data-testid="DeleteButton">
                     {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
                 </Button>
