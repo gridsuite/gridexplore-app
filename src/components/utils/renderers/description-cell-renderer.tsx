@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Tooltip } from '@mui/material';
-import { Create as CreateIcon, StickyNote2Outlined as StickyNote2OutlinedIcon } from '@mui/icons-material';
-import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { JSX } from 'react';
 
 const styles = {
     descriptionTooltip: {
@@ -28,14 +28,16 @@ export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<De
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
     }
-    const tooltip = descriptionLines?.join('\n');
+    const tooltipBox: JSX.Element | undefined = description ? (
+        <Box sx={styles.descriptionTooltip}>{descriptionLines?.join('\n')}</Box>
+    ) : undefined;
 
-    const icon = description ? (
-        <Tooltip title={<Box sx={styles.descriptionTooltip}>{tooltip}</Box>}>
-            <StickyNote2OutlinedIcon />
+    const icon: JSX.Element = (
+        <Tooltip title={tooltipBox}>
+            <IconButton color="primary">
+                <EditNoteIcon empty={!description} />
+            </IconButton>
         </Tooltip>
-    ) : (
-        <CreateIcon />
     );
     return (
         <Box
