@@ -27,6 +27,7 @@ import {
     PARAM_LANGUAGE,
     PermissionType,
     CustomError,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
@@ -92,6 +93,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
@@ -448,6 +450,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPLICIT_NAMING}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CRITERIA_FILTER:
@@ -458,6 +461,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPERT}
+                        enableDeveloperMode={enableDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

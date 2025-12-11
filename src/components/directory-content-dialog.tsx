@@ -342,6 +342,7 @@ function DirectoryContentDialog(
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                     description={activeElement.description}
+                    enableDeveloperMode={enableDeveloperMode}
                 />
             );
         }
@@ -360,6 +361,7 @@ function DirectoryContentDialog(
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                     description={activeElement.description}
+                    enableDeveloperMode={enableDeveloperMode}
                 />
             );
         }
