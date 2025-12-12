@@ -28,11 +28,11 @@ export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<De
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
     }
-    const tooltipBox: JSX.Element | undefined = description ? (
+    const tooltipBox = description ? (
         <Box sx={styles.descriptionTooltip}>{descriptionLines?.join('\n')}</Box>
     ) : undefined;
 
-    const icon: JSX.Element = (
+    const icon = (
         <Tooltip title={tooltipBox}>
             <IconButton color="primary">
                 <EditNoteIcon empty={!description} />
