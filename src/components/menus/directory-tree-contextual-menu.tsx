@@ -93,7 +93,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
@@ -450,7 +450,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPLICIT_NAMING}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CRITERIA_FILTER:
@@ -461,7 +461,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPERT}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:
