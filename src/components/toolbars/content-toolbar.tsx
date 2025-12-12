@@ -41,7 +41,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
     const [deleteError, setDeleteError] = useState('');
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const handleOpenDialog = (DialogId: string) => {
         setOpenDialog(DialogId);
@@ -135,7 +135,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
                         disabled: !allowsDownload,
                     });
                 }
-                if (enableDeveloperMode && allowsExportCases) {
+                if (isDeveloperMode && allowsExportCases) {
                     toolbarItems.push({
                         tooltipTextId: 'download.export.button',
                         callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -166,7 +166,7 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         downloadElements,
         selectedElements,
         selectedDirectoryWritable,
-        enableDeveloperMode,
+        isDeveloperMode,
     ]);
 
     const renderDialog = () => {

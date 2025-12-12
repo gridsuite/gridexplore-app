@@ -91,7 +91,7 @@ const initialState: AppState = {
     computedLanguage: getLocalStorageComputedLanguage(),
     [PARAM_THEME]: getLocalStorageTheme(),
     [PARAM_LANGUAGE]: getLocalStorageLanguage(),
-    enableDeveloperMode: false,
+    isDeveloperMode: false,
 
     currentChildren: undefined,
     selectedDirectory: null,
@@ -137,7 +137,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
-        state.enableDeveloperMode = action.enableDeveloperMode;
+        state.isDeveloperMode = action.isDeveloperMode;
     });
 
     builder.addCase(USER, (state, action: UserAction) => {
