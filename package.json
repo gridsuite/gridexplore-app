@@ -30,7 +30,7 @@
         "@mui/icons-material": "^5.18.0",
         "@mui/lab": "5.0.0-alpha.175",
         "@mui/material": "^5.18.0",
-        "@mui/x-tree-view": "^7.29.1",
+        "@mui/x-tree-view": "^8.21.0",
         "@reduxjs/toolkit": "^2.9.0",
         "ace-builds": "^1.43.3",
         "ag-grid-community": "^33.1.0",
