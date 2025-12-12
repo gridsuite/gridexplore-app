@@ -84,7 +84,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [directoryWritable, setDirectoryWritable] = useState(false);
     const [directoryReadable, setDirectoryReadable] = useState(false);
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const { snackError } = useSnackMessage();
 
@@ -432,7 +432,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (enableDeveloperMode && allowsExportCase()) {
+        if (isDeveloperMode && allowsExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -477,7 +477,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         directoryReadable,
         isSingleElement,
         allowsDownload,
-        enableDeveloperMode,
+        isDeveloperMode,
         allowsExportCase,
         allowsSpreadsheetCollection,
         allowsConvertFilterIntoExplicitNaming,
@@ -554,6 +554,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPLICIT_NAMING}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case DialogsId.CREATE_SPREADSHEET_COLLECTION:
