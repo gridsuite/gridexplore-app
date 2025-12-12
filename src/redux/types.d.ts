@@ -57,7 +57,7 @@ export type UploadingElement = {
 export interface AppState extends CommonStoreState {
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
-    enableDeveloperMode: boolean;
+    isDeveloperMode: boolean;
     computedLanguage: GsLangUser;
 
     // userManager: UserManagerState;
