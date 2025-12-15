@@ -6,7 +6,6 @@
  */
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
-import { JSX } from 'react';
 
 const styles = {
     descriptionTooltip: {
