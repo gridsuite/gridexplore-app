@@ -97,13 +97,13 @@ function EquipmentTypesByFilters({
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
             <Grid item container xs sx={{ height: 0, flex: 1 }}>
-                <Grid item xs={6} marginRight={-0.05} sx={{ height: '100%' }}>
+                <Grid item xs={6} sx={{ height: '100%', marginRight: -0.05 }}>
                     <TableContainer
                         component={Paper}
-                        sx={{
+                        sx={(t) => ({
                             height: '100%',
-                            border: '0.5px solid #808080',
-                        }}
+                            border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                        })}
                     >
                         <Table>
                             <TableHead>
@@ -128,13 +128,13 @@ function EquipmentTypesByFilters({
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={6} marginLeft={-0.05} sx={{ height: '100%' }}>
+                <Grid item xs={6} sx={{ height: '100%', marginLeft: -0.05 }}>
                     <TableContainer
                         component={Paper}
-                        sx={{
+                        sx={(t) => ({
                             height: '100%',
-                            border: '0.5px solid #808080',
-                        }}
+                            border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                        })}
                     >
                         <Table>
                             <TableHead>
