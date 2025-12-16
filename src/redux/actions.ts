@@ -62,9 +62,7 @@ export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
 export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_MODE>> & {
     isDeveloperMode: boolean;
 };
-export function selectEnableDeveloperMode(
-    isDeveloperMode: AppState['isDeveloperMode']
-): EnableDeveloperModeAction {
+export function selectEnableDeveloperMode(isDeveloperMode: AppState['isDeveloperMode']): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
         isDeveloperMode,
