@@ -84,6 +84,7 @@
     "SENSITIVITY_PARAMETERS": "Settings (Sensitivity analysis)",
     "LOADFLOW_PARAMETERS": "Settings (LoadFlow)",
     "SHORT_CIRCUIT_PARAMETERS": "Settings (Short circuit analysis)",
+    "PCC_MIN_PARAMETERS": "Settings (Pcc min N-1)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Settings (Network visualizations)",
     "DIAGRAM_CONFIG": "Network area diagram",
     "contingencyList.explicitNaming": "Explicit naming",
