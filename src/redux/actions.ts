@@ -60,14 +60,12 @@ export function selectComputedLanguage(computedLanguage: AppState['computedLangu
 
 export const ENABLE_DEVELOPER_MODE = 'ENABLE_DEVELOPER_MODE';
 export type EnableDeveloperModeAction = Readonly<Action<typeof ENABLE_DEVELOPER_MODE>> & {
-    enableDeveloperMode: boolean;
+    isDeveloperMode: boolean;
 };
-export function selectEnableDeveloperMode(
-    enableDeveloperMode: AppState['enableDeveloperMode']
-): EnableDeveloperModeAction {
+export function selectEnableDeveloperMode(isDeveloperMode: AppState['isDeveloperMode']): EnableDeveloperModeAction {
     return {
         type: ENABLE_DEVELOPER_MODE,
-        enableDeveloperMode,
+        isDeveloperMode,
     };
 }
 

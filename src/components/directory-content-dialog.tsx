@@ -77,7 +77,7 @@ function DirectoryContentDialog(
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
-    const enableDeveloperMode = useSelector((state: AppState) => state.enableDeveloperMode);
+    const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const user = useSelector((state: AppState) => state.user);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
@@ -342,6 +342,7 @@ function DirectoryContentDialog(
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                     description={activeElement.description}
+                    isDeveloperMode={isDeveloperMode}
                 />
             );
         }
@@ -360,6 +361,7 @@ function DirectoryContentDialog(
                     activeDirectory={activeDirectory}
                     language={languageLocal}
                     description={activeElement.description}
+                    isDeveloperMode={isDeveloperMode}
                 />
             );
         }
@@ -377,7 +379,7 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             }
@@ -408,7 +410,7 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             }
@@ -454,7 +456,7 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        enableDeveloperMode={enableDeveloperMode}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             }
