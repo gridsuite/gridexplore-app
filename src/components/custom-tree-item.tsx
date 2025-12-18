@@ -9,7 +9,7 @@ import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect } from 'reac
 import type { UUID } from 'node:crypto';
 import { PopoverReference } from '@mui/material';
 import { TreeItem, TreeItemSlotProps } from '@mui/x-tree-view';
-import { ElementAttributes, useStateBoolean } from '@gridsuite/commons-ui';
+import { doesNodeHasChildren, ElementAttributes, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
@@ -28,6 +28,9 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === node.elementUuid;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
+
+    const hasChildren = doesNodeHasChildren(node);
+    const hasSubdirectories = node.subdirectoriesCount > 0;
 
     const handleExpansionClick = useCallback<MouseEventHandler>(
         (event) => {
@@ -98,14 +101,15 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
             }
             sx={styles?.treeItemRoot}
         >
-            {Array.isArray(node.children)
-                ? node.children.map((childNode) => {
-                      return childNode ? (
-                          // @ts-ignore : TS issue with the ref
-                          <CustomTreeItem {...props} key={childNode.elementUuid} node={childNode} />
-                      ) : null;
-                  })
-                : null}
+            {hasChildren &&
+                node.children
+                    .filter((childNode) => !!childNode)
+                    .map((childNode) => (
+                        // @ts-ignore : TS issue with the ref
+                        <CustomTreeItem {...props} key={childNode.elementUuid} node={childNode} />
+                    ))}
+            {/* Placeholder to simulate children so MUI TreeItem displays the expand icon before data is loaded */}
+            {!hasChildren && hasSubdirectories && <span key="placeholder" style={{ display: 'none' }} />}
         </TreeItem>
     );
 });

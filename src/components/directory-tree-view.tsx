@@ -6,23 +6,15 @@
  */
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
 import { type PopoverReference } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { SimpleTreeView } from '@mui/x-tree-view';
+import { SimpleTreeView, SimpleTreeViewSlotProps } from '@mui/x-tree-view';
 import { type ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
 import CustomTreeItem from './custom-tree-item';
-
-function CustomEndIcon() {
-    return <ChevronRightIcon sx={styles.icon} />;
-}
-function CustomCollapseIcon() {
-    return <ExpandMoreIcon sx={styles.icon} />;
-}
 
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
@@ -122,7 +114,12 @@ export default function DirectoryTreeView({
         <SimpleTreeView
             expandedItems={expanded}
             selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
-            slots={{ collapseIcon: CustomCollapseIcon, expandIcon: CustomEndIcon }}
+            slotProps={
+                {
+                    collapseIcon: { sx: styles.icon },
+                    expandIcon: { sx: styles.icon },
+                } as SimpleTreeViewSlotProps
+            }
         >
             {mapDataRef.current?.[treeViewUuid] && (
                 <CustomTreeItem
