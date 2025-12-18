@@ -156,7 +156,7 @@ export function updatedTree(
 export const styles = {
     treeItemRoot: (theme) => ({
         // applied from onContextMenu
-        '& .focused': {
+        '&.focused > .MuiTreeItem-content': {
             borderRadius: theme.spacing(0.5),
             backgroundColor: `${theme.aggrid.highlightColor}!important`,
         },
