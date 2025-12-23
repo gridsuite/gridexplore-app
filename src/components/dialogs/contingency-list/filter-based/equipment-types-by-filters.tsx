@@ -102,7 +102,9 @@ function EquipmentTypesByFilters({
                         component={Paper}
                         sx={(t) => ({
                             height: '100%',
+                            boxShadow: 'none',
                             border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                            borderRadius: '4px 0 0 4px',
                         })}
                     >
                         <Table>
@@ -133,7 +135,9 @@ function EquipmentTypesByFilters({
                         component={Paper}
                         sx={(t) => ({
                             height: '100%',
+                            boxShadow: 'none',
                             border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                            borderRadius: '0 4px 4px 0',
                         })}
                     >
                         <Table>
