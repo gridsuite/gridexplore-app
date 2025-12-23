@@ -6,6 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
+import type { MuiStyles } from '@gridsuite/commons-ui';
 import { IDirectory } from '../redux/types';
 
 export function buildPathToFromMap(nodeId: UUID | undefined, mapDataRef: Record<string, IDirectory> | undefined) {
@@ -151,3 +152,37 @@ export function updatedTree(
 
     return [nextRoots, nextMap];
 }
+
+export const styles = {
+    treeItemRoot: (theme) => ({
+        // applied from onContextMenu
+        '&.focused > .MuiTreeItem-content': {
+            borderRadius: theme.spacing(0.5),
+            backgroundColor: `${theme.aggrid.highlightColor}!important`,
+        },
+    }),
+    treeItemContent: (theme) => ({
+        '&[data-selected]': {
+            backgroundColor: `${theme.aggrid.highlightColor}!important`,
+        },
+        '&[data-focused]': {
+            backgroundColor: 'inherit', // to remove the focus color when we click out the context menu
+        },
+    }),
+    treeItemIconContainer: {
+        width: '18px',
+    },
+    treeItemLabelRoot: (theme) => ({
+        display: 'flex',
+        padding: theme.spacing(0.5, 0),
+    }),
+    treeItemLabelText: {
+        flexGrow: 1,
+    },
+    treeItemAddIcon: {
+        padding: 0,
+    },
+    icon: (theme) => ({
+        marginRight: theme.spacing(1),
+    }),
+} as const satisfies MuiStyles;
