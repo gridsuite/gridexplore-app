@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useMemo } from 'react';
+import {useEffect, useMemo} from 'react';
 import {
     createTheme,
     CssBaseline,
@@ -282,6 +282,10 @@ function AppWrapperWithRedux() {
     const themeCompiled = useMemo(() => getMuiTheme(theme, computedLanguage), [computedLanguage, theme]);
 
     const urlMapper = useNotificationsUrlGenerator();
+
+    useEffect(() => {
+        document.body.setAttribute('data-mode', theme.toLowerCase());
+    }, [theme]);
 
     return (
         <IntlProvider locale={computedLanguage} defaultLocale={LANG_ENGLISH} messages={messages[computedLanguage]}>
