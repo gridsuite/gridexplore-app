@@ -9,6 +9,8 @@ import 'core-js/es/array/flat-map';
 import 'typeface-roboto';
 import './index.css';
 
+import "@design-system-rte/react/dist/style.css";
+
 import { createRoot } from 'react-dom/client';
 import AppWrapper from './components/app-wrapper';
 

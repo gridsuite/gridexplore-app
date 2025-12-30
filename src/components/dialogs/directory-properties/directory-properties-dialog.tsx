@@ -14,7 +14,7 @@ import {
     CancelButton,
     CustomFormProvider,
     PermissionType,
-    SubmitButton,
+    ValidateButton,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -254,9 +254,8 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                 <DialogActions>
                     <CancelButton onClick={handleClose} />
                     {canManage && (
-                        <SubmitButton
+                        <ValidateButton
                             onClick={handleSubmit(onSubmit)}
-                            variant="outlined"
                             disabled={!isDirty || loading}
                         />
                     )}
