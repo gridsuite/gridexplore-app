@@ -104,9 +104,5 @@
         "vite-plugin-checker": "^0.11.0",
         "vite-plugin-svgr": "^4.5.0",
         "vite-tsconfig-paths": "^5.1.4"
-    },
-    "//": "To prevent the use of react-is@19 which comes with mui v6 (see migration guide to mui v6)",
-    "overrides": {
-      "react-is": "^18.3.1"
     }
 }
