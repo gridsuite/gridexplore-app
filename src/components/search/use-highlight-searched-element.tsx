@@ -18,7 +18,7 @@ const SEARCH_HIGHLIGHT_DURATION_S = 4;
 export function useHighlightSearchedElement(gridApi: GridApi<ElementAttributes> | null) {
     const searchedElement = useSelector((state: AppState) => state.searchedElement);
     const dispatch = useDispatch<AppDispatch>();
-    const timeout = useRef<ReturnType<typeof setTimeout>>();
+    const timeout = useRef<ReturnType<typeof setTimeout>>(null);
 
     const highlightElement = useCallback(
         (api: GridApi<ElementAttributes>) => {
@@ -27,7 +27,7 @@ export function useHighlightSearchedElement(gridApi: GridApi<ElementAttributes> 
                 return;
             }
             const searchedElementRow = api.getRowNode(searchedElement.id);
-            if (searchedElementRow?.rowIndex != null && searchedElementRow?.rowIndex >= 0) {
+            if (searchedElementRow?.rowIndex != null && searchedElementRow?.rowIndex >= 0 && timeout.current) {
                 api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
                 clearTimeout(timeout.current);
                 timeout.current = setTimeout(() => {

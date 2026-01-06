@@ -25,7 +25,9 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
     PARAM_LANGUAGE,
+    PermissionType,
     CustomError,
+    PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
@@ -41,7 +43,6 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
-    PermissionType,
     renameElement,
 } from '../../utils/rest-api';
 
@@ -92,6 +93,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const handleOpenDialog = (dialogId: string) => {
         setHideMenu(true);
@@ -270,11 +272,10 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     messageDescriptorId: 'ImportNewCase',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_CASE),
                     icon: <AddIcon fontSize="small" data-testid="ImportNewCaseIcon" />,
-                }
+                },
+                { isDivider: true }
             );
         }
-
-        menuItems.push({ isDivider: true });
 
         if (!restrictMenuItems) {
             if (directory && directoryWritable) {
@@ -309,25 +310,23 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     icon: <ContentPasteIcon fontSize="small" data-testid="PasteIcon" />,
                     disabled: !itemSelectionForCopy.sourceItemUuid,
                 },
-                { isDivider: true }
+                { isDivider: true },
+                {
+                    messageDescriptorId: 'createFolder',
+                    callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
+                    icon: <CreateNewFolderIcon fontSize="small" data-testid="CreateFolderIcon" />,
+                }
             );
         }
 
-        if (directory && directoryWritable) {
-            menuItems.push({
-                messageDescriptorId: 'createFolder',
-                callback: () => handleOpenDialog(DialogsId.ADD_DIRECTORY),
-                icon: <CreateNewFolderIcon fontSize="small" data-testid="CreateFolderIcon" />,
-            });
-        }
-
-        menuItems.push({
-            messageDescriptorId: 'createRootFolder',
-            callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
-            icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
-        });
-
-        menuItems.push({ isDivider: true });
+        menuItems.push(
+            {
+                messageDescriptorId: 'createRootFolder',
+                callback: () => handleOpenDialog(DialogsId.ADD_ROOT_DIRECTORY),
+                icon: <FolderSpecialIcon fontSize="small" data-testid="CreateRootFolderIcon" />,
+            },
+            { isDivider: true }
+        );
 
         if (directory) {
             menuItems.push({
@@ -451,6 +450,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPLICIT_NAMING}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CRITERIA_FILTER:
@@ -461,6 +461,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         filterType={FilterType.EXPERT}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             case DialogsId.ADD_NEW_CASE:

@@ -12,6 +12,7 @@ import type {
     CellClickedEvent,
     CellContextMenuEvent,
     ColDef,
+    ColumnResizedEvent,
     GetRowIdParams,
     RowClassParams,
     RowStyle,
@@ -19,48 +20,35 @@ import type {
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReorderedColumns } from '../redux/actions';
-import { defaultColumnDefinition } from './utils/directory-content-utils';
+import { defaultColumnDefinition, DirectoryField } from './utils/directory-content-utils';
 import { AppState } from '../redux/types';
 import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
 export interface DirectoryContentTableProps
     extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
-    gridRef: RefObject<AgGridReact<ElementAttributes>>;
+    gridRef: RefObject<AgGridReact<ElementAttributes> | null>;
     rows: ElementAttributes[];
     handleCellContextualMenu: (event: CellContextMenuEvent) => void;
     handleRowSelected: () => void;
     handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
+    selectedDirectoryWritable: boolean;
 }
+
+const OVERFLOWABLE_COLUMNS = [DirectoryField.NAME.toString(), DirectoryField.TYPE.toString()];
 
 const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
-const recomputeOverFlowableCells = ({ api }: AgGridEvent) =>
-    api.refreshCells({ force: true, columns: ['elementName', 'type'] });
+const recomputeAllOverFlowableCells = ({ api }: AgGridEvent) =>
+    api.refreshCells({ force: true, columns: OVERFLOWABLE_COLUMNS });
+
+const recomputeOverFlowableColumnCells = (event: ColumnResizedEvent) => {
+    if (event.finished && event.column && OVERFLOWABLE_COLUMNS.includes(event.column.getColId())) {
+        event.api.refreshCells({ force: true, columns: [event.column.getColId()] });
+    }
+};
 
 export const CUSTOM_ROW_CLASS = 'custom-row-class';
-
-const getClickableRowStyle = (cellData: RowClassParams<ElementAttributes>) => {
-    const style: RowStyle = { fontSize: '1rem' };
-    if (
-        cellData.data &&
-        ![
-            ElementType.CASE,
-            ElementType.DIAGRAM_CONFIG,
-            ElementType.LOADFLOW_PARAMETERS,
-            ElementType.SENSITIVITY_PARAMETERS,
-            ElementType.SECURITY_ANALYSIS_PARAMETERS,
-            ElementType.VOLTAGE_INIT_PARAMETERS,
-            ElementType.SHORT_CIRCUIT_PARAMETERS,
-            ElementType.SPREADSHEET_CONFIG,
-            ElementType.SPREADSHEET_CONFIG_COLLECTION,
-            ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
-        ].includes(cellData.data.type)
-    ) {
-        style.cursor = 'pointer';
-    }
-    return style;
-};
 
 const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): ColDef[] => {
     const fieldIndexMap = new Map(newFieldOrder?.map((field, index) => [field, index]));
@@ -82,14 +70,32 @@ export function DirectoryContentTable({
     handleCellClick,
     onGridReady,
     colDef,
+    selectedDirectoryWritable,
 }: Readonly<DirectoryContentTableProps>) {
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
+
     const getCustomRowStyle = useCallback(
-        (cellData: RowClassParams<ElementAttributes>) => ({
-            ...getClickableRowStyle(cellData),
-            ...getRowStyle?.(cellData),
-        }),
-        [getRowStyle]
+        (cellData: RowClassParams<ElementAttributes>) => {
+            const style: RowStyle = { fontSize: '1rem' };
+            const editableElement = () => {
+                const READ_ONLY_ELEMENTS = [
+                    ElementType.CASE,
+                    ElementType.DIAGRAM_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG,
+                    ElementType.SPREADSHEET_CONFIG_COLLECTION,
+                ];
+                return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
+            };
+
+            if (selectedDirectoryWritable && editableElement()) {
+                style.cursor = 'pointer';
+            }
+            return {
+                ...style,
+                ...getRowStyle?.(cellData),
+            };
+        },
+        [getRowStyle, selectedDirectoryWritable]
     );
 
     const dispatch = useDispatch();
@@ -126,15 +132,16 @@ export function DirectoryContentTable({
             rowSelection={{
                 mode: 'multiRow',
                 enableClickSelection: false,
-                checkboxes: true,
-                headerCheckbox: true,
+                checkboxes: selectedDirectoryWritable,
+                headerCheckbox: selectedDirectoryWritable,
             }}
             selectionColumnDef={{ pinned: 'left' }}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
             onRowSelected={handleRowSelected}
-            onGridSizeChanged={recomputeOverFlowableCells}
+            onGridSizeChanged={recomputeAllOverFlowableCells}
+            onColumnResized={recomputeOverFlowableColumnCells}
             onColumnMoved={onColumnMoved}
             animateRows
             columnDefs={columnDefs}

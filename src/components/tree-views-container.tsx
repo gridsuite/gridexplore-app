@@ -113,7 +113,7 @@ export default function TreeViewsContainer() {
 
     const treeData = useSelector((state: AppState) => state.treeData);
 
-    const treeDataRef = useRef<ITreeData>();
+    const treeDataRef = useRef<ITreeData>(null);
     treeDataRef.current = treeData;
 
     useExportNotification();
@@ -161,10 +161,8 @@ export default function TreeViewsContainer() {
             anchorReference2: PopoverReference
         ) => {
             // to keep the focused style (that is normally lost when opening a contextual menu)
-            if (event.currentTarget.parentNode) {
-                (event.currentTarget.parentNode as HTMLElement).classList.add('focused');
-                setDOMFocusedDirectory(event.currentTarget.parentNode);
-            }
+            event.currentTarget.classList.add('focused');
+            setDOMFocusedDirectory(event.currentTarget);
 
             dispatch(setActiveDirectory(nodeId));
             setAnchorReference(anchorReference2);

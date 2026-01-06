@@ -48,7 +48,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
 
     const [languageLocal, handleChangeLanguage] = useParameterState(PARAM_LANGUAGE);
 
-    const [enableDeveloperModeLocal, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isDeveloperMode, handleChangeDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const searchInputRef = useRef<any | null>(null);
 
@@ -88,7 +88,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             onThemeClick={handleChangeTheme}
             theme={themeLocal}
             onDeveloperModeClick={handleChangeDeveloperMode}
-            developerMode={enableDeveloperModeLocal}
+            developerMode={isDeveloperMode}
             onLanguageClick={handleChangeLanguage}
             language={languageLocal}
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}

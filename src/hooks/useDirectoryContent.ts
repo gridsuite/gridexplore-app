@@ -34,7 +34,7 @@ export const useDirectoryContent = () => {
     const knownUsersIdentitiesRef = useRef<UsersIdentitiesMap>({});
     const [childrenMetadata, setChildrenMetadata] = useState<Record<UUID, ElementAttributes>>({});
     const { snackError } = useSnackMessage();
-    const previousData = useRef<ElementAttributes[]>();
+    const previousData = useRef<ElementAttributes[]>(undefined);
     previousData.current = currentChildren;
 
     const handleError = useCallback(

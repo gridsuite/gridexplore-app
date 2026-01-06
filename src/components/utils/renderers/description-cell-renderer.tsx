@@ -4,9 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Tooltip } from '@mui/material';
-import { Create as CreateIcon, StickyNote2Outlined as StickyNote2OutlinedIcon } from '@mui/icons-material';
-import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { Box, IconButton, Tooltip } from '@mui/material';
+import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
 
 const styles = {
     descriptionTooltip: {
@@ -20,29 +19,31 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export type DescriptionCellRendererProps = { data: ElementAttributes };
+export type DescriptionCellRendererProps = { data: ElementAttributes; directoryWritable: boolean };
 
-export function DescriptionCellRenderer({ data }: Readonly<DescriptionCellRendererProps>) {
+export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<DescriptionCellRendererProps>) {
     const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
     }
-    const tooltip = descriptionLines?.join('\n');
+    const tooltipBox = description ? (
+        <Box sx={styles.descriptionTooltip}>{descriptionLines?.join('\n')}</Box>
+    ) : undefined;
 
-    const icon = description ? (
-        <Tooltip title={<Box sx={styles.descriptionTooltip}>{tooltip}</Box>} placement="right">
-            <StickyNote2OutlinedIcon />
+    const icon = (
+        <Tooltip title={tooltipBox}>
+            <IconButton color="primary">
+                <EditNoteIcon empty={!description} />
+            </IconButton>
         </Tooltip>
-    ) : (
-        <CreateIcon />
     );
     return (
         <Box
             sx={{
                 display: 'inline-flex',
                 verticalAlign: 'middle',
-                cursor: 'pointer',
+                cursor: directoryWritable ? 'pointer' : undefined,
             }}
         >
             {icon}

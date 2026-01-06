@@ -6,17 +6,18 @@
  */
 
 import { UUID } from 'node:crypto';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, GetRowIdParams } from 'ag-grid-community';
 import { useFormContext } from 'react-hook-form';
 import {
     CustomAGGrid,
+    DefaultCellRenderer,
     DirectoryItemSelector,
     ElementType,
     FieldConstants,
-    getFilterEquipmentTypeLabel,
+    getEquipmentTypeShortLabel,
     SeparatorCellRenderer,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -39,6 +40,7 @@ const SEPARATOR_TYPE = 'SEPARATOR';
 const defaultDef: ColDef = {
     resizable: false,
     sortable: false,
+    cellRenderer: DefaultCellRenderer,
 };
 
 interface RowData {
@@ -53,12 +55,13 @@ const getRowId = (params: GetRowIdParams<RowData>) => {
 export type FilterBasedContingencyListVisualizationPanelProps = {
     isDataOutdated: boolean;
     setIsDataOutdated: (value: boolean) => void;
+    hasFilters: boolean;
 };
 
 export function FilterBasedContingencyListVisualizationPanel(
     props: Readonly<FilterBasedContingencyListVisualizationPanelProps>
 ) {
-    const { isDataOutdated, setIsDataOutdated } = props;
+    const { isDataOutdated, setIsDataOutdated, hasFilters } = props;
     const gridRef = useRef<AgGridReact>(null);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
@@ -72,7 +75,7 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     const getTranslatedEquipmentType = useCallback(
         (type: string | undefined) => {
-            const equipmentType = getFilterEquipmentTypeLabel(type);
+            const equipmentType = getEquipmentTypeShortLabel(type);
             return equipmentType ? intl.formatMessage({ id: equipmentType }) : '';
         },
         [intl]
@@ -84,9 +87,6 @@ export function FilterBasedContingencyListVisualizationPanel(
                 id: FieldConstants.EQUIPMENT_ID,
             }),
             field: FieldConstants.ID,
-            cellRenderer: ({ data }: { data: IdentifiableAttributes }) => {
-                return data.id;
-            },
             flex: 3,
         },
         {
@@ -95,6 +95,7 @@ export function FilterBasedContingencyListVisualizationPanel(
             }),
             field: FieldConstants.TYPE,
             flex: 2,
+            maxWidth: 120,
         },
     ];
 
@@ -178,30 +179,52 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     const studyName = selectedFolder ? selectedFolder + separator + selectedStudy : selectedStudy;
 
+    const formatPathName = useMemo(() => {
+        if (studyName.length > 48) {
+            const splitNameList = studyName.split('/');
+            const lastFolder = splitNameList.at(-1) as string;
+            if (splitNameList.length > 2) {
+                const firstFolder = splitNameList.at(0) as string;
+                if (firstFolder.length + lastFolder.length < 48) {
+                    return `${firstFolder}/.../${lastFolder}`;
+                }
+            }
+            return `.../${lastFolder}`;
+            // splitNameList length can not be equal to one because there is at least one root folder
+        }
+        return studyName;
+    }, [studyName]);
+
     return (
-        <Grid item container direction="column" xs={3} sx={{ minWidth: '31%' }}>
-            {/* ugly width fix for the grid layout */}
-            <Grid item>
-                <Typography variant="h6">
-                    <FormattedMessage id="visualization" />
-                </Typography>
+        <Grid container direction="column" sx={{ height: '100%' }}>
+            <Grid item component="h3">
+                <FormattedMessage id="visualization" />
             </Grid>
-            <Grid item container paddingY={1} alignItems="center" justifyContent="center">
-                <Grid item xs={1}>
+            <Grid item container alignItems="center" marginY={1}>
+                <Grid item paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs={7} fontWeight="bold" padding={1}>
+                <Grid item xs paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap title={studyName}>
-                            {studyName}
+                        <Typography noWrap fontWeight="bold" title={studyName}>
+                            {formatPathName}
                         </Typography>
                     ) : (
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item xs={4}>
-                    <Button onClick={() => setIsOpen(true)} variant="contained" color="primary" component="label">
-                        <FormattedMessage id="selectStudyDialogButton" />
+                <Grid item>
+                    <Button
+                        disabled={!hasFilters}
+                        onClick={() => setIsOpen(true)}
+                        variant={selectedStudy.length > 0 ? 'contained' : undefined}
+                        component="label"
+                    >
+                        {selectedStudy.length > 0 ? (
+                            <FormattedMessage id="edit" />
+                        ) : (
+                            <FormattedMessage id="selectStudyDialogTitle" />
+                        )}
                     </Button>
                     <DirectoryItemSelector
                         open={isOpen}
