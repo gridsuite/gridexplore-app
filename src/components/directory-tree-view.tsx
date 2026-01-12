@@ -6,82 +6,19 @@
  */
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronRight as ChevronRightIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { Box, type PopoverReference, Tooltip, Typography, Zoom } from '@mui/material';
+import { type PopoverReference } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { SimpleTreeView } from '@mui/x-tree-view';
-import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { SimpleTreeView, SimpleTreeViewSlotProps } from '@mui/x-tree-view';
+import { type ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import CustomTreeItem from './custom-tree-item';
 import { setSelectedDirectory } from '../redux/actions';
-import { AppState, IDirectory } from '../redux/types';
-
-const styles = {
-    treeViewRoot: (theme) => ({
-        padding: theme.spacing(0.0),
-    }),
-    treeItemRoot: (theme) => ({
-        userSelect: 'none',
-        '&:focus > .MuiTreeItem-content .MuiTreeItem-label, .focused': {
-            borderRadius: theme.spacing(2),
-            backgroundColor: theme.aggrid.highlightColor,
-        },
-        '&:hover': {
-            borderRadius: theme.spacing(2),
-            backgroundColor: theme.row.primary,
-        },
-    }),
-    treeItemSelected: (theme) => ({
-        borderRadius: `${theme.spacing(2)}!important`,
-        backgroundColor: theme.aggrid.highlightColor,
-    }),
-    treeItemContent: (theme) => ({
-        paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(1),
-    }),
-    treeItemIconContainer: {
-        width: '18px',
-        display: 'flex',
-        justifyContent: 'center',
-    },
-    treeItemLabel: (theme) => ({
-        flexGrow: 1,
-        overflow: 'hidden',
-        paddingRight: theme.spacing(1),
-        paddingLeft: theme.spacing(0),
-        fontWeight: 'inherit',
-        color: 'inherit',
-    }),
-    treeItemHovered: (theme) => ({
-        backgroundColor: `${theme.aggrid.highlightColor}!important`,
-        borderRadius: theme.spacing(2),
-    }),
-    treeItemLabelRoot: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        padding: theme.spacing(0.5, 0),
-    }),
-    treeItemLabelText: {
-        fontWeight: 'inherit',
-        flexGrow: 1,
-    },
-    icon: (theme) => ({
-        marginRight: theme.spacing(1),
-        width: '18px',
-        height: '18px',
-    }),
-} as const satisfies MuiStyles;
-
-function CustomEndIcon() {
-    return <ChevronRightIcon sx={styles.icon} />;
-}
-function CustomCollapseIcon() {
-    return <ExpandMoreIcon sx={styles.icon} />;
-}
+import { AppState } from '../redux/types';
+import { styles } from './treeview-utils';
+import CustomTreeItem from './custom-tree-item';
 
 export interface DirectoryTreeViewProps {
     treeViewUuid: UUID;
-    mapData: Record<string, IDirectory> | undefined;
+    mapData: Record<string, ElementAttributes> | undefined;
     onContextMenu: (
         event: ReactMouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>,
         nodeId: UUID,
@@ -102,7 +39,7 @@ export default function DirectoryTreeView({
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
 
-    const mapDataRef = useRef<Record<string, IDirectory> | undefined>({});
+    const mapDataRef = useRef<Record<string, ElementAttributes> | undefined>({});
     const expandedRef = useRef<UUID[]>([]);
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
     selectedDirectoryRef.current = selectedDirectory;
@@ -173,66 +110,25 @@ export default function DirectoryTreeView({
         ensureInOutExpansion(currentPath.map((n) => n.elementUuid));
     }, [currentPath, ensureInOutExpansion, treeViewUuid]);
 
-    /* Handle Rendering */
-    const renderTree = (node: ElementAttributes | undefined) => {
-        if (!node) {
-            return undefined;
-        }
-        return (
-            <CustomTreeItem
-                key={node.elementUuid}
-                itemId={node.elementUuid}
-                label={
-                    <Box
-                        sx={styles.treeItemLabelRoot}
-                        onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
-                    >
-                        <Tooltip
-                            TransitionComponent={Zoom}
-                            disableFocusListener
-                            disableTouchListener
-                            enterDelay={1000}
-                            enterNextDelay={1000}
-                            title={node.elementName}
-                            arrow
-                            placement="bottom-start"
-                        >
-                            <Typography noWrap sx={styles.treeItemLabelText}>
-                                {node.elementName}
-                            </Typography>
-                        </Tooltip>
-                    </Box>
-                }
-                ContentProps={{
-                    onExpand: handleIconClick,
-                    onSelect: handleLabelClick,
-                    onAddIconClick: onContextMenu,
-                    styles: {
-                        root: styles.treeItemRoot,
-                        selected: styles.treeItemSelected,
-                        label: styles.treeItemLabel,
-                        hovered: styles.treeItemHovered,
-                        iconContainer: styles.treeItemIconContainer,
-                    },
-                }}
-                slots={{ endIcon: node.subdirectoriesCount > 0 ? CustomEndIcon : undefined }}
-                sx={{ content: styles.treeItemContent }}
-            >
-                {Array.isArray(node.children)
-                    ? node.children.map((child) => renderTree(mapDataRef.current?.[child.elementUuid]))
-                    : null}
-            </CustomTreeItem>
-        );
-    };
-
     return (
         <SimpleTreeView
-            sx={styles.treeViewRoot}
             expandedItems={expanded}
             selectedItems={selectedDirectory ? selectedDirectory.elementUuid : null}
-            slots={{ collapseIcon: CustomCollapseIcon, expandIcon: CustomEndIcon }}
+            slotProps={
+                {
+                    collapseIcon: { sx: styles.icon },
+                    expandIcon: { sx: styles.icon },
+                } as SimpleTreeViewSlotProps
+            }
         >
-            {renderTree(mapDataRef.current?.[treeViewUuid])}
+            {mapDataRef.current?.[treeViewUuid] && (
+                <CustomTreeItem
+                    node={mapDataRef.current[treeViewUuid]}
+                    onExpand={handleIconClick}
+                    onSelect={handleLabelClick}
+                    onContextMenu={onContextMenu}
+                />
+            )}
         </SimpleTreeView>
     );
 }
