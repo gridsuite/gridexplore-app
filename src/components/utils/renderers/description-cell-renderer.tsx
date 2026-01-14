@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, IconButton, Tooltip } from '@mui/material';
-import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import { NoteAdd, StickyNote2Outlined } from '@mui/icons-material';
 
 const styles = {
     descriptionTooltip: {
@@ -34,7 +35,7 @@ export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<De
     const icon = (
         <Tooltip title={tooltipBox}>
             <IconButton color="primary">
-                <EditNoteIcon empty={!description} />
+                (!description ? <NoteAdd /> : <StickyNote2Outlined />; )
             </IconButton>
         </Tooltip>
     );
