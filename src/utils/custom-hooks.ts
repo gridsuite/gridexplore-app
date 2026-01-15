@@ -7,7 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
-import { CustomError, useSnackMessage } from '@gridsuite/commons-ui';
+import { ProblemDetailError, useSnackMessage } from '@gridsuite/commons-ui';
 import { ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
 
 export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
@@ -69,7 +69,7 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
 export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
-    onError?: (errors: CustomError[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
+    onError?: (errors: ProblemDetailError[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
 ): [(paramsList: unknown[][]) => Promise<void>] => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -90,7 +90,7 @@ export const useMultipleDeferredFetch = <T>(
             );
 
             const successes: T[] = [];
-            const errors: CustomError[] = [];
+            const errors: ProblemDetailError[] = [];
             results.forEach((result) => {
                 if (result.status === PromiseStatus.FULFILLED) {
                     successes.push(result.value.data);

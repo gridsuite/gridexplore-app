@@ -26,7 +26,7 @@ import {
     useSnackMessage,
     PARAM_LANGUAGE,
     PermissionType,
-    CustomError,
+    ProblemDetailError,
     PARAM_DEVELOPER_MODE,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -140,7 +140,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
-                        (error: CustomError) => {
+                        (error: ProblemDetailError) => {
                             if (handleMaxElementsExceededError(error, snackError)) {
                                 return;
                             }
@@ -159,7 +159,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.typeItem
-                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
+                    ).catch((error: ProblemDetailError) => handlePasteError(error, intl, snackError));
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -167,16 +167,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.specificTypeItem
-                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
+                    ).catch((error: ProblemDetailError) => handlePasteError(error, intl, snackError));
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
                     duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error: CustomError) => handlePasteError(error, intl, snackError)
+                        (error: ProblemDetailError) => handlePasteError(error, intl, snackError)
                     );
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error: CustomError) => handlePasteError(error, intl, snackError)
+                        (error: ProblemDetailError) => handlePasteError(error, intl, snackError)
                     );
                     break;
                 default:
@@ -197,7 +197,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
-                .catch((error: CustomError) => {
+                .catch((error: ProblemDetailError) => {
                     handleDeleteError(setDeleteError, error, intl, snackError);
                 });
         },
