@@ -99,7 +99,7 @@ export const handleDeleteDirectoryConflictError = (error: ProblemDetailError, sn
 };
 
 export const handlePasteError = (error: ProblemDetailError, intl: IntlShape, snackError: SnackError) => {
-    const message = generatePasteErrorMessages(intl)[error.status!];
+    const message = error.status ? generatePasteErrorMessages(intl)[error.status] : undefined;
     if (message) {
         handleGenericTxtError(message, snackError);
     } else {
@@ -121,7 +121,7 @@ export const handleDeleteError = (
         return;
     }
 
-    let message = generateGenericPermissionErrorMessages(intl)[error.status!];
+    let message = error.status ? generateGenericPermissionErrorMessages(intl)[error.status] : undefined;
     if (message) {
         snackError({ messageId: buildSnackMessage(error, message) });
     } else {
@@ -139,9 +139,11 @@ export const handleMoveError = (
     snackError: SnackError
 ) => {
     const predefinedMessages = generateMoveErrorMessages(intl);
-    const eligibleError = errors.find((error) => predefinedMessages[error.status?.toString()!]);
-    if (eligibleError) {
-        handleGenericTxtError(predefinedMessages[eligibleError.status?.toString()!], snackError);
+    const eligibleError = errors.find((error) =>
+        error.status ? predefinedMessages[error.status?.toString()] : undefined
+    );
+    if (eligibleError?.status) {
+        handleGenericTxtError(predefinedMessages[eligibleError.status.toString()], snackError);
         return;
     }
 
