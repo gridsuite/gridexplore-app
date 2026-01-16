@@ -11,7 +11,14 @@ import {
     HTTP_NOT_FOUND,
     PermissionCheckResult,
 } from 'utils/UIconstants';
-import { CustomError, ElementAttributes, snackWithFallback, UseSnackMessageReturn } from '@gridsuite/commons-ui';
+import {
+    catchErrorHandler,
+    CustomError,
+    ElementAttributes,
+    ProblemDetailError,
+    snackWithFallback,
+    UseSnackMessageReturn,
+} from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 import { type Dispatch, SetStateAction } from 'react';
 
@@ -19,8 +26,12 @@ export interface ErrorMessageByHttpError {
     [httpCode: string]: string;
 }
 
-export const buildSnackMessage = (error: CustomError, fallbackMessage: string): string =>
-    error.businessErrorCode != null ? error.businessErrorCode : fallbackMessage;
+export const buildSnackMessage = (error: unknown, fallbackMessage: string): string => {
+    if (error instanceof ProblemDetailError) {
+        return error.businessErrorCode ?? fallbackMessage;
+    }
+    return fallbackMessage;
+};
 
 export type SnackError = UseSnackMessageReturn['snackError'];
 
@@ -50,8 +61,9 @@ export const handleGenericTxtError = (error: string, snackError: SnackError) => 
     });
 };
 
-export const handleMaxElementsExceededError = (error: CustomError, snackError: SnackError): boolean => {
+export const handleMaxElementsExceededError = (error: unknown, snackError: SnackError): boolean => {
     if (
+        error instanceof ProblemDetailError &&
         error.status === HTTP_FORBIDDEN &&
         error.businessErrorCode?.includes(HTTP_MAX_ELEMENTS_EXCEEDED_BUSINESS_CODE)
     ) {
@@ -61,8 +73,9 @@ export const handleMaxElementsExceededError = (error: CustomError, snackError: S
     return false;
 };
 
-export const handleNotAllowedError = (error: CustomError, snackError: SnackError): boolean => {
+export const handleNotAllowedError = (error: unknown, snackError: SnackError): boolean => {
     if (
+        error instanceof CustomError &&
         error.status === HTTP_FORBIDDEN &&
         Object.values(PermissionCheckResult).some((permissionCheckResult) =>
             error.message.includes(permissionCheckResult)
@@ -74,45 +87,53 @@ export const handleNotAllowedError = (error: CustomError, snackError: SnackError
     return false;
 };
 
-export const handleMoveDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
-    if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
+export const handleMoveDirectoryConflictError = (error: unknown, snackError: SnackError): boolean => {
+    if (
+        error instanceof CustomError &&
+        error.status === HTTP_FORBIDDEN &&
+        error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)
+    ) {
         snackError({ messageId: buildSnackMessage(error, 'moveConflictError') });
         return true;
     }
     return false;
 };
 
-export const handleMoveNameConflictError = (error: CustomError, snackError: SnackError): boolean => {
-    if (error.status === HTTP_CONFLICT) {
+export const handleMoveNameConflictError = (error: unknown, snackError: SnackError): boolean => {
+    if (error instanceof CustomError && error.status === HTTP_CONFLICT) {
         snackError({ messageId: buildSnackMessage(error, 'moveNameConflictError') });
         return true;
     }
     return false;
 };
 
-export const handleDeleteDirectoryConflictError = (error: CustomError, snackError: SnackError): boolean => {
-    if (error.status === HTTP_FORBIDDEN && error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)) {
+export const handleDeleteDirectoryConflictError = (error: unknown, snackError: SnackError): boolean => {
+    if (
+        error instanceof CustomError &&
+        error.status === HTTP_FORBIDDEN &&
+        error.message.includes(PermissionCheckResult.CHILD_PERMISSION_DENIED)
+    ) {
         snackError({ messageId: buildSnackMessage(error, 'deleteConflictError') });
         return true;
     }
     return false;
 };
 
-export const handlePasteError = (error: CustomError, intl: IntlShape, snackError: SnackError) => {
-    const message = generatePasteErrorMessages(intl)[error.status];
-    if (message) {
-        handleGenericTxtError(message, snackError);
-    } else {
-        handleGenericTxtError(
-            intl.formatMessage({ id: buildSnackMessage(error, 'elementPasteFailed') }) + (error?.message ?? ''),
-            snackError
-        );
+export const handlePasteError = (error: unknown, intl: IntlShape, snackError: SnackError) => {
+    let message;
+    if (error instanceof CustomError) {
+        message = generatePasteErrorMessages(intl)[error.status];
     }
+    message =
+        message ??
+        intl.formatMessage({ id: buildSnackMessage(error, 'elementPasteFailed') }) +
+            (error instanceof Error ? error.message : '');
+    handleGenericTxtError(message, snackError);
 };
 
 export const handleDeleteError = (
     setDeleteError: Dispatch<SetStateAction<string>>,
-    error: CustomError,
+    error: unknown,
     intl: IntlShape,
     snackError: SnackError
 ) => {
@@ -121,25 +142,37 @@ export const handleDeleteError = (
         return;
     }
 
-    let message = generateGenericPermissionErrorMessages(intl)[error.status];
-    if (message) {
-        snackError({ messageId: buildSnackMessage(error, message) });
-    } else {
+    let message;
+    if (error instanceof CustomError) {
+        message = generateGenericPermissionErrorMessages(intl)[error.status];
+        if (message) {
+            snackError({ messageId: buildSnackMessage(error, message) });
+        } else {
+            message = error.message;
+            handleGenericTxtError(message, snackError);
+        }
+    } else if (error instanceof Error) {
         message = error.message;
         handleGenericTxtError(message, snackError);
+    } else {
+        message = 'unexpected error occurred';
+        handleGenericTxtError(message, snackError);
     }
+
     // show the error message and don't close the underlying dialog
     setDeleteError(message);
 };
 
 export const handleMoveError = (
-    errors: CustomError[],
+    errors: unknown[],
     paramsOnErrors: unknown[],
     intl: IntlShape,
     snackError: SnackError
 ) => {
     const predefinedMessages = generateMoveErrorMessages(intl);
-    const eligibleError = errors.find((error) => predefinedMessages[error.status.toString()]);
+    const eligibleError = errors.find(
+        (error) => error instanceof CustomError && predefinedMessages[error.status.toString()]
+    ) as CustomError;
     if (eligibleError) {
         handleGenericTxtError(predefinedMessages[eligibleError.status.toString()], snackError);
         return;
@@ -158,7 +191,7 @@ export const handleMoveError = (
 };
 
 export const handleDuplicateError = (
-    error: CustomError,
+    error: unknown,
     activeElement: ElementAttributes,
     intl: IntlShape,
     snackError: SnackError
@@ -166,14 +199,16 @@ export const handleDuplicateError = (
     if (handleNotAllowedError(error, snackError)) {
         return;
     }
-    handleGenericTxtError(
-        intl.formatMessage(
-            { id: buildSnackMessage(error, 'duplicateElementFailure') },
-            {
-                itemName: activeElement.elementName,
-                errorMessage: error.message,
-            }
-        ),
-        snackError
-    );
+    catchErrorHandler(error, (message) => {
+        handleGenericTxtError(
+            intl.formatMessage(
+                { id: buildSnackMessage(error, 'duplicateElementFailure') },
+                {
+                    itemName: activeElement.elementName,
+                    errorMessage: message,
+                }
+            ),
+            snackError
+        );
+    });
 };
