@@ -30,6 +30,7 @@ import {
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
     PARAM_LANGUAGE,
+    PccMinParametersEditionDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -252,6 +253,7 @@ function DirectoryContentDialog(
                         case ElementType.LOADFLOW_PARAMETERS:
                         case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                         case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                        case ElementType.PCC_MIN_PARAMETERS:
                         case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                         case ElementType.VOLTAGE_INIT_PARAMETERS:
                         case ElementType.SENSITIVITY_PARAMETERS:
@@ -457,6 +459,21 @@ function DirectoryContentDialog(
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         isDeveloperMode={isDeveloperMode}
+                    />
+                );
+            }
+            if (currentParametersType === ElementType.PCC_MIN_PARAMETERS) {
+                return (
+                    <PccMinParametersEditionDialog
+                        id={currentParametersId}
+                        open
+                        onClose={handleCloseParametersDialog}
+                        titleId="editParameters"
+                        name={elementName}
+                        description={activeElement.description}
+                        user={user}
+                        activeDirectory={activeDirectory}
+                        language={languageLocal}
                     />
                 );
             }
