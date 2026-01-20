@@ -83,6 +83,7 @@
     "SENSITIVITY_PARAMETERS": "Paramètres (Analyse de sensibilité)",
     "LOADFLOW_PARAMETERS": "Paramètres (Calcul de répartition)",
     "SHORT_CIRCUIT_PARAMETERS": "Paramètres (Analyse de court-circuit)",
+    "PCC_MIN_PARAMETERS": "Paramètres (Pcc min N-1)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Paramètres (Images réseau)",
     "DIAGRAM_CONFIG": "Image nodale de zone",
     "contingencyList.explicitNaming": "Par nommage",
