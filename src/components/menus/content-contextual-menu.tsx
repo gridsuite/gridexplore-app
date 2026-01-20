@@ -155,6 +155,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.PCC_MIN_PARAMETERS:
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
@@ -217,6 +218,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.PCC_MIN_PARAMETERS:
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         activeElement.elementUuid,
@@ -300,6 +302,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SECURITY_ANALYSIS_PARAMETERS,
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SHORT_CIRCUIT_PARAMETERS,
+            ElementType.PCC_MIN_PARAMETERS,
             ElementType.LOADFLOW_PARAMETERS,
             ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
