@@ -44,8 +44,8 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
                 onSuccess?.(args, data);
             } catch (error: unknown) {
                 let message;
-                if (error instanceof ProblemDetailError) {
-                    message = intl.formatMessage({ id: error.businessErrorCode });
+                if (error instanceof ProblemDetailError && error.businessErrorCode) {
+                    message = intl.formatMessage({ id: error.businessErrorCode }, error.businessErrorValues);
                 }
                 if (error instanceof Error) {
                     message = message ?? error.message;
