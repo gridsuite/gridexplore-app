@@ -29,6 +29,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PermissionType,
+    snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -52,14 +53,6 @@ import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import {
-    generateRenameErrorMessages,
-    handleDeleteError,
-    handleDuplicateError,
-    handleGenericTxtError,
-    handleMaxElementsExceededError,
-    handleMoveError,
-} from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
@@ -185,10 +178,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
 
                 default:
-                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    snackError({ headerId: 'unsupportedItem' });
             }
         }
-    }, [activeElement, copyElement, intl, selectedDirectory?.elementUuid, snackError]);
+    }, [activeElement, copyElement, selectedDirectory?.elementUuid, snackError]);
+
+    const snackDuplicateError = useCallback(
+        (error: unknown) =>
+            snackWithFallback(snackError, error, {
+                headerId: 'duplicateElementFailure',
+                headerValues: {
+                    itemName: activeElement.elementName,
+                },
+            }),
+        [activeElement.elementName, snackError]
+    );
 
     const duplicateItem = useCallback(() => {
         if (activeElement) {
@@ -198,12 +202,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
-                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
-                        }
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
+                        snackDuplicateError
+                    );
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -211,7 +212,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
+                    ).catch(snackDuplicateError);
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
@@ -225,25 +226,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
+                    ).catch(snackDuplicateError);
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
-                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 default: {
-                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    snackError({ headerId: 'unsupportedItem' });
                 }
             }
             handleCloseDialog();
         }
-    }, [activeElement, handleCloseDialog, intl, snackError]);
+    }, [activeElement, handleCloseDialog, snackDuplicateError, snackError]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
@@ -258,35 +255,43 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    handleDeleteError(setDeleteError, error, intl, snackError);
+                    snackWithFallback(snackError, error, {
+                        headerId: 'deleteConflictError',
+                    });
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, snackError]
     );
 
-    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, (errors, params, _, snacker) =>
+        snackWithFallback(snacker, errors[0], {
+            // First error taken arbitrarily but that was also the case before in the handler
+            headerId: 'moveElementsFailure',
+            headerValues: {
+                pbn: errors.length,
+                stn: params.length,
+                problematic: params.map((p) => (p as string[])[0]).join(' '),
+            },
+        })
+    );
 
-    const [renameCB, renameErrorMessage] = useDeferredFetch(
-        renameElement,
-        (renamedElement: any[]) => {
-            // if copied element is renamed
-            if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
-                dispatch(
-                    setItemSelectionForCopy({
-                        ...itemSelectionForCopy,
-                        nameItem: renamedElement[1],
-                    })
-                );
-                broadcastChannel.postMessage({
+    const [renameCB, renameErrorMessage] = useDeferredFetch(renameElement, (renamedElement: any[]) => {
+        // if copied element is renamed
+        if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
+            dispatch(
+                setItemSelectionForCopy({
                     ...itemSelectionForCopy,
                     nameItem: renamedElement[1],
-                });
-            }
+                })
+            );
+            broadcastChannel.postMessage({
+                ...itemSelectionForCopy,
+                nameItem: renamedElement[1],
+            });
+        }
 
-            handleCloseDialog();
-        },
-        generateRenameErrorMessages(intl)
-    );
+        handleCloseDialog();
+    });
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
     const isSingleElement = selectedElements.length === 1;

@@ -13,6 +13,7 @@ import {
     useSnackMessage,
     yupConfig as yup,
     PARAM_LANGUAGE,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,7 +22,6 @@ import { ContingencyListFormData, getContingencyListEmptyFormData, getFormConten
 import { useParameterState } from '../../use-parameters-dialog';
 import { AppState } from '../../../../redux/types';
 import { getExplicitNamingSchema } from './explicit-naming-utils';
-import { handleNotAllowedError } from '../../../utils/rest-errors';
 import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
@@ -79,11 +79,7 @@ export default function ExplicitNamingCreationDialog({
         )
             .then(() => closeAndClear())
             .catch((error) => {
-                if (handleNotAllowedError(error, snackError)) {
-                    return;
-                }
-                snackError({
-                    messageTxt: error.message,
+                snackWithFallback(snackError, error, {
                     headerId: 'contingencyListCreationError',
                     headerValues: { name: data[FieldConstants.NAME] },
                 });
