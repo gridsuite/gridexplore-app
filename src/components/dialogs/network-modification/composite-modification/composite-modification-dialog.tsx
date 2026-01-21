@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem } from '@mui/material';
+import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
@@ -21,6 +21,7 @@ import {
     useSnackMessage,
     yupConfig as yup,
     PARAM_LANGUAGE,
+    ModificationType,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
@@ -28,6 +29,7 @@ import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
+import { UUID } from 'node:crypto';
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -94,18 +96,31 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
+    const onModificationClick = useCallback((modificationId: UUID) => {
+        console.log('CLICK', modificationId);
+    }, []);
+
+    const editableModification = useCallback((modificationType: ModificationType) => {
+        const editableList = new Set([ModificationType.SUBSTATION_CREATION]);
+        return editableList.has(modificationType);
+    }, []);
+
     const generateNetworkModificationsList = () => {
         return (
             <List sx={unscrollableDialogStyles.scrollableContent}>
-                {modifications &&
-                    modifications.map((modification: NetworkModificationMetadata) => (
-                        <Box key={modification.uuid}>
-                            <ListItem>
+                {modifications?.map((modification: NetworkModificationMetadata) => (
+                    <Box key={modification.uuid}>
+                        <ListItem disablePadding>
+                            <ListItemButton
+                                disableRipple={editableModification(modification.type as ModificationType)}
+                                onClick={() => onModificationClick(modification.uuid)}
+                            >
                                 <Box>{getModificationLabel(modification)}</Box>
-                            </ListItem>
-                            <Divider component="li" />
-                        </Box>
-                    ))}
+                            </ListItemButton>
+                        </ListItem>
+                        <Divider component="li" />
+                    </Box>
+                ))}
             </List>
         );
     };
