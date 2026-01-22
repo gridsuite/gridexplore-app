@@ -69,14 +69,20 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
     );
 
     const allowsDownload = useMemo(() => {
-        const allowedTypes = [
-            ElementType.CASE,
-            ElementType.SPREADSHEET_CONFIG,
-            ElementType.SPREADSHEET_CONFIG_COLLECTION,
-        ];
-        // if selectedElements contains at least one of the allowed types
-        return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress;
-    }, [selectedElements, noCreationInProgress]);
+        const hasDownloadableElement = selectedElements.some((element) => {
+            if (element.type === ElementType.CASE) {
+                return true; // Cases can always be downloaded
+            }
+            // Spreadsheets and workspaces require developer mode
+            return (
+                isDeveloperMode &&
+                (element.type === ElementType.SPREADSHEET_CONFIG ||
+                    element.type === ElementType.SPREADSHEET_CONFIG_COLLECTION ||
+                    element.type === ElementType.WORKSPACE)
+            );
+        });
+        return hasDownloadableElement && noCreationInProgress;
+    }, [selectedElements, noCreationInProgress, isDeveloperMode]);
 
     const allowsSpreadsheetCollection = useMemo(() => {
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
