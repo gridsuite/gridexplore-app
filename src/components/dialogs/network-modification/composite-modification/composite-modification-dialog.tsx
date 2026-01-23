@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { type FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -21,23 +21,32 @@ import {
     useSnackMessage,
     yupConfig as yup,
     PARAM_LANGUAGE,
+    ModificationType,
+    SubstationCreationDialog,
+    FetchStatus,
+    fetchNetworkModification,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { UUID } from 'node:crypto';
 import { AppState } from '../../../../redux/types';
 import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
-import { useModificationDialog } from './use-modification-dialog';
 
 const styles = {
-    nopointer: {
+    noPointer: {
         cursor: 'default',
         '&:hover': {
             cursor: 'default',
         },
     },
 };
+
+const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, FunctionComponent<any>>([
+    [ModificationType.SUBSTATION_CREATION, SubstationCreationDialog],
+]);
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -64,6 +73,12 @@ interface CompositeModificationDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
+interface NetworkModificationData {
+    uuid: UUID;
+    type: string;
+    [key: string]: any;
+}
+
 export default function CompositeModificationDialog({
     compositeModificationId,
     open,
@@ -80,6 +95,10 @@ export default function CompositeModificationDialog({
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
+
+    const [editSelectedType, setEditSelectedType] = useState<ModificationType>();
+    const [editData, setEditData] = useState<NetworkModificationData>();
+    const [editDataFetchStatus, setEditDataFetchStatus] = useState(FetchStatus.IDLE);
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name, description),
@@ -104,17 +123,61 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
-    const { modificationDialog, openModificationDialog, isModificationEditable } = useModificationDialog();
+    const isModificationEditable = useCallback((modificationType: ModificationType) => {
+        return EDITABLE_MODIFICATION_DIALOGS.has(modificationType);
+    }, []);
 
     const editModification = useCallback(
         (modification: NetworkModificationMetadata) => {
             console.log('DBG DBR CLICK', modification);
-            if (isModificationEditable(modification.type)) {
-                openModificationDialog(modification.uuid, modification.type);
+            if (!isModificationEditable(modification.type)) {
+                return;
             }
+            // we can already open the empty dialog
+            setEditSelectedType(modification.type);
+            //setEditDataFetchStatus(FetchStatus.RUNNING);
+
+            // while fetching the actual data
+            fetchNetworkModification(modification.uuid)
+                .then((res) => {
+                    return res.json().then((data: NetworkModificationData) => {
+                        //remove all null values to avoid showing a "null" in the forms TODO DBR
+                        setEditData(data);
+                        //setEditDataFetchStatus(FetchStatus.SUCCEED);
+                    });
+                })
+                .catch((error: Error) => {
+                    snackWithFallback(snackError, error);
+                    //setEditDataFetchStatus(FetchStatus.FAILED);
+                });
         },
-        [openModificationDialog]
+        [isModificationEditable, snackError]
     );
+
+    function withDefaultParams(Dialog: React.FC<any>) {
+        return (
+            <Dialog
+                editData={editData}
+                isUpdate
+                onClose={() => {
+                    setEditSelectedType(undefined);
+                    setEditData(undefined);
+                }}
+                editDataFetchStatus={editDataFetchStatus}
+            />
+        );
+    }
+
+    const renderEditionDialog = () => {
+        if (!editSelectedType) {
+            return null;
+        }
+        const dialog = EDITABLE_MODIFICATION_DIALOGS.get(editSelectedType);
+        if (!dialog) {
+            return null;
+        }
+        return withDefaultParams(dialog);
+    };
 
     const generateNetworkModificationsList = () => {
         return (
@@ -123,7 +186,7 @@ export default function CompositeModificationDialog({
                     <Box key={modification.uuid}>
                         <ListItem disablePadding>
                             <ListItemButton
-                                sx={isModificationEditable(modification.type) ? null : styles.nopointer}
+                                sx={isModificationEditable(modification.type) ? null : styles.noPointer}
                                 onClick={() => editModification(modification)}
                             >
                                 <Box>{getModificationLabel(modification)}</Box>
@@ -199,7 +262,7 @@ export default function CompositeModificationDialog({
                     </Box>
                 )}
             </CustomMuiDialog>
-            {modificationDialog}
+            {editSelectedType && renderEditionDialog()}
         </>
     );
 }
