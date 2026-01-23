@@ -20,7 +20,7 @@ import {
     useModificationLabelComputer,
     useSnackMessage,
     yupConfig as yup,
-    PARAM_LANGUAGE, mergeSx,
+    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
@@ -104,14 +104,16 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
-    const { modificationDialog, handleOpenModificationDialog, isModificationEditable } = useModificationDialog();
+    const { modificationDialog, openModificationDialog, isModificationEditable } = useModificationDialog();
 
     const editModification = useCallback(
         (modification: NetworkModificationMetadata) => {
             console.log('DBG DBR CLICK', modification);
-            handleOpenModificationDialog(modification.uuid, modification.type);
+            if (isModificationEditable(modification.type)) {
+                openModificationDialog(modification.uuid, modification.type);
+            }
         },
-        [handleOpenModificationDialog]
+        [openModificationDialog]
     );
 
     const generateNetworkModificationsList = () => {

@@ -28,41 +28,39 @@ interface NetworkModificationData {
 
 export function useModificationDialog() {
     const [modificationDialog, setModificationDialog] = useState<ReactElement>();
-    const [editData, setEditData] = useState<NetworkModificationData>();
     const { snackError } = useSnackMessage();
 
-    const createDialogWithProps = useCallback(
-        (Dialog: FunctionComponent<any>) => (
+    const getDialog = useCallback(
+        (Dialog: FunctionComponent<any>, data?: NetworkModificationData) => (
             <Dialog
-                editData={editData}
+                editData={data}
                 isUpdate
                 onClose={() => {
                     setModificationDialog(undefined);
-                    setEditData(undefined);
                 }}
                 editDataFetchStatus={FetchStatus.IDLE}
             />
         ),
-        [editData]
+        []
     );
 
-    const handleOpenModificationDialog = useCallback(
+    const openModificationDialog = useCallback(
         (modificationId: UUID, modificationType: ModificationType) => {
             const mapping = MODIFICATION_DIALOG_MAPPING.get(modificationType);
-            const dialog = mapping ? createDialogWithProps(mapping) : undefined;
-            if (!dialog) {
+            if (!mapping) {
                 return;
             }
-            // we can open the dialog in fetching mode
-            setModificationDialog(dialog);
+            // we can already open an empty dialog in fetching mode
+            setModificationDialog(getDialog(mapping));
 
             // Fetch modification data
             //setEditDataFetchStatus(FetchStatus.);
             fetchNetworkModification(modificationId)
                 .then((res) => {
                     return res.json().then((data: NetworkModificationData) => {
-                        //remove all null values to avoid showing a "null" in the forms
-                        setEditData(data);
+                        // remove all null values to avoid showing a "null" in the forms
+                        // update the dialog with actual data
+                        setModificationDialog(getDialog(mapping, data));
                         //setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
@@ -71,11 +69,11 @@ export function useModificationDialog() {
                     //setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
-        [createDialogWithProps, snackError]
+        [getDialog, snackError]
     );
 
     const isModificationEditable = (modificationType: ModificationType) =>
         MODIFICATION_DIALOG_MAPPING.has(modificationType);
 
-    return { modificationDialog, handleOpenModificationDialog, isModificationEditable };
+    return { modificationDialog, openModificationDialog, isModificationEditable };
 }
