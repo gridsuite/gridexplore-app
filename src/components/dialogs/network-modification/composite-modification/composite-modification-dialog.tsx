@@ -20,8 +20,7 @@ import {
     useModificationLabelComputer,
     useSnackMessage,
     yupConfig as yup,
-    PARAM_LANGUAGE,
-    ModificationType,
+    PARAM_LANGUAGE, mergeSx,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
@@ -29,7 +28,16 @@ import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
-import { UUID } from 'node:crypto';
+import { useModificationDialog } from './use-modification-dialog';
+
+const styles = {
+    nopointer: {
+        cursor: 'default',
+        '&:hover': {
+            cursor: 'default',
+        },
+    },
+};
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -96,14 +104,15 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
-    const onModificationClick = useCallback((modificationId: UUID) => {
-        console.log('CLICK', modificationId);
-    }, []);
+    const { modificationDialog, handleOpenModificationDialog, isModificationEditable } = useModificationDialog();
 
-    const editableModification = useCallback((modificationType: ModificationType) => {
-        const editableList = new Set([ModificationType.SUBSTATION_CREATION]);
-        return editableList.has(modificationType);
-    }, []);
+    const editModification = useCallback(
+        (modification: NetworkModificationMetadata) => {
+            console.log('DBG DBR CLICK', modification);
+            handleOpenModificationDialog(modification.uuid, modification.type);
+        },
+        [handleOpenModificationDialog]
+    );
 
     const generateNetworkModificationsList = () => {
         return (
@@ -112,8 +121,8 @@ export default function CompositeModificationDialog({
                     <Box key={modification.uuid}>
                         <ListItem disablePadding>
                             <ListItemButton
-                                disableRipple={editableModification(modification.type as ModificationType)}
-                                onClick={() => onModificationClick(modification.uuid)}
+                                sx={isModificationEditable(modification.type) ? null : styles.nopointer}
+                                onClick={() => editModification(modification)}
                             >
                                 <Box>{getModificationLabel(modification)}</Box>
                             </ListItemButton>
@@ -167,25 +176,28 @@ export default function CompositeModificationDialog({
     };
 
     return (
-        <CustomMuiDialog
-            open={open}
-            onClose={onClose}
-            titleId={titleId}
-            onSave={onSubmit}
-            removeOptional
-            disabledSave={!!nameError || !!isValidating}
-            isDataFetching={isFetching}
-            language={languageLocal}
-            formSchema={schema}
-            formMethods={methods}
-            unscrollableFullHeight
-        >
-            {!isFetching && (
-                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                    <CompositeModificationForm />
-                    {generateNetworkModificationsList()}
-                </Box>
-            )}
-        </CustomMuiDialog>
+        <>
+            <CustomMuiDialog
+                open={open}
+                onClose={onClose}
+                titleId={titleId}
+                onSave={onSubmit}
+                removeOptional
+                disabledSave={!!nameError || !!isValidating}
+                isDataFetching={isFetching}
+                language={languageLocal}
+                formSchema={schema}
+                formMethods={methods}
+                unscrollableFullHeight
+            >
+                {!isFetching && (
+                    <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                        <CompositeModificationForm />
+                        {generateNetworkModificationsList()}
+                    </Box>
+                )}
+            </CustomMuiDialog>
+            {modificationDialog}
+        </>
     );
 }
