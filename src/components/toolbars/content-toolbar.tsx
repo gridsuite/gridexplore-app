@@ -14,7 +14,13 @@ import {
     FileDownload,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
-import { ElementAttributes, ElementType, PARAM_DEVELOPER_MODE, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementAttributes,
+    ElementType,
+    PARAM_DEVELOPER_MODE,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { deleteElements, moveElementsToDirectory } from '../../utils/rest-api';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CommonToolbar, { CommonToolbarProps } from './common-toolbar';
@@ -25,7 +31,6 @@ import ExportCaseDialog from '../dialogs/export-case-dialog';
 import * as constants from '../../utils/UIconstants';
 import { DialogsId } from '../../utils/UIconstants';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
-import { handleDeleteError, handleMoveError } from '../utils/rest-errors';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 
 export type ContentToolbarProps = Omit<CommonToolbarProps, 'items'> & {
@@ -57,7 +62,17 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
         handleCloseDialog();
     }, [handleCloseDialog, stopCasesExports]);
 
-    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, (errors, params, _, snacker) =>
+        snackWithFallback(snacker, errors[0], {
+            // First error taken arbitrarily but that was also the case before in the handler
+            headerId: 'moveElementsFailure',
+            headerValues: {
+                pbn: params[0].length,
+                stn: params[0].length,
+                problematic: params.map((p) => (p as string[])[0]).join(' '),
+            },
+        })
+    );
 
     const noCreationInProgress = useMemo(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
 
@@ -100,10 +115,12 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             deleteElements(elementsUuids, selectedDirectory.elementUuid)
                 .then(handleCloseDialog)
                 .catch((error) => {
-                    handleDeleteError(setDeleteError, error, intl, snackError);
+                    snackWithFallback(snackError, error, {
+                        headerId: 'deleteConflictError',
+                    });
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, snackError]
     );
 
     const items = useMemo(() => {
