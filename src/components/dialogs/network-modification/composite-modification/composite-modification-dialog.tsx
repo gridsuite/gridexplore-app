@@ -135,7 +135,7 @@ export default function CompositeModificationDialog({
             }
             // we can already open the empty dialog
             setEditSelectedType(modification.type);
-            //setEditDataFetchStatus(FetchStatus.RUNNING);
+            setEditDataFetchStatus(FetchStatus.RUNNING);
 
             // while fetching the actual data
             fetchNetworkModification(modification.uuid)
@@ -143,12 +143,12 @@ export default function CompositeModificationDialog({
                     return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms TODO DBR
                         setEditData(data);
-                        //setEditDataFetchStatus(FetchStatus.SUCCEED);
+                        setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
                 .catch((error: Error) => {
                     snackWithFallback(snackError, error);
-                    //setEditDataFetchStatus(FetchStatus.FAILED);
+                    setEditDataFetchStatus(FetchStatus.FAILED);
                 });
         },
         [isModificationEditable, snackError]
