@@ -7,8 +7,7 @@
 
 import { useCallback, useState } from 'react';
 import { IntlShape, useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ErrorMessageByHttpError, SnackError } from '../components/utils/rest-errors';
+import { ProblemDetailError, useSnackMessage, UseSnackMessageReturn } from '@gridsuite/commons-ui';
 
 export type GenericFunction<T, TArgs extends unknown[] = any[]> = (...args: TArgs) => Promise<T>;
 
@@ -21,7 +20,6 @@ export enum PromiseStatus {
  * It also returns a unique state which contains fetch status, results and error message if it failed.
  * @param {function} fetchFunction the fetch function to call
  * @param {function} onSuccess callback to call on request success
- * @param errorsMessageIds
  * @param {function} onError callback to call if request failed
  * @returns {function} fetchCallback The callback to call to execute the request.
  *                     It accepts params as argument which must follow fetch function params.
@@ -33,24 +31,31 @@ export enum PromiseStatus {
 export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
     fetchFunction: GenericFunction<T, TArgs>,
     onSuccess?: (args: TArgs, data?: T) => void,
-    errorsMessageIds: ErrorMessageByHttpError = {},
-    onError?: (error: string, snackError: SnackError) => void
+    onError?: (error: unknown) => void
 ): [(...args: TArgs) => Promise<void>, string] => {
-    const { snackError } = useSnackMessage();
     const [errorMessage, setErrorMessage] = useState<string>('');
+
+    const intl = useIntl();
 
     const fetch = useCallback(
         async (...args: TArgs) => {
             try {
                 const data = await fetchFunction(...args);
                 onSuccess?.(args, data);
-            } catch (error: any) {
-                const errorMessageId = errorsMessageIds[error.message] ?? error.message;
-                setErrorMessage(errorMessageId);
-                onError?.(errorMessageId, snackError);
+            } catch (error: unknown) {
+                let message;
+                if (error instanceof ProblemDetailError && error.businessErrorCode) {
+                    message = intl.formatMessage({ id: error.businessErrorCode }, error.businessErrorValues);
+                }
+                if (error instanceof Error) {
+                    message = message ?? error.message;
+                }
+                message = message ?? String(error);
+                setErrorMessage(message);
+                onError?.(error);
             }
         },
-        [fetchFunction, onSuccess, errorsMessageIds, onError, snackError]
+        [fetchFunction, onSuccess, onError, intl]
     );
 
     return [fetch, errorMessage];
@@ -69,7 +74,12 @@ export const useDeferredFetch = <T, TArgs extends unknown[] = any[]>(
 export const useMultipleDeferredFetch = <T>(
     fetchFunction: GenericFunction<T>,
     onSuccess?: (data: T[]) => void,
-    onError?: (errors: unknown[], params: unknown[][], intl: IntlShape, snackError: SnackError) => void
+    onError?: (
+        errors: unknown[],
+        params: unknown[][],
+        intl: IntlShape,
+        snackError: UseSnackMessageReturn['snackError']
+    ) => void
 ): [(paramsList: unknown[][]) => Promise<void>] => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
