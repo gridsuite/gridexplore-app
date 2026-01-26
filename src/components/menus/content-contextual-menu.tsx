@@ -268,8 +268,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             // First error taken arbitrarily but that was also the case before in the handler
             headerId: 'moveElementsFailure',
             headerValues: {
-                pbn: errors.length,
-                stn: params.length,
+                pbn: params[0].length,
+                stn: params[0].length,
                 problematic: params.map((p) => (p as string[])[0]).join(' '),
             },
         })

@@ -67,8 +67,8 @@ export default function ContentToolbar(props: Readonly<ContentToolbarProps>) {
             // First error taken arbitrarily but that was also the case before in the handler
             headerId: 'moveElementsFailure',
             headerValues: {
-                pbn: errors.length,
-                stn: params.length,
+                pbn: params[0].length,
+                stn: params[0].length,
                 problematic: params.map((p) => (p as string[])[0]).join(' '),
             },
         })
