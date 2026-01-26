@@ -129,7 +129,7 @@
     "noActionAvailable": "Aucune action disponible",
     "elementCreationInProgress": "Création en cours : pas d'opération autorisée",
     "serverConnectionFailed": "Échec de connexion avec le serveur. Veuillez réessayer ultérieurement",
-    "invalidFormatOrName": "Format ou nom du fichier importé non valide",
+    "invalidFormatOrName": "Format ou nom du fichier importé invalide.",
     "parameterLoadingProblem": "Problème de chargement des paramètres",
     "add": "Ajouter",
     "replace": "Remplacer",

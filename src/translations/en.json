@@ -130,7 +130,7 @@
     "noActionAvailable": "No action available",
     "elementCreationInProgress": "Creation in progress: no operation permitted",
     "serverConnectionFailed": "Failed to connect to server. Please retry later.",
-    "invalidFormatOrName": "Imported file name or format invalid",
+    "invalidFormatOrName": "Invalid imported file name or format.",
     "parameterLoadingProblem": "problem of loading parameters",
     "add": "Add",
     "replace": "Replace",
