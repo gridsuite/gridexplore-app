@@ -161,6 +161,7 @@ export default function CompositeModificationDialog({
                 isUpdate
                 onClose={handleModificationDialogClose}
                 editDataFetchStatus={editDataFetchStatus}
+                language={languageLocal}
             />
         );
     }
