@@ -9,6 +9,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    snackWithFallback,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -31,7 +32,6 @@ import {
     getContingencyList,
     saveFilterBasedContingencyList,
 } from '../../../../utils/rest-api';
-import { handleNotAllowedError } from '../../../utils/rest-errors';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { getFilterBasedFormDataFromFetchedElement } from '../contingency-list-utils';
 
@@ -149,11 +149,7 @@ export default function FilterBasedContingencyListDialog({
                 )
                     .then(() => closeAndClear())
                     .catch((error) => {
-                        if (handleNotAllowedError(error, snackError)) {
-                            return;
-                        }
-                        snackError({
-                            messageTxt: error.message,
+                        snackWithFallback(snackError, error, {
                             headerId: 'contingencyListEditingError',
                             headerValues: { name: data[FieldConstants.NAME] },
                         });
@@ -167,11 +163,7 @@ export default function FilterBasedContingencyListDialog({
                 )
                     .then(() => closeAndClear())
                     .catch((error) => {
-                        if (handleNotAllowedError(error, snackError)) {
-                            return;
-                        }
-                        snackError({
-                            messageTxt: error.message,
+                        snackWithFallback(snackError, error, {
                             headerId: 'contingencyListCreationError',
                             headerValues: { name: data[FieldConstants.NAME] },
                         });
