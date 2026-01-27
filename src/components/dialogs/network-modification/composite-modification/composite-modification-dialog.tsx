@@ -124,7 +124,6 @@ export default function CompositeModificationDialog({
 
     const editModification = useCallback(
         (modification: NetworkModificationMetadata) => {
-            console.log('DBG DBR CLICK', modification);
             if (!isModificationEditable(modification.type)) {
                 return;
             }
