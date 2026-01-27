@@ -119,6 +119,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
+                case ElementType.WORKSPACE:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error) => {
                             snackWithFallback(snackError, error, {
