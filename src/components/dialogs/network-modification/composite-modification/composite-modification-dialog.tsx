@@ -26,9 +26,10 @@ import {
     FetchStatus,
     fetchNetworkModification,
     snackWithFallback,
+    NetworkModificationData,
+    removeNullFields,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { UUID } from 'node:crypto';
 import { AppState } from '../../../../redux/types';
 import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
@@ -71,12 +72,6 @@ interface CompositeModificationDialogProps {
     name: string;
     description: string;
     broadcastChannel: BroadcastChannel;
-}
-
-interface NetworkModificationData {
-    uuid: UUID;
-    type: string;
-    [key: string]: any;
 }
 
 export default function CompositeModificationDialog({
@@ -141,8 +136,8 @@ export default function CompositeModificationDialog({
             fetchNetworkModification(modification.uuid)
                 .then((res) => {
                     return res.json().then((data: NetworkModificationData) => {
-                        //remove all null values to avoid showing a "null" in the forms TODO DBR
-                        setEditData(data);
+                        //remove all null values to avoid showing a "null" in the forms
+                        setEditData(removeNullFields(data));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
@@ -154,15 +149,17 @@ export default function CompositeModificationDialog({
         [isModificationEditable, snackError]
     );
 
+    const handleModificationDialogClose = useCallback(() => {
+        setEditSelectedType(undefined);
+        setEditData(undefined);
+    }, []);
+
     function withDefaultParams(Dialog: React.FC<any>) {
         return (
             <Dialog
                 editData={editData}
                 isUpdate
-                onClose={() => {
-                    setEditSelectedType(undefined);
-                    setEditData(undefined);
-                }}
+                onClose={handleModificationDialogClose}
                 editDataFetchStatus={editDataFetchStatus}
             />
         );
