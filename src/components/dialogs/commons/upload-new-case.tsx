@@ -9,7 +9,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { ErrorInput, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, extractErrorMessage, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
@@ -61,7 +61,7 @@ export default function UploadNewCase({
         (error: any) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
                 setError(FieldConstants.CASE_FILE, {
-                    message: intl.formatMessage({ id: 'invalidFormatOrName' }),
+                    message: extractErrorMessage(error, 'invalidFormatOrName', intl),
                 });
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
                 setError(FieldConstants.CASE_FILE, {
