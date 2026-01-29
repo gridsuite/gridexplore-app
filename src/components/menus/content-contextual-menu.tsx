@@ -152,6 +152,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
+                case ElementType.WORKSPACE:
                     console.info(
                         `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
@@ -202,6 +203,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
+                case ElementType.WORKSPACE:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
                         snackDuplicateError
                     );
@@ -313,6 +315,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
             ElementType.DIAGRAM_CONFIG,
+            ElementType.WORKSPACE,
         ];
 
         const hasMetadata = selectedElements[0]?.hasMetadata;
@@ -339,14 +342,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const allowsDownload = useCallback(() => {
-        const allowedTypes = [
-            ElementType.CASE,
-            ElementType.SPREADSHEET_CONFIG,
-            ElementType.SPREADSHEET_CONFIG_COLLECTION,
-        ];
-        // if selectedElements contains at least one of the allowed types
-        return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
-    }, [selectedElements, noCreationInProgress]);
+        const hasDownloadableElement = selectedElements.some((element) => {
+            if (element.type === ElementType.CASE) {
+                return true; // Cases can always be downloaded
+            }
+            // Spreadsheets and workspaces require developer mode
+            return (
+                isDeveloperMode &&
+                (element.type === ElementType.SPREADSHEET_CONFIG ||
+                    element.type === ElementType.SPREADSHEET_CONFIG_COLLECTION ||
+                    element.type === ElementType.WORKSPACE)
+            );
+        });
+        return hasDownloadableElement && noCreationInProgress();
+    }, [selectedElements, noCreationInProgress, isDeveloperMode]);
 
     const allowsExportCase = useCallback(() => {
         // if selectedElements contains at least one case
