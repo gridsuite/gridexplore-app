@@ -307,6 +307,8 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/composite-modifications';
         case ElementType.DIAGRAM_CONFIG:
             return '/diagram-config';
+        case ElementType.WORKSPACE:
+            return '/workspaces';
         default:
             return undefined;
     }
@@ -383,6 +385,18 @@ export function downloadSpreadsheetConfig(configId: string) {
 export function downloadSpreadsheetConfigCollection(collectionId: string) {
     console.info(`Downloading spreadsheet config collection with id: ${collectionId}`);
     const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}`;
+
+    return backendFetch(fetchUrl, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+}
+
+export function downloadWorkspace(workspaceId: string) {
+    console.info(`Downloading workspace with id: ${workspaceId}`);
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/workspaces/${workspaceId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
