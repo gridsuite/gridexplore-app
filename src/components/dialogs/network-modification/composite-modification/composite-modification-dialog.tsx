@@ -138,7 +138,9 @@ export default function CompositeModificationDialog({
                 setEditData(removeNullFields(data));
                 setEditDataFetchStatus(FetchStatus.SUCCEED);
             } catch (error: unknown) {
-                snackWithFallback(snackError, error);
+                snackWithFallback(snackError, error, {
+                    headerId: 'ModificationReadError',
+                });
                 setEditDataFetchStatus(FetchStatus.FAILED);
             }
         },
