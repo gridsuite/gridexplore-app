@@ -123,7 +123,7 @@ export default function CompositeModificationDialog({
     }, []);
 
     const editModification = useCallback(
-        (modification: NetworkModificationMetadata) => {
+        async (modification: NetworkModificationMetadata) => {
             if (!isModificationEditable(modification.type)) {
                 return;
             }
@@ -131,19 +131,16 @@ export default function CompositeModificationDialog({
             setEditSelectedType(modification.type);
             setEditDataFetchStatus(FetchStatus.RUNNING);
 
-            // while fetching the actual data
-            fetchNetworkModification(modification.uuid)
-                .then((res) => {
-                    return res.json().then((data: NetworkModificationData) => {
-                        //remove all null values to avoid showing a "null" in the forms
-                        setEditData(removeNullFields(data));
-                        setEditDataFetchStatus(FetchStatus.SUCCEED);
-                    });
-                })
-                .catch((error: Error) => {
-                    snackWithFallback(snackError, error);
-                    setEditDataFetchStatus(FetchStatus.FAILED);
-                });
+            try {
+                const res = await fetchNetworkModification(modification.uuid);
+                const data: NetworkModificationData = await res.json();
+                // remove all null values to avoid showing a "null" in the forms
+                setEditData(removeNullFields(data));
+                setEditDataFetchStatus(FetchStatus.SUCCEED);
+            } catch (error: unknown) {
+                snackWithFallback(snackError, error);
+                setEditDataFetchStatus(FetchStatus.FAILED);
+            }
         },
         [isModificationEditable, snackError]
     );
@@ -259,7 +256,7 @@ export default function CompositeModificationDialog({
                     </Box>
                 )}
             </CustomMuiDialog>
-            {editSelectedType && renderEditionDialog()}
+            {renderEditionDialog()}
         </>
     );
 }
