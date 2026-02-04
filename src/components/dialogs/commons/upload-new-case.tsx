@@ -7,26 +7,33 @@
 
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import { ErrorInput, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
+import type { AppState, ExploreMetadata } from '../../../redux/types';
 
 export interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
 }
 
-const MAX_FILE_SIZE_IN_MO = 100;
-const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+const DEFAULT_MAX_FILE_SIZE_IN_MO = 100;
 
 export default function UploadNewCase({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
 }: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
+    const MAX_FILE_SIZE_IN_MO = useSelector((state: AppState) => {
+        const exploreApp = state.appsAndUrls.find((metadata) => metadata.name === 'Explore') as ExploreMetadata;
+        return exploreApp?.MaxFileSizeInMo ?? DEFAULT_MAX_FILE_SIZE_IN_MO;
+    });
+
+    const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
 

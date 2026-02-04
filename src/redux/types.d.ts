@@ -78,3 +78,8 @@ export interface AppState extends CommonStoreState {
     itemSelectionForCopy: ItemSelectionForCopy;
     reorderedColumns: string[];
 }
+
+export type ExploreMetadata = Metadata & {
+    name: 'Explore';
+    MaxFileSizeInMo?: number;
+};
