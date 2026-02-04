@@ -184,6 +184,7 @@ export default function CompositeModificationDialog({
                             <ListItemButton
                                 sx={isModificationEditable(modification.type) ? null : styles.noPointer}
                                 onClick={() => editModification(modification)}
+                                disableRipple
                             >
                                 <Box>{getModificationLabel(modification)}</Box>
                             </ListItemButton>
