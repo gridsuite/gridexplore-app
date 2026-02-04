@@ -9,7 +9,7 @@ import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { ErrorInput, extractErrorMessage, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, extractSnackInputs, FieldConstants, FieldErrorAlert, SnackInputs } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
@@ -60,12 +60,15 @@ export default function UploadNewCase({
     const handleUploadCaseError = useCallback(
         (error: any) => {
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
+                const displayErrorInfos: SnackInputs = extractSnackInputs(error, undefined, 'invalidFormatOrName');
                 setError(FieldConstants.CASE_FILE, {
-                    message: extractErrorMessage(error, 'invalidFormatOrName', intl),
+                    message: intl.formatMessage({ id: displayErrorInfos.messageId }, displayErrorInfos.messageValues),
                 });
             } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
                 setError(FieldConstants.CASE_FILE, {
-                    message: extractErrorMessage(error, 'serverConnectionFailed', intl),
+                    message: intl.formatMessage({
+                        id: 'serverConnectionFailed',
+                    }),
                 });
             } else {
                 setError(FieldConstants.CASE_FILE, {
