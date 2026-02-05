@@ -4,44 +4,98 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CustomMuiDialog, CustomMuiDialogProps } from '@gridsuite/commons-ui';
-import { useUpdateModification, UseUpdateModificationProps, WithId } from './useUpdateModification';
-import { FieldValues } from 'react-hook-form';
-import { FunctionComponent } from 'react';
+import { UUID } from 'node:crypto';
+import {
+    CustomMuiDialog,
+    CustomMuiDialogProps,
+    fetchNetworkModification,
+    removeNullFields,
+    snackWithFallback,
+    updateModification,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { FieldValues, useForm } from 'react-hook-form';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { ObjectSchema } from 'yup';
 
-export interface ModificationDialogProps<
-    FormData extends FieldValues,
-    ModificationData extends WithId,
-> extends UseUpdateModificationProps<FormData, ModificationData> {
+export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
     onClose: CustomMuiDialogProps['onClose'];
     language: CustomMuiDialogProps['language'];
     titleId: CustomMuiDialogProps['titleId'];
+    modificationUuid: UUID;
     ModificationForm: FunctionComponent;
+    formSchema: ObjectSchema<FormData>;
+    dtoToForm: (dto: ModificationData) => FormData;
+    formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
+    errorHeaderId: string;
 }
 
-/**
- * Dialog to update a substation creation
- */
+interface WithId {
+    uuid: UUID;
+}
+
 export function ModificationDialog<FormData extends FieldValues, ModificationData extends WithId>({
     open,
     onClose,
     language,
     titleId,
     ModificationForm,
-    ...useUpdateModificationProps
+    modificationUuid,
+    formSchema,
+    dtoToForm,
+    formToDto,
+    errorHeaderId,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
-    const { formMethods, onSubmit } = useUpdateModification<FormData, ModificationData>(useUpdateModificationProps);
+    const { snackError } = useSnackMessage();
+    const [modificationData, setModificationData] = useState<ModificationData>();
+
+    const formMethods = useForm<FormData>({
+        resolver: yupResolver(formSchema) as any, // really difficult to type with yup inferred types
+    });
+
+    useEffect(() => {
+        if (modificationData) {
+            formMethods.reset(dtoToForm(modificationData));
+        }
+    }, [formMethods, modificationData, dtoToForm]);
+
+    useEffect(() => {
+        fetchNetworkModification(modificationUuid)
+            .then((res) => res.json())
+            .then((res) => setModificationData(removeNullFields(res)))
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, {
+                    headerId: 'ModificationReadError',
+                });
+                onClose();
+            });
+    }, []);
+
+    const onSubmit = useCallback(
+        (form: FormData) => {
+            if (modificationData) {
+                updateModification({
+                    modificationUuid: modificationData.uuid,
+                    body: JSON.stringify(formToDto(form)),
+                }).catch((error: unknown) => {
+                    snackWithFallback(snackError, error, { headerId: errorHeaderId });
+                });
+            }
+        },
+        [snackError, modificationData?.uuid, formToDto, errorHeaderId]
+    );
 
     return (
         <CustomMuiDialog
             open={open}
-            formSchema={useUpdateModificationProps.formSchema}
+            formSchema={formSchema}
             formMethods={formMethods}
             onClose={onClose}
             onSave={onSubmit}
             titleId={titleId}
-            isDataFetching={!useUpdateModificationProps.modificationData}
+            isDataFetching={!modificationData}
             language={language}
         >
             <ModificationForm />

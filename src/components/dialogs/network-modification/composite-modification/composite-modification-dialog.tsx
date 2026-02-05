@@ -13,14 +13,11 @@ import { useIntl } from 'react-intl';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
-    fetchNetworkModification,
     FieldConstants,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     PARAM_LANGUAGE,
-    removeNullFields,
-    snackWithFallback,
     substationCreationDtoToForm,
     SubstationCreationForm,
     substationCreationFormSchema,
@@ -108,8 +105,7 @@ export default function CompositeModificationDialog({
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
 
-    const [selectedModificationType, setSelectedModificationType] = useState<ModificationType>();
-    const [selectedModificationData, setSelectedModificationData] = useState<any>();
+    const [selectedModification, setSelectedModification] = useState<NetworkModificationMetadata>();
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name, description),
@@ -143,45 +139,14 @@ export default function CompositeModificationDialog({
             if (!isModificationEditable(modification.type)) {
                 return;
             }
-            setSelectedModificationType(modification.type);
-            try {
-                const res = await fetchNetworkModification(modification.uuid);
-                const data = await res.json();
-                // remove all null values to avoid showing a "null" in the forms
-                setSelectedModificationData(removeNullFields(data));
-            } catch (error: unknown) {
-                snackWithFallback(snackError, error, {
-                    headerId: 'ModificationReadError',
-                });
-                handleModificationDialogClose();
-            }
+            setSelectedModification(modification);
         },
         [isModificationEditable, snackError]
     );
 
     const handleModificationDialogClose = useCallback(() => {
-        setSelectedModificationType(undefined);
-        setSelectedModificationData(undefined);
+        setSelectedModification(undefined);
     }, []);
-
-    const CurrentDialog = useMemo(() => {
-        if (!selectedModificationType) {
-            return null;
-        }
-        const dialog = EDITABLE_MODIFICATION_DIALOGS.get(selectedModificationType);
-        if (dialog) {
-            return () => (
-                <ModificationDialog
-                    open={!!selectedModificationData}
-                    onClose={handleModificationDialogClose}
-                    modificationData={selectedModificationData}
-                    language={languageLocal}
-                    {...dialog}
-                />
-            );
-        }
-        return null;
-    }, [selectedModificationType, selectedModificationData, languageLocal]);
 
     useEffect(() => {
         setIsFetching(true);
@@ -261,7 +226,17 @@ export default function CompositeModificationDialog({
                     </Box>
                 )}
             </CustomMuiDialog>
-            {CurrentDialog && <CurrentDialog />}
+            {selectedModification && (
+                <ModificationDialog
+                    open={!!selectedModification}
+                    onClose={handleModificationDialogClose}
+                    modificationUuid={selectedModification.uuid}
+                    language={languageLocal}
+                    // We can force to not undefined because if there is a selectedModification it means it is editable
+                    // and then a configuration will be associated
+                    {...EDITABLE_MODIFICATION_DIALOGS.get(selectedModification.type)!}
+                />
+            )}
         </>
     );
 }
