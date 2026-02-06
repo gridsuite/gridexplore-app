@@ -71,7 +71,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
                 });
                 onClose();
             });
-    }, []);
+    }, [modificationUuid, onClose, snackError]);
 
     const onSubmit = useCallback(
         (form: FormData) => {
@@ -84,7 +84,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
                 });
             }
         },
-        [snackError, modificationData?.uuid, formToDto, errorHeaderId]
+        [modificationData, formToDto, snackError, errorHeaderId]
     );
 
     return (

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -18,6 +18,7 @@ import {
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     PARAM_LANGUAGE,
+    snackWithFallback,
     substationCreationDtoToForm,
     SubstationCreationForm,
     substationCreationFormSchema,
@@ -141,7 +142,7 @@ export default function CompositeModificationDialog({
             }
             setSelectedModification(modification);
         },
-        [isModificationEditable, snackError]
+        [isModificationEditable]
     );
 
     const handleModificationDialogClose = useCallback(() => {
@@ -180,9 +181,8 @@ export default function CompositeModificationDialog({
                 }
                 onClose();
             })
-            .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'compositeModificationEditingError',
                     headerValues: { name },
                 });
