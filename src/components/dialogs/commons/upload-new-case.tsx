@@ -7,26 +7,36 @@
 
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useSelector } from 'react-redux';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { ErrorInput, FieldConstants, FieldErrorAlert } from '@gridsuite/commons-ui';
+import { ErrorInput, FieldConstants, FieldErrorAlert, isExploreMetadata } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
+import type { AppState } from '../../../redux/types';
 
 export interface UploadNewCaseProps {
     isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
 }
 
-const MAX_FILE_SIZE_IN_MO = 100;
-const MAX_FILE_SIZE_IN_BYTES = MAX_FILE_SIZE_IN_MO * 1024 * 1024;
+const DEFAULT_MAX_FILE_SIZE_IN_MB = 100;
 
 export default function UploadNewCase({
     isNewStudyCreation = false,
     getCurrentCaseImportParams,
 }: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
+
+    const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
+
+    const maxFileSizeInMb = useMemo(() => {
+        const exploreMetadata = appsAndUrls.find(isExploreMetadata);
+        return exploreMetadata?.maxFileSizeInMb ?? DEFAULT_MAX_FILE_SIZE_IN_MB;
+    }, [appsAndUrls]);
+
+    const maxFileSizeInByte = maxFileSizeInMb * 1024 * 1024;
 
     const [caseFileLoading, setCaseFileLoading] = useState(false);
 
@@ -89,7 +99,7 @@ export default function UploadNewCase({
         if (files?.length) {
             const currentFile = files[0];
 
-            if (currentFile.size <= MAX_FILE_SIZE_IN_BYTES) {
+            if (currentFile.size <= maxFileSizeInByte) {
                 onValueChange(currentFile);
 
                 if (isNewStudyCreation) {
@@ -123,7 +133,7 @@ export default function UploadNewCase({
                                 id: 'uploadFileExceedingLimitSizeErrorMsg',
                             },
                             {
-                                maxSize: MAX_FILE_SIZE_IN_MO,
+                                maxSize: maxFileSizeInMb,
                             }
                         )
                         .toString(),
