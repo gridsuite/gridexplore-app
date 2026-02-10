@@ -4,30 +4,63 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem } from '@mui/material';
+import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
+    ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
+    snackWithFallback,
+    substationCreationDtoToForm,
+    SubstationCreationForm,
+    substationCreationFormSchema,
+    substationCreationFormToDto,
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
     yupConfig as yup,
-    PARAM_LANGUAGE,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
-import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
+import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
+
+const styles = {
+    noPointer: {
+        cursor: 'default',
+        '&:hover': {
+            cursor: 'default',
+        },
+    },
+};
+
+type SpecificModificationDialogProps = Pick<
+    ModificationDialogProps<any, any>,
+    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+>;
+
+const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
+    [
+        ModificationType.SUBSTATION_CREATION,
+        {
+            formSchema: substationCreationFormSchema,
+            dtoToForm: substationCreationDtoToForm,
+            formToDto: substationCreationFormToDto,
+            errorHeaderId: 'SubstationCreationError',
+            titleId: 'CreateSubstation',
+            ModificationForm: SubstationCreationForm,
+        },
+    ],
+]);
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -64,12 +97,13 @@ export default function CompositeModificationDialog({
     broadcastChannel,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const dispatch = useDispatch();
+
+    const [selectedModification, setSelectedModification] = useState<NetworkModificationMetadata>();
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name, description),
@@ -94,21 +128,23 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
-    const generateNetworkModificationsList = () => {
-        return (
-            <List sx={unscrollableDialogStyles.scrollableContent}>
-                {modifications &&
-                    modifications.map((modification: NetworkModificationMetadata) => (
-                        <Box key={modification.uuid}>
-                            <ListItem>
-                                <Box>{getModificationLabel(modification)}</Box>
-                            </ListItem>
-                            <Divider component="li" />
-                        </Box>
-                    ))}
-            </List>
-        );
-    };
+    const isModificationEditable = useCallback((modificationType: ModificationType) => {
+        return EDITABLE_MODIFICATION_DIALOGS.has(modificationType);
+    }, []);
+
+    const editModification = useCallback(
+        async (modification: NetworkModificationMetadata) => {
+            if (!isModificationEditable(modification.type)) {
+                return;
+            }
+            setSelectedModification(modification);
+        },
+        [isModificationEditable]
+    );
+
+    const handleModificationDialogClose = useCallback(() => {
+        setSelectedModification(undefined);
+    }, []);
 
     useEffect(() => {
         setIsFetching(true);
@@ -142,9 +178,8 @@ export default function CompositeModificationDialog({
                 }
                 onClose();
             })
-            .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, {
                     headerId: 'compositeModificationEditingError',
                     headerValues: { name },
                 });
@@ -152,25 +187,51 @@ export default function CompositeModificationDialog({
     };
 
     return (
-        <CustomMuiDialog
-            open={open}
-            onClose={onClose}
-            titleId={titleId}
-            onSave={onSubmit}
-            removeOptional
-            disabledSave={!!nameError || !!isValidating}
-            isDataFetching={isFetching}
-            language={languageLocal}
-            formSchema={schema}
-            formMethods={methods}
-            unscrollableFullHeight
-        >
-            {!isFetching && (
-                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                    <CompositeModificationForm />
-                    {generateNetworkModificationsList()}
-                </Box>
+        <>
+            <CustomMuiDialog
+                open={open}
+                onClose={onClose}
+                titleId={titleId}
+                onSave={onSubmit}
+                removeOptional
+                disabledSave={!!nameError || !!isValidating}
+                isDataFetching={isFetching}
+                formSchema={schema}
+                formMethods={methods}
+                unscrollableFullHeight
+            >
+                {!isFetching && (
+                    <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                        <CompositeModificationForm />
+                        <List sx={unscrollableDialogStyles.scrollableContent}>
+                            {modifications?.map((modification: NetworkModificationMetadata) => (
+                                <Box key={modification.uuid}>
+                                    <ListItem disablePadding>
+                                        <ListItemButton
+                                            sx={isModificationEditable(modification.type) ? null : styles.noPointer}
+                                            onClick={() => editModification(modification)}
+                                            disableRipple
+                                        >
+                                            <Box>{getModificationLabel(modification)}</Box>
+                                        </ListItemButton>
+                                    </ListItem>
+                                    <Divider component="li" />
+                                </Box>
+                            ))}
+                        </List>
+                    </Box>
+                )}
+            </CustomMuiDialog>
+            {selectedModification && (
+                <ModificationDialog
+                    open={!!selectedModification}
+                    onClose={handleModificationDialogClose}
+                    modificationUuid={selectedModification.uuid}
+                    // We can force to not undefined because if there is a selectedModification it means it is editable
+                    // and then a configuration will be associated
+                    {...EDITABLE_MODIFICATION_DIALOGS.get(selectedModification.type)!}
+                />
             )}
-        </CustomMuiDialog>
+        </>
     );
 }
