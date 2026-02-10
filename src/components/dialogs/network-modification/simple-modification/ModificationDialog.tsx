@@ -22,7 +22,6 @@ import { ObjectSchema } from 'yup';
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
     onClose: CustomMuiDialogProps['onClose'];
-    language: CustomMuiDialogProps['language'];
     titleId: CustomMuiDialogProps['titleId'];
     modificationUuid: UUID;
     ModificationForm: FunctionComponent;
@@ -39,7 +38,6 @@ interface WithId {
 export function ModificationDialog<FormData extends FieldValues, ModificationData extends WithId>({
     open,
     onClose,
-    language,
     titleId,
     ModificationForm,
     modificationUuid,
@@ -96,7 +94,6 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
-            language={language}
         >
             <ModificationForm />
         </CustomMuiDialog>

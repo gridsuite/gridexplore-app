@@ -17,7 +17,6 @@ import {
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
-    PARAM_LANGUAGE,
     snackWithFallback,
     substationCreationDtoToForm,
     SubstationCreationForm,
@@ -30,7 +29,6 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { AppState } from '../../../../redux/types';
-import { useParameterState } from '../../use-parameters-dialog';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
@@ -99,7 +97,6 @@ export default function CompositeModificationDialog({
     broadcastChannel,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
-    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -199,7 +196,6 @@ export default function CompositeModificationDialog({
                 removeOptional
                 disabledSave={!!nameError || !!isValidating}
                 isDataFetching={isFetching}
-                language={languageLocal}
                 formSchema={schema}
                 formMethods={methods}
                 unscrollableFullHeight
@@ -231,7 +227,6 @@ export default function CompositeModificationDialog({
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
                     modificationUuid={selectedModification.uuid}
-                    language={languageLocal}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
                     {...EDITABLE_MODIFICATION_DIALOGS.get(selectedModification.type)!}
