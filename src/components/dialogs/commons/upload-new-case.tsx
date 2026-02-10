@@ -83,7 +83,7 @@ export default function UploadNewCase({
             }
             const { descriptor, values } = extractErrorMessageDescriptor(error, fallbackId);
             setError(FieldConstants.CASE_FILE, {
-                message: intl.formatMessage(descriptor, values),
+                message: intl.formatMessage(descriptor, values).toString(),
             });
         },
         [intl, setError]
