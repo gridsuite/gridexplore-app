@@ -10,7 +10,13 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
-import { ErrorInput, FieldConstants, FieldErrorAlert, isExploreMetadata } from '@gridsuite/commons-ui';
+import {
+    ErrorInput,
+    extractErrorMessageDescriptor,
+    FieldConstants,
+    FieldErrorAlert,
+    isExploreMetadata,
+} from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
 import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
@@ -69,21 +75,16 @@ export default function UploadNewCase({
 
     const handleUploadCaseError = useCallback(
         (error: any) => {
+            let fallbackId = 'caseUploadError';
             if (error.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                setError(FieldConstants.CASE_FILE, {
-                    message: intl.formatMessage({ id: 'invalidFormatOrName' }),
-                });
-            } else if (error.message.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
-                setError(FieldConstants.CASE_FILE, {
-                    message: intl.formatMessage({
-                        id: 'serverConnectionFailed',
-                    }),
-                });
-            } else {
-                setError(FieldConstants.CASE_FILE, {
-                    message: intl.formatMessage({ id: 'caseUploadError' }).concat(`: ${error?.message}`),
-                });
+                fallbackId = 'invalidFormatOrName';
+            } else if (error.message?.includes(HTTP_CONNECTION_FAILED_MESSAGE)) {
+                fallbackId = 'serverConnectionFailed';
             }
+            const { descriptor, values } = extractErrorMessageDescriptor(error, fallbackId);
+            setError(FieldConstants.CASE_FILE, {
+                message: intl.formatMessage(descriptor, values).toString(),
+            });
         },
         [intl, setError]
     );
