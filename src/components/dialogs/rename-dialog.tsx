@@ -92,7 +92,7 @@ export default function RenameDialog({
                 {error && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
-                <CancelButton onClick={handleClose} data-testid="CancelButton" />
+                <CancelButton onClick={handleClose} />
                 <Button onClick={handleClick} disabled={!newNameOk} variant="outlined" data-testid="ValidateButton">
                     <FormattedMessage id="validate" />
                 </Button>
