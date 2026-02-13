@@ -285,9 +285,8 @@ function DirectoryContentDialog(
                 <DescriptionModificationDialog
                     open
                     description={activeElement.description}
-                    elementUuid={activeElement.elementUuid}
                     onClose={handleDescDialogClose}
-                    updateElement={updateElement}
+                    updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, data)}
                 />
             );
         }
