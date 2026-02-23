@@ -22,6 +22,10 @@ import {
     SubstationCreationForm,
     substationCreationFormSchema,
     substationCreationFormToDto,
+    substationModificationDtoToForm,
+    SubstationModificationForm,
+    substationModificationFormSchema,
+    substationModificationFormToDto,
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
@@ -58,6 +62,17 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             errorHeaderId: 'SubstationCreationError',
             titleId: 'CreateSubstation',
             ModificationForm: SubstationCreationForm,
+        },
+    ],
+    [
+        ModificationType.SUBSTATION_MODIFICATION,
+        {
+            formSchema: substationModificationFormSchema,
+            dtoToForm: substationModificationDtoToForm,
+            formToDto: substationModificationFormToDto,
+            errorHeaderId: 'SubstationModificationError',
+            titleId: 'ModifySubstation',
+            ModificationForm: SubstationModificationForm,
         },
     ],
 ]);
