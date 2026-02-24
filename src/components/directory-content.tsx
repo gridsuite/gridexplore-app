@@ -11,6 +11,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, type BoxProps, Button, type ButtonProps, CircularProgress } from '@mui/material';
 import {
     type ElementAttributes,
+    ElementType,
+    fetchDirectoryContent,
+    fetchDirectoryElementPath,
     type ItemSelectionForCopy,
     type MuiStyles,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -18,8 +21,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
+import { UUID } from 'node:crypto';
 import * as constants from '../utils/UIconstants';
-import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
+import { setActiveDirectory, setItemSelectionForCopy, setSelectedDirectory } from '../redux/actions';
 import ContentContextualMenu from './menus/content-contextual-menu';
 import ContentToolbar from './toolbars/content-toolbar';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -34,7 +38,7 @@ import NoContentDirectory from './no-content-directory';
 import { CUSTOM_ROW_CLASS, DirectoryContentTable, type DirectoryContentTableProps } from './directory-content-table';
 import { useHighlightSearchedElement } from './search/use-highlight-searched-element';
 import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
-import { AppState } from '../redux/types';
+import { AppState, IDirectory } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
 import { checkPermissionOnDirectory } from './menus/menus-utils';
@@ -80,7 +84,10 @@ const styles = {
     },
 } as const satisfies MuiStyles;
 
-export default function DirectoryContent() {
+interface DirectoryContentProps {
+    initialDirectoriesUuid?: string;
+}
+export default function DirectoryContent({ initialDirectoriesUuid }: DirectoryContentProps) {
     const treeData = useSelector((state: AppState) => state.treeData);
     const dispatch = useDispatch();
     const gridRef = useRef<AgGridReact<ElementAttributes> | null>(null);
@@ -245,6 +252,23 @@ export default function DirectoryContent() {
             }),
         [onContextMenu]
     );
+
+    useEffect(() => {
+        if (!initialDirectoriesUuid) return;
+        const fetchResources = async () => {
+            try {
+                const resources: ElementAttributes[] = await fetchDirectoryElementPath(initialDirectoriesUuid as UUID);
+                dispatch(setSelectedDirectory(resources?.[0] as IDirectory));
+                console.info(
+                    `Fetched ${resources.length} resources from directory ${initialDirectoriesUuid}`,
+                    resources
+                );
+            } catch (error) {
+                console.error('Failed to fetch directory content', error);
+            }
+        };
+        fetchResources();
+    }, [dispatch, initialDirectoriesUuid, rows]);
 
     const handleBoxDownClick = useCallback<NonNullable<BoxProps['onMouseDown']>>(
         (e) => {

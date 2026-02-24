@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import LinkIcon from '@mui/icons-material/Link';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
@@ -33,6 +34,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { generatePath } from 'react-router';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
@@ -79,7 +81,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -101,6 +103,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         setHideMenu(false);
         setDeleteError('');
     }, [onClose, setOpenDialog]);
+
+    const copyLinkItem = useCallback(
+        (sourceItemUuid: string | null) => {
+            if (sourceItemUuid === null) { return}
+            const url = new URL(window.location.href);
+            url.searchParams.set('directoryUuid', sourceItemUuid);
+            navigator.clipboard.writeText(url.toString());
+            snackInfo({ messageTxt: 'Link copied' });
+        },
+        [snackInfo]
+    );
 
     const copyElement = useCallback(
         (
@@ -420,11 +433,18 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         if (directoryReadable && isSingleElement) {
-            menuItems.push({
-                messageDescriptorId: 'copy',
-                callback: copyItem,
-                icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-            });
+            menuItems.push(
+                {
+                    messageDescriptorId: 'copy',
+                    callback: copyItem,
+                    icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
+                },
+                {
+                    messageDescriptorId: 'copyLink',
+                    callback: () => copyLinkItem(selectedDirectory?.elementUuid ?? null),
+                    icon: <LinkIcon fontSize="small" />,
+                }
+            );
         }
 
         if (selectedElements.length === 1 && directoryWritable) {
@@ -501,6 +521,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         duplicateItem,
         copyItem,
+        copyLinkItem,
+        selectedDirectory?.elementUuid,
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,

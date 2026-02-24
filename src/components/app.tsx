@@ -38,6 +38,7 @@ import DirectoryContent from './directory-content';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
+import ExplorerLayout from './ExplorerLayout';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -186,27 +187,7 @@ export default function App() {
                 <CardErrorBoundary>
                     {user !== null ? (
                         <Routes>
-                            <Route
-                                path="/"
-                                element={
-                                    <>
-                                        <Box
-                                            width="30%"
-                                            height="100%"
-                                            overflow="auto"
-                                            style={{ borderRight: '1px solid rgb(81, 81, 81)' }}
-                                        >
-                                            <TreeViewsContainer />
-                                        </Box>
-                                        <Box width="70%" height="100%" display="flex" flexDirection="column">
-                                            <Box width="100%" flexShrink={0}>
-                                                <DirectoryBreadcrumbs />
-                                            </Box>
-                                            <DirectoryContent />
-                                        </Box>
-                                    </>
-                                }
-                            />
+                            <Route path="/" element={<ExplorerLayout />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}
