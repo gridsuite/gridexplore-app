@@ -247,7 +247,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     dialogMessageLabel="moveItemContentText"
                 />
             ) : (
-                <UploadNewCase isNewStudyCreation getCurrentCaseImportParams={getCurrentCaseImportParams} />
+                <UploadNewCase getCurrentCaseImportParams={getCurrentCaseImportParams} />
             )}
             <ImportParametersSection />
             <Grid pt={1}>
