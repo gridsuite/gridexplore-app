@@ -37,6 +37,7 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
+import { useDirectoryPathLoader } from '../hooks/use-directory-path-loader';
 
 const initialMousePosition = {
     mouseX: null,
@@ -552,61 +553,26 @@ export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?
         [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
     );
 
-    const updateMapDataForCopyLink = useCallback(
-        (nodeId: string, children: IDirectory[]) => {
-            if (!treeDataRef.current) {
-                return;
-            }
-            const [newRootDirectories, newMapData] = updatedTree(
-                treeDataRef.current.rootDirectories,
-                treeDataRef.current.mapData,
-                nodeId,
-                children
-            );
-            dispatch(
-                setTreeData({
-                    rootDirectories: newRootDirectories,
-                    mapData: newMapData,
-                    initialized: true,
-                })
-            );
-        },
-        [dispatch]
-    );
+    const { loadPath, handleDispatchDirectory } = useDirectoryPathLoader();
 
     useEffect(() => {
-        if (!sourceItemUuid) return;
-        if (!treeData.initialized) return;
-
+        if (!sourceItemUuid || !treeData.initialized) return;
         (async () => {
             try {
-                console.log('sourceItemUuid', sourceItemUuid);
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
-                console.log('path', path);
-
                 if (!path?.length) return;
-                const directories = path.filter((element) => element.type === ElementType.DIRECTORY);
-                // eslint-disable-next-line no-restricted-syntax
-                for (const dir of directories) {
-                    console.log('Fetching Folder content', dir.elementUuid);
-                    // eslint-disable-next-line no-await-in-loop
-                    const resources = await fetchDirectoryContent(dir.elementUuid);
-                    updateMapDataForCopyLink(
-                        dir.elementUuid,
-                        resources.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]
-                    );
-                }
+                const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
+                await loadPath(directories.map((dir) => dir.elementUuid));
+
                 const lastDirectory = directories[directories.length - 1];
                 if (lastDirectory) {
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
-
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
                     }
                 }
 
                 const lastElement = path[path.length - 1];
-
                 if (lastElement.type !== ElementType.DIRECTORY) {
                     const elementToHighlight: ElementAttributesES = {
                         id: lastElement.elementUuid,
@@ -619,7 +585,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?
                         pathName: path.map((p) => p.elementName),
                         pathUuid: path.map((p) => p.elementUuid),
                     };
-
                     dispatch(setSearchedElement(elementToHighlight));
                 }
             } catch (error: any) {
@@ -629,7 +594,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?
                 });
             }
         })();
-    }, [dispatch, snackError, sourceItemUuid, treeData.initialized, updateMapDataForCopyLink]);
+    }, [sourceItemUuid, treeData.initialized, loadPath, handleDispatchDirectory, dispatch, snackError]);
+
     return (
         <>
             <Box style={styles.treeBox} onContextMenu={handleOnContextMenuBox}>
