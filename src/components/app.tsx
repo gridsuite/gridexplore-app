@@ -35,7 +35,7 @@ import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
-import ExplorerLayout from './ExplorerLayout';
+import ExplorerLayout from './explorer-layout';
 
 export default function App() {
     const { snackError } = useSnackMessage();

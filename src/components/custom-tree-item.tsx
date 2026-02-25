@@ -9,7 +9,7 @@ import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect } from 'reac
 import type { UUID } from 'node:crypto';
 import { PopoverReference } from '@mui/material';
 import { TreeItem, TreeItemSlotProps } from '@mui/x-tree-view';
-import { doesNodeHasChildren, ElementAttributes, useStateBoolean } from '@gridsuite/commons-ui';
+import { doesNodeHasChildren, ElementAttributes, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
@@ -24,7 +24,7 @@ export type CustomTreeItemProps = {
 
 const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
     const { node, onExpand, onSelect, onContextMenu } = props;
-
+    const { snackInfo } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === node.elementUuid;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
@@ -56,6 +56,20 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
         [node.elementUuid, onContextMenu]
     );
 
+    const handleCopyLinkIconClick = useCallback<MouseEventHandler>(
+        async (event) => {
+            event.stopPropagation();
+            if (node.elementUuid === null) return;
+            const url = new URL(window.location.href);
+            if (node.elementUuid !== null) {
+                url.searchParams.set('sourceItemUuid', node.elementUuid);
+            }
+            navigator.clipboard.writeText(url.toString()).then();
+            snackInfo({ messageTxt: 'Link copied' });
+        },
+        [node.elementUuid, snackInfo]
+    );
+
     // We don't get a onMouseLeave event when using or leaving the contextual menu by
     // clicking outside the concerned div, so we must update the hover state manually.
     useEffect(() => {
@@ -77,6 +91,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
                     hover={hover}
                     isMenuOpen={isMenuOpen}
                     onAddIconClick={handleAddIconClick}
+                    onCopyLinkIconClick={handleCopyLinkIconClick}
                 />
             }
             slotProps={

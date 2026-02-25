@@ -9,6 +9,7 @@ import { MouseEventHandler } from 'react';
 import { Box, IconButton, Tooltip, Typography, Zoom } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
 import { ElementAttributes } from '@gridsuite/commons-ui';
+import LinkIcon from '@mui/icons-material/Link';
 import { styles } from './treeview-utils';
 
 export type CustomTreeItemLabelProps = {
@@ -16,6 +17,7 @@ export type CustomTreeItemLabelProps = {
     hover: boolean;
     isMenuOpen: boolean;
     onAddIconClick: MouseEventHandler<HTMLButtonElement>;
+    onCopyLinkIconClick: MouseEventHandler<HTMLButtonElement>;
 };
 
 export default function CustomTreeItemLabel({
@@ -23,6 +25,7 @@ export default function CustomTreeItemLabel({
     hover,
     isMenuOpen,
     onAddIconClick,
+    onCopyLinkIconClick,
 }: Readonly<CustomTreeItemLabelProps>) {
     return (
         <Box sx={styles?.treeItemLabelRoot}>
@@ -42,9 +45,14 @@ export default function CustomTreeItemLabel({
             </Tooltip>
             {/* By adding the button at the end of the label, we don't have to create a custom content, which simplify the code. */}
             {hover && (
-                <IconButton size="small" disableRipple onClick={onAddIconClick} sx={styles.treeItemAddIcon}>
-                    {isMenuOpen ? <AddBoxOutlinedIcon fontSize="small" /> : <AddIcon fontSize="small" />}
-                </IconButton>
+                <Box display="flex" alignItems="center" gap={0.5}>
+                    <IconButton size="small" disableRipple onClick={onCopyLinkIconClick} sx={styles.treeItemAddIcon}>
+                        <LinkIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton size="small" disableRipple onClick={onAddIconClick} sx={styles.treeItemAddIcon}>
+                        {isMenuOpen ? <AddBoxOutlinedIcon fontSize="small" /> : <AddIcon fontSize="small" />}
+                    </IconButton>
+                </Box>
             )}
         </Box>
     );

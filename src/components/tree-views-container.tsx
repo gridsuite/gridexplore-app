@@ -11,6 +11,7 @@ import {
     type ElementAttributes,
     ElementType,
     fetchDirectoryContent,
+    fetchDirectoryElementPath,
     fetchRootFolders,
     type MuiStyles,
     NotificationsUrlKeys,
@@ -24,6 +25,7 @@ import {
     setActiveDirectory,
     setCurrentChildren,
     setCurrentPath,
+    setSearchedElement,
     setSelectedDirectory,
     setTreeData,
     setUploadingElements,
@@ -32,7 +34,7 @@ import DirectoryTreeView from './directory-tree-view';
 import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
+import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
 
@@ -81,7 +83,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
     );
 }
 
-export default function TreeViewsContainer() {
+export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?: string }) {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -550,6 +552,84 @@ export default function TreeViewsContainer() {
         [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
     );
 
+    const updateMapDataForCopyLink = useCallback(
+        (nodeId: string, children: IDirectory[]) => {
+            if (!treeDataRef.current) {
+                return;
+            }
+            const [newRootDirectories, newMapData] = updatedTree(
+                treeDataRef.current.rootDirectories,
+                treeDataRef.current.mapData,
+                nodeId,
+                children
+            );
+            dispatch(
+                setTreeData({
+                    rootDirectories: newRootDirectories,
+                    mapData: newMapData,
+                    initialized: true,
+                })
+            );
+        },
+        [dispatch]
+    );
+
+    useEffect(() => {
+        if (!sourceItemUuid) return;
+        if (!treeData.initialized) return;
+
+        (async () => {
+            try {
+                console.log('sourceItemUuid', sourceItemUuid);
+                const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
+                console.log('path', path);
+
+                if (!path?.length) return;
+                const directories = path.filter((element) => element.type === ElementType.DIRECTORY);
+                // eslint-disable-next-line no-restricted-syntax
+                for (const dir of directories) {
+                    console.log('Fetching Folder content', dir.elementUuid);
+                    // eslint-disable-next-line no-await-in-loop
+                    const resources = await fetchDirectoryContent(dir.elementUuid);
+                    updateMapDataForCopyLink(
+                        dir.elementUuid,
+                        resources.filter((res) => res.type === ElementType.DIRECTORY) as IDirectory[]
+                    );
+                }
+                const lastDirectory = directories[directories.length - 1];
+                if (lastDirectory) {
+                    const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
+
+                    if (directoryInMap) {
+                        dispatch(setSelectedDirectory(directoryInMap));
+                    }
+                }
+
+                const lastElement = path[path.length - 1];
+
+                if (lastElement.type !== ElementType.DIRECTORY) {
+                    const elementToHighlight: ElementAttributesES = {
+                        id: lastElement.elementUuid,
+                        name: lastElement.elementName,
+                        parentId: lastElement.parentUuid as UUID,
+                        type: lastElement.type,
+                        owner: lastElement.owner,
+                        subdirectoriesCount: lastElement.subdirectoriesCount,
+                        lastModificationDate: lastElement.lastModificationDate,
+                        pathName: path.map((p) => p.elementName),
+                        pathUuid: path.map((p) => p.elementUuid),
+                    };
+
+                    dispatch(setSearchedElement(elementToHighlight));
+                }
+            } catch (error: any) {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'pathRetrievingError',
+                });
+            }
+        })();
+    }, [dispatch, snackError, sourceItemUuid, treeData.initialized, updateMapDataForCopyLink]);
     return (
         <>
             <Box style={styles.treeBox} onContextMenu={handleOnContextMenuBox}>

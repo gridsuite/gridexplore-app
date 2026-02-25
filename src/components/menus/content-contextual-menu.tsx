@@ -103,19 +103,18 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const copyLinkItem = useCallback(
-        (sourceItemUuid: string | null) => {
-            if (sourceItemUuid === null) {
-                return;
-            }
+    const copyLinkItem = useCallback(() => {
+        if (activeElement) {
+            if (selectedDirectory === null) return;
             const url = new URL(window.location.href);
-            url.searchParams.set('directoryUuid', sourceItemUuid);
-            navigator.clipboard.writeText(url.toString());
+            if (activeElement.elementUuid !== null) {
+                url.searchParams.set('sourceItemUuid', activeElement.elementUuid);
+            }
+            navigator.clipboard.writeText(url.toString()).then();
             snackInfo({ messageTxt: 'Link copied' });
             handleCloseDialog();
-        },
-        [handleCloseDialog, snackInfo]
-    );
+        }
+    }, [activeElement, handleCloseDialog, selectedDirectory, snackInfo]);
 
     const copyElement = useCallback(
         (
@@ -443,7 +442,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 {
                     messageDescriptorId: 'copyLink',
-                    callback: () => copyLinkItem(selectedDirectory?.elementUuid ?? null),
+                    callback: copyLinkItem,
                     icon: <LinkIcon fontSize="small" />,
                 }
             );
@@ -524,7 +523,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         duplicateItem,
         copyItem,
         copyLinkItem,
-        selectedDirectory?.elementUuid,
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,
