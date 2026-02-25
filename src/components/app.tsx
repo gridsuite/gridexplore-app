@@ -33,9 +33,6 @@ import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, sele
 import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
 import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
-import TreeViewsContainer from './tree-views-container';
-import DirectoryContent from './directory-content';
-import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
 import ExplorerLayout from './ExplorerLayout';

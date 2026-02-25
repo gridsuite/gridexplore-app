@@ -34,7 +34,6 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { generatePath } from 'react-router';
 import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
@@ -106,13 +105,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const copyLinkItem = useCallback(
         (sourceItemUuid: string | null) => {
-            if (sourceItemUuid === null) { return}
+            if (sourceItemUuid === null) {
+                return;
+            }
             const url = new URL(window.location.href);
             url.searchParams.set('directoryUuid', sourceItemUuid);
             navigator.clipboard.writeText(url.toString());
             snackInfo({ messageTxt: 'Link copied' });
+            handleCloseDialog();
         },
-        [snackInfo]
+        [handleCloseDialog, snackInfo]
     );
 
     const copyElement = useCallback(

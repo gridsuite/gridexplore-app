@@ -11,8 +11,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, type BoxProps, Button, type ButtonProps, CircularProgress } from '@mui/material';
 import {
     type ElementAttributes,
-    ElementType,
-    fetchDirectoryContent,
     fetchDirectoryElementPath,
     type ItemSelectionForCopy,
     type MuiStyles,
