@@ -217,9 +217,11 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
     return (
         <CustomMuiDialog
             titleId="createNewStudy"
-            formSchema={createStudyDialogFormValidationSchema}
-            formMethods={createStudyFormMethods}
-            removeOptional
+            formContext={{
+                ...createStudyFormMethods,
+                validationSchema: createStudyDialogFormValidationSchema,
+                removeOptional: true,
+            }}
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
