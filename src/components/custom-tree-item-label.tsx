@@ -9,8 +9,7 @@ import { MouseEventHandler } from 'react';
 import { Box, IconButton, Tooltip, Typography, Zoom } from '@mui/material';
 import { Add as AddIcon, AddBoxOutlined as AddBoxOutlinedIcon } from '@mui/icons-material';
 import { ElementAttributes } from '@gridsuite/commons-ui';
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
-import CheckIcon from '@mui/icons-material/Check';
+import { LinkRounded as LinkRoundedIcon, Check as CheckIcon } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 import { styles } from './treeview-utils';
 

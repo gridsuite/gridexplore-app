@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
@@ -22,6 +21,7 @@ import {
     InsertDriveFile as InsertDriveFileIcon,
     PhotoLibrary,
     TableView as TableViewIcon,
+    LinkRounded as LinkRoundedIcon,
 } from '@mui/icons-material';
 import {
     ElementAttributes,
