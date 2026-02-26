@@ -193,11 +193,13 @@ export default function CompositeModificationDialog({
                 onClose={onClose}
                 titleId={titleId}
                 onSave={onSubmit}
-                removeOptional
+                formContext={{
+                    ...methods,
+                    validationSchema: schema,
+                    removeOptional: true,
+                }}
                 disabledSave={!!nameError || !!isValidating}
                 isDataFetching={isFetching}
-                formSchema={schema}
-                formMethods={methods}
                 unscrollableFullHeight
             >
                 {!isFetching && (
