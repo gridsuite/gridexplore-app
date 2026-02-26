@@ -53,7 +53,9 @@ export default function CustomTreeItemLabel({
                 <Box display="flex" alignItems="center" gap={1.25}>
                     <Tooltip
                         title={
-                            isLinkCopied ? intl.formatMessage({ id: 'copied' }) : intl.formatMessage({ id: 'copyLink' })
+                            isLinkCopied
+                                ? intl.formatMessage({ id: 'LinkCopied' })
+                                : intl.formatMessage({ id: 'copyLink' })
                         }
                     >
                         <IconButton size="small" onClick={onCopyLinkIconClick}>
