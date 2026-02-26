@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect } from 'react';
+import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import { PopoverReference } from '@mui/material';
 import { TreeItem, TreeItemSlotProps } from '@mui/x-tree-view';
-import { doesNodeHasChildren, ElementAttributes, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import { doesNodeHasChildren, ElementAttributes, useStateBoolean } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
@@ -24,11 +24,10 @@ export type CustomTreeItemProps = {
 
 const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
     const { node, onExpand, onSelect, onContextMenu } = props;
-    const { snackInfo } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isMenuOpen = activeDirectory === node.elementUuid;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
-
+    const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
     const hasChildren = doesNodeHasChildren(node);
     const hasSubdirectories = node.subdirectoriesCount > 0;
 
@@ -61,13 +60,17 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
             event.stopPropagation();
             if (node.elementUuid === null) return;
             const url = new URL(window.location.href);
-            if (node.elementUuid !== null) {
-                url.searchParams.set('sourceItemUuid', node.elementUuid);
-            }
+            url.searchParams.set('sourceItemUuid', node.elementUuid);
             navigator.clipboard.writeText(url.toString()).then();
-            snackInfo({ messageTxt: 'Link copied' });
+            setIsLinkCopied(false);
+            setTimeout(() => {
+                setIsLinkCopied(true);
+                setTimeout(() => {
+                    setIsLinkCopied(false);
+                }, 2000);
+            }, 0);
         },
-        [node.elementUuid, snackInfo]
+        [node.elementUuid]
     );
 
     // We don't get a onMouseLeave event when using or leaving the contextual menu by
@@ -90,6 +93,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
                     node={node}
                     hover={hover}
                     isMenuOpen={isMenuOpen}
+                    isLinkCopied={isLinkCopied}
                     onAddIconClick={handleAddIconClick}
                     onCopyLinkIconClick={handleCopyLinkIconClick}
                 />

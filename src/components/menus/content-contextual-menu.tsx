@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import LinkIcon from '@mui/icons-material/Link';
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     Delete as DeleteIcon,
@@ -105,16 +105,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const copyLinkItem = useCallback(() => {
         if (activeElement) {
-            if (selectedDirectory === null) return;
+            if (activeElement.elementUuid === null) return;
             const url = new URL(window.location.href);
-            if (activeElement.elementUuid !== null) {
-                url.searchParams.set('sourceItemUuid', activeElement.elementUuid);
-            }
+            url.searchParams.set('sourceItemUuid', activeElement.elementUuid);
             navigator.clipboard.writeText(url.toString()).then();
-            snackInfo({ messageTxt: 'Link copied' });
+            snackInfo({
+                messageTxt: intl.formatMessage({ id: 'LinkCopied' }),
+            });
             handleCloseDialog();
         }
-    }, [activeElement, handleCloseDialog, selectedDirectory, snackInfo]);
+    }, [activeElement, handleCloseDialog, intl, snackInfo]);
 
     const copyElement = useCallback(
         (
@@ -440,11 +440,19 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     callback: copyItem,
                     icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
                 },
+                { isDivider: true },
                 {
                     messageDescriptorId: 'copyLink',
                     callback: copyLinkItem,
-                    icon: <LinkIcon fontSize="small" />,
-                }
+                    icon: (
+                        <LinkRoundedIcon
+                            sx={{
+                                transform: 'rotate(-50deg)',
+                            }}
+                        />
+                    ),
+                },
+                { isDivider: true }
             );
         }
 
