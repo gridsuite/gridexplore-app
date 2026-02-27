@@ -88,8 +88,10 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     return (
         <CustomMuiDialog
             open={open}
-            formSchema={formSchema}
-            formMethods={formMethods}
+            formContext={{
+                ...formMethods,
+                validationSchema: formSchema,
+            }}
             onClose={onClose}
             onSave={onSubmit}
             titleId={titleId}
