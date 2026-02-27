@@ -68,7 +68,7 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
         ModificationType.SUBSTATION_MODIFICATION,
         {
             formSchema: substationModificationFormSchema,
-            dtoToForm: substationModificationDtoToForm,
+            dtoToForm: (substationDto) => substationModificationDtoToForm(substationDto, false),
             formToDto: substationModificationFormToDto,
             errorHeaderId: 'SubstationModificationError',
             titleId: 'ModifySubstation',
