@@ -29,6 +29,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     dtoToForm: (dto: ModificationData) => FormData;
     formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
     errorHeaderId: string;
+    initialTabIndex?: number;
 }
 
 interface WithId {
@@ -45,9 +46,12 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dtoToForm,
     formToDto,
     errorHeaderId,
+    initialTabIndex = 0,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
+    const [tabIndex, setTabIndex] = useState<number>(initialTabIndex);
 
     const formMethods = useForm<FormData>({
         resolver: yupResolver(formSchema) as any, // really difficult to type with yup inferred types

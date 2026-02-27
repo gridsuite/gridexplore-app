@@ -59,6 +59,15 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             titleId: 'CreateSubstation',
             ModificationForm: SubstationCreationForm,
         },
+        ModificationType.LOAD_CREATION,
+        {
+            formSchema: substationCreationFormSchema,
+            dtoToForm: substationCreationDtoToForm,
+            formToDto: substationCreationFormToDto,
+            errorHeaderId: 'SubstationCreationError',
+            titleId: 'CreateSubstation',
+            ModificationForm: LoadDialogTabsContent,
+        },
     ],
 ]);
 
