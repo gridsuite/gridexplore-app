@@ -24,7 +24,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     onClose: CustomMuiDialogProps['onClose'];
     titleId: CustomMuiDialogProps['titleId'];
     modificationUuid: UUID;
-    ModificationForm: FunctionComponent;
+    ModificationForm: FunctionComponent<any>;
     formSchema: ObjectSchema<FormData>;
     dtoToForm: (dto: ModificationData) => FormData;
     formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
