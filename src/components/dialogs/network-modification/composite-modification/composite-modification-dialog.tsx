@@ -23,6 +23,10 @@ import {
     substationCreationFormSchema,
     substationCreationFormToDto,
     unscrollableDialogStyles,
+    VoltageLevelCreationForm,
+    voltageLevelCreationFormSchema,
+    voltageLevelCreationDtoToForm,
+    voltageLevelCreationFormToDto,
     useModificationLabelComputer,
     useSnackMessage,
     yupConfig as yup,
@@ -58,6 +62,17 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             errorHeaderId: 'SubstationCreationError',
             titleId: 'CreateSubstation',
             ModificationForm: SubstationCreationForm,
+        },
+    ],
+    [
+        ModificationType.VOLTAGE_LEVEL_CREATION,
+        {
+            formSchema: voltageLevelCreationFormSchema,
+            dtoToForm: voltageLevelCreationDtoToForm,
+            formToDto: voltageLevelCreationFormToDto,
+            errorHeaderId: 'VoltageLevelCreationError',
+            titleId: 'CreateVoltageLevel',
+            ModificationForm: VoltageLevelCreationForm,
         },
     ],
 ]);
