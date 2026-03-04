@@ -27,9 +27,11 @@ export function useHighlightSearchedElement(gridApi: GridApi<ElementAttributes> 
                 return;
             }
             const searchedElementRow = api.getRowNode(searchedElement.id);
-            if (searchedElementRow?.rowIndex != null && searchedElementRow?.rowIndex >= 0 && timeout.current) {
+            if (searchedElementRow?.rowIndex != null && searchedElementRow?.rowIndex >= 0) {
                 api.ensureIndexVisible(searchedElementRow.rowIndex, 'top');
-                clearTimeout(timeout.current);
+                if (timeout.current) {
+                    clearTimeout(timeout.current);
+                }
                 timeout.current = setTimeout(() => {
                     dispatch(setSearchedElement(null));
                 }, SEARCH_HIGHLIGHT_DURATION_S * 1000);
