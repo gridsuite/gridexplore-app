@@ -14,6 +14,12 @@ import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    loadCreationTabsInError,
+    LoadDialogHeader,
+    LoadDialogTabsContent,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -45,7 +51,14 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    | 'formSchema'
+    | 'dtoToForm'
+    | 'formToDto'
+    | 'errorHeaderId'
+    | 'titleId'
+    | 'ModificationForm'
+    | 'HeaderForm'
+    | 'tabsInError'
 >;
 
 const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
@@ -59,14 +72,18 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             titleId: 'CreateSubstation',
             ModificationForm: SubstationCreationForm,
         },
+    ],
+    [
         ModificationType.LOAD_CREATION,
         {
-            formSchema: substationCreationFormSchema,
-            dtoToForm: substationCreationDtoToForm,
-            formToDto: substationCreationFormToDto,
-            errorHeaderId: 'SubstationCreationError',
-            titleId: 'CreateSubstation',
+            formSchema: loadCreationFormSchema,
+            dtoToForm: loadCreationDtoToForm,
+            formToDto: loadCreationFormToDto,
+            errorHeaderId: 'LoadCreationError',
+            titleId: 'CreateLoad',
+            HeaderForm: LoadDialogHeader,
             ModificationForm: LoadDialogTabsContent,
+            tabsInError: loadCreationTabsInError,
         },
     ],
 ]);
