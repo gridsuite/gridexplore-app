@@ -182,8 +182,10 @@ export default function FilterBasedContingencyListDialog({
             open={open}
             onClose={closeAndClear}
             onSave={onSubmit}
-            formSchema={schema}
-            formMethods={methods}
+            formContext={{
+                ...methods,
+                validationSchema: schema,
+            }}
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             sx={{

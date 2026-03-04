@@ -17,9 +17,7 @@ import {
     loadCreationDtoToForm,
     loadCreationFormSchema,
     loadCreationFormToDto,
-    loadCreationTabsInError,
-    LoadDialogHeader,
-    LoadDialogTabsContent,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -28,6 +26,10 @@ import {
     SubstationCreationForm,
     substationCreationFormSchema,
     substationCreationFormToDto,
+    substationModificationDtoToForm,
+    SubstationModificationForm,
+    substationModificationFormSchema,
+    substationModificationFormToDto,
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
@@ -51,14 +53,7 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    | 'formSchema'
-    | 'dtoToForm'
-    | 'formToDto'
-    | 'errorHeaderId'
-    | 'titleId'
-    | 'ModificationForm'
-    | 'HeaderForm'
-    | 'tabsInError'
+    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
 >;
 
 const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
@@ -74,6 +69,17 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
         },
     ],
     [
+        ModificationType.SUBSTATION_MODIFICATION,
+        {
+            formSchema: substationModificationFormSchema,
+            dtoToForm: (substationDto) => substationModificationDtoToForm(substationDto, false),
+            formToDto: substationModificationFormToDto,
+            errorHeaderId: 'SubstationModificationError',
+            titleId: 'ModifySubstation',
+            ModificationForm: SubstationModificationForm,
+        },
+    ],
+    [
         ModificationType.LOAD_CREATION,
         {
             formSchema: loadCreationFormSchema,
@@ -81,9 +87,7 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             formToDto: loadCreationFormToDto,
             errorHeaderId: 'LoadCreationError',
             titleId: 'CreateLoad',
-            HeaderForm: LoadDialogHeader,
-            ModificationForm: LoadDialogTabsContent,
-            tabsInError: loadCreationTabsInError,
+            ModificationForm: LoadForm,
         },
     ],
 ]);
@@ -219,11 +223,13 @@ export default function CompositeModificationDialog({
                 onClose={onClose}
                 titleId={titleId}
                 onSave={onSubmit}
-                removeOptional
+                formContext={{
+                    ...methods,
+                    validationSchema: schema,
+                    removeOptional: true,
+                }}
                 disabledSave={!!nameError || !!isValidating}
                 isDataFetching={isFetching}
-                formSchema={schema}
-                formMethods={methods}
                 unscrollableFullHeight
             >
                 {!isFetching && (

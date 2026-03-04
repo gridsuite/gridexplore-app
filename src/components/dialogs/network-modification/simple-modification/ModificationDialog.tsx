@@ -14,27 +14,21 @@ import {
     updateModification,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FieldErrors, FieldValues, useForm } from 'react-hook-form';
+import { FieldValues, useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
-
-export interface ModificationFormProps {
-    tabIndex: number;
-}
 
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
     onClose: CustomMuiDialogProps['onClose'];
     titleId: CustomMuiDialogProps['titleId'];
     modificationUuid: UUID;
+    ModificationForm: FunctionComponent<any>;
     formSchema: ObjectSchema<FormData>;
     dtoToForm: (dto: ModificationData) => FormData;
     formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
     errorHeaderId: string;
-    HeaderForm?: FunctionComponent<any>;
-    ModificationForm: React.ComponentType<ModificationFormProps>;
-    tabsInError?: (errors: FieldErrors) => number[];
 }
 
 interface WithId {
@@ -51,13 +45,9 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dtoToForm,
     formToDto,
     errorHeaderId,
-    HeaderForm,
-    tabsInError,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
-    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
-    const [tabIndex, setTabIndex] = useState<number>(0);
 
     const formMethods = useForm<FormData>({
         resolver: yupResolver(formSchema) as any, // really difficult to type with yup inferred types
@@ -95,31 +85,19 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
         [modificationData, formToDto, snackError, errorHeaderId]
     );
 
-    const onValidationError = (errors: FieldErrors) => {
-        const errorTabs = tabsInError ? tabsInError(errors) : [];
-        if (errorTabs.length > 0) {
-            setTabIndex(errorTabs[0]);
-        }
-        setTabIndexesWithError(errorTabs);
-    };
-
-    const headerAndTabs = HeaderForm ? (
-        <HeaderForm tabIndexesWithError={tabIndexesWithError} tabIndex={tabIndex} setTabIndex={setTabIndex} />
-    ) : null;
-
     return (
         <CustomMuiDialog
             open={open}
-            formSchema={formSchema}
-            formMethods={formMethods}
+            formContext={{
+                ...formMethods,
+                validationSchema: formSchema,
+            }}
             onClose={onClose}
             onSave={onSubmit}
-            onValidationError={onValidationError}
             titleId={titleId}
-            subtitle={headerAndTabs}
             isDataFetching={!modificationData}
         >
-            <ModificationForm tabIndex={tabIndex} />
+            <ModificationForm />
         </CustomMuiDialog>
     );
 }

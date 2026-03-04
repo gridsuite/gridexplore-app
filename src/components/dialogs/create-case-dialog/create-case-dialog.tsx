@@ -90,9 +90,11 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
     return (
         <CustomMuiDialog
             titleId="ImportNewCase"
-            formSchema={createCaseDialogFormValidationSchema}
-            formMethods={createCaseFormMethods}
-            removeOptional
+            formContext={{
+                ...createCaseFormMethods,
+                validationSchema: createCaseDialogFormValidationSchema,
+                removeOptional: true,
+            }}
             open={open}
             onClose={onClose}
             onSave={handleCreateNewCase}

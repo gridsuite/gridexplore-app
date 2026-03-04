@@ -90,12 +90,14 @@ export default function ExplicitNamingCreationDialog({
             open={open}
             onClose={closeAndClear}
             onSave={onSubmit}
-            formSchema={schema}
-            formMethods={methods}
+            formContext={{
+                ...methods,
+                validationSchema: schema,
+                removeOptional: true,
+                language: languageLocal,
+            }}
             titleId={titleId}
-            removeOptional
             disabledSave={Boolean(nameError || isValidating)}
-            language={languageLocal}
             unscrollableFullHeight
         >
             <ExplicitNamingForm />
