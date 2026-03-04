@@ -60,7 +60,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
             event.stopPropagation();
             if (node.elementUuid === null) return;
             const url = new URL(window.location.href);
-            url.searchParams.set('sourceItemUuid', node.elementUuid);
+            url.pathname = `${url.pathname.replace(/\/$/, '')}/${node.elementUuid}`;
             navigator.clipboard.writeText(url.toString()).then();
             setIsLinkCopied(false);
             setTimeout(() => {

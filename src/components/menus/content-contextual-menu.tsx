@@ -107,7 +107,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         if (activeElement) {
             if (activeElement.elementUuid === null) return;
             const url = new URL(window.location.href);
-            url.searchParams.set('sourceItemUuid', activeElement.elementUuid);
+            url.pathname = `${url.pathname.replace(/\/$/, '')}/${activeElement.elementUuid}`;
             navigator.clipboard.writeText(url.toString()).then();
             snackInfo({
                 messageTxt: intl.formatMessage({ id: 'LinkCopied' }),

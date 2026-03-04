@@ -5,14 +5,33 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box } from '@mui/material';
-import { useSearchParams } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import DirectoryContent from './directory-content';
+import { setSelectedDirectory } from '../redux/actions';
 
 export default function ExplorerLayout() {
-    const [searchParams] = useSearchParams();
-    const sourceItemUuid = searchParams.get('sourceItemUuid') || undefined;
+    const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
+    const [sourceItemUuid, setSourceItemUuid] = useState<string | undefined>();
+    const lastPathSegment = useMemo(() => {
+        const segments = location.pathname.split('/').filter(Boolean);
+        return segments.length ? segments[segments.length - 1] : undefined;
+    }, [location.pathname]);
+    useEffect(() => {
+        if (!lastPathSegment) {
+            dispatch(setSelectedDirectory(null));
+            navigate('/', { replace: true });
+            return;
+        }
+
+        setSourceItemUuid((prev) => (prev !== lastPathSegment ? lastPathSegment : prev));
+    }, [lastPathSegment, navigate, dispatch]);
+
     return (
         <Box display="flex" width="100%" height="100%">
             <Box width="30%" height="100%" overflow="auto" style={{ borderRight: '1px solid #515151' }}>

@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { SimpleTreeView, SimpleTreeViewSlotProps } from '@mui/x-tree-view';
 import { type ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
+import { useNavigate } from 'react-router';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
@@ -34,7 +35,7 @@ export default function DirectoryTreeView({
     onDirectoryUpdate,
 }: Readonly<DirectoryTreeViewProps>) {
     const dispatch = useDispatch();
-
+    const navigate = useNavigate();
     const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
@@ -83,13 +84,20 @@ export default function DirectoryTreeView({
         (nodeId: UUID) => {
             if (selectedDirectory?.elementUuid !== nodeId) {
                 dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
+                const fullPath: string[] = [];
+                let current = mapDataRef.current?.[nodeId];
+                while (current) {
+                    fullPath.unshift(current.elementUuid);
+                    current = current.parentUuid ? mapDataRef.current?.[current.parentUuid] : undefined;
+                }
+                navigate(`/${fullPath.join('/')}`, { replace: false });
             }
             if (!expandedRef.current.includes(nodeId)) {
                 // update fold status of item
                 toggleDirectories([nodeId]);
             }
         },
-        [dispatch, selectedDirectory?.elementUuid, toggleDirectories]
+        [dispatch, navigate, selectedDirectory?.elementUuid, toggleDirectories]
     );
 
     const handleIconClick = useCallback(

@@ -184,7 +184,7 @@ export default function App() {
                 <CardErrorBoundary>
                     {user !== null ? (
                         <Routes>
-                            <Route path="/" element={<ExplorerLayout />} />
+                            <Route path="/*" element={<ExplorerLayout />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}
