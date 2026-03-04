@@ -84,13 +84,7 @@ export default function DirectoryTreeView({
         (nodeId: UUID) => {
             if (selectedDirectory?.elementUuid !== nodeId) {
                 dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
-                const fullPath: string[] = [];
-                let current = mapDataRef.current?.[nodeId];
-                while (current) {
-                    fullPath.unshift(current.elementUuid);
-                    current = current.parentUuid ? mapDataRef.current?.[current.parentUuid] : undefined;
-                }
-                navigate(`/${fullPath.join('/')}`, { replace: false });
+                navigate(`/elements/${nodeId}`, { replace: false });
             }
             if (!expandedRef.current.includes(nodeId)) {
                 // update fold status of item
