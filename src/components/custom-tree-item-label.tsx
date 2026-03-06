@@ -53,10 +53,10 @@ export default function CustomTreeItemLabel({
                     sx={{
                         position: 'absolute',
                         right: 0,
-                        display: 'flex',
-                        gap: 1.25,
+                        gap: 2,
                         opacity: hover ? 1 : 0,
-                        transition: 'opacity 0.2s',
+                        transform: 'translateY(-50%)',
+                        top: '50%',
                     }}
                 >
                     <Tooltip
