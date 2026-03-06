@@ -136,10 +136,12 @@ export default function ExplicitNamingEditionDialog({
             open={open}
             onClose={closeAndClear}
             onSave={onSubmit}
-            formSchema={schema}
-            formMethods={methods}
+            formContext={{
+                ...methods,
+                validationSchema: schema,
+                removeOptional: true,
+            }}
             titleId={titleId}
-            removeOptional
             disabledSave={Boolean(!!nameError || isValidating)}
             isDataFetching={isFetching}
             unscrollableFullHeight
