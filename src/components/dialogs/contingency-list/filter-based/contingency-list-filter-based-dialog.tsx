@@ -127,6 +127,7 @@ export default function FilterBasedContingencyListDialog({
     const onSubmit = useCallback(
         (data: ContingencyListFilterBasedFormData) => {
             const filterBaseContingencyList: FilterBasedContingencyList = {
+                type: ContingencyListType.FILTERS.id,
                 filters: data[FieldConstants.FILTERS]?.map((filter) => {
                     return {
                         id: filter.id,
