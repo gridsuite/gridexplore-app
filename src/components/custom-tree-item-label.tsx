@@ -49,7 +49,16 @@ export default function CustomTreeItemLabel({
             </Tooltip>
             {/* By adding the button at the end of the label, we don't have to create a custom content, which simplify the code. */}
             {hover && (
-                <Box display="flex" alignItems="center" gap={1.25}>
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        right: 0,
+                        display: 'flex',
+                        gap: 1.25,
+                        opacity: hover ? 1 : 0,
+                        transition: 'opacity 0.2s',
+                    }}
+                >
                     <Tooltip
                         title={
                             isLinkCopied
@@ -69,7 +78,7 @@ export default function CustomTreeItemLabel({
                             )}
                         </IconButton>
                     </Tooltip>
-                    <IconButton size="small" disableRipple onClick={onAddIconClick} sx={styles.treeItemAddIcon}>
+                    <IconButton size="small" onClick={onAddIconClick} sx={styles.treeItemAddIcon}>
                         {isMenuOpen ? <AddBoxOutlinedIcon fontSize="small" /> : <AddIcon fontSize="small" />}
                     </IconButton>
                 </Box>
