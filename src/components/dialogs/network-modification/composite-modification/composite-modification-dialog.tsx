@@ -68,7 +68,7 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
         ModificationType.VOLTAGE_LEVEL_CREATION,
         {
             formSchema: voltageLevelCreationFormSchema,
-            dtoToForm: voltageLevelCreationDtoToForm,
+            dtoToForm: (dto) => voltageLevelCreationDtoToForm(dto, undefined, false),
             formToDto: voltageLevelCreationFormToDto,
             errorHeaderId: 'VoltageLevelCreationError',
             titleId: 'CreateVoltageLevel',
