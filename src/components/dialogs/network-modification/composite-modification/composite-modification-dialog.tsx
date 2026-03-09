@@ -14,6 +14,10 @@ import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -73,6 +77,17 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             errorHeaderId: 'SubstationModificationError',
             titleId: 'ModifySubstation',
             ModificationForm: SubstationModificationForm,
+        },
+    ],
+    [
+        ModificationType.LOAD_CREATION,
+        {
+            formSchema: loadCreationFormSchema,
+            dtoToForm: loadCreationDtoToForm,
+            formToDto: loadCreationFormToDto,
+            errorHeaderId: 'LoadCreationError',
+            titleId: 'CreateLoad',
+            ModificationForm: LoadForm,
         },
     ],
 ]);
