@@ -18,7 +18,7 @@ export default function ExplorerLayout() {
     const location = useLocation();
     const dispatch = useDispatch();
     const [sourceItemUuid, setSourceItemUuid] = useState<string | undefined>();
-    const lastPathSegment = useMemo(() => location.pathname.split('/').filter(Boolean).at(-1), [location.pathname]);
+    const lastPathSegment = useMemo(() => location.pathname.split('/').findLast(Boolean), [location.pathname]);
     useEffect(() => {
         if (!lastPathSegment) {
             dispatch(setSelectedDirectory(null));
