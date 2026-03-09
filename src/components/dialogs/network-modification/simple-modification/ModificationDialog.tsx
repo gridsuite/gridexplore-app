@@ -54,21 +54,20 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     });
 
     useEffect(() => {
-        if (modificationData) {
-            formMethods.reset(dtoToForm(modificationData));
-        }
-    }, [formMethods, modificationData, dtoToForm]);
-
-    useEffect(() => {
         fetchNetworkModification(modificationUuid)
             .then((res) => res.json())
-            .then((res) => setModificationData(removeNullFields(res)))
+            .then((res) => {
+                const data = removeNullFields(res);
+                formMethods.reset(dtoToForm(data));
+                setModificationData(data);
+            })
             .catch((error: unknown) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'ModificationReadError',
                 });
                 onClose();
             });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [modificationUuid, onClose, snackError]);
 
     const onSubmit = useCallback(
