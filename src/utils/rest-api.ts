@@ -13,14 +13,14 @@ import {
     fetchEnv,
     getRequestParamFromList,
     getUserToken,
-    hasElementPermission,
-    PermissionType,
     type GsLang,
     type GsTheme,
+    hasElementPermission,
     LAST_SELECTED_DIRECTORY,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    PermissionType,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -282,6 +282,23 @@ export function createCase(name: string, description: string, file: Blob, parent
     return backendFetch(url, {
         method: 'post',
         body: formData,
+    });
+}
+
+export function persistCase(name: string, description: string, caseUuid: string, parentDirectoryUuid: UUID) {
+    console.info('Persist case %s with uuid %s', name, caseUuid);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('caseUuid', caseUuid);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${encodeURIComponent(
+        name
+    )}/persist?${urlSearchParams.toString()}`;
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
     });
 }
 
