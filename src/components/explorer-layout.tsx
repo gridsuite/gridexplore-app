@@ -18,10 +18,7 @@ export default function ExplorerLayout() {
     const location = useLocation();
     const dispatch = useDispatch();
     const [sourceItemUuid, setSourceItemUuid] = useState<string | undefined>();
-    const lastPathSegment = useMemo(() => {
-        const segments = location.pathname.split('/').filter(Boolean);
-        return segments.length ? segments[segments.length - 1] : undefined;
-    }, [location.pathname]);
+    const lastPathSegment = useMemo(() => location.pathname.split('/').filter(Boolean).at(-1), [location.pathname]);
     useEffect(() => {
         if (!lastPathSegment) {
             dispatch(setSelectedDirectory(null));
@@ -29,7 +26,7 @@ export default function ExplorerLayout() {
             return;
         }
 
-        setSourceItemUuid((prev) => (prev !== lastPathSegment ? lastPathSegment : prev));
+        setSourceItemUuid((prev) => (prev === lastPathSegment ? prev : lastPathSegment));
     }, [lastPathSegment, navigate, dispatch]);
 
     return (

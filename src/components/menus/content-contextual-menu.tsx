@@ -19,9 +19,9 @@ import {
     FileCopyTwoTone as FileCopyTwoToneIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
+    LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
     TableView as TableViewIcon,
-    LinkRounded as LinkRoundedIcon,
 } from '@mui/icons-material';
 import {
     ElementAttributes,
@@ -106,7 +106,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const copyLinkItem = useCallback(() => {
         if (activeElement) {
             if (activeElement.elementUuid === null) return;
-            const url = new URL(window.location.href);
+            const url = new URL(globalThis.location.href);
             url.pathname = `/elements/${activeElement.elementUuid}`;
             navigator.clipboard.writeText(url.toString()).then();
             snackInfo({

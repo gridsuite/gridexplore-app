@@ -84,7 +84,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
     );
 }
 
-export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?: string }) {
+export default function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -564,7 +564,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
                 await loadPath(directories.map((dir) => dir.elementUuid));
 
-                const lastDirectory = directories[directories.length - 1];
+                const lastDirectory = directories.at(-1);
                 if (lastDirectory) {
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
@@ -572,8 +572,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { sourceItemUuid?
                     }
                 }
 
-                const lastElement = path[path.length - 1];
-                if (lastElement.type !== ElementType.DIRECTORY) {
+                const lastElement = path.at(-1);
+                if (lastElement && lastElement?.type !== ElementType.DIRECTORY) {
                     const elementToHighlight: ElementAttributesES = {
                         id: lastElement.elementUuid,
                         name: lastElement.elementName,

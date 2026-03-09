@@ -59,7 +59,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
         async (event) => {
             event.stopPropagation();
             if (node.elementUuid === null) return;
-            const url = new URL(window.location.href);
+            const url = new URL(globalThis.location.href);
             url.pathname = `/elements/${node.elementUuid}`;
             navigator.clipboard.writeText(url.toString()).then();
             setIsLinkCopied(false);
