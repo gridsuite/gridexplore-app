@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -52,29 +52,18 @@ type SpecificModificationDialogProps = Pick<
     'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
 >;
 
-const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
-    [
-        ModificationType.SUBSTATION_CREATION,
-        {
-            formSchema: substationCreationFormSchema,
-            dtoToForm: substationCreationDtoToForm,
-            formToDto: substationCreationFormToDto,
-            errorHeaderId: 'SubstationCreationError',
-            titleId: 'CreateSubstation',
-            ModificationForm: SubstationCreationForm,
-        },
-    ],
-    [
-        ModificationType.VOLTAGE_LEVEL_CREATION,
-        {
-            formSchema: voltageLevelCreationFormSchema,
-            dtoToForm: (dto) => voltageLevelCreationDtoToForm(dto, undefined, false),
-            formToDto: voltageLevelCreationFormToDto,
-            errorHeaderId: 'VoltageLevelCreationError',
-            titleId: 'CreateVoltageLevel',
-            ModificationForm: VoltageLevelCreationForm,
-        },
-    ],
+const SUBSTATION_CREATION_DIALOG: SpecificModificationDialogProps = {
+    formSchema: substationCreationFormSchema,
+    dtoToForm: substationCreationDtoToForm,
+    formToDto: substationCreationFormToDto,
+    errorHeaderId: 'SubstationCreationError',
+    titleId: 'CreateSubstation',
+    ModificationForm: SubstationCreationForm,
+};
+
+const EDITABLE_MODIFICATION_TYPES = new Set<ModificationType>([
+    ModificationType.SUBSTATION_CREATION,
+    ModificationType.VOLTAGE_LEVEL_CREATION,
 ]);
 
 const schema = yup.object().shape({
@@ -112,6 +101,26 @@ export default function CompositeModificationDialog({
     broadcastChannel,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
+
+    const editableModificationDialogs = useMemo(
+        () =>
+            new Map<ModificationType, SpecificModificationDialogProps>([
+                [ModificationType.SUBSTATION_CREATION, SUBSTATION_CREATION_DIALOG],
+                [
+                    ModificationType.VOLTAGE_LEVEL_CREATION,
+                    {
+                        formSchema: voltageLevelCreationFormSchema,
+                        dtoToForm: (dto) => voltageLevelCreationDtoToForm(dto, intl, false),
+                        formToDto: voltageLevelCreationFormToDto,
+                        errorHeaderId: 'VoltageLevelCreationError',
+                        titleId: 'CreateVoltageLevel',
+                        ModificationForm: VoltageLevelCreationForm,
+                    },
+                ],
+            ]),
+        [intl]
+    );
+
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -144,7 +153,7 @@ export default function CompositeModificationDialog({
     };
 
     const isModificationEditable = useCallback((modificationType: ModificationType) => {
-        return EDITABLE_MODIFICATION_DIALOGS.has(modificationType);
+        return EDITABLE_MODIFICATION_TYPES.has(modificationType);
     }, []);
 
     const editModification = useCallback(
@@ -246,7 +255,7 @@ export default function CompositeModificationDialog({
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
-                    {...EDITABLE_MODIFICATION_DIALOGS.get(selectedModification.type)!}
+                    {...editableModificationDialogs.get(selectedModification.type)!}
                 />
             )}
         </>
