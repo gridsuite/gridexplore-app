@@ -23,16 +23,12 @@ import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../
 import type { AppState } from '../../../redux/types';
 
 export interface UploadNewCaseProps {
-    isNewStudyCreation?: boolean;
     getCurrentCaseImportParams?: (uuid: UUID) => void;
 }
 
 const DEFAULT_MAX_FILE_SIZE_IN_MB = 100;
 
-export default function UploadNewCase({
-    isNewStudyCreation = false,
-    getCurrentCaseImportParams,
-}: Readonly<UploadNewCaseProps>) {
+export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<UploadNewCaseProps>) {
     const intl = useIntl();
 
     const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
@@ -103,28 +99,26 @@ export default function UploadNewCase({
             if (currentFile.size <= maxFileSizeInByte) {
                 onValueChange(currentFile);
 
-                if (isNewStudyCreation) {
-                    // Create new case
-                    setCaseFileLoading(true);
-                    createCaseWithoutDirectoryElementCreation(currentFile)
-                        .then((newCaseUuid) => {
-                            const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
+                // Create new case
+                setCaseFileLoading(true);
+                createCaseWithoutDirectoryElementCreation(currentFile)
+                    .then((newCaseUuid) => {
+                        const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
 
-                            if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                                deleteCase(prevCaseUuid);
-                            }
+                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
+                            deleteCase(prevCaseUuid);
+                        }
 
-                            onCaseUuidChange(newCaseUuid);
+                        onCaseUuidChange(newCaseUuid);
 
-                            if (getCurrentCaseImportParams) {
-                                getCurrentCaseImportParams(newCaseUuid);
-                            }
-                        })
-                        .catch(handleUploadCaseError)
-                        .finally(() => {
-                            setCaseFileLoading(false);
-                        });
-                }
+                        if (getCurrentCaseImportParams) {
+                            getCurrentCaseImportParams(newCaseUuid);
+                        }
+                    })
+                    .catch(handleUploadCaseError)
+                    .finally(() => {
+                        setCaseFileLoading(false);
+                    });
             } else {
                 setError(FieldConstants.CASE_FILE, {
                     type: 'caseFileSize',
