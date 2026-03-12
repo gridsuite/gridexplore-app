@@ -56,19 +56,14 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
     );
 
     const handleCopyLinkIconClick = useCallback<MouseEventHandler>(
-        async (event) => {
+        (event) => {
             event.stopPropagation();
             if (node.elementUuid === null) return;
             const url = new URL(globalThis.location.href);
             url.pathname = `/elements/${node.elementUuid}`;
             navigator.clipboard.writeText(url.toString()).then();
             setIsLinkCopied(false);
-            setTimeout(() => {
-                setIsLinkCopied(true);
-                setTimeout(() => {
-                    setIsLinkCopied(false);
-                }, 2000);
-            }, 0);
+            setTimeout(() => setIsLinkCopied(false), 2000);
         },
         [node.elementUuid]
     );

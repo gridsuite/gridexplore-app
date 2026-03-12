@@ -47,7 +47,7 @@
     "copy": "Copier",
     "paste": "Coller",
     "copyLink": "Copier le lien",
-    "LinkCopied": "Lien copié",
+    "linkCopied": "Lien copié",
     "createNewStudyFromImportedCase": "Créer étude",
     "showSelectDirectoryDialog": "Modifier dossier",
     "showSelectDirectoryItemDialog": "Sélectionner",

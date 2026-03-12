@@ -66,11 +66,11 @@ export default function CustomTreeItemLabel({
                     <Tooltip
                         title={
                             isLinkCopied
-                                ? intl.formatMessage({ id: 'LinkCopied' })
+                                ? intl.formatMessage({ id: 'linkCopied' })
                                 : intl.formatMessage({ id: 'copyLink' })
                         }
                     >
-                        <IconButton size="small" onClick={onCopyLinkIconClick}>
+                        <IconButton data-testid="CopyLinkIcon" size="small" onClick={onCopyLinkIconClick}>
                             {isLinkCopied ? (
                                 <CheckIcon fontSize="small" color="success" />
                             ) : (

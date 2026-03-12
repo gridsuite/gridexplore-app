@@ -48,7 +48,7 @@
     "copy": "Copy",
     "paste": "Paste",
     "copyLink": "Copy link",
-    "LinkCopied": "Link copied",
+    "linkCopied": "Link copied",
     "createFolder": "Create folder",
     "createRootFolder": "Create root folder",
     "deleteFolder": "Delete",
