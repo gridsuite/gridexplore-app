@@ -13,6 +13,10 @@ import { useIntl } from 'react-intl';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
+    equipmentDeletionDtoToForm,
+    equipmentDeletionFormToDto,
+    equipmentDeletionFormSchema,
+    EquipmentDeletionForm,
     FieldConstants,
     ModificationType,
     NetworkModificationMetadata,
@@ -53,6 +57,17 @@ type SpecificModificationDialogProps = Pick<
 >;
 
 const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
+    [
+        ModificationType.EQUIPMENT_DELETION,
+        {
+            formSchema: equipmentDeletionFormSchema,
+            dtoToForm: equipmentDeletionDtoToForm,
+            formToDto: equipmentDeletionFormToDto,
+            errorHeaderId: 'UnableToDeleteEquipment',
+            titleId: 'DeleteEquipment',
+            ModificationForm: EquipmentDeletionForm,
+        },
+    ],
     [
         ModificationType.SUBSTATION_CREATION,
         {
