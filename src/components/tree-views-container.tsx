@@ -564,7 +564,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
                 await loadPath(directories.map((dir) => dir.elementUuid));
 
-                const lastDirectory = directories.lastItem;
+                const lastDirectory = directories.at(-1);
                 if (lastDirectory) {
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
@@ -572,7 +572,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     }
                 }
 
-                const lastElement = path.lastItem;
+                const lastElement = path.at(-1);
                 if (lastElement && lastElement?.type !== ElementType.DIRECTORY) {
                     const elementToHighlight: ElementAttributesES = {
                         id: lastElement.elementUuid,

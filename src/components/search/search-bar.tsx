@@ -62,7 +62,7 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
                     headerId: 'pathRetrievingError',
                 });
             }
-            const lastElement = matchingElement.pathUuid.lastItem;
+            const lastElement = matchingElement.pathUuid.at(-1);
             dispatch(setSearchedElement(data));
             if (lastElement !== selectedDirectory?.elementUuid) {
                 handleDispatchDirectory(lastElement);
