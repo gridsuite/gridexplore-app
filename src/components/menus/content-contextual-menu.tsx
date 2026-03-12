@@ -445,6 +445,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     callback: copyLinkItem,
                     icon: (
                         <LinkRoundedIcon
+                            data-testid="CopyLinkRoundedIcon"
                             sx={{
                                 transform: 'rotate(-50deg)',
                             }}
