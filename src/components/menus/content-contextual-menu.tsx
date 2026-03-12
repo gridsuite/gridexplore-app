@@ -295,7 +295,15 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleCloseDialog();
     });
 
+    const isStudyOrCase = useCallback((): boolean => {
+        return selectedElements[0].type === ElementType.CASE || selectedElements[0].type === ElementType.STUDY;
+    }, [selectedElements]);
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
+
+    const uploadingInProgress = useCallback(
+        () => selectedElements.every((el) => el.elementUuid === undefined),
+        [selectedElements]
+    );
     const isSingleElement = selectedElements.length === 1;
 
     const allowsDuplicate = useCallback(() => {
@@ -318,10 +326,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.WORKSPACE,
         ];
 
-        const hasMetadata = selectedElements[0]?.hasMetadata;
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
 
-        return hasMetadata && isSingleElement && isAllowedType && directoryWritable;
+        return isSingleElement && isAllowedType && directoryWritable;
     }, [selectedElements, isSingleElement, directoryWritable]);
 
     const allowsCreateNewStudyFromCase = useCallback(
@@ -389,6 +396,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.RENAME);
                 },
+                disabled: isStudyOrCase() && uploadingInProgress(),
             });
 
             menuItems.push({
@@ -398,6 +406,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
                 withDivider: true,
+                disabled: isStudyOrCase() && uploadingInProgress(),
             });
         }
 
@@ -416,6 +425,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 messageDescriptorId: 'duplicate',
                 callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" data-testid="DuplicateIcon" />,
+                disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
             });
         }
 
@@ -424,6 +434,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 messageDescriptorId: 'copy',
                 callback: copyItem,
                 icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
+                disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
             });
         }
 
@@ -435,6 +446,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
                 withDivider: true,
+                disabled: isStudyOrCase() && uploadingInProgress(),
             });
         }
 
@@ -498,12 +510,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsExportCase,
         allowsSpreadsheetCollection,
         allowsConvertFilterIntoExplicitNaming,
+        isStudyOrCase,
+        uploadingInProgress,
         handleOpenDialog,
         duplicateItem,
+        noCreationInProgress,
         copyItem,
         downloadElements,
         handleCloseDialog,
-        noCreationInProgress,
     ]);
 
     const renderDialog = () => {
