@@ -10,8 +10,8 @@ import { Box, IconButton, Tooltip, Typography, Zoom } from '@mui/material';
 import {
     Add as AddIcon,
     AddBoxOutlined as AddBoxOutlinedIcon,
-    LinkRounded as LinkRoundedIcon,
     Check as CheckIcon,
+    LinkRounded as LinkRoundedIcon,
 } from '@mui/icons-material';
 import { ElementAttributes } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
@@ -70,11 +70,12 @@ export default function CustomTreeItemLabel({
                                 : intl.formatMessage({ id: 'copyLink' })
                         }
                     >
-                        <IconButton data-testid="CopyLinkIcon" size="small" onClick={onCopyLinkIconClick}>
+                        <IconButton data-testid="CopyLinkIconButton" size="small" onClick={onCopyLinkIconClick}>
                             {isLinkCopied ? (
                                 <CheckIcon fontSize="small" color="success" />
                             ) : (
                                 <LinkRoundedIcon
+                                    data-testid="CopyLinkRoundedIcon"
                                     sx={{
                                         transform: 'rotate(-50deg)',
                                     }}

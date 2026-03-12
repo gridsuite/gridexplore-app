@@ -33,7 +33,6 @@ import {
 import DirectoryTreeView from './directory-tree-view';
 import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
-import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
@@ -565,7 +564,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
                 await loadPath(directories.map((dir) => dir.elementUuid));
 
-                const lastDirectory = directories.at(LAST_ELEMENT_INDEX);
+                const lastDirectory = directories.lastItem;
                 if (lastDirectory) {
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
@@ -573,7 +572,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     }
                 }
 
-                const lastElement = path.at(LAST_ELEMENT_INDEX);
+                const lastElement = path.lastItem;
                 if (lastElement && lastElement?.type !== ElementType.DIRECTORY) {
                     const elementToHighlight: ElementAttributesES = {
                         id: lastElement.elementUuid,
