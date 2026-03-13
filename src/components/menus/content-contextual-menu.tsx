@@ -19,6 +19,7 @@ import {
     FileCopyTwoTone as FileCopyTwoToneIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
+    LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
@@ -79,7 +80,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -101,6 +102,18 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         setHideMenu(false);
         setDeleteError('');
     }, [onClose, setOpenDialog]);
+
+    const copyLinkItem = useCallback(() => {
+        if (activeElement.elementUuid) {
+            const url = new URL(globalThis.location.href);
+            url.pathname = `/elements/${activeElement.elementUuid}`;
+            navigator.clipboard.writeText(url.toString()).then();
+            snackInfo({
+                messageTxt: intl.formatMessage({ id: 'linkCopied' }),
+            });
+            handleCloseDialog();
+        }
+    }, [activeElement, handleCloseDialog, intl, snackInfo]);
 
     const copyElement = useCallback(
         (
@@ -420,11 +433,27 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         if (directoryReadable && isSingleElement) {
-            menuItems.push({
-                messageDescriptorId: 'copy',
-                callback: copyItem,
-                icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-            });
+            menuItems.push(
+                {
+                    messageDescriptorId: 'copy',
+                    callback: copyItem,
+                    icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
+                },
+                { isDivider: true },
+                {
+                    messageDescriptorId: 'copyLink',
+                    callback: copyLinkItem,
+                    icon: (
+                        <LinkRoundedIcon
+                            data-testid="CopyLinkRoundedIcon"
+                            sx={{
+                                transform: 'rotate(-50deg)',
+                            }}
+                        />
+                    ),
+                },
+                { isDivider: true }
+            );
         }
 
         if (selectedElements.length === 1 && directoryWritable) {
@@ -501,6 +530,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         duplicateItem,
         copyItem,
+        copyLinkItem,
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,
