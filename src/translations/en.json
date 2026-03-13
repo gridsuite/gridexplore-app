@@ -117,7 +117,7 @@
     "Min": "Min",
     "Max": "Max",
     "cannotRetrieveContingencyList": "Could not retrieve contingency list: ",
-    "cannotComputeContingencyList" : "Could not compute contingency list",
+    "cannotComputeContingencyList": "Could not compute contingency list",
     "retrieveCompositeModificationError": "Could not retrieve composite modification content: ",
     "PropertyName": "Property name",
     "getAppLinkError": "Error getting application link for type = {type}",
@@ -200,5 +200,6 @@
     "reload": "Reload",
     "export.message.started": "Export {fileName} started",
     "export.message.succeeded": "Export {fileName} succeeded",
-    "export.message.failed": "Export file failed {error}"
+    "export.message.failed": "Export file failed {error}",
+    "PageNotFound": "Page not found"
 }

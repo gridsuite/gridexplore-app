@@ -27,7 +27,6 @@ import {
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FormattedMessage } from 'react-intl';
 import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
@@ -36,6 +35,7 @@ import AppTopBar from './app-top-bar';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
 import ExplorerLayout from './explorer-layout';
+import PageNotFound from './page-not-found';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -184,7 +184,8 @@ export default function App() {
                 <CardErrorBoundary>
                     {user !== null ? (
                         <Routes>
-                            <Route path="/*" element={<ExplorerLayout />} />
+                            <Route path="/" element={<ExplorerLayout />} />
+                            <Route path="/elements/:uuid" element={<ExplorerLayout />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}
@@ -193,14 +194,7 @@ export default function App() {
                                 path="/logout-callback"
                                 element={<h1>Error: logout failed; you are still logged in.</h1>}
                             />
-                            <Route
-                                path="*"
-                                element={
-                                    <h1>
-                                        <FormattedMessage id="PageNotFound" />
-                                    </h1>
-                                }
-                            />
+                            <Route path="*" element={<PageNotFound />} />
                         </Routes>
                     ) : (
                         <AuthenticationRouter

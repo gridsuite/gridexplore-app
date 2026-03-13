@@ -5,34 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router';
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router';
 import TreeViewsContainer from './tree-views-container';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import DirectoryContent from './directory-content';
-import { setSelectedDirectory } from '../redux/actions';
 
 export default function ExplorerLayout() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const dispatch = useDispatch();
-    const [sourceItemUuid, setSourceItemUuid] = useState<string | undefined>();
-    const lastPathSegment = useMemo(() => location.pathname.split('/').findLast(Boolean), [location.pathname]);
-    useEffect(() => {
-        if (!lastPathSegment) {
-            dispatch(setSelectedDirectory(null));
-            navigate('/', { replace: true });
-            return;
-        }
-
-        setSourceItemUuid((prev) => (prev === lastPathSegment ? prev : lastPathSegment));
-    }, [lastPathSegment, navigate, dispatch]);
+    const { uuid } = useParams<{ uuid?: string }>();
 
     return (
         <Box display="flex" width="100%" height="100%">
             <Box width="30%" height="100%" overflow="auto" style={{ borderRight: '1px solid #515151' }}>
-                <TreeViewsContainer sourceItemUuid={sourceItemUuid} />
+                <TreeViewsContainer sourceItemUuid={uuid} />
             </Box>
             <Box width="70%" height="100%" display="flex" flexDirection="column">
                 <Box flexShrink={0}>
