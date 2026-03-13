@@ -25,6 +25,8 @@ export type CustomTreeItemProps = {
 const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
     const { node, onExpand, onSelect, onContextMenu } = props;
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
+
     const isMenuOpen = activeDirectory === node.elementUuid;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
     const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
@@ -58,13 +60,13 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
     const handleCopyLinkIconClick = useCallback<MouseEventHandler>(
         (event) => {
             event.stopPropagation();
-            if (node.elementUuid === null) return;
+            if (node.elementUuid === null || selectedDirectory?.elementUuid !== node.elementUuid) return;
             const url = new URL(`${node.elementUuid}`, globalThis.location.href);
             navigator.clipboard.writeText(url.toString()).then();
             setIsLinkCopied(true);
             setTimeout(() => setIsLinkCopied(false), 2000);
         },
-        [node.elementUuid]
+        [selectedDirectory, node.elementUuid]
     );
 
     // We don't get a onMouseLeave event when using or leaving the contextual menu by
