@@ -105,8 +105,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const copyLinkItem = useCallback(() => {
         if (activeElement.elementUuid) {
-            const url = new URL(globalThis.location.href);
-            url.pathname = `/elements/${activeElement.elementUuid}`;
+            const url = new URL(`${activeElement.elementUuid}`, globalThis.location.href);
             navigator.clipboard.writeText(url.toString()).then();
             snackInfo({
                 messageTxt: intl.formatMessage({ id: 'linkCopied' }),
