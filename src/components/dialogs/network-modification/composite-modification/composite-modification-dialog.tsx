@@ -18,6 +18,10 @@ import {
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    byFilterDeletionDtoToForm,
+    byFilterDeletionFormSchema,
+    byFilterDeletionFormToDto,
+    ByFilterDeletionForm,
     substationCreationDtoToForm,
     SubstationCreationForm,
     substationCreationFormSchema,
@@ -62,6 +66,21 @@ const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModifica
             errorHeaderId: 'SubstationCreationError',
             titleId: 'CreateSubstation',
             ModificationForm: SubstationCreationForm,
+        },
+    ],
+
+    [
+        ModificationType.BY_FILTER_DELETION,
+        {
+            formSchema: byFilterDeletionFormSchema,
+            dtoToForm: byFilterDeletionDtoToForm,
+            formToDto: (formData) => ({
+                ...byFilterDeletionFormToDto(formData),
+                type: ModificationType.BY_FILTER_DELETION,
+            }),
+            errorHeaderId: 'UnableToDeleteEquipment',
+            titleId: 'DeleteEquipmentByFilter',
+            ModificationForm: ByFilterDeletionForm,
         },
     ],
     [
