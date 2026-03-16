@@ -27,17 +27,15 @@ import {
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { FormattedMessage } from 'react-intl';
 import { Box } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
 import { APP_NAME } from '../utils/config-params';
 import AppTopBar from './app-top-bar';
-import TreeViewsContainer from './tree-views-container';
-import DirectoryContent from './directory-content';
-import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/types';
+import ExplorerLayout from './explorer-layout';
+import PageNotFound from './page-not-found';
 
 export default function App() {
     const { snackError } = useSnackMessage();
@@ -186,27 +184,8 @@ export default function App() {
                 <CardErrorBoundary>
                     {user !== null ? (
                         <Routes>
-                            <Route
-                                path="/"
-                                element={
-                                    <>
-                                        <Box
-                                            width="30%"
-                                            height="100%"
-                                            overflow="auto"
-                                            style={{ borderRight: '1px solid rgb(81, 81, 81)' }}
-                                        >
-                                            <TreeViewsContainer />
-                                        </Box>
-                                        <Box width="70%" height="100%" display="flex" flexDirection="column">
-                                            <Box width="100%" flexShrink={0}>
-                                                <DirectoryBreadcrumbs />
-                                            </Box>
-                                            <DirectoryContent />
-                                        </Box>
-                                    </>
-                                }
-                            />
+                            <Route path="/" element={<ExplorerLayout />} />
+                            <Route path="/elements/:uuid" element={<ExplorerLayout />} />
                             <Route
                                 path="/sign-in-callback"
                                 element={<Navigate replace to={getPreLoginPath() || '/'} />}
@@ -215,14 +194,7 @@ export default function App() {
                                 path="/logout-callback"
                                 element={<h1>Error: logout failed; you are still logged in.</h1>}
                             />
-                            <Route
-                                path="*"
-                                element={
-                                    <h1>
-                                        <FormattedMessage id="PageNotFound" />
-                                    </h1>
-                                }
-                            />
+                            <Route path="*" element={<PageNotFound />} />
                         </Routes>
                     ) : (
                         <AuthenticationRouter

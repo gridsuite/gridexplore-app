@@ -9,6 +9,7 @@ export const HORIZONTAL_SHIFT = 16;
 export const VERTICAL_SHIFT = -4;
 export const MOUSE_EVENT_RIGHT_BUTTON = 2;
 export const MAX_DIRECTORY_NAME_LENGTH = 100;
+export const LAST_ELEMENT_INDEX = -1;
 
 export const DialogsId = {
     RENAME: 'rename',
