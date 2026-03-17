@@ -411,7 +411,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             }
