@@ -26,6 +26,7 @@ export interface FilteredIdentifiables {
 
 // type taken from actions-server
 export interface FilterBasedContingencyList {
+    type: string;
     filters: FilterAttributes[];
     selectedEquipmentTypesByFilter: Array<{
         filterId: string;
