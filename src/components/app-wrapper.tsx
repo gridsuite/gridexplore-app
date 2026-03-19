@@ -240,6 +240,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...csvEn,
         ...parametersEn,
         ...useUniqueNameValidationEn,
+        ...commonButtonEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -270,6 +271,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...csvFr,
         ...parametersFr,
         ...useUniqueNameValidationFr,
+        ...commonButtonFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

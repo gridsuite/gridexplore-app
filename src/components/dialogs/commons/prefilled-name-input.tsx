@@ -7,11 +7,16 @@
 
 import { useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { ElementType, FieldConstants, UniqueNameInput, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    ElementType,
+    FieldConstants,
+    snackWithFallback,
+    UniqueNameInput,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { getBaseName } from '../../../utils/rest-api';
 import { AppState } from '../../../redux/types';
-import { handleGenericTxtError } from '../../utils/rest-errors';
 
 export interface PrefilledNameInputProps {
     label: string;
@@ -43,7 +48,7 @@ export default function PrefilledNameInput({ label, name, elementType }: Readonl
                         });
                     })
                     .catch((error) => {
-                        handleGenericTxtError(error.message, snackError);
+                        snackWithFallback(snackError, error);
                     });
             }
         }

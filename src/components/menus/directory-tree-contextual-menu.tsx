@@ -22,12 +22,12 @@ import {
     ElementAttributes,
     ElementType,
     FilterCreationDialog,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
+    PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PermissionType,
-    CustomError,
-    PARAM_DEVELOPER_MODE,
+    snackWithFallback,
+    TreeViewFinderNodeProps,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import CreateStudyForm from '../dialogs/create-study-dialog/create-study-dialog';
@@ -51,18 +51,6 @@ import { useDeferredFetch } from '../../utils/custom-hooks';
 import ExplicitNamingCreationDialog from '../dialogs/contingency-list/explicit-naming/explicit-naming-creation-dialog';
 import CreateCaseDialog from '../dialogs/create-case-dialog/create-case-dialog';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import {
-    buildSnackMessage,
-    generateGenericPermissionErrorMessages,
-    generateRenameErrorMessages,
-    handleDeleteError,
-    handleGenericTxtError,
-    handleMaxElementsExceededError,
-    handleMoveDirectoryConflictError,
-    handleMoveNameConflictError,
-    handleNotAllowedError,
-    handlePasteError,
-} from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
@@ -107,17 +95,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameErrorMessage] = useDeferredFetch(
-        renameElement,
-        handleCloseDialog,
-        generateRenameErrorMessages(intl)
-    );
+    const [renameCB, renameErrorMessage] = useDeferredFetch(renameElement, handleCloseDialog);
 
-    const [insertDirectoryCB, insertDirectoryErrorMessage] = useDeferredFetch(
-        insertDirectory,
-        handleCloseDialog,
-        generateGenericPermissionErrorMessages(intl)
-    );
+    const [insertDirectoryCB, insertDirectoryErrorMessage] = useDeferredFetch(insertDirectory, handleCloseDialog);
 
     const [insertRootDirectoryCB, insertRootDirectoryErrorMessage] = useDeferredFetch(
         insertRootDirectory,
@@ -128,7 +108,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
 
     function pasteElement(directoryUuid: UUID, selectionForPaste: any) {
         if (!selectionForPaste.sourceItemUuid) {
-            handleGenericTxtError(intl.formatMessage({ id: 'elementPasteFailed404' }), snackError);
+            snackError({ headerId: 'elementPasteFailed404' });
             handleCloseDialog();
         } else {
             console.info('Pasting element %s into directory %s', selectionForPaste.nameItem, directoryUuid);
@@ -139,12 +119,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
+                case ElementType.WORKSPACE:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
-                        (error: CustomError) => {
-                            if (handleMaxElementsExceededError(error, snackError)) {
-                                return;
-                            }
-                            handlePasteError(error, intl, snackError);
+                        (error) => {
+                            snackWithFallback(snackError, error, {
+                                headerId: 'elementPasteFailed',
+                            });
                         }
                     );
                     break;
@@ -153,13 +133,18 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.PCC_MIN_PARAMETERS:
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         selectionForPaste.sourceItemUuid,
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.typeItem
-                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
+                    ).catch((error) =>
+                        snackWithFallback(snackError, error, {
+                            headerId: 'elementPasteFailed',
+                        })
+                    );
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -167,25 +152,31 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         directoryUuid,
                         selectionForPaste.typeItem,
                         selectionForPaste.specificTypeItem
-                    ).catch((error: CustomError) => handlePasteError(error, intl, snackError));
+                    ).catch((error) =>
+                        snackWithFallback(snackError, error, {
+                            headerId: 'elementPasteFailed',
+                        })
+                    );
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error: CustomError) => handlePasteError(error, intl, snackError)
+                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error) =>
+                        snackWithFallback(snackError, error, {
+                            headerId: 'elementPasteFailed',
+                        })
                     );
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error: CustomError) => handlePasteError(error, intl, snackError)
+                        (error) =>
+                            snackWithFallback(snackError, error, {
+                                headerId: 'elementPasteFailed',
+                            })
                     );
                     break;
                 default:
-                    handleGenericTxtError(
-                        intl.formatMessage({
-                            id: 'unsupportedItem',
-                        }),
-                        snackError
-                    );
+                    snackError({
+                        headerId: 'unsupportedItem',
+                    });
             }
 
             handleCloseDialog();
@@ -197,11 +188,13 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             setDeleteError('');
             deleteElement(elementsUuid)
                 .then(handleCloseDialog)
-                .catch((error: CustomError) => {
-                    handleDeleteError(setDeleteError, error, intl, snackError);
+                .catch((error) => {
+                    snackWithFallback(snackError, error, {
+                        headerId: 'deleteConflictError',
+                    });
                 });
         },
-        [handleCloseDialog, intl, snackError]
+        [handleCloseDialog, snackError]
     );
 
     // Allowance
@@ -343,21 +336,12 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         (selectedDir: TreeViewFinderNodeProps[]) => {
             if (selectedDir.length === 1 && directory) {
                 moveElementsToDirectory([directory.elementUuid], selectedDir[0].id as UUID).catch((error) => {
-                    if (handleMoveDirectoryConflictError(error, snackError)) {
-                        return;
-                    }
-                    if (handleNotAllowedError(error, snackError)) {
-                        return;
-                    }
-                    if (handleMoveNameConflictError(error, snackError)) {
-                        return;
-                    }
                     const path = buildPathToFromMap(directory.elementUuid, treeData.mapData)
                         ?.map((el) => el.elementName)
                         .join('/');
-                    snackError({
-                        messageId: buildSnackMessage(error, 'MovingDirectoryError'),
-                        messageValues: { elementPath: path },
+                    snackWithFallback(snackError, error, {
+                        headerId: 'MovingDirectoryError',
+                        headerValues: { elementPath: path },
                     });
                 });
             }

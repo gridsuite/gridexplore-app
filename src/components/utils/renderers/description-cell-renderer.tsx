@@ -17,6 +17,9 @@ const styles = {
         maxHeight: '50px',
         cursor: 'pointer',
     },
+    coloredButton: (theme) => ({
+        color: theme.palette.text.primary,
+    }),
 } as const satisfies MuiStyles;
 
 export type DescriptionCellRendererProps = { data: ElementAttributes; directoryWritable: boolean };
@@ -33,7 +36,7 @@ export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<De
 
     const icon = (
         <Tooltip title={tooltipBox}>
-            <IconButton color="primary">
+            <IconButton sx={styles.coloredButton}>
                 <EditNoteIcon empty={!description} />
             </IconButton>
         </Tooltip>
