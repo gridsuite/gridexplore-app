@@ -41,6 +41,7 @@ import { fetchCompositeModificationContent, saveCompositeModification } from '..
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
+import NetworkModificationsTable from './network-modification-table/network-modifications-table';
 
 const styles = {
     noPointer: {
@@ -242,22 +243,19 @@ export default function CompositeModificationDialog({
                 {!isFetching && (
                     <Box sx={unscrollableDialogStyles.unscrollableContainer}>
                         <CompositeModificationForm />
-                        <List sx={unscrollableDialogStyles.scrollableContent}>
-                            {modifications?.map((modification: NetworkModificationMetadata) => (
-                                <Box key={modification.uuid}>
-                                    <ListItem disablePadding>
-                                        <ListItemButton
-                                            sx={isModificationEditable(modification.type) ? null : styles.noPointer}
-                                            onClick={() => editModification(modification)}
-                                            disableRipple
-                                        >
-                                            <Box>{getModificationLabel(modification)}</Box>
-                                        </ListItemButton>
-                                    </ListItem>
-                                    <Divider component="li" />
-                                </Box>
-                            ))}
-                        </List>
+                        <NetworkModificationsTable
+                            handleCellClick={editModification}
+                            modifications={modifications}
+                            setModifications={setModifications}
+                            onRowDragStart={() => {}}
+                            onRowDragEnd={() => {}}
+                            onRowSelected={() => {}}
+                            isRowDragDisabled
+                            isImpactedByNotification={() => false}
+                            notificationMessageId="notificationMessageId"
+                            isFetchingModifications={false}
+                            pendingState={false}
+                        />
                     </Box>
                 )}
             </CustomMuiDialog>
