@@ -17,6 +17,9 @@ import {
     loadCreationDtoToForm,
     loadCreationFormSchema,
     loadCreationFormToDto,
+    loadModificationDtoToForm,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
     LoadForm,
     ModificationType,
     NetworkModificationMetadata,
@@ -57,7 +60,7 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm' | 'isModification'
 >;
 
 const schema = yup.object().shape({
@@ -148,6 +151,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'LoadCreationError',
                         titleId: 'CreateLoad',
                         ModificationForm: LoadForm,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_MODIFICATION,
+                    {
+                        formSchema: loadModificationFormSchema,
+                        dtoToForm: loadModificationDtoToForm,
+                        formToDto: loadModificationFormToDto,
+                        errorHeaderId: 'LoadModificationError',
+                        titleId: 'ModifyLoad',
+                        ModificationForm: LoadForm,
+                        isModification: true,
                     },
                 ],
                 [

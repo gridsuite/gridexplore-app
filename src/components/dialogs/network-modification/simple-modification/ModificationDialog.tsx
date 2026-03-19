@@ -29,6 +29,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     dtoToForm: (dto: ModificationData) => FormData;
     formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
     errorHeaderId: string;
+    isModification?: boolean;
 }
 
 interface WithId {
@@ -45,6 +46,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dtoToForm,
     formToDto,
     errorHeaderId,
+    isModification = false,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -91,13 +93,14 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             formContext={{
                 ...formMethods,
                 validationSchema: formSchema,
+                removeOptional: true,
             }}
             onClose={onClose}
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
         >
-            <ModificationForm />
+            <ModificationForm isModification={isModification} />
         </CustomMuiDialog>
     );
 }
