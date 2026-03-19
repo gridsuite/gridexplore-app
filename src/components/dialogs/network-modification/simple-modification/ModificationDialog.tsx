@@ -93,6 +93,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             formContext={{
                 ...formMethods,
                 validationSchema: formSchema,
+                removeOptional: true,
             }}
             onClose={onClose}
             onSave={onSubmit}
