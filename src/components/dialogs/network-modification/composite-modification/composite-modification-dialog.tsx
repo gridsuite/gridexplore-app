@@ -14,6 +14,13 @@ import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    loadModificationDtoToForm,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -57,7 +64,7 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm' | 'isModification'
 >;
 
 const schema = yup.object().shape({
@@ -137,6 +144,29 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'SubstationModificationError',
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_CREATION,
+                    {
+                        formSchema: loadCreationFormSchema,
+                        dtoToForm: loadCreationDtoToForm,
+                        formToDto: loadCreationFormToDto,
+                        errorHeaderId: 'LoadCreationError',
+                        titleId: 'CreateLoad',
+                        ModificationForm: LoadForm,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_MODIFICATION,
+                    {
+                        formSchema: loadModificationFormSchema,
+                        dtoToForm: loadModificationDtoToForm,
+                        formToDto: loadModificationFormToDto,
+                        errorHeaderId: 'LoadModificationError',
+                        titleId: 'ModifyLoad',
+                        ModificationForm: LoadForm,
+                        isModification: true,
                     },
                 ],
                 [
