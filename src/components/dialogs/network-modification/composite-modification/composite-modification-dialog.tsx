@@ -4,16 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import {
-    createBaseColumns,
+    BASE_MODIFICATION_TABLE_COLUMNS,
     CustomMuiDialog,
     FieldConstants,
     ModificationType,
+    NameHeaderProps,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
@@ -31,10 +32,14 @@ import {
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
+    NetworkModificationEditorNameHeader,
+    NameCell,
+    networkTableStyles,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
+import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
@@ -70,6 +75,24 @@ interface CompositeModificationDialogProps {
     description: string;
     broadcastChannel: BroadcastChannel;
 }
+const createBaseColumns = (
+    isRowDragDisabled: boolean,
+    modificationsCount: number,
+    nameHeaderProps: NameHeaderProps,
+    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
+): ColumnDef<NetworkModificationMetadata>[] => [
+    {
+        id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
+        header: () => (
+            <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
+        ),
+        cell: ({ row }) => <NameCell row={row} />,
+        meta: {
+            cellStyle: networkTableStyles.columnCell.modificationName,
+        },
+        minSize: 160,
+    },
+];
 
 export default function CompositeModificationDialog({
     compositeModificationId,
