@@ -7,11 +7,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem, ListItemButton } from '@mui/material';
 import {
+    createBaseColumns,
     CustomMuiDialog,
     FieldConstants,
     ModificationType,
@@ -27,7 +26,6 @@ import {
     substationModificationFormSchema,
     substationModificationFormToDto,
     unscrollableDialogStyles,
-    useModificationLabelComputer,
     useSnackMessage,
     voltageLevelCreationDtoToForm,
     VoltageLevelCreationForm,
@@ -36,21 +34,12 @@ import {
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { NetworkModificationsTable } from '@gridsuite/commons-ui';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
-import NetworkModificationsTable from './network-modification-table/network-modifications-table';
-
-const styles = {
-    noPointer: {
-        cursor: 'default',
-        '&:hover': {
-            cursor: 'default',
-        },
-    },
-};
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -151,18 +140,6 @@ export default function CompositeModificationDialog({
         [intl]
     );
 
-    const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata) => {
-        if (!modif) {
-            return null;
-        }
-        const labelData = {
-            ...modif,
-            ...computeLabel(modif),
-        };
-        return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
-    };
-
     const isModificationEditable = useCallback(
         (modificationType: ModificationType) => {
             return editableModificationDialogs.has(modificationType);
@@ -246,7 +223,6 @@ export default function CompositeModificationDialog({
                         <NetworkModificationsTable
                             handleCellClick={editModification}
                             modifications={modifications}
-                            setModifications={setModifications}
                             onRowDragStart={() => {}}
                             onRowDragEnd={() => {}}
                             onRowSelected={() => {}}
@@ -255,6 +231,9 @@ export default function CompositeModificationDialog({
                             notificationMessageId="notificationMessageId"
                             isFetchingModifications={false}
                             pendingState={false}
+                            createAllColumns={createBaseColumns}
+                            highlightedModificationUuid={null}
+                            setModifications={setModifications}
                         />
                     </Box>
                 )}
