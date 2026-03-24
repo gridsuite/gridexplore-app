@@ -184,10 +184,7 @@ export default function CompositeModificationDialog({
                     ModificationType.VOLTAGE_LEVEL_MODIFICATION,
                     {
                         formSchema: voltageLevelModificationFormSchema,
-                        dtoToForm: (dto) => ({
-                            ...voltageLevelModificationDtoToForm(dto, false),
-                            [FieldConstants.HIDE_SUBSTATION_FIELD]: true,
-                        }),
+                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
                         formToDto: voltageLevelModificationFormToDto,
                         errorHeaderId: 'VoltageLevelModificationError',
                         titleId: 'ModifyVoltageLevel',
