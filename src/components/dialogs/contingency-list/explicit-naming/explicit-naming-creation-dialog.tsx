@@ -10,6 +10,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     useSnackMessage,
     PARAM_LANGUAGE,
     snackWithFallback,
@@ -25,7 +26,7 @@ import { getExplicitNamingSchema } from './explicit-naming-utils';
 import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     ...getExplicitNamingSchema(),

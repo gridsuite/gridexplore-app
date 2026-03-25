@@ -75,6 +75,8 @@ import {
     PARAM_THEME,
     errorsEn,
     errorsFr,
+    validationEn,
+    validationFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -231,6 +233,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...elementSearchEn,
         ...businessErrorsEn,
         ...errorsEn,
+        ...validationEn,
         ...filterEn,
         ...filterExpertEn,
         ...descriptionEn,
@@ -263,6 +266,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...filterFr,
         ...businessErrorsFr,
         ...errorsFr,
+        ...validationFr,
         ...filterExpertFr,
         ...descriptionFr,
         ...equipmentsFr,

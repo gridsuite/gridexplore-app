@@ -40,6 +40,7 @@ import {
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
+    NAME_EMPTY,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -64,7 +65,7 @@ type SpecificModificationDialogProps = Pick<
 >;
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().trim(),
 });
 

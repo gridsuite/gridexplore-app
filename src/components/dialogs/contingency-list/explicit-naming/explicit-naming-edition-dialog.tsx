@@ -9,6 +9,7 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -39,7 +40,7 @@ interface ExplicitNamingEditionFormData {
 }
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
