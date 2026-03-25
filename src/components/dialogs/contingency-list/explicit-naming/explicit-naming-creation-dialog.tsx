@@ -10,13 +10,14 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     useSnackMessage,
-    yupConfig as yup,
     PARAM_LANGUAGE,
     snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import { createContingencyList } from '../../../../utils/rest-api';
 import { ContingencyListFormData, getContingencyListEmptyFormData, getFormContent } from '../contingency-list-utils';
 import { useParameterState } from '../../use-parameters-dialog';
@@ -25,7 +26,7 @@ import { getExplicitNamingSchema } from './explicit-naming-utils';
 import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     ...getExplicitNamingSchema(),

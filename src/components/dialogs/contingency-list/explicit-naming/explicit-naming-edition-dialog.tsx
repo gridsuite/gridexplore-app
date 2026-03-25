@@ -9,13 +9,14 @@ import {
     CustomMuiDialog,
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     NO_ITEM_SELECTION_FOR_COPY,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useEffect, useState } from 'react';
+import * as yup from 'yup';
 import { getContingencyList, saveExplicitNamingContingencyList } from 'utils/rest-api';
 import { prepareContingencyListForBackend } from 'components/dialogs/contingency-list-helper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,7 +40,7 @@ interface ExplicitNamingEditionFormData {
 }
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
