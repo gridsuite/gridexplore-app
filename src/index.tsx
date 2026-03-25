@@ -6,11 +6,14 @@
  */
 import 'core-js/es/array/flat-map';
 
+import { configureYupLocale } from '@gridsuite/commons-ui';
 import 'typeface-roboto';
 import './index.css';
 
 import { createRoot } from 'react-dom/client';
 import AppWrapper from './components/app-wrapper';
+
+configureYupLocale();
 
 const container = document.getElementById('root');
 createRoot(container!).render(<AppWrapper />);

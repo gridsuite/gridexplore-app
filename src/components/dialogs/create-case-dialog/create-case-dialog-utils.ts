@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldConstants, MAX_CHAR_DESCRIPTION, yupConfig as yup } from '@gridsuite/commons-ui';
+import { FieldConstants, MAX_CHAR_DESCRIPTION } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 
 export const getCreateCaseDialogFormValidationDefaultValues = () => ({
