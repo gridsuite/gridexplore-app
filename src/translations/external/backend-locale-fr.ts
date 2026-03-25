@@ -29,7 +29,7 @@ const BackendLocaleFr = {
     Three_windings_transformer: 'Transformateur à 3 enroulements',
     Busbar_section: 'Section de jeux de barre',
     Bus: 'Noeud électrique',
-    Dangling_line: 'Ligne frontière',
+    Boundary_line: 'Ligne frontière',
     Hvdc_line: 'Ligne HVDC',
     Lcc_converter_station: 'Station de conversion LCC',
     Vsc_converter_station: 'Station de conversion VSC',

@@ -29,7 +29,7 @@ const BackendLocaleEn = {
     Three_windings_transformer: 'Three Windings Transformer',
     Busbar_section: 'Bus Bar Section',
     Bus: 'Bus',
-    Dangling_line: 'Dangling Line',
+    Boundary_line: 'Boundary Line',
     Hvdc_line: 'HVDC Line',
     Lcc_converter_station: 'LCC Converter Station',
     Vsc_converter_station: 'VSC Converter Station',
