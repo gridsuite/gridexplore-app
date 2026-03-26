@@ -215,10 +215,7 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: byFilterDeletionFormSchema,
                         dtoToForm: byFilterDeletionDtoToForm,
-                        formToDto: (formData) => ({
-                            ...byFilterDeletionFormToDto(formData),
-                            type: ModificationType.BY_FILTER_DELETION,
-                        }),
+                        formToDto: byFilterDeletionFormToDto,
                         errorHeaderId: 'UnableToDeleteEquipment',
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
