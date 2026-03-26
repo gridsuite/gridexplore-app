@@ -13,7 +13,18 @@ import { useIntl } from 'react-intl';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
+    equipmentDeletionDtoToForm,
+    equipmentDeletionFormToDto,
+    equipmentDeletionFormSchema,
+    EquipmentDeletionForm,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    loadModificationDtoToForm,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -37,6 +48,10 @@ import {
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
+    voltageLevelModificationDtoToForm,
+    VoltageLevelModificationForm,
+    voltageLevelModificationFormSchema,
+    voltageLevelModificationFormToDto,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -57,7 +72,7 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm' | 'isModification'
 >;
 
 const schema = yup.object().shape({
@@ -118,6 +133,17 @@ export default function CompositeModificationDialog({
         () =>
             new Map<ModificationType, SpecificModificationDialogProps>([
                 [
+                    ModificationType.EQUIPMENT_DELETION,
+                    {
+                        formSchema: equipmentDeletionFormSchema,
+                        dtoToForm: equipmentDeletionDtoToForm,
+                        formToDto: equipmentDeletionFormToDto,
+                        errorHeaderId: 'UnableToDeleteEquipment',
+                        titleId: 'DeleteEquipment',
+                        ModificationForm: EquipmentDeletionForm,
+                    },
+                ],
+                [
                     ModificationType.SUBSTATION_CREATION,
                     {
                         formSchema: substationCreationFormSchema,
@@ -140,6 +166,29 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.LOAD_CREATION,
+                    {
+                        formSchema: loadCreationFormSchema,
+                        dtoToForm: loadCreationDtoToForm,
+                        formToDto: loadCreationFormToDto,
+                        errorHeaderId: 'LoadCreationError',
+                        titleId: 'CreateLoad',
+                        ModificationForm: LoadForm,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_MODIFICATION,
+                    {
+                        formSchema: loadModificationFormSchema,
+                        dtoToForm: loadModificationDtoToForm,
+                        formToDto: loadModificationFormToDto,
+                        errorHeaderId: 'LoadModificationError',
+                        titleId: 'ModifyLoad',
+                        ModificationForm: LoadForm,
+                        isModification: true,
+                    },
+                ],
+                [
                     ModificationType.VOLTAGE_LEVEL_CREATION,
                     {
                         formSchema: voltageLevelCreationFormSchema,
@@ -148,6 +197,17 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelCreationError',
                         titleId: 'CreateVoltageLevel',
                         ModificationForm: VoltageLevelCreationForm,
+                    },
+                ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_MODIFICATION,
+                    {
+                        formSchema: voltageLevelModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelModificationError',
+                        titleId: 'ModifyVoltageLevel',
+                        ModificationForm: VoltageLevelModificationForm,
                     },
                 ],
                 [
