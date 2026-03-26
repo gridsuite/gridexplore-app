@@ -72,7 +72,14 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm' | 'isModification'
+    | 'formSchema'
+    | 'dtoToForm'
+    | 'formToDto'
+    | 'errorHeaderId'
+    | 'titleId'
+    | 'ModificationForm'
+    | 'isModification'
+    | 'removeOptional'
 >;
 
 const schema = yup.object().shape({
@@ -141,6 +148,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'UnableToDeleteEquipment',
                         titleId: 'DeleteEquipment',
                         ModificationForm: EquipmentDeletionForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -152,6 +160,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'SubstationCreationError',
                         titleId: 'CreateSubstation',
                         ModificationForm: SubstationCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -163,6 +172,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'SubstationModificationError',
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
+                        removeOptional: true,
                     },
                 ],
                 [
@@ -174,6 +184,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'LoadCreationError',
                         titleId: 'CreateLoad',
                         ModificationForm: LoadForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -186,6 +197,7 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyLoad',
                         ModificationForm: LoadForm,
                         isModification: true,
+                        removeOptional: true,
                     },
                 ],
                 [
@@ -197,6 +209,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelCreationError',
                         titleId: 'CreateVoltageLevel',
                         ModificationForm: VoltageLevelCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -208,6 +221,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelModificationError',
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,
+                        removeOptional: true,
                     },
                 ],
                 [
