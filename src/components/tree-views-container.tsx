@@ -570,7 +570,9 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
-                        // I didn't find a quick and better solution than timeout to be able to scroll to nested directories. To be improved.
+                        // I didn't find a quick and better solution than timeout to be able to scroll to nested directories.
+                        // Even if the directoryHtmlElement below exists, the render seems not to be finished yet.
+                        // To be improved.
                         setTimeout(() => {
                             const directoryHtmlElement = document.getElementById(lastDirectory.elementUuid);
                             if (directoryHtmlElement) {
