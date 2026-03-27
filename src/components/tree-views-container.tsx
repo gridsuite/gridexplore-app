@@ -33,12 +33,12 @@ import {
 import DirectoryTreeView from './directory-tree-view';
 import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
+import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
 import { useDirectoryPathLoader } from '../hooks/use-directory-path-loader';
-import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 
 const initialMousePosition = {
     mouseX: null,
@@ -570,6 +570,17 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
+                        // I didn't find a quick and better solution than timeout to be able to scroll to nested directories. To be improved.
+                        setTimeout(() => {
+                            const directoryHtmlElement = document.getElementById(lastDirectory.elementUuid);
+                            if (directoryHtmlElement) {
+                                directoryHtmlElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'center',
+                                });
+                            }
+                        }, 500);
                     }
                 }
 
