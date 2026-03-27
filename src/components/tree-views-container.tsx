@@ -577,7 +577,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                                 directoryHtmlElement.scrollIntoView({
                                     behavior: 'smooth',
                                     block: 'center',
-                                    inline: 'center',
+                                    inline: 'nearest',
                                 });
                             }
                         }, 500);
