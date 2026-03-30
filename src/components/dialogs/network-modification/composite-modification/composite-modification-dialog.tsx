@@ -187,7 +187,7 @@ export default function CompositeModificationDialog({
                     ModificationType.LOAD_MODIFICATION,
                     {
                         formSchema: loadModificationFormSchema,
-                        dtoToForm: loadModificationDtoToForm,
+                        dtoToForm: (loadDto) => loadModificationDtoToForm(loadDto, false),
                         formToDto: loadModificationFormToDto,
                         errorHeaderId: 'LoadModificationError',
                         titleId: 'ModifyLoad',
