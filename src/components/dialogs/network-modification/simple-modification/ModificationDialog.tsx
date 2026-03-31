@@ -30,6 +30,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
     errorHeaderId: string;
     isModification?: boolean;
+    removeOptional?: boolean;
 }
 
 interface WithId {
@@ -47,6 +48,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     formToDto,
     errorHeaderId,
     isModification = false,
+    removeOptional = true,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -93,7 +95,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             formContext={{
                 ...formMethods,
                 validationSchema: formSchema,
-                removeOptional: true,
+                removeOptional,
             }}
             onClose={onClose}
             onSave={onSubmit}
