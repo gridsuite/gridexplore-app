@@ -233,6 +233,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'UnableToDeleteEquipment',
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
+                        removeOptional: false,
                     },
                 ],
             ]),
