@@ -13,11 +13,26 @@ import { useIntl } from 'react-intl';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
+    equipmentDeletionDtoToForm,
+    equipmentDeletionFormToDto,
+    equipmentDeletionFormSchema,
+    EquipmentDeletionForm,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    loadModificationDtoToForm,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    byFilterDeletionDtoToForm,
+    byFilterDeletionFormSchema,
+    byFilterDeletionFormToDto,
+    ByFilterDeletionForm,
     substationCreationDtoToForm,
     SubstationCreationForm,
     substationCreationFormSchema,
@@ -33,6 +48,10 @@ import {
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
+    voltageLevelModificationDtoToForm,
+    VoltageLevelModificationForm,
+    voltageLevelModificationFormSchema,
+    voltageLevelModificationFormToDto,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,7 +72,14 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    | 'formSchema'
+    | 'dtoToForm'
+    | 'formToDto'
+    | 'errorHeaderId'
+    | 'titleId'
+    | 'ModificationForm'
+    | 'isModification'
+    | 'removeOptional'
 >;
 
 const schema = yup.object().shape({
@@ -114,6 +140,18 @@ export default function CompositeModificationDialog({
         () =>
             new Map<ModificationType, SpecificModificationDialogProps>([
                 [
+                    ModificationType.EQUIPMENT_DELETION,
+                    {
+                        formSchema: equipmentDeletionFormSchema,
+                        dtoToForm: equipmentDeletionDtoToForm,
+                        formToDto: equipmentDeletionFormToDto,
+                        errorHeaderId: 'UnableToDeleteEquipment',
+                        titleId: 'DeleteEquipment',
+                        ModificationForm: EquipmentDeletionForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
                     ModificationType.SUBSTATION_CREATION,
                     {
                         formSchema: substationCreationFormSchema,
@@ -122,6 +160,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'SubstationCreationError',
                         titleId: 'CreateSubstation',
                         ModificationForm: SubstationCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -133,6 +172,32 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'SubstationModificationError',
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
+                        removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_CREATION,
+                    {
+                        formSchema: loadCreationFormSchema,
+                        dtoToForm: loadCreationDtoToForm,
+                        formToDto: loadCreationFormToDto,
+                        errorHeaderId: 'LoadCreationError',
+                        titleId: 'CreateLoad',
+                        ModificationForm: LoadForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_MODIFICATION,
+                    {
+                        formSchema: loadModificationFormSchema,
+                        dtoToForm: (loadDto) => loadModificationDtoToForm(loadDto, false),
+                        formToDto: loadModificationFormToDto,
+                        errorHeaderId: 'LoadModificationError',
+                        titleId: 'ModifyLoad',
+                        ModificationForm: LoadForm,
+                        isModification: true,
+                        removeOptional: true,
                     },
                 ],
                 [
@@ -144,6 +209,31 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelCreationError',
                         titleId: 'CreateVoltageLevel',
                         ModificationForm: VoltageLevelCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_MODIFICATION,
+                    {
+                        formSchema: voltageLevelModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelModificationError',
+                        titleId: 'ModifyVoltageLevel',
+                        ModificationForm: VoltageLevelModificationForm,
+                        removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.BY_FILTER_DELETION,
+                    {
+                        formSchema: byFilterDeletionFormSchema,
+                        dtoToForm: byFilterDeletionDtoToForm,
+                        formToDto: byFilterDeletionFormToDto,
+                        errorHeaderId: 'UnableToDeleteEquipment',
+                        titleId: 'DeleteEquipmentByFilter',
+                        ModificationForm: ByFilterDeletionForm,
+                        removeOptional: false,
                     },
                 ],
             ]),

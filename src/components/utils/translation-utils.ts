@@ -17,6 +17,7 @@ export const getElementTypeTranslation = (
     switch (type) {
         case ElementType.FILTER:
         case ElementType.CONTINGENCY_LIST:
+        case ElementType.PROCESS_CONFIG:
             translatedType = intl.formatMessage({
                 id: subtype ? `${subtype}_${type}` : type,
             });
