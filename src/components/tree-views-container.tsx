@@ -33,12 +33,12 @@ import {
 import DirectoryTreeView from './directory-tree-view';
 import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
+import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
 import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
 import { useDirectoryPathLoader } from '../hooks/use-directory-path-loader';
-import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 
 const initialMousePosition = {
     mouseX: null,
@@ -570,6 +570,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
+                        // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
+                        // Using a delay with timeout is not clean but is the only short and working solution we found.
+                        setTimeout(() => {
+                            const directoryHtmlElement = document.getElementById(lastDirectory.elementUuid);
+                            if (directoryHtmlElement) {
+                                directoryHtmlElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest',
+                                });
+                            }
+                        }, 500);
                     }
                 }
 
