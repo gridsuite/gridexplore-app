@@ -237,7 +237,6 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'ModifyByAssignment',
                         titleId: 'ModifyByAssignment',
                         ModificationForm: ModificationByAssignmentForm,
-                        isModification: true,
                         removeOptional: false,
                     },
                 ],
