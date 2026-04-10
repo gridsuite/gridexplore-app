@@ -80,6 +80,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
     return (
         <TreeItem
             ref={ref}
+            id={node.elementUuid}
             itemId={node.elementUuid}
             onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
             onClick={handleSelectionClick}
