@@ -382,6 +382,18 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
+    const allowsRenameOrMove = useCallback(() => {
+        return isSingleElement && directoryWritable;
+    }, [directoryWritable, isSingleElement]);
+
+    const allowsCopy = useCallback(() => {
+        return directoryReadable && isSingleElement;
+    }, [directoryReadable, isSingleElement]);
+
+    const allowsDelete = useCallback(() => {
+        return isSingleElement && directoryWritable;
+    }, [directoryWritable, isSingleElement]);
+
     useEffect(() => {
         if (selectedDirectory !== null) {
             Promise.all([
@@ -399,7 +411,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here in order
         const menuItems = [];
 
-        if (isSingleElement && directoryWritable) {
+        if (allowsRenameOrMove()) {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
@@ -438,7 +450,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (directoryReadable && isSingleElement) {
+        if (allowsCopy()) {
             menuItems.push(
                 {
                     messageDescriptorId: 'copy',
@@ -463,7 +475,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
-        if (isSingleElement && directoryWritable) {
+        if (allowsDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
@@ -525,11 +537,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return menuItems;
     }, [
         selectedElements,
-        directoryWritable,
+        allowsRenameOrMove,
         allowsCreateNewStudyFromCase,
         allowsDuplicate,
-        directoryReadable,
-        isSingleElement,
+        allowsCopy,
+        allowsDelete,
         allowsDownload,
         isDeveloperMode,
         allowsExportCase,
