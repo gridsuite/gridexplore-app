@@ -173,6 +173,7 @@ export const styles = {
         width: '18px',
     },
     treeItemLabelRoot: (theme) => ({
+        position: 'relative',
         display: 'flex',
         padding: theme.spacing(0.5, 0),
     }),

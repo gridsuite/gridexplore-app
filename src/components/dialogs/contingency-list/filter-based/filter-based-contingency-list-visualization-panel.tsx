@@ -33,6 +33,7 @@ import {
     IdentifiableAttributes,
 } from '../../../../utils/contingency-list.type';
 import { getIdentifiablesFromFilters } from '../../../../utils/rest-api';
+import { ContingencyListType } from '../../../../utils/elementType';
 
 const separator = '/';
 const SEPARATOR_TYPE = 'SEPARATOR';
@@ -107,6 +108,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                     ContingencyFieldConstants.SUB_EQUIPMENT_TYPES_BY_FILTER
                 );
                 const filtersWithSubEquipments = {
+                    type: ContingencyListType.FILTERS.id,
                     filters: currentFilters.map((value) => ({ id: value.id })),
                     selectedEquipmentTypesByFilter: currentSubEquipments.map((value) => ({
                         filterId: value.filterId,

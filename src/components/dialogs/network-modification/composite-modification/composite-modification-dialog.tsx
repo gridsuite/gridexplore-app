@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -13,11 +13,30 @@ import { useIntl } from 'react-intl';
 import { List, ListItem, ListItemButton } from '@mui/material';
 import {
     CustomMuiDialog,
+    equipmentDeletionDtoToForm,
+    equipmentDeletionFormToDto,
+    equipmentDeletionFormSchema,
+    EquipmentDeletionForm,
     FieldConstants,
+    loadCreationDtoToForm,
+    loadCreationFormSchema,
+    loadCreationFormToDto,
+    loadModificationDtoToForm,
+    loadModificationFormSchema,
+    loadModificationFormToDto,
+    LoadForm,
     ModificationType,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    byFilterDeletionDtoToForm,
+    byFilterDeletionFormSchema,
+    byFilterDeletionFormToDto,
+    ByFilterDeletionForm,
+    ModificationByAssignmentForm,
+    modificationByAssignmentDtoToForm,
+    modificationByAssignmentFormSchema,
+    modificationByAssignmentFormToDto,
     substationCreationDtoToForm,
     SubstationCreationForm,
     substationCreationFormSchema,
@@ -29,6 +48,14 @@ import {
     unscrollableDialogStyles,
     useModificationLabelComputer,
     useSnackMessage,
+    voltageLevelCreationDtoToForm,
+    VoltageLevelCreationForm,
+    voltageLevelCreationFormSchema,
+    voltageLevelCreationFormToDto,
+    voltageLevelModificationDtoToForm,
+    VoltageLevelModificationForm,
+    voltageLevelModificationFormSchema,
+    voltageLevelModificationFormToDto,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -49,33 +76,15 @@ const styles = {
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
-    'formSchema' | 'dtoToForm' | 'formToDto' | 'errorHeaderId' | 'titleId' | 'ModificationForm'
+    | 'formSchema'
+    | 'dtoToForm'
+    | 'formToDto'
+    | 'errorHeaderId'
+    | 'titleId'
+    | 'ModificationForm'
+    | 'isModification'
+    | 'removeOptional'
 >;
-
-const EDITABLE_MODIFICATION_DIALOGS = new Map<ModificationType, SpecificModificationDialogProps>([
-    [
-        ModificationType.SUBSTATION_CREATION,
-        {
-            formSchema: substationCreationFormSchema,
-            dtoToForm: substationCreationDtoToForm,
-            formToDto: substationCreationFormToDto,
-            errorHeaderId: 'SubstationCreationError',
-            titleId: 'CreateSubstation',
-            ModificationForm: SubstationCreationForm,
-        },
-    ],
-    [
-        ModificationType.SUBSTATION_MODIFICATION,
-        {
-            formSchema: substationModificationFormSchema,
-            dtoToForm: (substationDto) => substationModificationDtoToForm(substationDto, false),
-            formToDto: substationModificationFormToDto,
-            errorHeaderId: 'SubstationModificationError',
-            titleId: 'ModifySubstation',
-            ModificationForm: SubstationModificationForm,
-        },
-    ],
-]);
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
@@ -131,6 +140,122 @@ export default function CompositeModificationDialog({
     const nameError: any = errors[FieldConstants.NAME];
     const isValidating = errors.root?.isValidating;
 
+    const editableModificationDialogs = useMemo(
+        () =>
+            new Map<ModificationType, SpecificModificationDialogProps>([
+                [
+                    ModificationType.EQUIPMENT_DELETION,
+                    {
+                        formSchema: equipmentDeletionFormSchema,
+                        dtoToForm: equipmentDeletionDtoToForm,
+                        formToDto: equipmentDeletionFormToDto,
+                        errorHeaderId: 'UnableToDeleteEquipment',
+                        titleId: 'DeleteEquipment',
+                        ModificationForm: EquipmentDeletionForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.SUBSTATION_CREATION,
+                    {
+                        formSchema: substationCreationFormSchema,
+                        dtoToForm: substationCreationDtoToForm,
+                        formToDto: substationCreationFormToDto,
+                        errorHeaderId: 'SubstationCreationError',
+                        titleId: 'CreateSubstation',
+                        ModificationForm: SubstationCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.SUBSTATION_MODIFICATION,
+                    {
+                        formSchema: substationModificationFormSchema,
+                        dtoToForm: (substationDto) => substationModificationDtoToForm(substationDto, false),
+                        formToDto: substationModificationFormToDto,
+                        errorHeaderId: 'SubstationModificationError',
+                        titleId: 'ModifySubstation',
+                        ModificationForm: SubstationModificationForm,
+                        removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_CREATION,
+                    {
+                        formSchema: loadCreationFormSchema,
+                        dtoToForm: loadCreationDtoToForm,
+                        formToDto: loadCreationFormToDto,
+                        errorHeaderId: 'LoadCreationError',
+                        titleId: 'CreateLoad',
+                        ModificationForm: LoadForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.LOAD_MODIFICATION,
+                    {
+                        formSchema: loadModificationFormSchema,
+                        dtoToForm: (loadDto) => loadModificationDtoToForm(loadDto, false),
+                        formToDto: loadModificationFormToDto,
+                        errorHeaderId: 'LoadModificationError',
+                        titleId: 'ModifyLoad',
+                        ModificationForm: LoadForm,
+                        isModification: true,
+                        removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_CREATION,
+                    {
+                        formSchema: voltageLevelCreationFormSchema,
+                        dtoToForm: (dto) => voltageLevelCreationDtoToForm(dto, intl, false),
+                        formToDto: voltageLevelCreationFormToDto,
+                        errorHeaderId: 'VoltageLevelCreationError',
+                        titleId: 'CreateVoltageLevel',
+                        ModificationForm: VoltageLevelCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_MODIFICATION,
+                    {
+                        formSchema: voltageLevelModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelModificationError',
+                        titleId: 'ModifyVoltageLevel',
+                        ModificationForm: VoltageLevelModificationForm,
+                        removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.MODIFICATION_BY_ASSIGNMENT,
+                    {
+                        formSchema: modificationByAssignmentFormSchema,
+                        dtoToForm: modificationByAssignmentDtoToForm,
+                        formToDto: modificationByAssignmentFormToDto,
+                        errorHeaderId: 'ModifyByAssignment',
+                        titleId: 'ModifyByAssignment',
+                        ModificationForm: ModificationByAssignmentForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.BY_FILTER_DELETION,
+                    {
+                        formSchema: byFilterDeletionFormSchema,
+                        dtoToForm: byFilterDeletionDtoToForm,
+                        formToDto: byFilterDeletionFormToDto,
+                        errorHeaderId: 'UnableToDeleteEquipment',
+                        titleId: 'DeleteEquipmentByFilter',
+                        ModificationForm: ByFilterDeletionForm,
+                        removeOptional: false,
+                    },
+                ],
+            ]),
+        [intl]
+    );
+
     const { computeLabel } = useModificationLabelComputer();
     const getModificationLabel = (modif: NetworkModificationMetadata) => {
         if (!modif) {
@@ -143,9 +268,12 @@ export default function CompositeModificationDialog({
         return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
     };
 
-    const isModificationEditable = useCallback((modificationType: ModificationType) => {
-        return EDITABLE_MODIFICATION_DIALOGS.has(modificationType);
-    }, []);
+    const isModificationEditable = useCallback(
+        (modificationType: ModificationType) => {
+            return editableModificationDialogs.has(modificationType);
+        },
+        [editableModificationDialogs]
+    );
 
     const editModification = useCallback(
         async (modification: NetworkModificationMetadata) => {
@@ -246,7 +374,7 @@ export default function CompositeModificationDialog({
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
-                    {...EDITABLE_MODIFICATION_DIALOGS.get(selectedModification.type)!}
+                    {...editableModificationDialogs.get(selectedModification.type)!}
                 />
             )}
         </>

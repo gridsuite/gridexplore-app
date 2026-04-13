@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect } from 'react';
+import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import { PopoverReference } from '@mui/material';
 import { TreeItem, TreeItemSlotProps } from '@mui/x-tree-view';
@@ -24,11 +24,12 @@ export type CustomTreeItemProps = {
 
 const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
     const { node, onExpand, onSelect, onContextMenu } = props;
-
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
+
     const isMenuOpen = activeDirectory === node.elementUuid;
     const { value: hover, setTrue: enableHover, setFalse: disableHover, setValue: setHover } = useStateBoolean(false);
-
+    const [isLinkCopied, setIsLinkCopied] = useState<boolean>(false);
     const hasChildren = doesNodeHasChildren(node);
     const hasSubdirectories = node.subdirectoriesCount > 0;
 
@@ -56,6 +57,18 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
         [node.elementUuid, onContextMenu]
     );
 
+    const handleCopyLinkIconClick = useCallback<MouseEventHandler>(
+        (event) => {
+            event.stopPropagation();
+            if (!node.elementUuid || !selectedDirectory?.elementUuid) return;
+            const url = new URL(`${node.elementUuid}`, globalThis.location.href);
+            navigator.clipboard.writeText(url.toString()).then();
+            setIsLinkCopied(true);
+            setTimeout(() => setIsLinkCopied(false), 2000);
+        },
+        [selectedDirectory, node.elementUuid]
+    );
+
     // We don't get a onMouseLeave event when using or leaving the contextual menu by
     // clicking outside the concerned div, so we must update the hover state manually.
     useEffect(() => {
@@ -67,6 +80,7 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
     return (
         <TreeItem
             ref={ref}
+            id={node.elementUuid}
             itemId={node.elementUuid}
             onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
             onClick={handleSelectionClick}
@@ -76,7 +90,9 @@ const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemP
                     node={node}
                     hover={hover}
                     isMenuOpen={isMenuOpen}
+                    isLinkCopied={isLinkCopied}
                     onAddIconClick={handleAddIconClick}
+                    onCopyLinkIconClick={handleCopyLinkIconClick}
                 />
             }
             slotProps={

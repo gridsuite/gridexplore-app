@@ -19,6 +19,7 @@ import {
     FileCopyTwoTone as FileCopyTwoToneIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
+    LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
@@ -79,7 +80,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -101,6 +102,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         setHideMenu(false);
         setDeleteError('');
     }, [onClose, setOpenDialog]);
+
+    const copyLinkItem = useCallback(() => {
+        if (activeElement.elementUuid) {
+            const url = new URL(`${activeElement.elementUuid}`, globalThis.location.href);
+            navigator.clipboard.writeText(url.toString()).then();
+            snackInfo({
+                messageTxt: intl.formatMessage({ id: 'linkCopied' }),
+            });
+            handleCloseDialog();
+        }
+    }, [activeElement, handleCloseDialog, intl, snackInfo]);
 
     const copyElement = useCallback(
         (
@@ -332,20 +344,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [selectedElements, isSingleElement, directoryWritable]);
 
     const allowsCreateNewStudyFromCase = useCallback(
-        () =>
-            selectedElements.length === 1 &&
-            selectedElements[0].type === ElementType.CASE &&
-            selectedElements[0].hasMetadata,
-        [selectedElements]
+        () => isSingleElement && selectedElements[0].type === ElementType.CASE && selectedElements[0].hasMetadata,
+        [isSingleElement, selectedElements]
     );
 
     const allowsConvertFilterIntoExplicitNaming = useCallback(
         () =>
-            selectedElements.length === 1 &&
+            isSingleElement &&
             selectedElements[0].type === ElementType.FILTER &&
             selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
             directoryWritable,
-        [selectedElements, directoryWritable]
+        [isSingleElement, selectedElements, directoryWritable]
     );
 
     const allowsDownload = useCallback(() => {
@@ -387,10 +396,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             return undefined;
         }
 
-        // build menuItems here
+        // build menuItems here in order
         const menuItems = [];
 
-        if (selectedElements.length === 1 && directoryWritable) {
+        if (isSingleElement && directoryWritable) {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
@@ -430,15 +439,31 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         if (directoryReadable && isSingleElement) {
-            menuItems.push({
-                messageDescriptorId: 'copy',
-                callback: copyItem,
-                icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-                disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
-            });
+            menuItems.push(
+                {
+                    messageDescriptorId: 'copy',
+                    callback: copyItem,
+                    icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
+                    disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
+                },
+                { isDivider: true },
+                {
+                    messageDescriptorId: 'copyLink',
+                    callback: copyLinkItem,
+                    icon: (
+                        <LinkRoundedIcon
+                            data-testid="CopyLinkRoundedIcon"
+                            sx={{
+                                transform: 'rotate(-50deg)',
+                            }}
+                        />
+                    ),
+                },
+                { isDivider: true }
+            );
         }
 
-        if (selectedElements.length === 1 && directoryWritable) {
+        if (isSingleElement && directoryWritable) {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
@@ -516,6 +541,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         duplicateItem,
         noCreationInProgress,
         copyItem,
+        copyLinkItem,
         downloadElements,
         handleCloseDialog,
     ]);
