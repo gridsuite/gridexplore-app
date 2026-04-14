@@ -53,12 +53,13 @@ import {
     voltageLevelCreationFormToDto,
     NetworkModificationEditorNameHeader,
     NameCell,
-    networkTableStyles,
     voltageLevelModificationDtoToForm,
     VoltageLevelModificationForm,
     voltageLevelModificationFormSchema,
     voltageLevelModificationFormToDto,
     yupConfig as yup,
+    ComposedModificationMetadata,
+    networkModificationTableStyles,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
@@ -105,12 +106,13 @@ interface CompositeModificationDialogProps {
     description: string;
     broadcastChannel: BroadcastChannel;
 }
+
 const createBaseColumns = (
     isRowDragDisabled: boolean,
     modificationsCount: number,
     nameHeaderProps: NameHeaderProps,
-    setModifications: React.Dispatch<SetStateAction<NetworkModificationMetadata[]>>
-): ColumnDef<NetworkModificationMetadata>[] => [
+    _setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+): ColumnDef<ComposedModificationMetadata>[] => [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
         header: () => (
@@ -118,7 +120,7 @@ const createBaseColumns = (
         ),
         cell: ({ row }) => <NameCell row={row} />,
         meta: {
-            cellStyle: networkTableStyles.columnCell.modificationName,
+            cellStyle: networkModificationTableStyles.columnCell.modificationName,
         },
         minSize: 160,
     },
@@ -363,6 +365,7 @@ export default function CompositeModificationDialog({
                             createAllColumns={createBaseColumns}
                             highlightedModificationUuid={null}
                             setModifications={setModifications}
+                            studyUuid={null}
                         />
                     </Box>
                 )}
