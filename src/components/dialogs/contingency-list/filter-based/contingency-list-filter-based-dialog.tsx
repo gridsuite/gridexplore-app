@@ -107,7 +107,6 @@ export default function FilterBasedContingencyListDialog({
                         name ?? '',
                         description ?? ''
                     );
-                    console.log('FORM DATA', formData);
                     reset({ ...formData });
                 })
                 .catch((error) => {

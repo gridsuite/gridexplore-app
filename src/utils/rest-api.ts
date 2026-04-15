@@ -547,17 +547,12 @@ export function createFilterBasedContingency(
  * @returns {Promise<Response>}
  */
 function enrichContingencyList(contingencyList: any) {
-    console.log(contingencyList);
     const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id)) as Set<string>;
-    console.log('FILTER IDS', filterIds);
-    console.log('FILTER IDS', filterIds.size);
     return filterIds.size > 0
         ? fetchElementNames(filterIds).then((elementNames) => {
-              console.log('ELEMENT NAMES', elementNames);
               return {
                   ...contingencyList,
                   filters: contingencyList.filters?.map((filter: FilterAttributes) => {
-                      console.log(filter.id, elementNames[filter.id]);
                       return {
                           ...filter,
                           name: elementNames[filter.id],
@@ -570,16 +565,11 @@ function enrichContingencyList(contingencyList: any) {
 
 export function getContingencyList(type: string, id: string) {
     const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
-    console.log('récupération des contingency lists depuis actions GET');
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
     });
 
-    return contingencyListPromise.then((contingencyList) => {
-        const resp = enrichContingencyList(contingencyList);
-        console.log('CL ENRICHED:', resp);
-        return resp;
-    });
+    return contingencyListPromise.then((contingencyList) => enrichContingencyList(contingencyList));
 }
 
 export function getIdentifiablesFromFilters(
