@@ -364,7 +364,6 @@ export default function CompositeModificationDialog({
                             pendingState={false}
                             createAllColumns={createBaseColumns}
                             highlightedModificationUuid={null}
-                            setModifications={setModifications}
                             studyUuid={null}
                         />
                     </Box>
