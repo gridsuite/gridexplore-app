@@ -10,6 +10,7 @@ import {
     backendFetchJson,
     backendFetchText,
     ElementType,
+    fetchElementNames,
     fetchEnv,
     getRequestParamFromList,
     getUserToken,
@@ -29,7 +30,12 @@ import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
-import { FilterBasedContingencyList, FilteredIdentifiables, FiltersWithEquipmentTypes } from './contingency-list.type';
+import {
+    FilterAttributes,
+    FilterBasedContingencyList,
+    FilteredIdentifiables,
+    FiltersWithEquipmentTypes,
+} from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -540,11 +546,39 @@ export function createFilterBasedContingency(
  * Get contingency list by type and id
  * @returns {Promise<Response>}
  */
+function enrichContingencyList(contingencyList: any) {
+    console.log(contingencyList);
+    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id)) as Set<string>;
+    console.log('FILTER IDS', filterIds);
+    console.log('FILTER IDS', filterIds.size);
+    return filterIds.size > 0
+        ? fetchElementNames(filterIds).then((elementNames) => {
+              console.log('ELEMENT NAMES', elementNames);
+              return {
+                  ...contingencyList,
+                  filters: contingencyList.filters?.map((filter: FilterAttributes) => {
+                      console.log(filter.id, elementNames[filter.id]);
+                      return {
+                          ...filter,
+                          name: elementNames[filter.id],
+                      };
+                  }),
+              };
+          })
+        : Promise.resolve(contingencyList);
+}
+
 export function getContingencyList(type: string, id: string) {
     const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
-
-    return backendFetchJson(url, {
+    console.log('récupération des contingency lists depuis actions GET');
+    const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
+    });
+
+    return contingencyListPromise.then((contingencyList) => {
+        const resp = enrichContingencyList(contingencyList);
+        console.log('CL ENRICHED:', resp);
+        return resp;
     });
 }
 

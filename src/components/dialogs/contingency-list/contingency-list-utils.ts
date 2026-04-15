@@ -65,7 +65,7 @@ export const getFilterBasedFormDataFromFetchedElement = (
     [FieldConstants.FILTERS]: response.filters.map((filter: FilterAttributes) => {
         return {
             id: filter.id,
-            name: filter.name ?? '',
+            name: filter.name ?? null,
             specificMetadata: { equipmentType: filter.equipmentType ?? '' },
         };
     }),
