@@ -24,13 +24,13 @@ import {
     isStudyMetadata,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
-    ShortCircuitParametersEditionDialog,
-    VoltageInitParametersEditionDialog,
-    useSnackMessage,
-    SecurityAnalysisParametersDialog,
-    SensitivityAnalysisParametersDialog,
     PARAM_LANGUAGE,
     PccMinParametersEditionDialog,
+    SecurityAnalysisParametersDialog,
+    SensitivityAnalysisParametersDialog,
+    ShortCircuitParametersEditionDialog,
+    useSnackMessage,
+    VoltageInitParametersEditionDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';

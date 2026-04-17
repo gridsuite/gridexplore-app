@@ -20,6 +20,7 @@ const BackendLocaleEn = {
     FILTERS_CONTINGENCY_LIST: 'Contingency list (Filter based)',
     IDENTIFIER_LIST_FILTER: 'Filter (Explicit naming)',
     SECURITY_ANALYSIS_PROCESS_CONFIG: 'Process configuration (Security analysis)',
+    LOADFLOW_PROCESS_CONFIG: 'Process configuration (Loadflow)',
 
     // spreadsheet config metadata
     Load: 'Load',
