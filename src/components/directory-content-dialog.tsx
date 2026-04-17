@@ -381,7 +381,6 @@ function DirectoryContentDialog(
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         isDeveloperMode={isDeveloperMode}
-                        isRootNode={false}
                     />
                 );
             }
@@ -397,7 +396,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isRootNode={false}
                     />
                 );
             }
@@ -413,7 +411,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isRootNode={false}
                     />
                 );
             }
@@ -429,7 +426,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isRootNode={false}
                     />
                 );
             }
@@ -445,7 +441,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isRootNode={false}
                     />
                 );
             }
@@ -462,7 +457,6 @@ function DirectoryContentDialog(
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         isDeveloperMode={isDeveloperMode}
-                        isRootNode={false}
                     />
                 );
             }
@@ -478,7 +472,6 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
-                        isRootNode={false}
                     />
                 );
             }
