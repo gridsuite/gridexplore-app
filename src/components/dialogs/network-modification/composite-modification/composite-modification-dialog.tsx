@@ -298,10 +298,7 @@ export default function CompositeModificationDialog({
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'retrieveCompositeModificationError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
             })
             .finally(() => setIsFetching(false));
     }, [compositeModificationId, name, snackError]);

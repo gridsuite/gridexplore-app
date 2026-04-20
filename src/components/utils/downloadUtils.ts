@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
@@ -105,10 +105,9 @@ export function useDownloadUtils() {
 
     const handleDownloadError = useCallback(
         (element: ElementAttributes, errorMsg: string) => {
-            snackError({
+            snackWithFallback(snackError, errorMsg, {
                 headerId: 'download.error',
                 headerValues: { caseName: element.elementName },
-                messageTxt: errorMsg,
             });
         },
         [snackError]

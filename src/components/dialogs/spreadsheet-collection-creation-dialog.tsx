@@ -13,6 +13,7 @@ import {
     ElementType,
     type IElementCreationDialog,
     type IElementUpdateDialog,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import {
@@ -54,10 +55,7 @@ function CreateSpreadsheetCollectionDialog({
                 })
                 .catch((error) => {
                     console.error(error);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'createCollectionError',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'createCollectionError' });
                 });
         },
         [snackError, snackInfo, spreadsheetConfigIds]
@@ -82,8 +80,7 @@ function CreateSpreadsheetCollectionDialog({
                 })
                 .catch((error) => {
                     console.error(error);
-                    snackError({
-                        messageTxt: error.message,
+                    snackWithFallback(snackError, error, {
                         headerId: 'updateCollectionError',
                         headerValues: {
                             item: element.elementFullPath,
