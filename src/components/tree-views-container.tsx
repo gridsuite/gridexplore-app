@@ -11,6 +11,7 @@ import {
     type ElementAttributes,
     ElementType,
     fetchDirectoryContent,
+    fetchDirectoryElementPath,
     fetchRootFolders,
     type MuiStyles,
     NotificationsUrlKeys,
@@ -24,6 +25,7 @@ import {
     setActiveDirectory,
     setCurrentChildren,
     setCurrentPath,
+    setSearchedElement,
     setSelectedDirectory,
     setTreeData,
     setUploadingElements,
@@ -31,10 +33,12 @@ import {
 import DirectoryTreeView from './directory-tree-view';
 import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
+import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
-import { AppState, IDirectory, ITreeData, UploadingElement } from '../redux/types';
+import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement } from '../redux/types';
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
+import { useDirectoryPathLoader } from '../hooks/use-directory-path-loader';
 
 const initialMousePosition = {
     mouseX: null,
@@ -81,7 +85,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
     );
 }
 
-export default function TreeViewsContainer() {
+export default function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
     const dispatch = useDispatch();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
@@ -549,6 +553,61 @@ export default function TreeViewsContainer() {
             )),
         [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
     );
+
+    const { loadPath, handleDispatchDirectory } = useDirectoryPathLoader();
+
+    useEffect(() => {
+        if (!sourceItemUuid || !treeData.initialized) return;
+        (async () => {
+            try {
+                const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
+                if (!path?.length) return;
+                const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
+                await loadPath(directories.map((dir) => dir.elementUuid));
+
+                const lastDirectory = directories.at(LAST_ELEMENT_INDEX);
+                if (lastDirectory) {
+                    const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
+                    if (directoryInMap) {
+                        dispatch(setSelectedDirectory(directoryInMap));
+                        // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
+                        // Using a delay with timeout is not clean but is the only short and working solution we found.
+                        setTimeout(() => {
+                            const directoryHtmlElement = document.getElementById(lastDirectory.elementUuid);
+                            if (directoryHtmlElement) {
+                                directoryHtmlElement.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center',
+                                    inline: 'nearest',
+                                });
+                            }
+                        }, 500);
+                    }
+                }
+
+                const lastElement = path.at(LAST_ELEMENT_INDEX);
+                if (lastElement && lastElement?.type !== ElementType.DIRECTORY) {
+                    const elementToHighlight: ElementAttributesES = {
+                        id: lastElement.elementUuid,
+                        name: lastElement.elementName,
+                        parentId: lastElement.parentUuid as UUID,
+                        type: lastElement.type,
+                        owner: lastElement.owner,
+                        subdirectoriesCount: lastElement.subdirectoriesCount,
+                        lastModificationDate: lastElement.lastModificationDate,
+                        pathName: path.map((p) => p.elementName),
+                        pathUuid: path.map((p) => p.elementUuid),
+                    };
+                    dispatch(setSearchedElement(elementToHighlight));
+                }
+            } catch (error: any) {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'pathRetrievingError',
+                });
+            }
+        })();
+    }, [sourceItemUuid, treeData.initialized, loadPath, handleDispatchDirectory, dispatch, snackError]);
 
     return (
         <>

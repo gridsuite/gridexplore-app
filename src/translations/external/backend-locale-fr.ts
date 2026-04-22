@@ -19,6 +19,8 @@ const BackendLocaleFr = {
     IDENTIFIERS_CONTINGENCY_LIST: "Liste d'aléas (Par nommage)",
     FILTERS_CONTINGENCY_LIST: "Liste d'aléas (Par filtres)",
     IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
+    SECURITY_ANALYSIS_PROCESS_CONFIG: 'Configuration de chaînes (Analyse de sécurité)',
+    LOADFLOW_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de répartition)',
 
     // spreadsheet config metadata
     Load: 'Consommation',

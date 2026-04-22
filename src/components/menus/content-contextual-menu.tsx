@@ -19,6 +19,7 @@ import {
     FileCopyTwoTone as FileCopyTwoToneIcon,
     FileDownload,
     InsertDriveFile as InsertDriveFileIcon,
+    LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
@@ -29,6 +30,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PermissionType,
+    snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -52,14 +54,6 @@ import { useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
-import {
-    generateRenameErrorMessages,
-    handleDeleteError,
-    handleDuplicateError,
-    handleGenericTxtError,
-    handleMaxElementsExceededError,
-    handleMoveError,
-} from '../utils/rest-errors';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
@@ -86,7 +80,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const { snackError } = useSnackMessage();
+    const { snackError, snackInfo } = useSnackMessage();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
@@ -108,6 +102,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         setHideMenu(false);
         setDeleteError('');
     }, [onClose, setOpenDialog]);
+
+    const copyLinkItem = useCallback(() => {
+        if (activeElement.elementUuid) {
+            const url = new URL(`${activeElement.elementUuid}`, globalThis.location.href);
+            navigator.clipboard.writeText(url.toString()).then();
+            snackInfo({
+                messageTxt: intl.formatMessage({ id: 'linkCopied' }),
+            });
+            handleCloseDialog();
+        }
+    }, [activeElement, handleCloseDialog, intl, snackInfo]);
 
     const copyElement = useCallback(
         (
@@ -155,9 +160,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.PCC_MIN_PARAMETERS:
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
+                case ElementType.WORKSPACE:
                     console.info(
                         `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
@@ -184,10 +191,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
 
                 default:
-                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    snackError({ headerId: 'unsupportedItem' });
             }
         }
-    }, [activeElement, copyElement, intl, selectedDirectory?.elementUuid, snackError]);
+    }, [activeElement, copyElement, selectedDirectory?.elementUuid, snackError]);
+
+    const snackDuplicateError = useCallback(
+        (error: unknown) =>
+            snackWithFallback(snackError, error, {
+                headerId: 'duplicateElementFailure',
+                headerValues: {
+                    itemName: activeElement.elementName,
+                },
+            }),
+        [activeElement.elementName, snackError]
+    );
 
     const duplicateItem = useCallback(() => {
         if (activeElement) {
@@ -197,12 +215,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.FILTER:
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
-                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch((error) => {
-                        if (handleMaxElementsExceededError(error, snackError)) {
-                            return;
-                        }
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                case ElementType.WORKSPACE:
+                    duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
+                        snackDuplicateError
+                    );
                     break;
                 case ElementType.CONTINGENCY_LIST:
                     duplicateElement(
@@ -210,38 +226,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         undefined,
                         activeElement.type,
                         activeElement.specificMetadata.type
-                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
+                    ).catch(snackDuplicateError);
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
                 case ElementType.SENSITIVITY_PARAMETERS:
                 case ElementType.SECURITY_ANALYSIS_PARAMETERS:
                 case ElementType.LOADFLOW_PARAMETERS:
                 case ElementType.SHORT_CIRCUIT_PARAMETERS:
+                case ElementType.PCC_MIN_PARAMETERS:
                 case ElementType.NETWORK_VISUALIZATIONS_PARAMETERS:
                     duplicateElement(
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
                         activeElement.type
-                    ).catch((error) => handleDuplicateError(error, activeElement, intl, snackError));
+                    ).catch(snackDuplicateError);
                     break;
                 case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
-                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch((error) => {
-                        handleDuplicateError(error, activeElement, intl, snackError);
-                    });
+                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 default: {
-                    handleGenericTxtError(intl.formatMessage({ id: 'unsupportedItem' }), snackError);
+                    snackError({ headerId: 'unsupportedItem' });
                 }
             }
             handleCloseDialog();
         }
-    }, [activeElement, handleCloseDialog, intl, snackError]);
+    }, [activeElement, handleCloseDialog, snackDuplicateError, snackError]);
 
     const handleCloseExportDialog = useCallback(() => {
         stopCasesExports();
@@ -256,35 +269,43 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 .then(() => handleCloseDialog())
                 // show the error message and don't close the dialog
                 .catch((error) => {
-                    handleDeleteError(setDeleteError, error, intl, snackError);
+                    snackWithFallback(snackError, error, {
+                        headerId: 'deleteConflictError',
+                    });
                 });
         },
-        [selectedDirectory?.elementUuid, handleCloseDialog, intl, snackError]
+        [selectedDirectory?.elementUuid, handleCloseDialog, snackError]
     );
 
-    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, handleMoveError);
+    const [moveCB] = useMultipleDeferredFetch(moveElementsToDirectory, undefined, (errors, params, _, snacker) =>
+        snackWithFallback(snacker, errors[0], {
+            // First error taken arbitrarily but that was also the case before in the handler
+            headerId: 'moveElementsFailure',
+            headerValues: {
+                pbn: params[0].length,
+                stn: params[0].length,
+                problematic: params.map((p) => (p as string[])[0]).join(' '),
+            },
+        })
+    );
 
-    const [renameCB, renameErrorMessage] = useDeferredFetch(
-        renameElement,
-        (renamedElement: any[]) => {
-            // if copied element is renamed
-            if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
-                dispatch(
-                    setItemSelectionForCopy({
-                        ...itemSelectionForCopy,
-                        nameItem: renamedElement[1],
-                    })
-                );
-                broadcastChannel.postMessage({
+    const [renameCB, renameErrorMessage] = useDeferredFetch(renameElement, (renamedElement: any[]) => {
+        // if copied element is renamed
+        if (itemSelectionForCopy.sourceItemUuid === renamedElement[0]) {
+            dispatch(
+                setItemSelectionForCopy({
                     ...itemSelectionForCopy,
                     nameItem: renamedElement[1],
-                });
-            }
+                })
+            );
+            broadcastChannel.postMessage({
+                ...itemSelectionForCopy,
+                nameItem: renamedElement[1],
+            });
+        }
 
-            handleCloseDialog();
-        },
-        generateRenameErrorMessages(intl)
-    );
+        handleCloseDialog();
+    });
 
     const noCreationInProgress = useCallback(() => selectedElements.every((el) => el.hasMetadata), [selectedElements]);
     const isSingleElement = selectedElements.length === 1;
@@ -300,11 +321,13 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SECURITY_ANALYSIS_PARAMETERS,
             ElementType.SENSITIVITY_PARAMETERS,
             ElementType.SHORT_CIRCUIT_PARAMETERS,
+            ElementType.PCC_MIN_PARAMETERS,
             ElementType.LOADFLOW_PARAMETERS,
             ElementType.NETWORK_VISUALIZATIONS_PARAMETERS,
             ElementType.SPREADSHEET_CONFIG,
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
             ElementType.DIAGRAM_CONFIG,
+            ElementType.WORKSPACE,
         ];
 
         const hasMetadata = selectedElements[0]?.hasMetadata;
@@ -331,14 +354,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
 
     const allowsDownload = useCallback(() => {
-        const allowedTypes = [
-            ElementType.CASE,
-            ElementType.SPREADSHEET_CONFIG,
-            ElementType.SPREADSHEET_CONFIG_COLLECTION,
-        ];
-        // if selectedElements contains at least one of the allowed types
-        return selectedElements.some((element) => allowedTypes.includes(element.type)) && noCreationInProgress();
-    }, [selectedElements, noCreationInProgress]);
+        const hasDownloadableElement = selectedElements.some((element) => {
+            if (element.type === ElementType.CASE) {
+                return true; // Cases can always be downloaded
+            }
+            // Spreadsheets and workspaces require developer mode
+            return (
+                isDeveloperMode &&
+                (element.type === ElementType.SPREADSHEET_CONFIG ||
+                    element.type === ElementType.SPREADSHEET_CONFIG_COLLECTION ||
+                    element.type === ElementType.WORKSPACE)
+            );
+        });
+        return hasDownloadableElement && noCreationInProgress();
+    }, [selectedElements, noCreationInProgress, isDeveloperMode]);
 
     const allowsExportCase = useCallback(() => {
         // if selectedElements contains at least one case
@@ -403,11 +432,27 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         if (directoryReadable && isSingleElement) {
-            menuItems.push({
-                messageDescriptorId: 'copy',
-                callback: copyItem,
-                icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-            });
+            menuItems.push(
+                {
+                    messageDescriptorId: 'copy',
+                    callback: copyItem,
+                    icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
+                },
+                { isDivider: true },
+                {
+                    messageDescriptorId: 'copyLink',
+                    callback: copyLinkItem,
+                    icon: (
+                        <LinkRoundedIcon
+                            data-testid="CopyLinkRoundedIcon"
+                            sx={{
+                                transform: 'rotate(-50deg)',
+                            }}
+                        />
+                    ),
+                },
+                { isDivider: true }
+            );
         }
 
         if (selectedElements.length === 1 && directoryWritable) {
@@ -484,6 +529,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         handleOpenDialog,
         duplicateItem,
         copyItem,
+        copyLinkItem,
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,

@@ -16,11 +16,12 @@ import {
     FieldConstants,
     isObjectEmpty,
     keyGenerator,
+    snackWithFallback,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { createCase } from '../../../utils/rest-api';
-import { HTTP_UNPROCESSABLE_ENTITY_STATUS } from '../../../utils/UIconstants';
+import type { UUID } from 'node:crypto';
+import { persistCase } from '../../../utils/rest-api';
 import { addUploadingElement, removeUploadingElement } from '../../../redux/actions';
 import UploadNewCase from '../commons/upload-new-case';
 import {
@@ -28,7 +29,6 @@ import {
     getCreateCaseDialogFormValidationDefaultValues,
 } from './create-case-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { buildSnackMessage, handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
 import { AppDispatch } from '../../../redux/store';
 import { AppState, UploadingElement } from '../../../redux/types';
 
@@ -36,6 +36,7 @@ interface IFormData {
     [FieldConstants.CASE_NAME]: string;
     [FieldConstants.DESCRIPTION]?: string;
     [FieldConstants.CASE_FILE]: File | null;
+    [FieldConstants.CASE_UUID]: UUID | null;
 }
 
 export interface CreateCaseDialogProps {
@@ -62,7 +63,7 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
-    const handleCreateNewCase = ({ caseName, description, caseFile }: IFormData): void => {
+    const handleCreateNewCase = ({ caseName, description, caseUuid }: IFormData): void => {
         const uploadingCase: UploadingElement = {
             // @ts-expect-error: TODO wrong ID here
             id: keyGenerator(),
@@ -75,30 +76,14 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         };
 
         // @ts-expect-error TODO: manage null cases here
-        createCase(caseName, description ?? '', caseFile, activeDirectory)
+        persistCase(caseName, description ?? '', caseUuid, activeDirectory)
             .then(onClose)
             .catch((err) => {
                 dispatch(removeUploadingElement(uploadingCase));
-                if (handleMaxElementsExceededError(err, snackError)) {
-                    return;
-                }
-                if (handleNotAllowedError(err, snackError)) {
-                    return;
-                }
-
-                if (err.status === HTTP_UNPROCESSABLE_ENTITY_STATUS) {
-                    snackError({
-                        messageId: buildSnackMessage(err, 'invalidFormatOrName'),
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
-                } else {
-                    snackError({
-                        messageTxt: err?.message,
-                        headerId: 'caseCreationError',
-                        headerValues: { name: caseName },
-                    });
-                }
+                snackWithFallback(snackError, err, {
+                    headerId: 'caseCreationError',
+                    headerValues: { name: caseName },
+                });
             });
         // the uploadingCase ghost element will be removed when directory content updated by fetch
         dispatch(addUploadingElement(uploadingCase));
@@ -107,9 +92,11 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
     return (
         <CustomMuiDialog
             titleId="ImportNewCase"
-            formSchema={createCaseDialogFormValidationSchema}
-            formMethods={createCaseFormMethods}
-            removeOptional
+            formContext={{
+                ...createCaseFormMethods,
+                validationSchema: createCaseDialogFormValidationSchema,
+                removeOptional: true,
+            }}
             open={open}
             onClose={onClose}
             onSave={handleCreateNewCase}

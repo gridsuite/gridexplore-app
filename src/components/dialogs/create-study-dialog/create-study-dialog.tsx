@@ -20,6 +20,7 @@ import {
     keyGenerator,
     ModifyElementSelection,
     Parameter,
+    snackWithFallback,
     useConfidentialityWarning,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -36,7 +37,6 @@ import {
     getCreateStudyDialogFormDefaultValues,
 } from './create-study-dialog-utils';
 import PrefilledNameInput from '../commons/prefilled-name-input';
-import { handleMaxElementsExceededError, handleNotAllowedError } from '../../utils/rest-errors';
 import { AppState, UploadingElement } from '../../../redux/types';
 
 const STRING_LIST = 'STRING_LIST';
@@ -189,14 +189,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 })
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
-                    if (handleMaxElementsExceededError(error, snackError)) {
-                        return;
-                    }
-                    if (handleNotAllowedError(error, snackError)) {
-                        return;
-                    }
-                    snackError({
-                        messageTxt: error.message,
+                    snackWithFallback(snackError, error, {
                         headerId: 'studyCreationError',
                         headerValues: {
                             studyName,
@@ -224,9 +217,11 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
     return (
         <CustomMuiDialog
             titleId="createNewStudy"
-            formSchema={createStudyDialogFormValidationSchema}
-            formMethods={createStudyFormMethods}
-            removeOptional
+            formContext={{
+                ...createStudyFormMethods,
+                validationSchema: createStudyDialogFormValidationSchema,
+                removeOptional: true,
+            }}
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
@@ -254,7 +249,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                     dialogMessageLabel="moveItemContentText"
                 />
             ) : (
-                <UploadNewCase isNewStudyCreation getCurrentCaseImportParams={getCurrentCaseImportParams} />
+                <UploadNewCase getCurrentCaseImportParams={getCurrentCaseImportParams} />
             )}
             <ImportParametersSection />
             <Grid pt={1}>
