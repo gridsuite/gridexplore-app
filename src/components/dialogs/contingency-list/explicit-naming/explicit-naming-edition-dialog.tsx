@@ -10,6 +10,7 @@ import {
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
+    snackWithFallback,
     useSnackMessage,
     yupConfig as yup,
 } from '@gridsuite/commons-ui';
@@ -91,10 +92,7 @@ export default function ExplicitNamingEditionDialog({
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'cannotRetrieveContingencyList',
-                });
+                snackWithFallback(snackError, error, { headerId: 'cannotRetrieveContingencyList' });
             })
             .finally(() => setIsFetching(false));
     }, [contingencyListId, name, reset, snackError, description]);
@@ -123,8 +121,7 @@ export default function ExplicitNamingEditionDialog({
                 closeAndClear();
             })
             .catch((errorMessage) => {
-                snackError({
-                    messageTxt: errorMessage,
+                snackWithFallback(snackError, errorMessage, {
                     headerId: 'contingencyListEditingError',
                     headerValues: { name },
                 });
