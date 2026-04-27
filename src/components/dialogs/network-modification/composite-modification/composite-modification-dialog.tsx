@@ -4,14 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
 import { useForm } from 'react-hook-form';
 import { useIntl } from 'react-intl';
-import { List, ListItem, ListItemButton } from '@mui/material';
 import {
+    BASE_MODIFICATION_TABLE_COLUMNS,
     CustomMuiDialog,
     equipmentDeletionDtoToForm,
     equipmentDeletionFormToDto,
@@ -26,6 +25,7 @@ import {
     loadModificationFormToDto,
     LoadForm,
     ModificationType,
+    NameHeaderProps,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
@@ -46,33 +46,29 @@ import {
     substationModificationFormSchema,
     substationModificationFormToDto,
     unscrollableDialogStyles,
-    useModificationLabelComputer,
     useSnackMessage,
     voltageLevelCreationDtoToForm,
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
+    NetworkModificationEditorNameHeader,
+    NameCell,
     voltageLevelModificationDtoToForm,
     VoltageLevelModificationForm,
     voltageLevelModificationFormSchema,
     voltageLevelModificationFormToDto,
     yupConfig as yup,
+    ComposedModificationMetadata,
+    networkModificationTableStyles,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { NetworkModificationsTable } from '@gridsuite/commons-ui';
+import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
-
-const styles = {
-    noPointer: {
-        cursor: 'default',
-        '&:hover': {
-            cursor: 'default',
-        },
-    },
-};
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -111,6 +107,25 @@ interface CompositeModificationDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
+const createBaseColumns = (
+    isRowDragDisabled: boolean,
+    modificationsCount: number,
+    nameHeaderProps: NameHeaderProps,
+    _setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
+): ColumnDef<ComposedModificationMetadata>[] => [
+    {
+        id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
+        header: () => (
+            <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
+        ),
+        cell: ({ row }) => <NameCell row={row} />,
+        meta: {
+            cellStyle: networkModificationTableStyles.columnCell.modificationName,
+        },
+        minSize: 160,
+    },
+];
+
 export default function CompositeModificationDialog({
     compositeModificationId,
     open,
@@ -125,6 +140,7 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
+    const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<NetworkModificationMetadata>();
@@ -256,18 +272,6 @@ export default function CompositeModificationDialog({
         [intl]
     );
 
-    const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata) => {
-        if (!modif) {
-            return null;
-        }
-        const labelData = {
-            ...modif,
-            ...computeLabel(modif),
-        };
-        return intl.formatMessage({ id: `network_modifications.${modif.messageType}` }, labelData);
-    };
-
     const isModificationEditable = useCallback(
         (modificationType: ModificationType) => {
             return editableModificationDialogs.has(modificationType);
@@ -277,12 +281,15 @@ export default function CompositeModificationDialog({
 
     const editModification = useCallback(
         async (modification: NetworkModificationMetadata) => {
+            if (!isDeveloperMode) {
+                return;
+            }
             if (!isModificationEditable(modification.type)) {
                 return;
             }
             setSelectedModification(modification);
         },
-        [isModificationEditable]
+        [isDeveloperMode, isModificationEditable]
     );
 
     const handleModificationDialogClose = useCallback(() => {
@@ -345,22 +352,21 @@ export default function CompositeModificationDialog({
                 {!isFetching && (
                     <Box sx={unscrollableDialogStyles.unscrollableContainer}>
                         <CompositeModificationForm />
-                        <List sx={unscrollableDialogStyles.scrollableContent}>
-                            {modifications?.map((modification: NetworkModificationMetadata) => (
-                                <Box key={modification.uuid}>
-                                    <ListItem disablePadding>
-                                        <ListItemButton
-                                            sx={isModificationEditable(modification.type) ? null : styles.noPointer}
-                                            onClick={() => editModification(modification)}
-                                            disableRipple
-                                        >
-                                            <Box>{getModificationLabel(modification)}</Box>
-                                        </ListItemButton>
-                                    </ListItem>
-                                    <Divider component="li" />
-                                </Box>
-                            ))}
-                        </List>
+                        <NetworkModificationsTable
+                            handleCellClick={editModification}
+                            modifications={modifications}
+                            onRowDragStart={() => {}}
+                            onRowDragEnd={() => {}}
+                            onRowSelected={() => {}}
+                            isRowDragDisabled
+                            isImpactedByNotification={() => false}
+                            notificationMessageId="notificationMessageId"
+                            isFetchingModifications={false}
+                            pendingState={false}
+                            createAllColumns={createBaseColumns}
+                            highlightedModificationUuid={null}
+                            studyUuid={null}
+                        />
                     </Box>
                 )}
             </CustomMuiDialog>
