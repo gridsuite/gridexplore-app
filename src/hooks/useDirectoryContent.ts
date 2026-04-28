@@ -6,8 +6,8 @@
  */
 
 import { useSelector } from 'react-redux';
-import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
-import { ElementAttributes, fetchElementsInfos, useSnackMessage } from '@gridsuite/commons-ui';
+import { useRef, useEffect, useState, useMemo } from 'react';
+import { ElementAttributes, fetchElementsInfos, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { UsersIdentities, UsersIdentitiesMap } from 'utils/user-identities.type';
 import { fetchUsersIdentities } from '../utils/rest-api';
@@ -36,15 +36,6 @@ export const useDirectoryContent = () => {
     const { snackError } = useSnackMessage();
     const previousData = useRef<ElementAttributes[]>(undefined);
     previousData.current = currentChildren;
-
-    const handleError = useCallback(
-        (message: string) => {
-            snackError({
-                messageTxt: message,
-            });
-        },
-        [snackError]
-    );
 
     useEffect(() => {
         if (!currentChildren?.length) {
@@ -104,11 +95,11 @@ export const useDirectoryContent = () => {
                 })
                 .catch((error) => {
                     if (previousData.current && Object.keys(previousData.current).length === 0) {
-                        handleError(error.message);
+                        snackWithFallback(snackError, error);
                     }
                 });
         }
-    }, [handleError, currentChildren]);
+    }, [snackError, currentChildren]);
 
     // TODO remove this when currentChildren and metadata are fetched at once
     const currentChildrenWithOwnerNames = useMemo(() => {
