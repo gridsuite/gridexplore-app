@@ -109,7 +109,7 @@
     "selectStudyDialogTitle": "Choisir une étude",
     "selectStudyText": "Veuillez choisir une étude",
     "noSelectedStudyText": "Aucune étude sélectionnée.",
-    "DanglingLines": "Lignes frontières",
+    "BoundaryLines": "Lignes frontières",
     "HvdcLines": "Lignes HVDC",
     "BusBarSections": "Sections de barre",
     "range": "intervalle",
