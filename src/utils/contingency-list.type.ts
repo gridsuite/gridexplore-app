@@ -33,13 +33,21 @@ export interface FilterBasedContingencyList {
         equipmentTypes: string[];
     }>;
 }
+export interface FilterBasedContingencyListBackend {
+    type: string;
+    filters: UUID[];
+    selectedEquipmentTypesByFilter: Array<{
+        filterId: string;
+        equipmentTypes: string[];
+    }>;
+}
 
 // type taken from filter-server, for now it's the same as FilterBasedContingencyList
 export type FiltersWithEquipmentTypes = FilterBasedContingencyList;
 
 export interface FilterElement {
     id: UUID;
-    name: string;
+    name: string | null;
     specificMetadata: {
         equipmentType: string;
     };
