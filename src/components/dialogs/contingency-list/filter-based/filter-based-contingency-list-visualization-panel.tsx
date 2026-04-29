@@ -19,6 +19,7 @@ import {
     FieldConstants,
     getEquipmentTypeShortLabel,
     SeparatorCellRenderer,
+    snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -136,10 +137,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         setRowsData(attributes);
                     })
                     .catch((error) =>
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'cannotComputeContingencyList',
-                        })
+                        snackWithFallback(snackError, error, { headerId: 'cannotComputeContingencyList' })
                     )
                     .finally(() => {
                         setIsFetching(false);
