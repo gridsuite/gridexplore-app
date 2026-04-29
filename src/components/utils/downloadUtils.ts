@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import { ElementAttributes, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import { ElementAttributes, ElementType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import {
@@ -104,11 +104,10 @@ export function useDownloadUtils() {
     const [abortController, setAbortController] = useState<AbortController>();
 
     const handleDownloadError = useCallback(
-        (element: ElementAttributes, errorMsg: string) => {
-            snackError({
+        (element: ElementAttributes, error: any) => {
+            snackWithFallback(snackError, error, {
                 headerId: 'download.error',
                 headerValues: { caseName: element.elementName },
-                messageTxt: errorMsg,
             });
         },
         [snackError]
@@ -145,7 +144,7 @@ export function useDownloadUtils() {
                 if (error.name === 'AbortError') {
                     throw error;
                 }
-                handleDownloadError(caseElement, error.message ?? String(error));
+                handleDownloadError(caseElement, error);
             }
         },
         [handleDownloadError, intl, snackInfo]
@@ -324,7 +323,7 @@ export function useDownloadUtils() {
                         triggerDownload(downloadData);
                     }
                 } catch (error: unknown) {
-                    handleDownloadError(element, error instanceof Error ? error.message : String(error));
+                    handleDownloadError(element, error);
                 }
             }
 

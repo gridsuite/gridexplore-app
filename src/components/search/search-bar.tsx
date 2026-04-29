@@ -9,6 +9,7 @@ import {
     ElementSearchInput,
     ElementSearchInputProps,
     Paginated,
+    snackWithFallback,
     useElementSearch,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -57,10 +58,7 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
             try {
                 await loadPath(matchingElement.pathUuid);
             } catch (error: any) {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'pathRetrievingError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'pathRetrievingError' });
             }
             const lastElement = matchingElement.pathUuid.at(-1);
             dispatch(setSearchedElement(data));
