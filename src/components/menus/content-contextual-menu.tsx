@@ -318,7 +318,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     );
     const isSingleElement = selectedElements.length === 1;
 
-    const allowsDuplicate = useCallback(() => {
+    const couldDuplicate = useCallback(() => {
         const allowedTypes = [
             ElementType.CASE,
             ElementType.STUDY,
@@ -343,12 +343,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && isAllowedType && directoryWritable;
     }, [selectedElements, isSingleElement, directoryWritable]);
 
-    const allowsCreateNewStudyFromCase = useCallback(
+    const couldCreateNewStudyFromCase = useCallback(
         () => isSingleElement && selectedElements[0].type === ElementType.CASE && selectedElements[0].hasMetadata,
         [isSingleElement, selectedElements]
     );
 
-    const allowsConvertFilterIntoExplicitNaming = useCallback(
+    const couldConvertFilterIntoExplicitNaming = useCallback(
         () =>
             isSingleElement &&
             selectedElements[0].type === ElementType.FILTER &&
@@ -357,7 +357,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         [isSingleElement, selectedElements, directoryWritable]
     );
 
-    const allowsDownload = useCallback(() => {
+    const couldDownload = useCallback(() => {
         const hasDownloadableElement = selectedElements.some((element) => {
             if (element.type === ElementType.CASE) {
                 return true; // Cases can always be downloaded
@@ -373,24 +373,31 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return hasDownloadableElement && noCreationInProgress();
     }, [selectedElements, noCreationInProgress, isDeveloperMode]);
 
-    const allowsExportCase = useCallback(() => {
+    const couldExportCase = useCallback(() => {
         // if selectedElements contains at least one case
         return selectedElements.some((element) => element.type === ElementType.CASE) && noCreationInProgress();
     }, [selectedElements, noCreationInProgress]);
 
-    const allowsSpreadsheetCollection = useMemo(() => {
+    const couldCreateSpreadsheetCollection = useMemo(() => {
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
-    const allowsRenameOrMove = useCallback(() => {
+    const couldRenameOrMove = useCallback(() => {
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
-    const allowsCopy = useCallback(() => {
+    const allowsRenameOrMoveOrCopy = useCallback(() => {
+        return isStudyOrCase() && uploadingInProgress();
+    }, [isStudyOrCase, uploadingInProgress]);
+
+    const couldCopy = useCallback(() => {
         return directoryReadable && isSingleElement;
     }, [directoryReadable, isSingleElement]);
+    const allowsDuplicateOrCopy = useCallback(() => {
+        return isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress());
+    }, [isStudyOrCase, noCreationInProgress, uploadingInProgress]);
 
-    const allowsDelete = useCallback(() => {
+    const couldDelete = useCallback(() => {
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
@@ -411,13 +418,13 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here in order
         const menuItems = [];
 
-        if (allowsRenameOrMove()) {
+        if (couldRenameOrMove()) {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
                     handleOpenDialog(DialogsId.RENAME);
                 },
-                disabled: isStudyOrCase() && uploadingInProgress(),
+                disabled: allowsRenameOrMoveOrCopy(),
             });
 
             menuItems.push({
@@ -427,11 +434,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
                 withDivider: true,
-                disabled: isStudyOrCase() && uploadingInProgress(),
+                disabled: allowsRenameOrMoveOrCopy(),
             });
         }
 
-        if (allowsCreateNewStudyFromCase()) {
+        if (couldCreateNewStudyFromCase()) {
             menuItems.push({
                 messageDescriptorId: 'createNewStudyFromImportedCase',
                 callback: () => {
@@ -441,22 +448,22 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsDuplicate()) {
+        if (couldDuplicate()) {
             menuItems.push({
                 messageDescriptorId: 'duplicate',
                 callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" data-testid="DuplicateIcon" />,
-                disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
+                disabled: allowsDuplicateOrCopy(),
             });
         }
 
-        if (allowsCopy()) {
+        if (couldCopy()) {
             menuItems.push(
                 {
                     messageDescriptorId: 'copy',
                     callback: copyItem,
                     icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-                    disabled: isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()),
+                    disabled: allowsDuplicateOrCopy(),
                 },
                 { isDivider: true },
                 {
@@ -475,7 +482,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
-        if (allowsDelete()) {
+        if (couldDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
@@ -483,11 +490,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
                 withDivider: true,
-                disabled: isStudyOrCase() && uploadingInProgress(),
+                disabled: allowsRenameOrMoveOrCopy(),
             });
         }
 
-        if (allowsDownload()) {
+        if (couldDownload()) {
             menuItems.push({
                 messageDescriptorId: 'download.button',
                 callback: async () => {
@@ -498,7 +505,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (isDeveloperMode && allowsExportCase()) {
+        if (isDeveloperMode && couldExportCase()) {
             menuItems.push({
                 messageDescriptorId: 'download.export.button',
                 callback: () => handleOpenDialog(DialogsId.EXPORT),
@@ -506,7 +513,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsSpreadsheetCollection) {
+        if (couldCreateSpreadsheetCollection) {
             menuItems.push({
                 messageDescriptorId: 'createSpreadsheetCollection',
                 callback: () => {
@@ -516,7 +523,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (allowsConvertFilterIntoExplicitNaming()) {
+        if (couldConvertFilterIntoExplicitNaming()) {
             menuItems.push({
                 messageDescriptorId: 'convertFilterIntoExplicitNaming',
                 callback: () => {
@@ -537,22 +544,22 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return menuItems;
     }, [
         selectedElements,
-        allowsRenameOrMove,
-        allowsCreateNewStudyFromCase,
-        allowsDuplicate,
-        allowsCopy,
-        allowsDelete,
-        allowsDownload,
+        couldRenameOrMove,
+        couldCreateNewStudyFromCase,
+        couldDuplicate,
+        couldCopy,
+        couldDelete,
+        couldDownload,
         isDeveloperMode,
-        allowsExportCase,
-        allowsSpreadsheetCollection,
-        allowsConvertFilterIntoExplicitNaming,
-        isStudyOrCase,
-        uploadingInProgress,
+        couldExportCase,
+        couldCreateSpreadsheetCollection,
+        couldConvertFilterIntoExplicitNaming,
+        allowsRenameOrMoveOrCopy,
         handleOpenDialog,
         duplicateItem,
-        noCreationInProgress,
+        allowsDuplicateOrCopy,
         copyItem,
+        noCreationInProgress,
         copyLinkItem,
         downloadElements,
         handleCloseDialog,
