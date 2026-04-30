@@ -39,7 +39,7 @@ const equipmentTypes: string[] = [
     EquipmentType.SHUNT_COMPENSATOR,
     EquipmentType.STATIC_VAR_COMPENSATOR,
     EquipmentType.HVDC_LINE,
-    EquipmentType.DANGLING_LINE,
+    EquipmentType.BOUNDARY_LINE,
 ];
 
 const styles = {
