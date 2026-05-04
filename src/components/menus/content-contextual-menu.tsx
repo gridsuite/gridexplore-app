@@ -387,14 +387,15 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [directoryWritable, isSingleElement]);
 
     const allowsRenameOrMoveOrCopy = useCallback(() => {
-        return isStudyOrCase() && uploadingInProgress();
+        return !(isStudyOrCase() && uploadingInProgress());
     }, [isStudyOrCase, uploadingInProgress]);
 
     const couldCopy = useCallback(() => {
         return directoryReadable && isSingleElement;
     }, [directoryReadable, isSingleElement]);
+
     const allowsDuplicateOrCopy = useCallback(() => {
-        return isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress());
+        return !(isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()));
     }, [isStudyOrCase, noCreationInProgress, uploadingInProgress]);
 
     const couldDelete = useCallback(() => {
@@ -424,7 +425,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 callback: () => {
                     handleOpenDialog(DialogsId.RENAME);
                 },
-                disabled: allowsRenameOrMoveOrCopy(),
+                disabled: !allowsRenameOrMoveOrCopy(),
             });
 
             menuItems.push({
@@ -434,7 +435,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
                 withDivider: true,
-                disabled: allowsRenameOrMoveOrCopy(),
+                disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
 
@@ -453,7 +454,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 messageDescriptorId: 'duplicate',
                 callback: duplicateItem,
                 icon: <FileCopyTwoToneIcon fontSize="small" data-testid="DuplicateIcon" />,
-                disabled: allowsDuplicateOrCopy(),
+                disabled: !allowsDuplicateOrCopy(),
             });
         }
 
@@ -463,7 +464,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     messageDescriptorId: 'copy',
                     callback: copyItem,
                     icon: <ContentCopyRoundedIcon fontSize="small" data-testid="CopyIcon" />,
-                    disabled: allowsDuplicateOrCopy(),
+                    disabled: !allowsDuplicateOrCopy(),
                 },
                 { isDivider: true },
                 {
@@ -490,7 +491,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 },
                 icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
                 withDivider: true,
-                disabled: allowsRenameOrMoveOrCopy(),
+                disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
 
