@@ -12,7 +12,6 @@ import {
     ElementType,
     fetchEnv,
     getRequestParamFromList,
-    getUserToken,
     type GsLang,
     type GsTheme,
     hasElementPermission,
@@ -64,13 +63,6 @@ export interface ErrorWithStatus extends Error {
 }
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
-
-export function getUrlWithToken(baseUrl: string) {
-    if (baseUrl.includes('?')) {
-        return `${baseUrl}&access_token=${getUserToken()}`;
-    }
-    return `${baseUrl}?access_token=${getUserToken()}`;
-}
 
 export interface PermissionDTO {
     allUsers: boolean;
