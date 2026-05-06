@@ -60,6 +60,10 @@ import {
     yupConfig as yup,
     ComposedModificationMetadata,
     networkModificationTableStyles,
+    batteryCreationFormSchema,
+    BatteryCreationForm,
+    batteryCreationFormToDto,
+    batteryCreationDtoToForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
@@ -193,6 +197,18 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.BATTERY_CREATION,
+                    {
+                        formSchema: batteryCreationFormSchema,
+                        dtoToForm: batteryCreationDtoToForm,
+                        formToDto: batteryCreationFormToDto,
+                        errorHeaderId: 'BatteryCreationError',
+                        titleId: 'CreateBattery',
+                        ModificationForm: BatteryCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
