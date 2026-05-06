@@ -110,7 +110,7 @@
     "selectStudyDialogTitle": "Pick a study",
     "selectStudyText": "Please choose a study",
     "noSelectedStudyText": "No study selected.",
-    "DanglingLines": "Dangling lines",
+    "BoundaryLines": "Boundary lines",
     "HvdcLines": "HVDC Lines",
     "BusBarSections": "Busbar sections",
     "range": "range",
