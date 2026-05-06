@@ -11,6 +11,7 @@ import {
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
     PARAM_THEME,
+    snackWithFallback,
     updateConfigParameter,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -37,10 +38,7 @@ export function useParameterState<TParamName extends ParamName>(
             setParamLocalState(value);
             updateConfigParameter(APP_NAME, paramName, value.toString()).catch((error) => {
                 setParamLocalState(paramGlobalState);
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'paramsChangingError' });
             });
         },
         [paramName, snackError, setParamLocalState, paramGlobalState]

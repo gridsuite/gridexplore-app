@@ -15,6 +15,7 @@ import {
     CustomFormProvider,
     PermissionType,
     SubmitButton,
+    snackWithFallback,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -112,10 +113,7 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
 
             reset(formData);
         } catch (error: any) {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'directoryPermissionsFetchError',
-            });
+            snackWithFallback(snackError, error, { headerId: 'directoryPermissionsFetchError' });
         } finally {
             setLoading(false);
         }
@@ -133,10 +131,7 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                 }
             })
             .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'directoryOwnerIdentityFetchError',
-                });
+                snackWithFallback(snackError, error, { headerId: 'directoryOwnerIdentityFetchError' });
             });
     }, [directory?.owner, directory?.elementUuid, snackError]);
 

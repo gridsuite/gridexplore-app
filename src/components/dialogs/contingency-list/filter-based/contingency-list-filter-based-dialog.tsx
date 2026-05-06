@@ -110,10 +110,7 @@ export default function FilterBasedContingencyListDialog({
                     reset({ ...formData });
                 })
                 .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'cannotRetrieveContingencyList',
-                    });
+                    snackWithFallback(snackError, error, { headerId: 'cannotRetrieveContingencyList' });
                 })
                 .finally(() => setIsFetching(false));
         }

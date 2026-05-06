@@ -546,10 +546,10 @@ export function createFilterBasedContingency(
  * Get contingency list by type and id
  * @returns {Promise<Response>}
  */
-function enrichContingencyList(contingencyList: any) {
-    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id)) as Set<string>;
+function enrichContingencyList(contingencyList: FilterBasedContingencyList) {
+    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id));
     return filterIds.size > 0
-        ? fetchElementNames(filterIds).then((elementNames) => {
+        ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
               return {
                   ...contingencyList,
                   filters: contingencyList.filters?.map((filter: FilterAttributes) => {
@@ -563,7 +563,7 @@ function enrichContingencyList(contingencyList: any) {
         : Promise.resolve(contingencyList);
 }
 
-export function getContingencyList(type: string, id: string) {
+export function getContingencyList(type: string, id: string): Promise<FilterBasedContingencyList> {
     const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
