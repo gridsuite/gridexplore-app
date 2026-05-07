@@ -547,9 +547,9 @@ export function createFilterBasedContingency(
  * @returns {Promise<Response>}
  */
 function enrichContingencyList(contingencyList: any) {
-    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id)) as Set<string>;
+    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id));
     return filterIds.size > 0
-        ? fetchElementNames(filterIds).then((elementNames) => {
+        ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
               return {
                   ...contingencyList,
                   filters: contingencyList.filters?.map((filter: FilterAttributes) => {
