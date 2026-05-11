@@ -28,13 +28,15 @@ import { IncomingHttpHeaders } from 'node:http';
 import type { UUID } from 'node:crypto';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import {
+    ContingencyListTypeMap,
     FilterAttributes,
     FilterBasedContingencyList,
     FilteredIdentifiables,
     FiltersWithEquipmentTypes,
+    isFilterBasedContingencyList,
+    PrepareContingencyListForBackend,
 } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
@@ -543,27 +545,52 @@ export function createFilterBasedContingency(
 }
 
 /**
- * Get contingency list by type and id
- * @returns {Promise<Response>}
+ * Enhances a given contingency list with additional data such as element names if applicable.
+ *
+ * @param {FilterBasedContingencyList | PrepareContingencyListForBackend} contingencyList
+ * The contingency list to be enriched. It can either be a `FilterBasedContingencyList` or
+ * a `PrepareContingencyListForBackend` type. If it is a `FilterBasedContingencyList`, the filters
+ * will be updated with corresponding names fetched from an external source.
+ * @return {FilterBasedContingencyList | PrepareContingencyListForBackend | Promise<FilterBasedContingencyList>}
+ * Returns the original contingency list if no additional processing is required. If the list is a
+ * `FilterBasedContingencyList` with applicable filters, it returns a promise that resolves to
+ * an updated list with the filters enriched with names.
  */
-function enrichContingencyList(contingencyList: any) {
-    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id));
-    return filterIds.size > 0
-        ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
-              return {
-                  ...contingencyList,
-                  filters: contingencyList.filters?.map((filter: FilterAttributes) => {
-                      return {
-                          ...filter,
-                          name: elementNames[filter.id],
-                      };
-                  }),
-              };
-          })
-        : Promise.resolve(contingencyList);
+function enrichContingencyList(contingencyList: FilterBasedContingencyList | PrepareContingencyListForBackend) {
+    if (isFilterBasedContingencyList(contingencyList)) {
+        const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id));
+        return filterIds.size > 0
+            ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
+                  return {
+                      ...contingencyList,
+                      filters: contingencyList.filters?.map((filter: FilterAttributes) => {
+                          return {
+                              ...filter,
+                              name: elementNames[filter.id],
+                          };
+                      }),
+                  };
+              })
+            : contingencyList;
+    }
+    return contingencyList;
 }
 
-export function getContingencyList(type: string, id: string) {
+/**
+ * Retrieves a contingency list based on the specified type and identifier.
+ *
+ * @param {T} type - The type of contingency list to retrieve. Must be a key of ContingencyListTypeMap.
+ * @param {string} id - The identifier used to fetch the contingent data for the specified type.
+ * @return {Promise<ContingencyListTypeMap[T]>} A promise resolving to the contingency list corresponding to the given type and id.
+ */
+export function getContingencyList<T extends keyof ContingencyListTypeMap>(
+    type: T,
+    id: string
+): Promise<ContingencyListTypeMap[T]>;
+export function getContingencyList(
+    type: string,
+    id: string
+): Promise<FilterBasedContingencyList | PrepareContingencyListForBackend> {
     const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',

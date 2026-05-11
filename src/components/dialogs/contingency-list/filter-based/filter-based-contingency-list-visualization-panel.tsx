@@ -28,6 +28,7 @@ import { FolderOutlined } from '@mui/icons-material';
 import { DataTableOverlay } from './data-table-overlay';
 import {
     ContingencyFieldConstants,
+    FilterBasedContingencyList,
     FilteredIdentifiables,
     FilterElement,
     FilterSubEquipments,
@@ -115,7 +116,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         filterId: value.filterId,
                         equipmentTypes: value.subEquipmentTypes,
                     })),
-                };
+                } satisfies FilterBasedContingencyList;
                 setIsFetching(true);
                 getIdentifiablesFromFilters(studyId, filtersWithSubEquipments)
                     .then((response: FilteredIdentifiables) => {
