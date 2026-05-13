@@ -39,7 +39,7 @@ export type FiltersWithEquipmentTypes = FilterBasedContingencyList;
 
 export interface FilterElement {
     id: UUID;
-    name: string;
+    name: string | null;
     specificMetadata: {
         equipmentType: string;
     };
