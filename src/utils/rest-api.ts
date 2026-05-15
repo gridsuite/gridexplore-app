@@ -23,14 +23,13 @@ import {
     PARAM_THEME,
     PermissionType,
 } from '@gridsuite/commons-ui';
-import type { LiteralUnion } from 'type-fest';
-import { IncomingHttpHeaders } from 'node:http';
-import type { UUID } from 'node:crypto';
-import { ContingencyListType } from './elementType';
-import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { UsersIdentities } from './user-identities.type';
+import type {LiteralUnion} from 'type-fest';
+import {IncomingHttpHeaders} from 'node:http';
+import type {UUID} from 'node:crypto';
+import {ContingencyListType} from './elementType';
+import {CONTINGENCY_ENDPOINTS} from './constants-endpoints';
+import {UsersIdentities} from './user-identities.type';
 import {
-    ContingencyListTypeMap,
     FilterAttributes,
     FilterBasedContingencyList,
     FilteredIdentifiables,
@@ -577,16 +576,21 @@ function enrichContingencyList(contingencyList: FilterBasedContingencyList | Pre
 }
 
 /**
- * Retrieves a contingency list based on the specified type and identifier.
+ * Retrieves `FilterBasedContingencyList` based on identifier.
  *
- * @param {T} type - The type of contingency list to retrieve. Must be a key of ContingencyListTypeMap.
- * @param {string} id - The identifier used to fetch the contingent data for the specified type.
- * @return {Promise<ContingencyListTypeMap[T]>} A promise resolving to the contingency list corresponding to the given type and id.
+ * @param {('FILTERS')} type - Must be 'FILTERS'.
+ * @param {string} id - The unique identifier associated with the contingency list.
+ * @return {Promise<FilterBasedContingencyList>} A promise that resolves to the contingency list of type `FilterBasedContingencyList`.
  */
-export function getContingencyList<T extends keyof ContingencyListTypeMap>(
-    type: T,
-    id: string
-): Promise<ContingencyListTypeMap[T]>;
+export function getContingencyList(type: 'FILTERS', id: string): Promise<FilterBasedContingencyList>;
+/**
+ * Retrieves `PrepareContingencyListForBackend` based on identifier.
+ *
+ * @param {'IDENTIFIERS'} type - Must be 'IDENTIFIERS'.
+ * @param {string} id - The unique identifier associated with the contingency list.
+ * @return {Promise<PrepareContingencyListForBackend>} A promise that resolves to the contingency list of type `PrepareContingencyListForBackend`.
+ */
+export function getContingencyList(type: 'IDENTIFIERS', id: string): Promise<PrepareContingencyListForBackend>;
 export function getContingencyList(
     type: string,
     id: string

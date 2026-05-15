@@ -4,14 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { UUID } from 'node:crypto';
-import { ContingencyListType } from './elementType';
-
-// Maps each contingency list type to its corresponding return type
-export interface ContingencyListTypeMap {
-    FILTERS: FilterBasedContingencyList;
-    IDENTIFIERS: PrepareContingencyListForBackend;
-}
+import {UUID} from 'node:crypto';
+import {ContingencyListType} from './elementType';
 
 // --- ID-based contingency list --- //
 export interface Identifier {
