@@ -57,9 +57,17 @@ import {
     VoltageLevelModificationForm,
     voltageLevelModificationFormSchema,
     voltageLevelModificationFormToDto,
+    shuntCompensatorCreationDtoToForm,
+    ShuntCompensatorCreationForm,
+    shuntCompensatorCreationFormSchema,
+    shuntCompensatorCreationFormToDto,
     yupConfig as yup,
     ComposedModificationMetadata,
     networkModificationTableStyles,
+    batteryCreationFormSchema,
+    BatteryCreationForm,
+    batteryCreationFormToDto,
+    batteryCreationDtoToForm,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
@@ -196,6 +204,18 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.BATTERY_CREATION,
+                    {
+                        formSchema: batteryCreationFormSchema,
+                        dtoToForm: batteryCreationDtoToForm,
+                        formToDto: batteryCreationFormToDto,
+                        errorHeaderId: 'BatteryCreationError',
+                        titleId: 'CreateBattery',
+                        ModificationForm: BatteryCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
                     ModificationType.LOAD_CREATION,
                     {
                         formSchema: loadCreationFormSchema,
@@ -242,6 +262,18 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.SHUNT_COMPENSATOR_CREATION,
+                    {
+                        formSchema: shuntCompensatorCreationFormSchema,
+                        dtoToForm: shuntCompensatorCreationDtoToForm,
+                        formToDto: shuntCompensatorCreationFormToDto,
+                        errorHeaderId: 'ShuntCompensatorCreationError',
+                        titleId: 'CreateShuntCompensator',
+                        ModificationForm: ShuntCompensatorCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
