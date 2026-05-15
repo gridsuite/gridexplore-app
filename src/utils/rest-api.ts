@@ -23,12 +23,12 @@ import {
     PARAM_THEME,
     PermissionType,
 } from '@gridsuite/commons-ui';
-import type {LiteralUnion} from 'type-fest';
-import {IncomingHttpHeaders} from 'node:http';
-import type {UUID} from 'node:crypto';
-import {ContingencyListType} from './elementType';
-import {CONTINGENCY_ENDPOINTS} from './constants-endpoints';
-import {UsersIdentities} from './user-identities.type';
+import type { LiteralUnion } from 'type-fest';
+import { IncomingHttpHeaders } from 'node:http';
+import type { UUID } from 'node:crypto';
+import { ContingencyListType } from './elementType';
+import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
+import { UsersIdentities } from './user-identities.type';
 import {
     FilterAttributes,
     FilterBasedContingencyList,
