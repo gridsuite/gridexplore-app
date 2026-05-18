@@ -272,6 +272,27 @@ export function createStudy(
     });
 }
 
+export const importStudy = (
+    studyFile: File,
+    caseFiles: File[],
+    studyName: string,
+    description: string | undefined,
+    directoryUuid: UUID
+) => {
+    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/import`;
+    const formData = new FormData();
+    formData.append('studyFile', studyFile);
+    (caseFiles || []).forEach((f) => formData.append('caseFiles', f));
+    formData.append('studyName', studyName);
+    if (description) formData.append('description', description);
+    if (directoryUuid) formData.append('directoryUuid', directoryUuid);
+
+    return backendFetchJson(url, {
+        method: 'POST',
+        body: formData,
+    });
+};
+
 export function createCase(name: string, description: string, file: Blob, parentDirectoryUuid: UUID) {
     console.info('Creating a new case...');
     const urlSearchParams = new URLSearchParams();
