@@ -17,6 +17,9 @@ export default function CompositeModificationForm() {
                     label="name"
                     formProps={{
                         disabled: true,
+                        sx: {
+                            width: '50ch',
+                        },
                     }}
                 />
             </Box>
