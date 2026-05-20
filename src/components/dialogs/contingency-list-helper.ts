@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FieldConstants } from '@gridsuite/commons-ui';
+import { Identifier, IdentifierList, PrepareContingencyListForBackend } from '../../utils/contingency-list.type';
 
 export interface ContingencyList {
     [FieldConstants.NAME]: string;
@@ -12,28 +13,6 @@ export interface ContingencyList {
         [FieldConstants.CONTINGENCY_NAME]?: string | null | undefined;
         [FieldConstants.EQUIPMENT_IDS]?: (string | null | undefined)[] | undefined;
     }[];
-}
-
-export interface Identifier {
-    type: 'ID_BASED';
-    identifier?: string | null;
-}
-
-export interface IdentifierList {
-    type: 'LIST';
-    contingencyId: string;
-    identifierList?: Identifier[];
-}
-
-export interface PrepareContingencyListForBackend {
-    id: string | null;
-    identifierContingencyList: {
-        type: 'identifier';
-        version: string;
-        name: string;
-        identifiers: IdentifierList[];
-    };
-    type: 'IDENTIFIERS';
 }
 
 export const prepareContingencyListForBackend = (

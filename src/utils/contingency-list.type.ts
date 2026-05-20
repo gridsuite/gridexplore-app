@@ -5,7 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'node:crypto';
+import { ContingencyListType } from './elementType';
 
+// --- ID-based contingency list --- //
+export interface Identifier {
+    type: 'ID_BASED';
+    identifier?: string | null;
+}
+
+export interface IdentifierList {
+    type: 'LIST';
+    contingencyId: string;
+    identifierList?: Identifier[];
+}
+
+export interface PrepareContingencyListForBackend {
+    id: string | null;
+    identifierContingencyList: {
+        type: 'identifier';
+        version: string;
+        name: string;
+        identifiers: IdentifierList[];
+    };
+    type: 'IDENTIFIERS';
+}
+
+// --- Filter-based contingency list --- //
 // reproduce partially dto from Filter-server
 export interface FilterAttributes {
     id: UUID;
@@ -26,12 +51,18 @@ export interface FilteredIdentifiables {
 
 // type taken from actions-server
 export interface FilterBasedContingencyList {
-    type: string;
+    type: 'FILTERS';
     filters: FilterAttributes[];
     selectedEquipmentTypesByFilter: Array<{
         filterId: string;
         equipmentTypes: string[];
     }>;
+}
+
+export function isFilterBasedContingencyList(
+    contingencyList: FilterBasedContingencyList | PrepareContingencyListForBackend
+): contingencyList is FilterBasedContingencyList {
+    return contingencyList.type === ContingencyListType.FILTERS.id;
 }
 
 // type taken from filter-server, for now it's the same as FilterBasedContingencyList
