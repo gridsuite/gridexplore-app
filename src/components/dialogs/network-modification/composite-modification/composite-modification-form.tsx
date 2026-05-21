@@ -7,8 +7,11 @@
 
 import { FieldConstants, TextInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
 
 export default function CompositeModificationForm() {
+    const { getValues } = useFormContext();
+    const name = getValues(FieldConstants.NAME);
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
@@ -18,7 +21,9 @@ export default function CompositeModificationForm() {
                     formProps={{
                         disabled: true,
                         sx: {
-                            width: '50ch',
+                            minWidth: '50ch',
+                            width: `${String(name ?? '').length}ch`,
+                            maxWidth: '100%',
                         },
                     }}
                 />
