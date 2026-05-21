@@ -596,12 +596,7 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
-export function saveCompositeModification(
-    id: string,
-    moidificationUuids: UUID[] | null,
-    name: string,
-    description?: string
-) {
+export function saveCompositeModification(id: string, moidificationUuids: UUID[], name: string, description?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('description', description ?? '');
