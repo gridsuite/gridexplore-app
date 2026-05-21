@@ -28,6 +28,7 @@ import {
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    updateNetworkModificationsMetadata,
     byFilterDeletionDtoToForm,
     byFilterDeletionFormSchema,
     byFilterDeletionFormToDto,
@@ -114,10 +115,10 @@ interface CompositeModificationDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-// Rename a (nested) composite modification. Only the name and description are sent;
-// the content is left null so the backend keeps the existing sub-modifications.
+// Rename a (nested) composite modification. It is a network modification inside the parent composite
+// (not a directory element), so its metadata is updated directly on the network-modification-server.
 const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
-    saveCompositeModification(modification.uuid, null, newName, modification.description);
+    updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
 
 const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
     {
