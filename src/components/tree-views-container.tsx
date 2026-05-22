@@ -459,7 +459,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     useEffect(() => {
         if (directoryUpdatedEvent.eventData?.headers) {
-            const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
+            const { notificationType, isRootDirectory, oldIsRootDirectory } = directoryUpdatedEvent.eventData.headers;
+            const oldDirectoryUuid = directoryUpdatedEvent.eventData.headers.oldDirectoryUuid as UUID;
             const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
             const error = directoryUpdatedEvent.eventData.headers.error as string;
             const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
@@ -469,12 +470,20 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 dispatch(directoryUpdated({}));
             }
 
-            if (isRootDirectory) {
+            let directoryToUpdateUuid = directoryUuid;
+            let isDirectoryToUpdateRoot = isRootDirectory;
+
+            if (oldDirectoryUuid != null || oldIsRootDirectory) {
+                directoryToUpdateUuid = oldDirectoryUuid;
+                isDirectoryToUpdateRoot = oldIsRootDirectory;
+            }
+
+            if (isDirectoryToUpdateRoot) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                     notificationType === NotificationType.DELETE_DIRECTORY &&
-                    selectedDirectoryRef.current.elementUuid === directoryUuid
+                    selectedDirectoryRef.current.elementUuid === directoryToUpdateUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
                     return;
@@ -491,17 +500,17 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-            if (directoryUuid) {
+            if (directoryToUpdateUuid) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
-                    if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
+                    if (directoryToUpdateUuid === selectedDirectoryRef.current.elementUuid) {
+                        updateDirectoryTreeAndContent(directoryToUpdateUuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
+                updateDirectoryTree(directoryToUpdateUuid, false, isDirectoryMoving);
             }
         }
     }, [
