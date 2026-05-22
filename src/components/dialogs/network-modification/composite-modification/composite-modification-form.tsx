@@ -5,31 +5,37 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    UniqueNameInput,
-    ElementType,
-    FieldConstants,
-    DescriptionField,
-    unscrollableDialogStyles,
-} from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/types';
-import Box from '@mui/material/Box';
+import { FieldConstants, TextInput, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import { Box } from '@mui/material';
+import { useFormContext } from 'react-hook-form';
 
 export default function CompositeModificationForm() {
-    const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
+    const { getValues } = useFormContext();
+    const name = getValues(FieldConstants.NAME);
     return (
         <>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                <UniqueNameInput
+                <TextInput
                     name={FieldConstants.NAME}
-                    label="nameProperty"
-                    elementType={ElementType.MODIFICATION}
-                    activeDirectory={activeDirectory}
+                    label="name"
+                    formProps={{
+                        disabled: true,
+                        sx: {
+                            minWidth: '50ch',
+                            width: `${String(name ?? '').length}ch`,
+                            maxWidth: '100%',
+                        },
+                    }}
                 />
             </Box>
             <Box sx={unscrollableDialogStyles.unscrollableHeader}>
-                <DescriptionField />
+                <TextInput
+                    name={FieldConstants.DESCRIPTION}
+                    label="description"
+                    formProps={{
+                        disabled: true,
+                    }}
+                />
             </Box>
         </>
     );
