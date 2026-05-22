@@ -98,6 +98,7 @@
     "contingencyListCreationError": "Une erreur est survenue lors de la création de la liste d'aléas : {name}",
     "contingencyListEditingError": "Une erreur est survenue lors de l'édition de la liste d'aléas : {name}",
     "compositeModificationEditingError": "Une erreur est survenue lors de l'édition de la modification composite : {name}",
+    "networkModificationRenamingError": "Une erreur est survenue lors du renommage de la modification",
     "contingencyListCreation": "creationListeAleas",
     "equipmentID": "ID d'ouvrage",
     "equipments": "Ouvrages",
