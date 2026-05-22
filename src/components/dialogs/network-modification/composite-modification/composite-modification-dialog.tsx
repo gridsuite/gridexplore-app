@@ -380,6 +380,12 @@ export default function CompositeModificationDialog({
                 disabledSave={!!nameError || !!isValidating}
                 isDataFetching={isFetching}
                 unscrollableFullHeight
+                sx={{
+                    '.MuiDialog-paper': {
+                        width: '75vw',
+                        maxWidth: '75vw',
+                    },
+                }}
             >
                 {!isFetching && (
                     <Box sx={unscrollableDialogStyles.unscrollableContainer}>
