@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useForm } from 'react-hook-form';
@@ -25,10 +25,10 @@ import {
     loadModificationFormToDto,
     LoadForm,
     ModificationType,
-    NameHeaderProps,
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    updateNetworkModificationsMetadata,
     byFilterDeletionDtoToForm,
     byFilterDeletionFormSchema,
     byFilterDeletionFormToDto,
@@ -51,8 +51,8 @@ import {
     VoltageLevelCreationForm,
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
-    NetworkModificationEditorNameHeader,
-    NameCell,
+    NameCellRenderer,
+    NameHeaderRenderer,
     voltageLevelModificationDtoToForm,
     VoltageLevelModificationForm,
     voltageLevelModificationFormSchema,
@@ -115,20 +115,19 @@ interface CompositeModificationDialogProps {
     broadcastChannel: BroadcastChannel;
 }
 
-const createBaseColumns = (
-    isRowDragDisabled: boolean,
-    modificationsCount: number,
-    nameHeaderProps: NameHeaderProps,
-    _setModifications: React.Dispatch<SetStateAction<ComposedModificationMetadata[]>>
-): ColumnDef<ComposedModificationMetadata>[] => [
+// Rename a (nested) composite modification. It is a network modification inside the parent composite
+// (not a directory element), so its metadata is updated directly on the network-modification-server.
+const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
+    updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
+
+const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
     {
         id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
-        header: () => (
-            <NetworkModificationEditorNameHeader modificationCount={modificationsCount} {...nameHeaderProps} />
-        ),
-        cell: ({ row }) => <NameCell row={row} />,
+        header: NameHeaderRenderer,
+        cell: NameCellRenderer,
         meta: {
             cellStyle: networkModificationTableStyles.columnCell.modificationName,
+            onChange: renameCompositeModification,
         },
         minSize: 160,
     },
@@ -380,6 +379,12 @@ export default function CompositeModificationDialog({
                 disabledSave={!!nameError || !!isValidating}
                 isDataFetching={isFetching}
                 unscrollableFullHeight
+                sx={{
+                    '.MuiDialog-paper': {
+                        width: '75vw',
+                        maxWidth: '75vw',
+                    },
+                }}
             >
                 {!isFetching && (
                     <Box sx={unscrollableDialogStyles.unscrollableContainer}>
@@ -395,7 +400,7 @@ export default function CompositeModificationDialog({
                             notificationMessageId="notificationMessageId"
                             isFetchingModifications={false}
                             pendingState={false}
-                            createAllColumns={createBaseColumns}
+                            columns={BASE_COLUMNS}
                             highlightedModificationUuid={null}
                             studyUuid={null}
                         />
