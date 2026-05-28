@@ -478,7 +478,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 isDirectoryToUpdateRoot = oldIsRootDirectory;
             }
 
-            if (isDirectoryToUpdateRoot) {
+            if (
+                isDirectoryToUpdateRoot &&
+                (isDirectoryMoving || notificationType !== NotificationType.UPDATE_DIRECTORY)
+            ) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
