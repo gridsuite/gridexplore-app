@@ -458,35 +458,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     });
 
     useEffect(() => {
-        if (directoryUpdatedEvent.eventData?.headers) {
-            const { notificationType, isRootDirectory, oldIsRootDirectory } = directoryUpdatedEvent.eventData.headers;
-            const oldDirectoryUuid = directoryUpdatedEvent.eventData.headers.oldDirectoryUuid as UUID;
-            const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
-            const error = directoryUpdatedEvent.eventData.headers.error as string;
-            const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
-            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
-            if (error) {
-                displayErrorIfExist(error, elementName);
-                dispatch(directoryUpdated({}));
-            }
-
-            let directoryToUpdateUuid = directoryUuid;
-            let isDirectoryToUpdateRoot = isRootDirectory;
-
-            if (oldDirectoryUuid != null || oldIsRootDirectory) {
-                directoryToUpdateUuid = oldDirectoryUuid;
-                isDirectoryToUpdateRoot = oldIsRootDirectory;
-            }
-
-            if (
-                isDirectoryToUpdateRoot &&
-                (isDirectoryMoving || notificationType !== NotificationType.UPDATE_DIRECTORY)
-            ) {
+        function updateDirectory(
+            directoryUuid: UUID,
+            isRootDirectory: unknown,
+            isDirectoryMoving: boolean,
+            notificationType: unknown
+        ) {
+            if (isRootDirectory && (isDirectoryMoving || notificationType !== NotificationType.UPDATE_DIRECTORY)) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                     notificationType === NotificationType.DELETE_DIRECTORY &&
-                    selectedDirectoryRef.current.elementUuid === directoryToUpdateUuid
+                    selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
                     return;
@@ -503,18 +486,36 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-            if (directoryToUpdateUuid) {
+            if (directoryUuid) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
-                    if (directoryToUpdateUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryToUpdateUuid, isDirectoryMoving);
+                    if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
+                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryToUpdateUuid, false, isDirectoryMoving);
+                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
             }
+        }
+
+        if (directoryUpdatedEvent.eventData?.headers) {
+            const { notificationType, isRootDirectory, oldIsRootDirectory } = directoryUpdatedEvent.eventData.headers;
+            const oldDirectoryUuid = directoryUpdatedEvent.eventData.headers.oldDirectoryUuid as UUID;
+            const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
+            const error = directoryUpdatedEvent.eventData.headers.error as string;
+            const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
+            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
+            if (error) {
+                displayErrorIfExist(error, elementName);
+                dispatch(directoryUpdated({}));
+            }
+
+            if (oldDirectoryUuid) {
+                updateDirectory(oldDirectoryUuid, oldIsRootDirectory, isDirectoryMoving, notificationType);
+            }
+            updateDirectory(directoryUuid, isRootDirectory, isDirectoryMoving, notificationType);
         }
     }, [
         directoryUpdatedEvent,
