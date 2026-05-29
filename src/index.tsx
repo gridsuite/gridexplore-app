@@ -8,6 +8,7 @@ import 'core-js/es/array/flat-map';
 
 import 'typeface-roboto';
 import './index.css';
+import './configure-yup-init';
 
 import { createRoot } from 'react-dom/client';
 import AppWrapper from './components/app-wrapper';

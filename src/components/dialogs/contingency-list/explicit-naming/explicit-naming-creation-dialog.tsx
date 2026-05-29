@@ -11,10 +11,10 @@ import {
     FieldConstants,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
-    yupConfig as yup,
     PARAM_LANGUAGE,
     snackWithFallback,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { createContingencyList } from '../../../../utils/rest-api';
