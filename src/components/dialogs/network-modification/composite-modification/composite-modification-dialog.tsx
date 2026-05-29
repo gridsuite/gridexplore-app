@@ -61,7 +61,6 @@ import {
     ShuntCompensatorCreationForm,
     shuntCompensatorCreationFormSchema,
     shuntCompensatorCreationFormToDto,
-    yupConfig as yup,
     ComposedModificationMetadata,
     networkModificationTableStyles,
     batteryCreationFormSchema,
@@ -69,6 +68,7 @@ import {
     batteryCreationFormToDto,
     batteryCreationDtoToForm,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
