@@ -11,13 +11,13 @@ import {
     MAX_CHAR_DESCRIPTION,
     snackWithFallback,
     useSnackMessage,
-    yupConfig as yup,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'node:crypto';
+import * as yup from 'yup';
 import { ObjectSchema } from 'yup';
 import {
     ContingencyFieldConstants,
