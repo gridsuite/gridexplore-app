@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FieldConstants, yupConfig as yup } from '@gridsuite/commons-ui';
+import { FieldConstants } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { ContingencyListType } from '../../../../utils/elementType';
 import { SideActionProps } from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 
