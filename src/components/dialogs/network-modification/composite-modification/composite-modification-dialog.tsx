@@ -53,15 +53,14 @@ import {
     voltageLevelCreationFormToDto,
     NameCellRenderer,
     NameHeaderRenderer,
-    voltageLevelModificationDtoToForm,
     VoltageLevelModificationForm,
-    voltageLevelModificationFormSchema,
-    voltageLevelModificationFormToDto,
+    voltageLevelModificationWithMeasurementsDtoToForm,
+    voltageLevelModificationWithMeasurementsFormSchema,
+    voltageLevelModificationWithMeasurementsFormToDto,
     shuntCompensatorCreationDtoToForm,
     ShuntCompensatorCreationForm,
     shuntCompensatorCreationFormSchema,
     shuntCompensatorCreationFormToDto,
-    yupConfig as yup,
     ComposedModificationMetadata,
     networkModificationTableStyles,
     batteryCreationFormSchema,
@@ -69,6 +68,7 @@ import {
     batteryCreationFormToDto,
     batteryCreationDtoToForm,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
@@ -254,9 +254,9 @@ export default function CompositeModificationDialog({
                 [
                     ModificationType.VOLTAGE_LEVEL_MODIFICATION,
                     {
-                        formSchema: voltageLevelModificationFormSchema,
-                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
-                        formToDto: voltageLevelModificationFormToDto,
+                        formSchema: voltageLevelModificationWithMeasurementsFormSchema,
+                        dtoToForm: (dto) => voltageLevelModificationWithMeasurementsDtoToForm(dto, false),
+                        formToDto: voltageLevelModificationWithMeasurementsFormToDto,
                         errorHeaderId: 'VoltageLevelModificationError',
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,

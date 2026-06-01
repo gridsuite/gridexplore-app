@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Option, yupConfig as yup } from '@gridsuite/commons-ui';
+import { Option } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 
 export const READ_ALL_USERS = 'readAllUsers';
