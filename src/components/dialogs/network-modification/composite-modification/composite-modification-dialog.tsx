@@ -71,6 +71,10 @@ import {
     BatteryCreationForm,
     batteryCreationFormToDto,
     batteryCreationDtoToForm,
+    batteryModificationDtoToForm,
+    batteryModificationFormSchema,
+    batteryModificationFormToDto,
+    BatteryModificationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -216,6 +220,18 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateBattery',
                         ModificationForm: BatteryCreationForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.BATTERY_MODIFICATION,
+                    {
+                        formSchema: batteryModificationFormSchema,
+                        dtoToForm: (batteryDto) => batteryModificationDtoToForm(batteryDto, false),
+                        formToDto: batteryModificationFormToDto,
+                        errorHeaderId: 'BatteryModificationError',
+                        titleId: 'ModifyBattery',
+                        ModificationForm: BatteryModificationForm,
+                        removeOptional: true,
                     },
                 ],
                 [
