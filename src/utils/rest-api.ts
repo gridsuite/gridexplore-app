@@ -35,6 +35,11 @@ import {
     FilteredIdentifiables,
     FiltersWithEquipmentTypes,
 } from './contingency-list.type';
+import {
+    PersistedProcessConfigFromBack,
+    SecurityAnalysisProcessConfig,
+    SecurityAnalysisProcessConfigFromBack,
+} from '../components/dialogs/process-configs/process-configs.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
@@ -44,6 +49,7 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GAT
 const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
+const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -789,4 +795,58 @@ export function fetchGroups(): Promise<GroupDTO[]> {
 // Function to check if user has MANAGE permission on directory
 export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
+}
+
+async function enrichConfiguration(persistedProcessConfig: PersistedProcessConfigFromBack) {
+    const { processConfig } = persistedProcessConfig;
+    const allUuids = new Set<string>([
+        ...processConfig.modificationUuids,
+        processConfig.securityAnalysisParametersUuid,
+        processConfig.loadflowParametersUuid,
+    ]);
+
+    const elementNamesByUuid = await fetchElementNames(allUuids);
+
+    return {
+        processType: processConfig.processType,
+        modifications: processConfig.modificationUuids.map((uuid) => ({
+            id: uuid,
+            name: elementNamesByUuid[uuid],
+        })),
+        securityAnalysisParameters: {
+            id: processConfig.securityAnalysisParametersUuid,
+            name: elementNamesByUuid[processConfig.securityAnalysisParametersUuid],
+        },
+        loadflowParameters: {
+            id: processConfig.loadflowParametersUuid,
+            name: elementNamesByUuid[processConfig.loadflowParametersUuid],
+        },
+    } satisfies SecurityAnalysisProcessConfig;
+}
+
+export function fetchSAProcessConfig(processConfigUuid: UUID) {
+    console.info('Fetching SA process config from monitor server');
+    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
+    return backendFetchJson(url, {
+        method: 'get',
+    }).then((persistedProcessConfig: PersistedProcessConfigFromBack) => enrichConfiguration(persistedProcessConfig));
+}
+
+export function updateSAProcessConfig(
+    processConfigUuid: UUID,
+    name: string,
+    description: string,
+    processConfig: SecurityAnalysisProcessConfigFromBack
+) {
+    console.info('Updating SA process config from monitor server');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('name', name);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
+
+    return backendFetchJson(url, {
+        method: 'put',
+        body: JSON.stringify(processConfig),
+    });
 }

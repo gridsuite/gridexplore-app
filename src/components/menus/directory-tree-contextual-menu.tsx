@@ -58,6 +58,7 @@ import { checkPermissionOnDirectory } from './menus-utils';
 import DirectoryPropertiesDialog from '../dialogs/directory-properties/directory-properties-dialog';
 import { FilterType } from '../../utils/elementType';
 import FilterBasedContingencyListDialog from '../dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
+import { UpdateSAProcessConfigDialog } from '../dialogs/process-configs/update-sa-process-config-dialog';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;

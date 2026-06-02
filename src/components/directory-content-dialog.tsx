@@ -46,6 +46,8 @@ import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 import { DirectoryField } from './utils/directory-content-utils';
+import { isProcessType, ProcessType } from './dialogs/process-configs/process-configs.type';
+import { UpdateSAProcessConfigDialog } from './dialogs/process-configs/update-sa-process-config-dialog';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -152,6 +154,14 @@ function DirectoryContentDialog(
         closeDialog();
     }, [closeDialog]);
 
+    const [currentProcessConfigId, setCurrentProcessConfigId] = useState<UUID>();
+    const [currentProcessConfigType, setCurrentProcessConfigType] = useState<ProcessType>();
+    const handleCloseProcessConfigDialog = useCallback(() => {
+        setCurrentProcessConfigId(undefined);
+        setCurrentProcessConfigType(undefined);
+        closeDialog();
+    }, [closeDialog]);
+
     const openStudyTab = useCallback(
         (studyUuid: UUID) => {
             const url = getStudyUrl(studyUuid);
@@ -211,6 +221,17 @@ function DirectoryContentDialog(
         [setOpenDialog]
     );
 
+    const openProcessConfigDialog = useCallback(
+        (elementId: UUID, processType: string) => {
+            if (isProcessType(processType)) {
+                setCurrentProcessConfigId(elementId);
+                setCurrentProcessConfigType(processType);
+                setOpenDialog(constants.DialogsId.EDIT_PROCESS_CONFIG);
+            }
+        },
+        [setOpenDialog]
+    );
+
     useImperativeHandle(
         refApi,
         () => ({
@@ -259,6 +280,9 @@ function DirectoryContentDialog(
                         case ElementType.SENSITIVITY_PARAMETERS:
                             openParametersDialog(elementId, event.data.type);
                             break;
+                        case ElementType.PROCESS_CONFIG:
+                            openProcessConfigDialog(elementId, subtype);
+                            break;
                         default:
                             break;
                     }
@@ -273,6 +297,7 @@ function DirectoryContentDialog(
             openFilterDialog,
             openModificationDialog,
             openParametersDialog,
+            openProcessConfigDialog,
             selectedDirectoryElementUuid,
             selectedDirectoryWritable,
             setActiveElement,
@@ -472,6 +497,20 @@ function DirectoryContentDialog(
                         user={user}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
+                    />
+                );
+            }
+        }
+        if (currentProcessConfigId) {
+            if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
+                return (
+                    <UpdateSAProcessConfigDialog
+                        processConfigId={currentProcessConfigId}
+                        open
+                        onClose={handleCloseProcessConfigDialog}
+                        name={elementName}
+                        description={activeElement.description}
+                        directory={activeDirectory}
                     />
                 );
             }
