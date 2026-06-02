@@ -53,22 +53,30 @@ import {
     voltageLevelCreationFormToDto,
     NameCellRenderer,
     NameHeaderRenderer,
-    voltageLevelModificationDtoToForm,
     VoltageLevelModificationForm,
-    voltageLevelModificationFormSchema,
-    voltageLevelModificationFormToDto,
+    voltageLevelModificationWithMeasurementsDtoToForm,
+    voltageLevelModificationWithMeasurementsFormSchema,
+    voltageLevelModificationWithMeasurementsFormToDto,
     shuntCompensatorCreationDtoToForm,
     ShuntCompensatorCreationForm,
     shuntCompensatorCreationFormSchema,
     shuntCompensatorCreationFormToDto,
-    yupConfig as yup,
+    shuntCompensatorModificationDtoToForm,
+    ShuntCompensatorModificationForm,
+    shuntCompensatorModificationFormSchema,
+    shuntCompensatorModificationFormToDto,
     ComposedModificationMetadata,
     networkModificationTableStyles,
     batteryCreationFormSchema,
     BatteryCreationForm,
     batteryCreationFormToDto,
     batteryCreationDtoToForm,
+    batteryModificationDtoToForm,
+    batteryModificationFormSchema,
+    batteryModificationFormToDto,
+    BatteryModificationForm,
 } from '@gridsuite/commons-ui';
+import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { NetworkModificationsTable } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
@@ -215,6 +223,18 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.BATTERY_MODIFICATION,
+                    {
+                        formSchema: batteryModificationFormSchema,
+                        dtoToForm: (batteryDto) => batteryModificationDtoToForm(batteryDto, false),
+                        formToDto: batteryModificationFormToDto,
+                        errorHeaderId: 'BatteryModificationError',
+                        titleId: 'ModifyBattery',
+                        ModificationForm: BatteryModificationForm,
+                        removeOptional: true,
+                    },
+                ],
+                [
                     ModificationType.LOAD_CREATION,
                     {
                         formSchema: loadCreationFormSchema,
@@ -254,9 +274,9 @@ export default function CompositeModificationDialog({
                 [
                     ModificationType.VOLTAGE_LEVEL_MODIFICATION,
                     {
-                        formSchema: voltageLevelModificationFormSchema,
-                        dtoToForm: (dto) => voltageLevelModificationDtoToForm(dto, false),
-                        formToDto: voltageLevelModificationFormToDto,
+                        formSchema: voltageLevelModificationWithMeasurementsFormSchema,
+                        dtoToForm: (dto) => voltageLevelModificationWithMeasurementsDtoToForm(dto, false),
+                        formToDto: voltageLevelModificationWithMeasurementsFormToDto,
                         errorHeaderId: 'VoltageLevelModificationError',
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,
@@ -273,6 +293,19 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateShuntCompensator',
                         ModificationForm: ShuntCompensatorCreationForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.SHUNT_COMPENSATOR_MODIFICATION,
+                    {
+                        formSchema: shuntCompensatorModificationFormSchema,
+                        dtoToForm: (shuntDto) => shuntCompensatorModificationDtoToForm(shuntDto, false),
+                        formToDto: shuntCompensatorModificationFormToDto,
+                        errorHeaderId: 'ShuntCompensatorModificationError',
+                        titleId: 'ModifyShuntCompensator',
+                        ModificationForm: ShuntCompensatorModificationForm,
+                        isModification: true,
+                        removeOptional: true,
                     },
                 ],
                 [
