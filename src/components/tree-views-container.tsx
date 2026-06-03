@@ -268,7 +268,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                         isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
                     )
                 );
-                navigate(`/elements/${nodeId}`, { replace: false });
+                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: false });
             }
         },
         [insertContent, dispatch, navigate]
