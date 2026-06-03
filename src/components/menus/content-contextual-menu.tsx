@@ -165,6 +165,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                 case ElementType.WORKSPACE:
+                case ElementType.PROCESS_CONFIG:
                     console.info(
                         `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
@@ -216,6 +217,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.PROCESS_CONFIG:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
                         snackDuplicateError
                     );
@@ -336,6 +338,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
             ElementType.DIAGRAM_CONFIG,
             ElementType.WORKSPACE,
+            ElementType.PROCESS_CONFIG,
         ];
 
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
