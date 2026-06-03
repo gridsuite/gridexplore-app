@@ -75,8 +75,8 @@ export default function DirectoryBreadcrumbs() {
     /* Handle User interactions */
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
-        navigate(`/elements/${dir?.elementUuid}`, { replace: true });
         dispatch(setSelectedDirectory(dir));
+        navigate(dir !== null ? `/elements/${dir.elementUuid}` : '/', { replace: false });
     };
 
     /* Handle Rendering */
