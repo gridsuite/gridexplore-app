@@ -41,7 +41,10 @@ import PageNotFound from './page-not-found';
 export default function App() {
     const { snackError } = useSnackMessage();
 
-    const userProfile = useSelector((state: AppState) => state.user?.profile ?? null, shallowEqual);
+    const userProfile = useSelector((state) => {
+        const p = state.user?.profile;
+        return p ? { sub: p.sub, name: p.name, email: p.email, profile: p.profile } : null;
+    }, shallowEqual);
 
     const signInCallbackError = useSelector((state: AppState) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state: AppState) => state.authenticationRouterError);
