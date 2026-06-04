@@ -41,7 +41,7 @@ import PageNotFound from './page-not-found';
 export default function App() {
     const { snackError } = useSnackMessage();
 
-    const userProfile = useSelector((state) => {
+    const userProfile = useSelector((state: AppState) => {
         const p = state.user?.profile;
         return p ? { sub: p.sub, name: p.name, email: p.email, profile: p.profile } : null;
     }, shallowEqual);
