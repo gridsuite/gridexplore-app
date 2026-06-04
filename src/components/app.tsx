@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router';
 import {
     AnnouncementNotification,
@@ -41,11 +41,17 @@ import PageNotFound from './page-not-found';
 export default function App() {
     const { snackError } = useSnackMessage();
 
-    const userProfile = useSelector((state: AppState) => {
-        const p = state.user?.profile;
-        return p ? { sub: p.sub, name: p.name, email: p.email, profile: p.profile } : null;
-    }, shallowEqual);
-
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b ||
+            (a != null &&
+                b != null &&
+                a.sub === b.sub &&
+                a.name === b.name &&
+                a.email === b.email &&
+                a.profile === b.profile)
+    );
     const signInCallbackError = useSelector((state: AppState) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state: AppState) => state.authenticationRouterError);
     const showAuthenticationRouterLogin = useSelector((state: AppState) => state.showAuthenticationRouterLogin);
