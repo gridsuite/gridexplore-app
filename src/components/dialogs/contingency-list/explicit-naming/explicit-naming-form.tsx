@@ -127,7 +127,6 @@ export default function ExplicitNamingForm() {
                 }}
                 defaultColDef={defaultColDef}
                 alwaysShowVerticalScroll
-                stopEditingWhenCellsLoseFocus
                 csvProps={{
                     fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                     fileHeaders: csvFileHeaders,
