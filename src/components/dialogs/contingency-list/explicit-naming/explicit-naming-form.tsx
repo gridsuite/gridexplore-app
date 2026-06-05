@@ -57,7 +57,6 @@ export default function ExplicitNamingForm() {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: FieldConstants.CONTINGENCY_NAME,
                 editable: true,
-                rowDrag: true,
             },
         ],
         [intl]
