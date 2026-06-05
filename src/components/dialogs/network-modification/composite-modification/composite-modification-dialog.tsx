@@ -80,6 +80,10 @@ import {
     generatorCreationDtoToForm,
     generatorCreationFormToDto,
     GeneratorCreationForm,
+    generatorModificationFormSchema,
+    generatorModificationDtoToForm,
+    generatorModificationFormToDto,
+    GeneratorModificationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -248,6 +252,18 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateGenerator',
                         ModificationForm: GeneratorCreationForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.GENERATOR_MODIFICATION,
+                    {
+                        formSchema: generatorModificationFormSchema,
+                        dtoToForm: (generatorDto) => generatorModificationDtoToForm(generatorDto, false),
+                        formToDto: generatorModificationFormToDto,
+                        errorHeaderId: 'GeneratorModificationError',
+                        titleId: 'ModifyGenerator',
+                        ModificationForm: GeneratorModificationForm,
+                        removeOptional: true,
                     },
                 ],
                 [
