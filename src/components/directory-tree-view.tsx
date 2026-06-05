@@ -7,12 +7,11 @@
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { type PopoverReference } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { SimpleTreeView, SimpleTreeViewSlotProps } from '@mui/x-tree-view';
 import { type ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { useNavigate } from 'react-router';
-import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
 import CustomTreeItem from './custom-tree-item';
@@ -34,7 +33,6 @@ export default function DirectoryTreeView({
     onContextMenu,
     onDirectoryUpdate,
 }: Readonly<DirectoryTreeViewProps>) {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -83,15 +81,16 @@ export default function DirectoryTreeView({
     const handleLabelClick = useCallback(
         (nodeId: UUID) => {
             if (selectedDirectory?.elementUuid !== nodeId) {
-                dispatch(setSelectedDirectory(mapDataRef.current ? mapDataRef.current[nodeId] : null));
-                navigate(`/elements/${nodeId}`, { replace: false });
+                // The URL is the single source of truth: navigating updates the selected
+                // directory and fetches its content (handled in TreeViewsContainer).
+                navigate(`/elements/${nodeId}`);
             }
             if (!expandedRef.current.includes(nodeId)) {
                 // update fold status of item
                 toggleDirectories([nodeId]);
             }
         },
-        [dispatch, navigate, selectedDirectory?.elementUuid, toggleDirectories]
+        [navigate, selectedDirectory?.elementUuid, toggleDirectories]
     );
 
     const handleIconClick = useCallback(

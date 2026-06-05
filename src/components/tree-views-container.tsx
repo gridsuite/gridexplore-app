@@ -108,7 +108,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
     selectedDirectoryRef.current = selectedDirectory;
-    const previousSelectedDirectoryUuidRef = useRef<UUID | undefined>(undefined);
 
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState<ParentNode | null>(null);
 
@@ -263,15 +262,12 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             insertContent(nodeId, newSubdirectories);
             if (hasToChangeSelected) {
                 // if selected directory (possibly via ancestor) is deleted by another user, we should select (closest still existing) parent directory
-                dispatch(
-                    setSelectedDirectory(
-                        isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
-                    )
-                );
-                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: false });
+                // This is an involuntary navigation triggered by a notification, so we replace the history entry instead of keeping a deleted element URL.
+                // The selected directory itself is updated by the URL-driven effect (see below).
+                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: true });
             }
         },
-        [insertContent, dispatch, navigate]
+        [insertContent, navigate]
     );
 
     const cleanCreationFailedElementInCurrentElements = useCallback(
@@ -480,8 +476,9 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     notificationType === NotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
-                    dispatch(setSelectedDirectory(null));
-                    navigate(`/`, { replace: false });
+                    // The selected root directory was deleted: go back to root. The selected directory
+                    // itself is cleared by the URL-driven effect (see below).
+                    navigate(`/`, { replace: true });
                     return;
                 }
                 // if it's a new root directory then do not continue because we don't need
@@ -520,16 +517,11 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     ]);
 
     /* Handle components synchronization */
-    // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
+    // Fetch the content of the selected directory. selectedDirectory is only ever set from the
+    // URL-driven effect below, so this effect fires once per directory change (keyed on the uuid).
     useEffect(() => {
-        // To avoid refetching even if the dependencies changed (other than the elementUuid)
-        const selectedDirectoryUuid = selectedDirectory?.elementUuid;
-        if (previousSelectedDirectoryUuidRef.current === selectedDirectoryUuid) {
-            return;
-        }
-        previousSelectedDirectoryUuidRef.current = selectedDirectoryUuid;
-        if (selectedDirectoryUuid) {
-            updateDirectoryTreeAndContent(selectedDirectoryUuid, false);
+        if (selectedDirectory?.elementUuid) {
+            updateDirectoryTreeAndContent(selectedDirectory.elementUuid, false);
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
@@ -566,13 +558,38 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
     );
 
-    const { loadPath, handleDispatchDirectory } = useDirectoryPathLoader();
+    const { loadPath } = useDirectoryPathLoader();
 
+    /* The URL (sourceItemUuid) is the single source of truth for the selected directory.
+       This effect is the ONLY place that turns the URL into the `selectedDirectory` Redux state,
+       which keeps the data flow unidirectional: every user action (tree, breadcrumbs, search, ...)
+       only navigates, and the selection/content follows from the URL. */
     useEffect(() => {
-        if (!sourceItemUuid || !treeData.initialized) return;
-        // We can be in this case when navigating with breadcrumbs
-        // and so we don't want to refetch since we already have the data
-        if (sourceItemUuid === selectedDirectoryRef?.current?.elementUuid?.toString()) return;
+        // Wait for the root directories to be loaded before resolving anything from the URL.
+        if (!treeData.initialized) {
+            return;
+        }
+
+        // Root route ('/'): nothing selected.
+        if (!sourceItemUuid) {
+            if (selectedDirectoryRef.current !== null) {
+                dispatch(setSelectedDirectory(null));
+            }
+            return;
+        }
+
+        // Fast path: the directory is already known (click in the tree, breadcrumbs, expanded node).
+        // We already have its path/data, so there is no need to fetch it again.
+        const knownDirectory = treeDataRef.current?.mapData[sourceItemUuid];
+        if (knownDirectory) {
+            if (selectedDirectoryRef.current?.elementUuid !== sourceItemUuid) {
+                dispatch(setSelectedDirectory(knownDirectory));
+            }
+            return;
+        }
+
+        // Slow path: deep-link, search result or any element not loaded yet → resolve the full path,
+        // expand the tree, select the containing directory and highlight the element if it isn't one.
         (async () => {
             try {
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
@@ -622,16 +639,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 });
             }
         })();
-    }, [
-        sourceItemUuid,
-        treeData.initialized,
-        loadPath,
-        handleDispatchDirectory,
-        dispatch,
-        selectedDirectoryRef,
-        navigate,
-        snackError,
-    ]);
+    }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError]);
 
     return (
         <>
