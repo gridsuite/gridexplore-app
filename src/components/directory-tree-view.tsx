@@ -81,10 +81,6 @@ export default function DirectoryTreeView({
     /* User interaction */
     const handleLabelClick = useCallback(
         (nodeId: UUID) => {
-            // Compare against the URL (the source of truth), not the selected directory: after a
-            // deep-link to an element, selectedDirectory may already be this node while the URL still
-            // points elsewhere, so we must still navigate. Navigating updates the selected directory
-            // and fetches its content (handled in TreeViewsContainer).
             if (urlElementUuid !== nodeId) {
                 navigate(`/elements/${nodeId}`);
             }
