@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { SimpleTreeView, SimpleTreeViewSlotProps } from '@mui/x-tree-view';
 import { type ElementAttributes } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
 import CustomTreeItem from './custom-tree-item';
@@ -34,6 +34,7 @@ export default function DirectoryTreeView({
     onDirectoryUpdate,
 }: Readonly<DirectoryTreeViewProps>) {
     const navigate = useNavigate();
+    const { uuid: urlElementUuid } = useParams<{ uuid?: string }>();
     const [expanded, setExpanded] = useState<UUID[]>([]);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
@@ -80,9 +81,11 @@ export default function DirectoryTreeView({
     /* User interaction */
     const handleLabelClick = useCallback(
         (nodeId: UUID) => {
-            if (selectedDirectory?.elementUuid !== nodeId) {
-                // The URL is the single source of truth: navigating updates the selected
-                // directory and fetches its content (handled in TreeViewsContainer).
+            // Compare against the URL (the source of truth), not the selected directory: after a
+            // deep-link to an element, selectedDirectory may already be this node while the URL still
+            // points elsewhere, so we must still navigate. Navigating updates the selected directory
+            // and fetches its content (handled in TreeViewsContainer).
+            if (urlElementUuid !== nodeId) {
                 navigate(`/elements/${nodeId}`);
             }
             if (!expandedRef.current.includes(nodeId)) {
@@ -90,7 +93,7 @@ export default function DirectoryTreeView({
                 toggleDirectories([nodeId]);
             }
         },
-        [navigate, selectedDirectory?.elementUuid, toggleDirectories]
+        [navigate, urlElementUuid, toggleDirectories]
     );
 
     const handleIconClick = useCallback(

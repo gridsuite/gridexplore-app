@@ -595,7 +595,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
                 if (!path?.length) return;
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
-                await loadPath(directories.map((dir) => dir.elementUuid));
+                // Load only the ancestors. The selected directory's full content (subdirectories AND
+                // files) is fetched by the selectedDirectory effect via updateDirectoryTreeAndContent,
+                // so fetching it here too would duplicate that request.
+                await loadPath(directories.slice(0, LAST_ELEMENT_INDEX).map((dir) => dir.elementUuid));
 
                 const lastDirectory = directories.at(LAST_ELEMENT_INDEX);
                 if (lastDirectory) {
