@@ -123,7 +123,7 @@ export default function ExplicitNamingForm() {
 
     return (
         <Grid container direction="column" spacing={2} sx={{ flexGrow: 1, flexWrap: 'nowrap', minHeight: 0 }}>
-            <Grid size={12}>
+            <Grid>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label="nameProperty"
@@ -131,7 +131,7 @@ export default function ExplicitNamingForm() {
                     activeDirectory={activeDirectory}
                 />
             </Grid>
-            <Grid container size={12} spacing={2} justifyContent="space-between" alignItems="center">
+            <Grid container justifyContent="space-between" alignItems="center">
                 <Grid>
                     <DescriptionField />
                 </Grid>
@@ -150,11 +150,11 @@ export default function ExplicitNamingForm() {
                 </Grid>
             </Grid>
             {selectedFileError && (
-                <Grid size={12}>
+                <Grid>
                     <Alert severity="error">{selectedFileError}</Alert>
                 </Grid>
             )}
-            <Grid size={12} sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                 <CustomAgGridTable
                     ref={tableRef}
                     name={FieldConstants.EQUIPMENT_TABLE}
