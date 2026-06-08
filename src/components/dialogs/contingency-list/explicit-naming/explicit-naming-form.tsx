@@ -57,7 +57,6 @@ export default function ExplicitNamingForm() {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: FieldConstants.CONTINGENCY_NAME,
                 editable: true,
-                rowDrag: true,
             },
         ],
         [intl]
@@ -127,7 +126,6 @@ export default function ExplicitNamingForm() {
                 }}
                 defaultColDef={defaultColDef}
                 alwaysShowVerticalScroll
-                stopEditingWhenCellsLoseFocus
                 csvProps={{
                     fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                     fileHeaders: csvFileHeaders,
