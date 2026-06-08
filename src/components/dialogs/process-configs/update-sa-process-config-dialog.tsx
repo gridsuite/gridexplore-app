@@ -42,30 +42,32 @@ export function UpdateSAProcessConfigDialog({
             .array()
             .required()
             .of(
-                yup
-                    .array()
-                    .required()
-                    .of(
-                        yup
-                            .object()
-                            .shape({
-                                id: yup.string().required(),
-                                name: yup.string().required(),
-                            })
-                            .required()
-                    )
-                    .max(1)
+                yup.object().shape({
+                    modification: yup
+                        .array()
+                        .required()
+                        .of(
+                            yup
+                                .object()
+                                .shape({
+                                    id: yup.string().required(),
+                                    name: yup.string().required(),
+                                })
+                                .required()
+                        )
+                        .length(1),
+                })
             ),
         loadflowParameters: yup
             .array()
             .required()
             .of(yup.object().shape({ id: yup.string().required(), name: yup.string().required() }))
-            .max(1),
+            .length(1),
         securityAnalysisParameters: yup
             .array()
             .required()
             .of(yup.object().shape({ id: yup.string().required(), name: yup.string().required() }))
-            .max(1),
+            .length(1),
     });
 
     type UpdateSAProcessConfigFormData = yup.InferType<typeof schema>;
@@ -109,7 +111,9 @@ export function UpdateSAProcessConfigDialog({
                 processType: ProcessType.SECURITY_ANALYSIS,
                 loadflowParametersUuid: processConfigFormData.loadflowParameters[0].id,
                 securityAnalysisParametersUuid: processConfigFormData.securityAnalysisParameters[0].id,
-                modificationUuids: processConfigFormData.modifications.map((modification) => modification[0].id),
+                modificationUuids: processConfigFormData.modifications.map(
+                    (modification) => modification.modification[0].id
+                ),
             };
             updateSAProcessConfig(
                 processConfigId,

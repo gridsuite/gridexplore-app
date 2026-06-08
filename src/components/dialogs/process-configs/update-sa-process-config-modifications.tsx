@@ -17,7 +17,7 @@ export function UpdateSaProcessConfigModifications() {
         return [
             {
                 label: intl.formatMessage({ id: 'modifications' }),
-                dataKey: 'modifications',
+                dataKey: 'modification',
                 initialValue: [],
                 editable: true,
                 type: DndColumnType.CUSTOM,
@@ -25,7 +25,7 @@ export function UpdateSaProcessConfigModifications() {
                 // eslint-disable-next-line react/no-unstable-nested-components
                 component: (rowIndex: number) => (
                     <DirectoryItemsInput
-                        name={`modifications[${rowIndex}]`}
+                        name={`modifications[${rowIndex}].modification`}
                         allowMultiSelect={false}
                         elementType={ElementType.MODIFICATION}
                         titleId="modifications"
@@ -36,7 +36,7 @@ export function UpdateSaProcessConfigModifications() {
         ];
     }, [intl]);
 
-    const createModification = () => [{ selected: false }];
+    const createModification = () => [{ modification: [] }];
 
     return (
         <DndTable

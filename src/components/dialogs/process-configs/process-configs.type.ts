@@ -44,7 +44,10 @@ export type SecurityAnalysisProcessConfig = Omit<
     SecurityAnalysisProcessConfigFromBack,
     'securityAnalysisParametersUuid' | 'loadflowParametersUuid' | 'modificationUuids'
 > & {
-    modifications: NamedElement[];
+    modifications: (NamedElement & {
+        enabled: boolean;
+        description?: string;
+    })[];
     loadflowParameters: NamedElement;
     securityAnalysisParameters: NamedElement;
 };

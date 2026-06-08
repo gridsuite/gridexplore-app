@@ -805,13 +805,15 @@ async function enrichConfiguration(persistedProcessConfig: PersistedProcessConfi
         processConfig.loadflowParametersUuid,
     ]);
 
-    const elementNamesByUuid = await fetchElementNames(allUuids);
+    const elementNamesByUuid = (await fetchElementNames(allUuids)) as Record<string, string>;
 
     return {
         processType: processConfig.processType,
         modifications: processConfig.modificationUuids.map((uuid) => ({
             id: uuid,
             name: elementNamesByUuid[uuid],
+            enabled: true,
+            description: undefined,
         })),
         securityAnalysisParameters: {
             id: processConfig.securityAnalysisParametersUuid,
@@ -847,6 +849,10 @@ export function updateSAProcessConfig(
 
     return backendFetchJson(url, {
         method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
         body: JSON.stringify(processConfig),
     });
 }

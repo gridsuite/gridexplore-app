@@ -14,7 +14,9 @@ export function getSAProcessConfigFormDataFromFetchedElement(
     return {
         name,
         description: description ?? undefined,
-        modifications: processConfig.modifications.map((modification) => [modification]),
+        modifications: processConfig.modifications.map((modification) => ({
+            modification: [{ id: modification.id, name: modification.name }],
+        })),
         securityAnalysisParameters: [processConfig.securityAnalysisParameters],
         loadflowParameters: [processConfig.loadflowParameters],
     };
