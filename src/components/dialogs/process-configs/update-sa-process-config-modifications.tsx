@@ -1,40 +1,35 @@
 import { DirectoryItemsInput, DndColumn, DndColumnType, DndTable, ElementType } from '@gridsuite/commons-ui';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { useMemo } from 'react';
-import { useIntl } from 'react-intl';
+import { useFieldArray } from 'react-hook-form';
+import { useCallback, useMemo } from 'react';
 
 export function UpdateSaProcessConfigModifications() {
-    const intl = useIntl();
     const useFieldArrayModifications = useFieldArray({
         name: `modifications`,
     });
-    const { getValues } = useFormContext();
-    console.log('VALUES', getValues());
 
-    const { fields } = useFieldArrayModifications;
-    console.log('fields', fields);
+    const modificationSelector = useCallback(
+        (rowIndex: number) => (
+            <DirectoryItemsInput
+                name={`modifications[${rowIndex}].modification`}
+                allowMultiSelect={false}
+                elementType={ElementType.MODIFICATION}
+                titleId="modifications"
+                label={undefined}
+            />
+        ),
+        []
+    );
+
     const columnsDefinition = useMemo<DndColumn[]>(() => {
         return [
             {
-                label: intl.formatMessage({ id: 'modifications' }),
                 dataKey: 'modification',
-                initialValue: [],
-                editable: true,
                 type: DndColumnType.CUSTOM,
-                //TODO: TOFIX
-                // eslint-disable-next-line react/no-unstable-nested-components
-                component: (rowIndex: number) => (
-                    <DirectoryItemsInput
-                        name={`modifications[${rowIndex}].modification`}
-                        allowMultiSelect={false}
-                        elementType={ElementType.MODIFICATION}
-                        titleId="modifications"
-                        label={undefined}
-                    />
-                ),
+                editable: true,
+                component: modificationSelector,
             },
         ];
-    }, [intl]);
+    }, [modificationSelector]);
 
     const createModification = () => [{ modification: [] }];
 

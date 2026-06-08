@@ -91,14 +91,12 @@ export function UpdateSAProcessConfigDialog({
         setIsLoading(true);
         fetchSAProcessConfig(processConfigId)
             .then((processConfig) => {
-                console.log('PROCESSCONFIG FETCHED', processConfig);
                 if (processConfig) {
                     const formData: UpdateSAProcessConfigFormData = getSAProcessConfigFormDataFromFetchedElement(
                         processConfig,
                         name,
                         description
                     );
-                    console.log('formData', formData);
                     reset({ ...formData });
                 }
             })
@@ -127,7 +125,7 @@ export function UpdateSAProcessConfigDialog({
 
     return (
         <CustomMuiDialog
-            titleId="EditASProcessConfig"
+            titleId="editASProcessConfig"
             formContext={{
                 ...methods,
                 validationSchema: schema,

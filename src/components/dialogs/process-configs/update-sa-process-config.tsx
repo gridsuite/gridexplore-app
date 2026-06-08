@@ -37,9 +37,9 @@ export function UpdateSaProcessConfig({ directory, processConfigName }: Readonly
             <Grid2 size={12}>
                 <DescriptionField />
             </Grid2>
+            <GridSection title="modifications" />
             <UpdateSaProcessConfigModifications />
-            <GridSection title="networkParameters" />
-
+            <GridSection title="providersParameters" />
             <Grid2 size={12}>
                 <DirectoryItemsInput
                     titleId="loadflow"

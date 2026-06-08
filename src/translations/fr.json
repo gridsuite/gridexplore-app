@@ -204,7 +204,7 @@
     "PageNotFound": "Page introuvable",
     "editASProcessConfig": "Edition d'une configuration d'analyse de sécurité sous aléas",
     "modifications": "Modifications",
-    "networkParameters": "Paramètres de réseau",
+    "providersParameters": "Paramètres des simulateurs",
     "loadflow": "Calcul de répartition",
     "securityAnalysis": "Analyse de sécurité"
 }
