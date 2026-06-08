@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomMuiDialog } from '@gridsuite/commons-ui';
+import { CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'node:crypto';
 import * as yup from 'yup';
@@ -76,8 +76,8 @@ export function UpdateSAProcessConfigDialog({
         name,
         description: description ?? '',
         modifications: [],
-        loadflowParametersUuid: [],
-        securityAnalysisParametersUuid: [],
+        loadflowParameters: [],
+        securityAnalysisParameters: [],
     };
 
     const methods = useForm<UpdateSAProcessConfigFormData>({
@@ -85,7 +85,10 @@ export function UpdateSAProcessConfigDialog({
         resolver: yupResolver<UpdateSAProcessConfigFormData>(schema),
     });
 
-    const { reset } = methods;
+    const {
+        reset,
+        formState: { errors },
+    } = methods;
 
     useEffect(() => {
         setIsLoading(true);
@@ -123,6 +126,9 @@ export function UpdateSAProcessConfigDialog({
         [processConfigId, onClose]
     );
 
+    const nameError = errors[FieldConstants.NAME];
+    const isValidating = errors.root?.isValidating;
+
     return (
         <CustomMuiDialog
             titleId="editASProcessConfig"
@@ -134,6 +140,7 @@ export function UpdateSAProcessConfigDialog({
             open={open}
             onClose={onClose}
             onSave={handleUpdateProcessConfig}
+            disabledSave={Boolean(nameError || isValidating)}
         >
             {!isLoading && <UpdateSaProcessConfig directory={directory} processConfigName={name} />}
             {isLoading && <LinearProgress />}
