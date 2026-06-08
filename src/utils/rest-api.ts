@@ -536,16 +536,7 @@ export function createFilterBasedContingency(
 }
 
 /**
- * Enhances a given contingency list with additional data such as element names if applicable.
- *
- * @param {FilterBasedContingencyList | PrepareContingencyListForBackend} contingencyList
- * The contingency list to be enriched. It can either be a `FilterBasedContingencyList` or
- * a `PrepareContingencyListForBackend` type. If it is a `FilterBasedContingencyList`, the filters
- * will be updated with corresponding names fetched from an external source.
- * @return {FilterBasedContingencyList | PrepareContingencyListForBackend | Promise<FilterBasedContingencyList>}
- * Returns the original contingency list if no additional processing is required. If the list is a
- * `FilterBasedContingencyList` with applicable filters, it returns a promise that resolves to
- * an updated list with the filters enriched with names.
+ * Enriches a `FilterBasedContingencyList` with element names; returns other types as-is.
  */
 function enrichContingencyList(contingencyList: FilterBasedContingencyList | PrepareContingencyListForBackend) {
     if (isFilterBasedContingencyList(contingencyList)) {
