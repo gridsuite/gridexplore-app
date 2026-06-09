@@ -1,8 +1,10 @@
 import { DirectoryItemsInput, DndColumn, DndColumnType, DndTable, ElementType } from '@gridsuite/commons-ui';
 import { useFieldArray } from 'react-hook-form';
 import { useCallback, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 
 export function UpdateSaProcessConfigModifications() {
+    const intl = useIntl();
     const useFieldArrayModifications = useFieldArray({
         name: `modifications`,
     });
@@ -14,7 +16,7 @@ export function UpdateSaProcessConfigModifications() {
                 allowMultiSelect={false}
                 elementType={ElementType.MODIFICATION}
                 titleId="modifications"
-                label="modifications"
+                label={undefined}
             />
         ),
         []
@@ -26,10 +28,11 @@ export function UpdateSaProcessConfigModifications() {
                 dataKey: 'modification',
                 type: DndColumnType.CUSTOM, // ColumnDirectoryItem does not allow allowMultiSelect to false
                 editable: true,
+                label: intl.formatMessage({ id: 'modifications' }),
                 component: modificationSelector,
             },
         ];
-    }, [modificationSelector]);
+    }, [modificationSelector, intl]);
 
     const createModification = () => [{ modification: [] }];
 

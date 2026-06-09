@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid2 } from '@mui/material';
+import { Box, Grid2 } from '@mui/material';
 import {
     DescriptionField,
     DirectoryItemsInput,
     ElementType,
     FieldConstants,
     UniqueNameInput,
-    GridSection,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'node:crypto';
+import { FormattedMessage } from 'react-intl';
 import { UpdateSaProcessConfigModifications } from './update-sa-process-config-modifications';
 
 interface UpdateSaProcessConfigProps {
@@ -37,9 +37,13 @@ export function UpdateSaProcessConfig({ directory, processConfigName }: Readonly
             <Grid2 size={12}>
                 <DescriptionField />
             </Grid2>
-            <GridSection title="modifications" />
+            <Box component="h3">
+                <FormattedMessage id="modifications" />
+            </Box>
             <UpdateSaProcessConfigModifications />
-            <GridSection title="providersParameters" />
+            <Box component="h3">
+                <FormattedMessage id="providersParameters" />
+            </Box>
             <Grid2 size={12}>
                 <DirectoryItemsInput
                     titleId="loadflow"
