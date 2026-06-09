@@ -46,8 +46,8 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
             if (!matchingElement) {
                 return;
             }
-            // The URL is the single source of truth: navigating to the element expands the tree,
-            // selects its directory and highlights it (handled in TreeViewsContainer).
+            // The URL is the single source of truth: navigating expands the tree, selects the directory
+            // and highlights the element (handled in TreeViewsContainer).
             navigate(`/elements/${matchingElement.id}`);
         },
         [elementsFound, navigate]

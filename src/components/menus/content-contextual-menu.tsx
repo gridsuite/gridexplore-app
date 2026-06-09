@@ -402,9 +402,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
-    // Only check when the menu is open (permissions are only used to build the open menu) and key on the
-    // uuid: `selectedDirectory` gets a new object reference on every tree update (SELECT_DIRECTORY clones
-    // it, TREE_DATA mutates its elementName via Immer), which would otherwise re-run these checks on each navigation.
+    // Only when the menu is open (permissions just build it), keyed on the uuid: `selectedDirectory`
+    // changes reference on every tree update, which would otherwise re-run these checks.
     useEffect(() => {
         if (open && selectedDirectory !== null) {
             Promise.all([

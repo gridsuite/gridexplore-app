@@ -73,8 +73,7 @@ export default function DirectoryBreadcrumbs() {
     /* Handle User interactions */
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
-        // The URL is the single source of truth: navigating updates the selected
-        // directory and fetches its content (handled in TreeViewsContainer).
+        // The URL is the single source of truth (selection/content handled in TreeViewsContainer).
         navigate(dir !== null ? `/elements/${dir.elementUuid}` : '/');
     };
 
