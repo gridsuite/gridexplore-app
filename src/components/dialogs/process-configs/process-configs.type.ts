@@ -16,22 +16,22 @@ export function isProcessType(type: string): type is ProcessType {
     return Object.values(ProcessType).includes(type as ProcessType);
 }
 
-export interface ProcessConfigBaseFromBack {
+export interface ProcessConfigBaseBackend {
     processType: ProcessType;
     modificationUuids: string[];
 }
 
-export interface SecurityAnalysisProcessConfigFromBack extends ProcessConfigBaseFromBack {
+export interface SecurityAnalysisProcessConfigBackend extends ProcessConfigBaseBackend {
     processType: ProcessType.SECURITY_ANALYSIS;
     securityAnalysisParametersUuid: string;
     loadflowParametersUuid: string;
 }
 
-export type ProcessConfigFromBack = SecurityAnalysisProcessConfigFromBack; // will be union between all ProcessConfig types
+export type ProcessConfigBackend = SecurityAnalysisProcessConfigBackend; // will be union between all ProcessConfig types
 
-export type PersistedProcessConfigFromBack = {
+export type PersistedProcessConfigBackend = {
     id: UUID;
-    processConfig: ProcessConfigFromBack;
+    processConfig: ProcessConfigBackend;
 };
 
 // Form types
@@ -41,7 +41,7 @@ export interface NamedElement {
 }
 
 export type SecurityAnalysisProcessConfig = Omit<
-    SecurityAnalysisProcessConfigFromBack,
+    SecurityAnalysisProcessConfigBackend,
     'securityAnalysisParametersUuid' | 'loadflowParametersUuid' | 'modificationUuids'
 > & {
     modifications: (NamedElement & {

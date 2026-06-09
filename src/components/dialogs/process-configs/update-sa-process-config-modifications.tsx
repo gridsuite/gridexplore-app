@@ -14,7 +14,7 @@ export function UpdateSaProcessConfigModifications() {
                 allowMultiSelect={false}
                 elementType={ElementType.MODIFICATION}
                 titleId="modifications"
-                label={undefined}
+                label="modifications"
             />
         ),
         []
@@ -24,7 +24,7 @@ export function UpdateSaProcessConfigModifications() {
         return [
             {
                 dataKey: 'modification',
-                type: DndColumnType.CUSTOM,
+                type: DndColumnType.CUSTOM, // ColumnDirectoryItem does not allow allowMultiSelect to false
                 editable: true,
                 component: modificationSelector,
             },

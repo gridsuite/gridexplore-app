@@ -8,14 +8,17 @@
 import { CustomMuiDialog, FieldConstants } from '@gridsuite/commons-ui';
 import { useCallback, useEffect, useState } from 'react';
 import { UUID } from 'node:crypto';
-import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { LinearProgress } from '@mui/material';
-import { ProcessType, SecurityAnalysisProcessConfigFromBack } from './process-configs.type';
 import { fetchSAProcessConfig, updateSAProcessConfig } from '../../../utils/rest-api';
 import { UpdateSaProcessConfig } from './update-sa-process-config';
-import { getSAProcessConfigFormDataFromFetchedElement } from './update-process-configs-utils';
+import {
+    getSAProcessConfigFormDataFromFetchedElement,
+    getSAProcessConfigBackendFromFormData,
+    updateProcessConfigFormSchema,
+    UpdateSAProcessConfigFormData,
+} from './update-process-configs-utils';
 
 interface UpdateSAProcessConfigDialogProps {
     open: boolean;
@@ -35,42 +38,6 @@ export function UpdateSAProcessConfigDialog({
     directory,
 }: Readonly<UpdateSAProcessConfigDialogProps>) {
     const [isLoading, setIsLoading] = useState(false);
-    const schema = yup.object().shape({
-        name: yup.string().required(),
-        description: yup.string(),
-        modifications: yup
-            .array()
-            .required()
-            .of(
-                yup.object().shape({
-                    modification: yup
-                        .array()
-                        .required()
-                        .of(
-                            yup
-                                .object()
-                                .shape({
-                                    id: yup.string().required(),
-                                    name: yup.string().required(),
-                                })
-                                .required()
-                        )
-                        .length(1),
-                })
-            ),
-        loadflowParameters: yup
-            .array()
-            .required()
-            .of(yup.object().shape({ id: yup.string().required(), name: yup.string().required() }))
-            .length(1),
-        securityAnalysisParameters: yup
-            .array()
-            .required()
-            .of(yup.object().shape({ id: yup.string().required(), name: yup.string().required() }))
-            .length(1),
-    });
-
-    type UpdateSAProcessConfigFormData = yup.InferType<typeof schema>;
 
     const emptyFormData = {
         name,
@@ -82,7 +49,7 @@ export function UpdateSAProcessConfigDialog({
 
     const methods = useForm<UpdateSAProcessConfigFormData>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<UpdateSAProcessConfigFormData>(schema),
+        resolver: yupResolver<UpdateSAProcessConfigFormData>(updateProcessConfigFormSchema),
     });
 
     const {
@@ -108,19 +75,11 @@ export function UpdateSAProcessConfigDialog({
 
     const handleUpdateProcessConfig = useCallback(
         (processConfigFormData: UpdateSAProcessConfigFormData) => {
-            const processConfig: SecurityAnalysisProcessConfigFromBack = {
-                processType: ProcessType.SECURITY_ANALYSIS,
-                loadflowParametersUuid: processConfigFormData.loadflowParameters[0].id,
-                securityAnalysisParametersUuid: processConfigFormData.securityAnalysisParameters[0].id,
-                modificationUuids: processConfigFormData.modifications.map(
-                    (modification) => modification.modification[0].id
-                ),
-            };
             updateSAProcessConfig(
                 processConfigId,
                 processConfigFormData.name,
                 processConfigFormData.description ?? '',
-                processConfig
+                getSAProcessConfigBackendFromFormData(processConfigFormData)
             ).then(() => onClose());
         },
         [processConfigId, onClose]
@@ -134,7 +93,7 @@ export function UpdateSAProcessConfigDialog({
             titleId="editASProcessConfig"
             formContext={{
                 ...methods,
-                validationSchema: schema,
+                validationSchema: updateProcessConfigFormSchema,
                 removeOptional: true,
             }}
             open={open}

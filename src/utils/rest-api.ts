@@ -36,9 +36,9 @@ import {
     FiltersWithEquipmentTypes,
 } from './contingency-list.type';
 import {
-    PersistedProcessConfigFromBack,
+    PersistedProcessConfigBackend,
     SecurityAnalysisProcessConfig,
-    SecurityAnalysisProcessConfigFromBack,
+    SecurityAnalysisProcessConfigBackend,
 } from '../components/dialogs/process-configs/process-configs.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
@@ -797,7 +797,7 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
 }
 
-async function enrichConfiguration(persistedProcessConfig: PersistedProcessConfigFromBack) {
+async function enrichConfiguration(persistedProcessConfig: PersistedProcessConfigBackend) {
     const { processConfig } = persistedProcessConfig;
     const allUuids = new Set<string>([
         ...processConfig.modificationUuids,
@@ -831,14 +831,14 @@ export function fetchSAProcessConfig(processConfigUuid: UUID) {
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
-    }).then((persistedProcessConfig: PersistedProcessConfigFromBack) => enrichConfiguration(persistedProcessConfig));
+    }).then((persistedProcessConfig: PersistedProcessConfigBackend) => enrichConfiguration(persistedProcessConfig));
 }
 
 export function updateSAProcessConfig(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: SecurityAnalysisProcessConfigFromBack
+    processConfig: SecurityAnalysisProcessConfigBackend
 ) {
     console.info('Updating SA process config from monitor server');
     const urlSearchParams = new URLSearchParams();
