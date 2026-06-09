@@ -545,7 +545,9 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     /* Handle components synchronization */
     // Fetch the content of the selected directory. selectedDirectory is only ever set from the
-    // URL-driven effect below, so this effect fires once per directory change (keyed on the uuid).
+    // URL-driven effect below. Keyed on the uuid, and the two guards below ensure it fetches at most
+    // once per directory change, and never for a directory whose content was just fed by the
+    // notification handler or that has already been deleted.
     useEffect(() => {
         const selectedDirectoryUuid = selectedDirectory?.elementUuid;
         // Skip when the content of this directory was just fetched and fed by the notification handler
@@ -607,7 +609,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     useEffect(() => {
         // Wait for the root directories to be loaded before resolving anything from the URL.
         if (!treeData.initialized) {
-            return;
+            return undefined;
         }
 
         // Root route ('/'): nothing selected.
@@ -615,7 +617,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             if (selectedDirectoryRef.current !== null) {
                 dispatch(setSelectedDirectory(null));
             }
-            return;
+            return undefined;
         }
 
         // Fast path: the directory is already known (click in the tree, breadcrumbs, expanded node).
@@ -625,20 +627,28 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             if (selectedDirectoryRef.current?.elementUuid !== sourceItemUuid) {
                 dispatch(setSelectedDirectory(knownDirectory));
             }
-            return;
+            return undefined;
         }
 
         // Slow path: deep-link, search result or any element not loaded yet → resolve the full path,
         // expand the tree, select the containing directory and highlight the element if it isn't one.
+        // If the URL changes again before this async work finishes, the cleanup flips `cancelled` so the
+        // stale resolution doesn't select/highlight the wrong directory (avoids an out-of-order race).
+        let cancelled = false;
         (async () => {
             try {
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
-                if (!path?.length) return;
+                if (cancelled || !path?.length) {
+                    return;
+                }
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
                 // Load only the ancestors. The selected directory's full content (subdirectories AND
                 // files) is fetched by the selectedDirectory effect via updateDirectoryTreeAndContent,
                 // so fetching it here too would duplicate that request.
                 await loadPath(directories.slice(0, LAST_ELEMENT_INDEX).map((dir) => dir.elementUuid));
+                if (cancelled) {
+                    return;
+                }
 
                 const lastDirectory = directories.at(LAST_ELEMENT_INDEX);
                 if (lastDirectory) {
@@ -676,12 +686,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     dispatch(setSearchedElement(elementToHighlight));
                 }
             } catch (error: any) {
+                if (cancelled) {
+                    return;
+                }
                 snackError({
                     messageTxt: error.message,
                     headerId: 'pathRetrievingError',
                 });
             }
         })();
+        return () => {
+            cancelled = true;
+        };
     }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError]);
 
     return (
