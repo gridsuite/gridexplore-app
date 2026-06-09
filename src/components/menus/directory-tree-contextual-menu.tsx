@@ -200,16 +200,16 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    // Only when the menu is open (directoryWritable just builds it), keyed on the uuid: `directory`
-    // changes reference on every tree update, which would otherwise re-run this check.
+    // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
+    // re-run this check.
     useEffect(() => {
-        if (open && directory !== null) {
+        if (directory !== null) {
             checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, directory?.elementUuid]);
+    }, [directory?.elementUuid]);
 
     const buildMenu = () => {
         // build menuItems here

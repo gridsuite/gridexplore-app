@@ -402,17 +402,17 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
-    // Only when the menu is open (permissions just build it), keyed on the uuid: `selectedDirectory`
-    // changes reference on every tree update, which would otherwise re-run these checks.
+    // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
+    // otherwise re-run these checks.
     useEffect(() => {
-        if (open && selectedDirectory !== null) {
+        if (selectedDirectory !== null) {
             Promise.all([
                 checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then(setDirectoryReadable),
                 checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then(setDirectoryWritable),
             ]).finally(() => setPermissionsLoaded(true));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [open, selectedDirectory?.elementUuid]);
+    }, [selectedDirectory?.elementUuid]);
 
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
