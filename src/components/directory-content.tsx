@@ -120,13 +120,17 @@ export default function DirectoryContent() {
     /** access write on current directory */
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
+    // Keyed on the uuid only: the WRITE permission depends solely on the directory id, and
+    // `selectedDirectory` gets a new object reference on every tree update (SELECT_DIRECTORY clones
+    // it and TREE_DATA mutates its elementName via Immer), which would otherwise re-run this check.
     useEffect(() => {
         if (selectedDirectory !== null) {
             checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
-    }, [selectedDirectory]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDirectory?.elementUuid]);
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
