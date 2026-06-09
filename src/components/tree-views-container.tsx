@@ -538,8 +538,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     ]);
 
     /* Handle components synchronization */
-    // Fetch the selected directory's content. Keyed on the uuid; the two guards below make it fetch at
-    // most once per change and skip a directory already fed by the notification handler or just deleted.
+    // Fetch the selected directory's content.
+    // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
+    // The two guards below make it fetch at most once per change
+    // and skip a directory already fed by the notification handler or just deleted.
     useEffect(() => {
         const selectedDirectoryUuid = selectedDirectory?.elementUuid;
         // Already fetched and fed by the notification handler (deletion navigated to its parent).
