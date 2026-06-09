@@ -200,14 +200,14 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
-    // re-run this check.
     useEffect(() => {
         if (directory !== null) {
             checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
+        // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
+        // re-run this check.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [directory?.elementUuid]);
 

@@ -120,14 +120,14 @@ export default function DirectoryContent() {
     /** access write on current directory */
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
-    // Keyed on the uuid: the permission only depends on the directory id, and `selectedDirectory`
-    // changes reference on every tree update, which would otherwise re-run this check.
     useEffect(() => {
         if (selectedDirectory !== null) {
             checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 setDirectoryWritable(b);
             });
         }
+        // Keyed on the uuid: the permission only depends on the directory id, and `selectedDirectory`
+        // changes reference on every tree update, which would otherwise re-run this check.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDirectory?.elementUuid]);
 

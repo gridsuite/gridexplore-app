@@ -402,8 +402,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
-    // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
-    // otherwise re-run these checks.
     useEffect(() => {
         if (selectedDirectory !== null) {
             Promise.all([
@@ -411,6 +409,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then(setDirectoryWritable),
             ]).finally(() => setPermissionsLoaded(true));
         }
+        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
+        // otherwise re-run these checks.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDirectory?.elementUuid]);
 
