@@ -441,9 +441,12 @@ export default function CompositeModificationDialog({
                         <NetworkModificationsTable
                             handleCellClick={editModification}
                             modifications={modifications}
+                            // the following values will be used when we enable composite editing in gridexplore
                             onRowDragStart={() => {}}
                             onRowDragEnd={() => {}}
-                            onRowSelected={() => {}}
+                            onSelectedRowsChange={() => {}}
+                            modificationUuidsToReset={[]}
+                            modificationToEditLabel={null}
                             isRowDragDisabled
                             isImpactedByNotification={() => false}
                             notificationMessageId="notificationMessageId"
