@@ -20,4 +20,4 @@ export const ContingencyListType = {
         label: 'contingencyList.explicitNaming',
     },
     FILTERS: { id: 'FILTERS', label: 'contingencyList.filterBased' },
-};
+} as const;
