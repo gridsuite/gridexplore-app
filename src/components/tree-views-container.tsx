@@ -549,8 +549,14 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     useEffect(() => {
         const selectedDirectoryUuid = selectedDirectory?.elementUuid;
         // Skip when the content of this directory was just fetched and fed by the notification handler
-        // (deletion of the selected directory navigates here), to avoid a duplicate fetch.
+        // (deletion of the selected directory navigates to its parent), to avoid a duplicate fetch.
         if (previousSelectedDirectoryUuidRef.current === selectedDirectoryUuid) {
+            return;
+        }
+        // The selected directory may have just been deleted: it lingers as selected until the URL catches
+        // up to its parent, but is already gone from the tree, so fetching it would 404. Skip it WITHOUT
+        // recording it, so the dedup ref keeps pointing at the real navigation target (the parent).
+        if (selectedDirectoryUuid && !treeDataRef.current?.mapData[selectedDirectoryUuid]) {
             return;
         }
         previousSelectedDirectoryUuidRef.current = selectedDirectoryUuid;
