@@ -408,7 +408,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
                     const navigatedTo = updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving); // Update Tree Map data
-                    if (navigatedTo) {
+                    if (navigatedTo === nodeId) {
                         // We navigated here because the selected directory was deleted; its content was just
                         // fetched, so feed it and let the selection effect skip its own fetch.
                         updateCurrentChildren(childrenToBeInserted);
