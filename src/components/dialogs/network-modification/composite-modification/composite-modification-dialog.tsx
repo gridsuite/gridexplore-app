@@ -67,6 +67,7 @@ import {
     shuntCompensatorModificationFormToDto,
     ComposedModificationMetadata,
     networkModificationTableStyles,
+    NetworkModificationsTable,
     batteryCreationFormSchema,
     BatteryCreationForm,
     batteryCreationFormToDto,
@@ -75,10 +76,13 @@ import {
     batteryModificationFormSchema,
     batteryModificationFormToDto,
     BatteryModificationForm,
+    generatorCreationFormSchema,
+    generatorCreationDtoToForm,
+    generatorCreationFormToDto,
+    GeneratorCreationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { NetworkModificationsTable } from '@gridsuite/commons-ui';
 import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
@@ -232,6 +236,18 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyBattery',
                         ModificationForm: BatteryModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.GENERATOR_CREATION,
+                    {
+                        formSchema: generatorCreationFormSchema,
+                        dtoToForm: generatorCreationDtoToForm,
+                        formToDto: generatorCreationFormToDto,
+                        errorHeaderId: 'GeneratorCreationError',
+                        titleId: 'CreateGenerator',
+                        ModificationForm: GeneratorCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
@@ -425,9 +441,12 @@ export default function CompositeModificationDialog({
                         <NetworkModificationsTable
                             handleCellClick={editModification}
                             modifications={modifications}
+                            // the following values will be used when we enable composite editing in gridexplore
                             onRowDragStart={() => {}}
                             onRowDragEnd={() => {}}
-                            onRowSelected={() => {}}
+                            onSelectedRowsChange={() => {}}
+                            modificationUuidsToReset={[]}
+                            modificationToEditLabel={null}
                             isRowDragDisabled
                             isImpactedByNotification={() => false}
                             notificationMessageId="notificationMessageId"

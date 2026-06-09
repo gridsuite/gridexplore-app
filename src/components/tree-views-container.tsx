@@ -7,6 +7,7 @@
 
 import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 import {
     type ElementAttributes,
     ElementType,
@@ -87,6 +88,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
 
 export default function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
@@ -106,6 +108,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
     selectedDirectoryRef.current = selectedDirectory;
+    const previousSelectedDirectoryUuidRef = useRef<UUID | undefined>(undefined);
 
     const [DOMFocusedDirectory, setDOMFocusedDirectory] = useState<ParentNode | null>(null);
 
@@ -265,9 +268,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                         isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
                     )
                 );
+                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: false });
             }
         },
-        [insertContent, dispatch]
+        [insertContent, dispatch, navigate]
     );
 
     const cleanCreationFailedElementInCurrentElements = useCallback(
@@ -472,6 +476,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
                     dispatch(setSelectedDirectory(null));
+                    navigate(`/`, { replace: false });
                     return;
                 }
                 // if it's a new root directory then do not continue because we don't need
@@ -524,13 +529,20 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         updateDirectoryTree,
         updateDirectoryTreeAndContent,
         updateRootDirectories,
+        navigate,
     ]);
 
     /* Handle components synchronization */
     // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
     useEffect(() => {
-        if (selectedDirectory?.elementUuid) {
-            updateDirectoryTreeAndContent(selectedDirectory.elementUuid, false);
+        // To avoid refetching even if the dependencies changed (other than the elementUuid)
+        const selectedDirectoryUuid = selectedDirectory?.elementUuid;
+        if (previousSelectedDirectoryUuidRef.current === selectedDirectoryUuid) {
+            return;
+        }
+        previousSelectedDirectoryUuidRef.current = selectedDirectoryUuid;
+        if (selectedDirectoryUuid) {
+            updateDirectoryTreeAndContent(selectedDirectoryUuid, false);
         }
     }, [selectedDirectory?.elementUuid, updateDirectoryTreeAndContent]);
 
@@ -571,6 +583,9 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     useEffect(() => {
         if (!sourceItemUuid || !treeData.initialized) return;
+        // We can be in this case when navigating with breadcrumbs
+        // and so we don't want to refetch since we already have the data
+        if (sourceItemUuid === selectedDirectoryRef?.current?.elementUuid?.toString()) return;
         (async () => {
             try {
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
@@ -620,7 +635,16 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 });
             }
         })();
-    }, [sourceItemUuid, treeData.initialized, loadPath, handleDispatchDirectory, dispatch, snackError]);
+    }, [
+        sourceItemUuid,
+        treeData.initialized,
+        loadPath,
+        handleDispatchDirectory,
+        dispatch,
+        selectedDirectoryRef,
+        navigate,
+        snackError,
+    ]);
 
     return (
         <>

@@ -27,7 +27,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     ModificationForm: FunctionComponent<any>;
     formSchema: ObjectSchema<FormData>;
     dtoToForm: (dto: ModificationData) => FormData;
-    formToDto: (form: FormData) => Omit<ModificationData, 'uuid'>;
+    formToDto: (form: FormData, dto?: ModificationData) => Omit<ModificationData, 'uuid'>;
     errorHeaderId: string;
     isModification?: boolean;
     removeOptional?: boolean;
@@ -80,7 +80,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             if (modificationData) {
                 updateModification({
                     modificationUuid: modificationData.uuid,
-                    body: JSON.stringify(formToDto(form)),
+                    body: JSON.stringify(formToDto(form, modificationData)),
                 }).catch((error: unknown) => {
                     snackWithFallback(snackError, error, { headerId: errorHeaderId });
                 });
