@@ -473,7 +473,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         listenerCallbackMessage: onUpdateDirectories,
     });
 
+    // Each notification toggles `directoryUpdatedEvent.force`, so it is a new object per real event.
+    // We process it exactly once: other deps of the effect below (notably `navigate`, whose identity
+    // changes on every navigation with react-router's `<Routes>`) would otherwise re-run it with the
+    // same stale event and re-fetch / re-navigate (e.g. keep fetching a deleted element's parent on
+    // each subsequent click).
+    const processedDirectoryEventRef = useRef(directoryUpdatedEvent);
+
     useEffect(() => {
+        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
+            return;
+        }
+        processedDirectoryEventRef.current = directoryUpdatedEvent;
         if (directoryUpdatedEvent.eventData?.headers) {
             const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
             const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
