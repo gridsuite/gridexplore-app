@@ -91,7 +91,7 @@
     "contingencyList.filterBased.filtersTableColumn": "Filtres de postes / sites",
     "contingencyList.filterBased.subEquipmentsTableColumn": "Types d'ouvrages",
     "distributionKey": "Clé de répartition",
-    "CSVFileCommentContingencyList1": "# Si un aléa est associé à plusieurs ouvrages utiliser la barre verticale \"|\" comme séparateur",
+    "CSVFileCommentContingencyList1": "# Si un aléa est associé à plusieurs ouvrages utiliser la barre verticale '|' comme séparateur",
     "CSVFileCommentContingencyList2": "# ID_ligne1;Ligne 1",
     "CSVFileCommentContingencyList3": "# ID_transformateur2;Transformateur 2",
     "CSVFileCommentContingencyList4": "# ID_ligne1|ID_groupe1;N-2 mixte",
