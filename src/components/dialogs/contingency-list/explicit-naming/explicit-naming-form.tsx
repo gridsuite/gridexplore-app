@@ -42,7 +42,7 @@ export default function ExplicitNamingForm() {
     const { getValues } = useFormContext();
     const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
     const columnDefs = useMemo<ColDef[]>(
         () => [
             {
@@ -142,16 +142,16 @@ export default function ExplicitNamingForm() {
                         language={languageLocal}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
+                        onFileError={setFileErrorMessage}
                         hasExistingData={hasExistingData}
                         onAppend={(results) => tableRef.current?.append(getDataFromCsvFile(results.data))}
                         onReplace={(results) => tableRef.current?.replace(getDataFromCsvFile(results.data))}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
