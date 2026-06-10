@@ -10,6 +10,7 @@ import { Box, Breadcrumbs, emphasize, Link, Tooltip, Typography } from '@mui/mat
 import { FolderOpen as FolderOpenIcon } from '@mui/icons-material';
 import { type ElementAttributes, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { MouseEvent } from 'react';
+import { useNavigate } from 'react-router';
 import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/types';
 
@@ -66,6 +67,7 @@ const styles = {
 
 export default function DirectoryBreadcrumbs() {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
@@ -74,6 +76,7 @@ export default function DirectoryBreadcrumbs() {
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
         dispatch(setSelectedDirectory(dir));
+        navigate(dir !== null ? `/elements/${dir.elementUuid}` : '/', { replace: false });
     };
 
     /* Handle Rendering */
