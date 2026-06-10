@@ -325,6 +325,8 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/diagram-config';
         case ElementType.WORKSPACE:
             return '/workspaces';
+        case ElementType.PROCESS_CONFIG:
+            return '/process-configs';
         default:
             return undefined;
     }
