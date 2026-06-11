@@ -123,6 +123,7 @@ export default function DirectoryContent() {
     useEffect(() => {
         let isCurrent = true;
         if (selectedDirectory !== null) {
+            setDirectoryWritable(false);
             checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
                 if (isCurrent) {
                     setDirectoryWritable(b);
