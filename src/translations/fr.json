@@ -201,5 +201,10 @@
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Téléchargement du {fileName} a réussi",
     "export.message.failed": "Échec du téléchargement du fichier {error}",
-    "PageNotFound": "Page introuvable"
+    "PageNotFound": "Page introuvable",
+    "editASProcessConfig": "Edition d'une configuration d'analyse de sécurité sous aléas",
+    "modifications": "Modifications",
+    "providersParameters": "Paramètres des simulateurs",
+    "loadflow": "Calcul de répartition",
+    "securityAnalysis": "Analyse de sécurité"
 }
