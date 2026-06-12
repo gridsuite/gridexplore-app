@@ -16,7 +16,6 @@ import {
     ElementType,
     FieldConstants,
     getCsvDelimiter,
-    hasNonEmptyRows,
     PARAM_LANGUAGE,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
@@ -106,8 +105,6 @@ export default function ExplicitNamingForm() {
         []
     );
 
-    const hasExistingData = useCallback(() => hasNonEmptyRows(getValues(FieldConstants.EQUIPMENT_TABLE)), [getValues]);
-
     const getTemplateData = useCallback(() => [csvFileHeaders, ...csvInitialData], [csvFileHeaders, csvInitialData]);
 
     const getTableData = useCallback(() => {
@@ -143,7 +140,7 @@ export default function ExplicitNamingForm() {
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
                         onFileError={setFileErrorMessage}
-                        hasExistingData={hasExistingData}
+                        getTableData={() => getValues(FieldConstants.EQUIPMENT_TABLE)}
                         onAppend={(results) => tableRef.current?.append(getDataFromCsvFile(results.data))}
                         onReplace={(results) => tableRef.current?.replace(getDataFromCsvFile(results.data))}
                     />
