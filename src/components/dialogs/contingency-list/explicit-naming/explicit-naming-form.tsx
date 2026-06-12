@@ -15,8 +15,8 @@ import {
     DescriptionField,
     ElementType,
     FieldConstants,
+    getCsvDelimiter,
     hasNonEmptyRows,
-    LANG_FRENCH,
     PARAM_LANGUAGE,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
@@ -88,7 +88,7 @@ export default function ExplicitNamingForm() {
     );
 
     const csvInitialData = useMemo(() => {
-        const separator = languageLocal === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(languageLocal);
         return [
             [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
             intl.formatMessage({ id: 'CSVFileCommentContingencyList2' }).split(separator),
@@ -113,13 +113,13 @@ export default function ExplicitNamingForm() {
     const getTableData = useCallback(() => {
         const rows = (getValues(FieldConstants.EQUIPMENT_TABLE) ?? []) as Record<string, any>[];
         return [
-            csvFileHeaders,
+            ...getTemplateData(),
             ...rows.map((r) => [
                 (r[FieldConstants.EQUIPMENT_IDS] ?? []).join('|'),
                 r[FieldConstants.CONTINGENCY_NAME] ?? '',
             ]),
         ];
-    }, [csvFileHeaders, getValues]);
+    }, [getTemplateData, getValues]);
 
     return (
         <Grid container direction="column" spacing={2} sx={{ flexGrow: 1, flexWrap: 'nowrap', minHeight: 0 }}>
