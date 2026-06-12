@@ -6,19 +6,21 @@
  */
 
 import { useIntl } from 'react-intl';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { FieldValues, useFormContext, UseFieldArrayReturn } from 'react-hook-form';
 import { v4 as uuid4 } from 'uuid';
 import {
+    CsvPicker,
     CustomAgGridTable,
     DescriptionField,
     ElementType,
     FieldConstants,
+    getCsvDelimiter,
     PARAM_LANGUAGE,
     UniqueNameInput,
-    unscrollableDialogStyles,
 } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
-import { Box } from '@mui/material';
+import { Alert, Grid2 as Grid } from '@mui/material';
 import { useSelector } from 'react-redux';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
@@ -36,6 +38,10 @@ export default function ExplicitNamingForm() {
     const intl = useIntl();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const { getValues } = useFormContext();
+    const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
+    const [selectedFile, setSelectedFile] = useState<File | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
     const columnDefs = useMemo<ColDef[]>(
         () => [
             {
@@ -62,35 +68,33 @@ export default function ExplicitNamingForm() {
         [intl]
     );
 
-    const getDataFromCsvFile = useCallback((csvData: string[][]) => {
-        if (csvData) {
-            return csvData.map((value) => ({
+    const csvFileHeaders = useMemo(() => columnDefs.map((c) => c.headerName as string), [columnDefs]);
+
+    const getDataFromCsvFile = useCallback(
+        (csvData: Record<string, string>[]) => {
+            const [equipmentsHeader, contingencyHeader] = csvFileHeaders;
+            return csvData.map((row) => ({
                 [FieldConstants.AG_GRID_ROW_UUID]: uuid4(),
                 [FieldConstants.EQUIPMENT_IDS]:
-                    value[0]
+                    row[equipmentsHeader]
                         ?.split('|')
                         .map((n) => n.trim())
                         .filter((n) => n) || undefined,
-                [FieldConstants.CONTINGENCY_NAME]: value[1]?.trim() || '',
+                [FieldConstants.CONTINGENCY_NAME]: row[contingencyHeader]?.trim() || '',
             }));
-        }
-        return [];
-    }, []);
-
-    const csvFileHeaders = useMemo(
-        () => [intl.formatMessage({ id: 'equipments' }), intl.formatMessage({ id: 'elementName' })],
-        [intl]
+        },
+        [csvFileHeaders]
     );
 
-    const csvInitialData = useMemo(
-        () => [
+    const csvInitialData = useMemo(() => {
+        const separator = getCsvDelimiter(languageLocal);
+        return [
             [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
-            [intl.formatMessage({ id: 'CSVFileCommentContingencyList2' })],
-            [intl.formatMessage({ id: 'CSVFileCommentContingencyList3' })],
-            [intl.formatMessage({ id: 'CSVFileCommentContingencyList4' })],
-        ],
-        [intl]
-    );
+            intl.formatMessage({ id: 'CSVFileCommentContingencyList2' }).split(separator),
+            intl.formatMessage({ id: 'CSVFileCommentContingencyList3' }).split(separator),
+            intl.formatMessage({ id: 'CSVFileCommentContingencyList4' }).split(separator),
+        ];
+    }, [intl, languageLocal]);
 
     const defaultColDef = useMemo(
         () => ({
@@ -101,46 +105,76 @@ export default function ExplicitNamingForm() {
         []
     );
 
+    const getTemplateData = useCallback(() => [csvFileHeaders, ...csvInitialData], [csvFileHeaders, csvInitialData]);
+
+    const getTableData = useCallback(() => {
+        const rows = (getValues(FieldConstants.EQUIPMENT_TABLE) ?? []) as Record<string, any>[];
+        return [
+            ...getTemplateData(),
+            ...rows.map((r) => [
+                (r[FieldConstants.EQUIPMENT_IDS] ?? []).join('|'),
+                r[FieldConstants.CONTINGENCY_NAME] ?? '',
+            ]),
+        ];
+    }, [getTemplateData, getValues]);
+
     return (
-        <>
-            <Box sx={unscrollableDialogStyles.unscrollableHeader}>
+        <Grid container direction="column" spacing={2} sx={{ flexGrow: 1, flexWrap: 'nowrap', minHeight: 0 }}>
+            <Grid>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
                     label="nameProperty"
                     elementType={ElementType.CONTINGENCY_LIST}
                     activeDirectory={activeDirectory}
                 />
-                <DescriptionField />
-            </Box>
-            <CustomAgGridTable
-                name={FieldConstants.EQUIPMENT_TABLE}
-                columnDefs={columnDefs}
-                makeDefaultRowData={makeDefaultRowData}
-                pagination
-                paginationPageSize={100}
-                rowSelection={{
-                    mode: 'multiRow',
-                    enableClickSelection: false,
-                    checkboxes: true,
-                    headerCheckbox: true,
-                }}
-                defaultColDef={defaultColDef}
-                alwaysShowVerticalScroll
-                csvProps={{
-                    fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
-                    fileHeaders: csvFileHeaders,
-                    getDataFromCsv: getDataFromCsvFile,
-                    csvData: csvInitialData,
-                    language: languageLocal,
-                }}
-                cssProps={{
-                    padding: 1,
-                    '& .ag-root-wrapper-body': {
-                        maxHeight: 'unset',
-                    },
-                }}
-                overrideLocales={AGGRID_LOCALES}
-            />
-        </>
+            </Grid>
+            <Grid container justifyContent="space-between" alignItems="center">
+                <Grid>
+                    <DescriptionField />
+                </Grid>
+                <Grid>
+                    <CsvPicker<Record<string, string>>
+                        label="UploadCSV"
+                        header={csvFileHeaders}
+                        language={languageLocal}
+                        selectedFile={selectedFile}
+                        onFileChange={setSelectedFile}
+                        onFileError={setFileErrorMessage}
+                        getTableData={() => getValues(FieldConstants.EQUIPMENT_TABLE)}
+                        onAppend={(results) => tableRef.current?.append(getDataFromCsvFile(results.data))}
+                        onReplace={(results) => tableRef.current?.replace(getDataFromCsvFile(results.data))}
+                    />
+                </Grid>
+            </Grid>
+            {fileErrorMessage && (
+                <Grid>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
+                </Grid>
+            )}
+            <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                <CustomAgGridTable
+                    ref={tableRef}
+                    name={FieldConstants.EQUIPMENT_TABLE}
+                    columnDefs={columnDefs}
+                    makeDefaultRowData={makeDefaultRowData}
+                    pagination
+                    rowSelection={{
+                        mode: 'multiRow',
+                        enableClickSelection: false,
+                        checkboxes: true,
+                        headerCheckbox: true,
+                    }}
+                    defaultColDef={defaultColDef}
+                    alwaysShowVerticalScroll
+                    overrideLocales={AGGRID_LOCALES}
+                    csvProps={{
+                        fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
+                        language: languageLocal,
+                        getTemplateData,
+                        getTableData,
+                    }}
+                />
+            </Grid>
+        </Grid>
     );
 }
