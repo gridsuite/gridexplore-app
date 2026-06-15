@@ -502,7 +502,7 @@ function DirectoryContentDialog(
                 );
             }
         }
-        if (currentProcessConfigId) {
+        if (currentProcessConfigId && activeDirectory) {
             if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
                 return (
                     <UpdateSAProcessConfigDialog
