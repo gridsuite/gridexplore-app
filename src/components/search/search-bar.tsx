@@ -5,32 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { RefObject, useCallback } from 'react';
-import {
-    ElementSearchInput,
-    ElementSearchInputProps,
-    Paginated,
-    snackWithFallback,
-    useElementSearch,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { ElementSearchInput, ElementSearchInputProps, Paginated, useElementSearch } from '@gridsuite/commons-ui';
+import { useSelector } from 'react-redux';
 import { TextFieldProps } from '@mui/material';
+import { useNavigate } from 'react-router';
 import { searchElementsInfos } from '../../utils/rest-api';
-import { setSearchedElement } from '../../redux/actions';
 import { SearchItem } from './search-item';
 import { AppState, ElementAttributesES } from '../../redux/types';
 import { SearchBarRenderInput } from './search-bar-render-input';
-import { AppDispatch } from '../../redux/store';
 import { SearchBarPaperDisplayedElementWarning } from './search-bar-displayed-element-warning';
-import { useDirectoryPathLoader } from '../../hooks/use-directory-path-loader';
 
 export interface SearchBarProps {
     inputRef: RefObject<TextFieldProps>;
 }
 
 export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
-    const dispatch = useDispatch<AppDispatch>();
-    const { snackError } = useSnackMessage();
+    const navigate = useNavigate();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
     const fetchElementsPageable: (newSearchTerm: string) => Promise<Paginated<ElementAttributesES>> = useCallback(
@@ -40,7 +30,6 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     const { elementsFound, isLoading, searchTerm, updateSearchTerm, totalElements } = useElementSearch({
         fetchElements: fetchElementsPageable,
     });
-    const { loadPath, handleDispatchDirectory } = useDirectoryPathLoader();
     const renderOptionItem = useCallback<ElementSearchInputProps<ElementAttributesES>['renderElement']>(
         (props) => {
             const { element, inputValue } = props;
@@ -52,21 +41,16 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
     );
 
     const handleMatchingElement = useCallback<ElementSearchInputProps<ElementAttributesES>['onSelectionChange']>(
-        async (data) => {
+        (data) => {
             const matchingElement = elementsFound.find((element) => element === data);
-            if (!matchingElement) return;
-            try {
-                await loadPath(matchingElement.pathUuid);
-            } catch (error: any) {
-                snackWithFallback(snackError, error, { headerId: 'pathRetrievingError' });
+            if (!matchingElement) {
+                return;
             }
-            const lastElement = matchingElement.pathUuid.at(-1);
-            dispatch(setSearchedElement(data));
-            if (lastElement !== selectedDirectory?.elementUuid) {
-                handleDispatchDirectory(lastElement);
-            }
+            // The URL is the single source of truth: navigating expands the tree, selects the directory
+            // and highlights the element (handled in TreeViewsContainer).
+            navigate(`/elements/${matchingElement.id}`);
         },
-        [elementsFound, loadPath, selectedDirectory?.elementUuid, handleDispatchDirectory, snackError, dispatch]
+        [elementsFound, navigate]
     );
 
     const displayComponent = useCallback<NonNullable<ElementSearchInputProps<ElementAttributesES>['PaperComponent']>>(
