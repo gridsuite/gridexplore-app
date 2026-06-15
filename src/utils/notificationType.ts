@@ -13,6 +13,11 @@ export enum NotificationType {
     CASE_EXPORT_FINISHED = 'caseExportFinished',
 }
 
+export interface DirectoryInfos {
+    uuid: UUID;
+    isRoot: boolean;
+}
+
 export interface ExportCaseEventData {
     headers: ExportCaseEventDataHeaders;
     payload: undefined;

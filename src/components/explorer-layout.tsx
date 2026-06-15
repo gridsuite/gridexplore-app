@@ -6,7 +6,7 @@
  */
 import { Box } from '@mui/material';
 import { useParams } from 'react-router';
-import TreeViewsContainer from './tree-views-container';
+import { TreeViewsContainer } from './tree-views-container';
 import DirectoryBreadcrumbs from './directory-breadcrumbs';
 import DirectoryContent from './directory-content';
 

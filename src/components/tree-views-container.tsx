@@ -32,7 +32,7 @@ import {
     setUploadingElements,
 } from '../redux/actions';
 import DirectoryTreeView from './directory-tree-view';
-import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
+import { DirectoryInfos, isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -86,7 +86,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
     );
 }
 
-export default function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
+export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -416,12 +416,12 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     /* Manage Studies updating with Web Socket */
     const displayErrorIfExist = useCallback(
-        (error: string, studyName: string) => {
+        (error: string, studyNames: string[]) => {
             if (error) {
                 snackError({
                     messageTxt: error,
                     headerId: 'studyCreatingError',
-                    headerValues: { studyName },
+                    headerValues: { studyName: studyNames.join(', ') },
                 });
             }
         },
@@ -463,17 +463,17 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     useEffect(() => {
         function updateDirectory(
-            directoryUuid: UUID,
-            isRootDirectory: unknown,
+            directory: DirectoryInfos,
             isDirectoryMoving: boolean,
-            notificationType: unknown
+            notificationType: NotificationType
         ) {
-            if (isRootDirectory && (isDirectoryMoving || notificationType !== NotificationType.UPDATE_DIRECTORY)) {
+            // if parent uuid is null that also means that it is root directory
+            if (directory.isRoot || directory.uuid == null) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                     notificationType === NotificationType.DELETE_DIRECTORY &&
-                    selectedDirectoryRef.current.elementUuid === directoryUuid
+                    selectedDirectoryRef.current.elementUuid === directory.uuid
                 ) {
                     dispatch(setSelectedDirectory(null));
                     navigate(`/`, { replace: false });
@@ -481,7 +481,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 }
                 // if it's a new root directory then do not continue because we don't need
                 // to fetch an empty content
-                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directoryUuid)) {
+                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directory.uuid)) {
                     return;
                 }
 
@@ -491,36 +491,36 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-            if (directoryUuid) {
+
+            if (directory.uuid != null) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
-                    if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
+                    if (directory.uuid === selectedDirectoryRef.current.elementUuid) {
+                        updateDirectoryTreeAndContent(directory.uuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
+                updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
             }
         }
 
         if (directoryUpdatedEvent.eventData?.headers) {
-            const { notificationType, isRootDirectory, oldIsRootDirectory } = directoryUpdatedEvent.eventData.headers;
-            const oldDirectoryUuid = directoryUpdatedEvent.eventData.headers.oldDirectoryUuid as UUID;
-            const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
+            const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
+            const directoriesInfos = JSON.parse(
+                directoryUpdatedEvent.eventData.headers.directoriesInfos as string
+            ) as DirectoryInfos[];
             const error = directoryUpdatedEvent.eventData.headers.error as string;
-            const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
+            const elementNames = directoryUpdatedEvent.eventData.headers.elementNames as string[];
             const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
+
             if (error) {
-                displayErrorIfExist(error, elementName);
+                displayErrorIfExist(error, elementNames);
                 dispatch(directoryUpdated({}));
             }
 
-            if (oldDirectoryUuid) {
-                updateDirectory(oldDirectoryUuid, oldIsRootDirectory, isDirectoryMoving, notificationType);
-            }
-            updateDirectory(directoryUuid, isRootDirectory, isDirectoryMoving, notificationType);
+            directoriesInfos.forEach((folder) => updateDirectory(folder, isDirectoryMoving, notificationType));
         }
     }, [
         directoryUpdatedEvent,
