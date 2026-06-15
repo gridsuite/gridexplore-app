@@ -21,6 +21,7 @@ import {
     InsertDriveFile as InsertDriveFileIcon,
     LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
+    ScreenShareOutlined as ScreenShareOutlinedIcon,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
 import {
@@ -56,6 +57,7 @@ import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
+import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
@@ -405,6 +407,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
+    const couldDisplaySharingLinks = useCallback(() => {
+        return (
+            isSingleElement &&
+            selectedElements[0].type === ElementType.MODIFICATION &&
+            (selectedElements[0].references?.length ?? 0) > 0
+        );
+    }, [isSingleElement, selectedElements]);
+
     useEffect(() => {
         let isCurrent = true;
         if (selectedDirectory !== null) {
@@ -508,6 +518,16 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
+        if (couldDisplaySharingLinks()) {
+            menuItems.push({
+                messageDescriptorId: 'displaySharingLinks',
+                callback: () => {
+                    handleOpenDialog(DialogsId.SHARING_LINKS);
+                },
+                icon: <ScreenShareOutlinedIcon fontSize="small" data-testid="SharingLinksIcon" />,
+            });
+        }
+
         if (couldDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
@@ -575,6 +595,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         couldDuplicate,
         couldCopy,
         couldDelete,
+        couldDisplaySharingLinks,
         couldDownload,
         isDeveloperMode,
         couldExportCase,
@@ -672,6 +693,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
+            case DialogsId.SHARING_LINKS:
+                return <SharingLinksDialog open onClose={handleCloseDialog} element={activeElement} />;
             default:
                 return null;
         }
