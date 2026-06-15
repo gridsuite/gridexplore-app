@@ -821,41 +821,12 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
 }
 
-async function enrichConfiguration(persistedProcessConfig: PersistedProcessConfigBackend) {
-    const { processConfig } = persistedProcessConfig;
-    const allUuids = new Set<string>([
-        ...processConfig.modificationUuids,
-        processConfig.securityAnalysisParametersUuid,
-        processConfig.loadflowParametersUuid,
-    ]);
-
-    const elementNamesByUuid = (await fetchElementNames(allUuids)) as Record<string, string>;
-
-    return {
-        processType: processConfig.processType,
-        modifications: processConfig.modificationUuids.map((uuid) => ({
-            id: uuid,
-            name: elementNamesByUuid[uuid],
-            enabled: true,
-            description: undefined,
-        })),
-        securityAnalysisParameters: {
-            id: processConfig.securityAnalysisParametersUuid,
-            name: elementNamesByUuid[processConfig.securityAnalysisParametersUuid],
-        },
-        loadflowParameters: {
-            id: processConfig.loadflowParametersUuid,
-            name: elementNamesByUuid[processConfig.loadflowParametersUuid],
-        },
-    } satisfies SecurityAnalysisProcessConfig;
-}
-
 export function fetchSAProcessConfig(processConfigUuid: UUID) {
     console.info('Fetching SA process config from monitor server');
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
-    }).then((persistedProcessConfig: PersistedProcessConfigBackend) => enrichConfiguration(persistedProcessConfig));
+    });
 }
 
 export function updateSAProcessConfig(

@@ -202,10 +202,5 @@
     "export.message.started": "Export {fileName} started",
     "export.message.succeeded": "Export {fileName} succeeded",
     "export.message.failed": "Export file failed {error}",
-    "PageNotFound": "Page not found",
-    "editASProcessConfig": "Edit a security analysis with contingency process config",
-    "modifications": "Modifications",
-    "providersParameters": "Providers parameters",
-    "loadflow": "Loadflow",
-    "securityAnalysis": "Security analysis"
+    "PageNotFound": "Page not found"
 }

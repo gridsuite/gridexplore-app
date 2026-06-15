@@ -31,11 +31,14 @@ import {
     ShortCircuitParametersEditionDialog,
     useSnackMessage,
     VoltageInitParametersEditionDialog,
+    UpdateSAProcessConfigDialog,
+    ProcessType,
+    isProcessType,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { getFilterById, updateElement } from '../utils/rest-api';
+import { fetchSAProcessConfig, getFilterById, updateElement, updateSAProcessConfig } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/explicit-naming/explicit-naming-edition-dialog';
@@ -46,8 +49,6 @@ import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 import { DirectoryField } from './utils/directory-content-utils';
-import { isProcessType, ProcessType } from './dialogs/process-configs/process-configs.type';
-import { UpdateSAProcessConfigDialog } from './dialogs/process-configs/update-sa-process-config-dialog';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -511,6 +512,8 @@ function DirectoryContentDialog(
                         name={elementName}
                         description={activeElement.description}
                         directory={activeDirectory}
+                        fetchSAProcessConfig={fetchSAProcessConfig}
+                        updateSAProcessConfig={updateSAProcessConfig}
                     />
                 );
             }
