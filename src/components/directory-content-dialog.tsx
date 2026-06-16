@@ -38,7 +38,7 @@ import {
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { fetchSAProcessConfig, getFilterById, updateElement, updateSAProcessConfig } from '../utils/rest-api';
+import { fetchProcessConfig, getFilterById, updateElement, updateSAProcessConfig } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/explicit-naming/explicit-naming-edition-dialog';
@@ -512,7 +512,7 @@ function DirectoryContentDialog(
                         name={elementName}
                         description={activeElement.description}
                         directory={activeDirectory}
-                        fetchSAProcessConfig={fetchSAProcessConfig}
+                        fetchSAProcessConfig={fetchProcessConfig}
                         updateSAProcessConfig={updateSAProcessConfig}
                     />
                 );

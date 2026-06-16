@@ -821,7 +821,7 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
 }
 
-export function fetchSAProcessConfig(processConfigUuid: UUID) {
+export function fetchProcessConfig(processConfigUuid: UUID) {
     console.info('Fetching SA process config from monitor server');
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
