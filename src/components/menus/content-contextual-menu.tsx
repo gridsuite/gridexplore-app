@@ -165,6 +165,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.SPREADSHEET_CONFIG:
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                 case ElementType.WORKSPACE:
+                case ElementType.PROCESS_CONFIG:
                     console.info(
                         `${activeElement.type} with uuid ${activeElement.elementUuid} from directory ${selectedDirectory?.elementUuid} selected for copy`
                     );
@@ -216,6 +217,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.PROCESS_CONFIG:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
                         snackDuplicateError
                     );
@@ -336,6 +338,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             ElementType.SPREADSHEET_CONFIG_COLLECTION,
             ElementType.DIAGRAM_CONFIG,
             ElementType.WORKSPACE,
+            ElementType.PROCESS_CONFIG,
         ];
 
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
@@ -403,13 +406,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [directoryWritable, isSingleElement]);
 
     useEffect(() => {
+        let isCurrent = true;
         if (selectedDirectory !== null) {
             Promise.all([
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then(setDirectoryReadable),
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then(setDirectoryWritable),
-            ]).finally(() => setPermissionsLoaded(true));
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryReadable(b);
+                    }
+                }),
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryWritable(b);
+                    }
+                }),
+            ]).finally(() => {
+                if (isCurrent) {
+                    setPermissionsLoaded(true);
+                }
+            });
+        } else {
+            setDirectoryReadable(false);
+            setDirectoryWritable(false);
         }
-    }, [selectedDirectory]);
+        return () => {
+            isCurrent = false;
+        };
+        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
+        // otherwise re-run these checks.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDirectory?.elementUuid]);
 
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
