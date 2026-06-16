@@ -12,6 +12,13 @@ import './configure-yup-init';
 
 import { createRoot } from 'react-dom/client';
 import AppWrapper from './components/app-wrapper';
+import SilentRenewApp from './components/silent-renew-app';
 
 const container = document.getElementById('root');
-createRoot(container!).render(<AppWrapper />);
+const root = createRoot(container!);
+
+if (window.location.pathname.endsWith('/silent-renew-callback')) {
+    root.render(<SilentRenewApp />);
+} else {
+    root.render(<AppWrapper />);
+}

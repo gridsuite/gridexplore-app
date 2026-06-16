@@ -16,6 +16,7 @@ import {
     type GsLang,
     type GsTheme,
     hasElementPermission,
+    IdpSettings,
     LAST_SELECTED_DIRECTORY,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
@@ -44,6 +45,7 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GAT
 const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
+const IDP_SETTINGS_CACHE_KEY = 'gridsuite-idp-settings';
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -93,8 +95,29 @@ const getContingencyUriParamType = (contingencyListType: string | null | undefin
     }
 };
 
-export function fetchIdpSettings() {
-    return fetch('idpSettings.json').then((res) => res.json());
+// Always hits the network: picks up config changes on each full app load
+// AND refreshes the cache read by the silent-renew iframe.
+export function fetchIdpSettings(): Promise<IdpSettings> {
+    return fetch('idpSettings.json')
+        .then((res) => res.json())
+        .then((settings: IdpSettings) => {
+            localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            return settings;
+        });
+}
+
+// Used only on the silent-renew path: reads the cache (no network),
+// falls back to a real fetch if the cache is missing/corrupted.
+export function getCachedIdpSettings(): Promise<IdpSettings> {
+    const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
+    if (cached) {
+        try {
+            return Promise.resolve(JSON.parse(cached) as IdpSettings);
+        } catch {
+            // corrupted cache -> fall back to a fresh fetch
+        }
+    }
+    return fetchIdpSettings();
 }
 
 export function fetchVersion() {

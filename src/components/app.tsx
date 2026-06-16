@@ -28,7 +28,7 @@ import {
     UserManagerState,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { selectComputedLanguage, selectEnableDeveloperMode, selectLanguage, selectTheme } from '../redux/actions';
 import { ConfigParameters, fetchIdpSettings } from '../utils/rest-api';
 import { APP_NAME } from '../utils/config-params';
@@ -158,12 +158,33 @@ export default function App() {
         }
         return undefined;
     }, [userProfile, dispatch, updateParams, snackError]);
+    const CTX = window === window.parent ? 'PARENT' : 'IFRAME';
+    const triggerSilentRenew = useCallback(async () => {
+        if (userManager.instance) {
+            console.log(`====[${CTX}][signinSilent] start/done`);
+            console.log('====[debug] signinSilent start');
+            try {
+                await userManager.instance.signinSilent();
+                console.log('====[debug] signinSilent done');
+            } catch (e) {
+                console.error('====[debug] signinSilent error', e);
+            }
+        }
+    }, [CTX, userManager.instance]);
 
     // We use <Box flex=.../> instead of <Grid/> because flex rules were too complexes or conflicts with MUI grid rules
     return (
         <Box display="flex" flexDirection="column" width="100%" height="100%">
             <Box flexShrink={0}>
                 <AppTopBar userProfile={userProfile} userManagerInstance={userManager.instance} />
+                {import.meta.env.DEV && (
+                    <Button
+                        onClick={triggerSilentRenew}
+                        style={{ position: 'fixed', bottom: 10, right: 10, zIndex: 9999 }}
+                    >
+                        Regénérer token
+                    </Button>
+                )}
             </Box>
             <Box flexShrink={0}>
                 <AnnouncementNotification userProfile={userProfile} sx={{ marginBottom: '0 !important' }} />
