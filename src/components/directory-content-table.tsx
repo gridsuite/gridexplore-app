@@ -24,8 +24,10 @@ import { defaultColumnDefinition, DirectoryField } from './utils/directory-conte
 import { AppState } from '../redux/types';
 import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
-export interface DirectoryContentTableProps
-    extends Pick<AgGridReactProps<ElementAttributes>, 'getRowStyle' | 'onGridReady'> {
+export interface DirectoryContentTableProps extends Pick<
+    AgGridReactProps<ElementAttributes>,
+    'getRowStyle' | 'onGridReady'
+> {
     gridRef: RefObject<AgGridReact<ElementAttributes> | null>;
     rows: ElementAttributes[];
     handleCellContextualMenu: (event: CellContextMenuEvent) => void;
