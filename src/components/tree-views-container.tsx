@@ -246,8 +246,11 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         [dispatch]
     );
 
+    // Returns the uuid we navigated to when the selected directory was removed (its still-existing
+    // parent), else undefined. The caller reuses that directory's already-fetched content to skip a
+    // duplicate fetch (see updateDirectoryTree / previousSelectedDirectoryUuidRef).
     const updateMapData = useCallback(
-        (nodeId: string, children: ElementAttributes[], isDirectoryMoving: boolean) => {
+        (nodeId: string, children: ElementAttributes[], isDirectoryMoving: boolean): UUID | undefined => {
             const newSubdirectories = children.filter((child) => child.type === ElementType.DIRECTORY);
 
             const prevPath = buildPathToFromMap(
@@ -263,15 +266,13 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             insertContent(nodeId, newSubdirectories);
             if (hasToChangeSelected) {
                 // if selected directory (possibly via ancestor) is deleted by another user, we should select (closest still existing) parent directory
-                dispatch(
-                    setSelectedDirectory(
-                        isDirectoryMoving ? null : (treeDataRef.current?.mapData[nodeId] as IDirectory)
-                    )
-                );
-                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: false });
+                // Involuntary navigation → replace the history entry; the selection follows from the URL.
+                navigate(isDirectoryMoving ? '/' : `/elements/${nodeId}`, { replace: true });
+                return isDirectoryMoving ? undefined : (nodeId as UUID);
             }
+            return undefined;
         },
-        [insertContent, dispatch, navigate]
+        [insertContent, navigate]
     );
 
     const cleanCreationFailedElementInCurrentElements = useCallback(
@@ -405,13 +406,21 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             }
 
             fetchDirectoryContent(nodeId)
-                .then((childrenToBeInserted) => updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving)) // Update Tree Map data
+                .then((childrenToBeInserted) => {
+                    const navigatedTo = updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving); // Update Tree Map data
+                    if (navigatedTo === nodeId) {
+                        // We navigated here because the selected directory was deleted; its content was just
+                        // fetched, so feed it and let the selection effect skip its own fetch.
+                        updateCurrentChildren(childrenToBeInserted);
+                        previousSelectedDirectoryUuidRef.current = navigatedTo;
+                    }
+                })
                 .catch((error) => {
                     console.warn(`Could not update subs of '${nodeId}' : ${error.message}`);
                     updateMapData(nodeId, [], false);
                 });
         },
-        [dispatch, updateMapData]
+        [dispatch, updateCurrentChildren, updateMapData]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -461,7 +470,16 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         listenerCallbackMessage: onUpdateDirectories,
     });
 
+    // Process each notification once. `directoryUpdatedEvent` is a new object per event (force toggles),
+    // so without this guard the effect's other deps (notably `navigate`, whose identity changes on every
+    // navigation) would re-run it with the same stale event and re-fetch on each later click.
+    const processedDirectoryEventRef = useRef(directoryUpdatedEvent);
+
     useEffect(() => {
+        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
+            return;
+        }
+        processedDirectoryEventRef.current = directoryUpdatedEvent;
         if (directoryUpdatedEvent.eventData?.headers) {
             const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
             const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
@@ -480,8 +498,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     notificationType === NotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directoryUuid
                 ) {
-                    dispatch(setSelectedDirectory(null));
-                    navigate(`/`, { replace: false });
+                    // Selected root directory deleted: go back to root (selection follows from the URL).
+                    navigate(`/`, { replace: true });
                     return;
                 }
                 // if it's a new root directory then do not continue because we don't need
@@ -520,11 +538,19 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     ]);
 
     /* Handle components synchronization */
+    // Fetch the selected directory's content.
     // To proc only if selectedDirectory?.elementUuid changed, take care of updateDirectoryTreeAndContent dependencies
+    // The two guards below make it fetch at most once per change
+    // and skip a directory already fed by the notification handler or just deleted.
     useEffect(() => {
-        // To avoid refetching even if the dependencies changed (other than the elementUuid)
         const selectedDirectoryUuid = selectedDirectory?.elementUuid;
+        // Already fetched and fed by the notification handler (deletion navigated to its parent).
         if (previousSelectedDirectoryUuidRef.current === selectedDirectoryUuid) {
+            return;
+        }
+        // Just-deleted directory still selected until the URL catches up: gone from the tree, so fetching
+        // it would 404. Skip without recording it, to keep the dedup ref on the real target (the parent).
+        if (selectedDirectoryUuid && !treeDataRef.current?.mapData[selectedDirectoryUuid]) {
             return;
         }
         previousSelectedDirectoryUuidRef.current = selectedDirectoryUuid;
@@ -566,19 +592,50 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
     );
 
-    const { loadPath, handleDispatchDirectory } = useDirectoryPathLoader();
+    const { loadPath } = useDirectoryPathLoader();
 
+    /* The URL (sourceItemUuid) is the single source of truth: this is the ONLY place that turns it into
+       `selectedDirectory`. Every user action just navigates, and the selection/content follows. */
     useEffect(() => {
-        if (!sourceItemUuid || !treeData.initialized) return;
-        // We can be in this case when navigating with breadcrumbs
-        // and so we don't want to refetch since we already have the data
-        if (sourceItemUuid === selectedDirectoryRef?.current?.elementUuid?.toString()) return;
+        // Wait for the root directories to be loaded before resolving anything from the URL.
+        if (!treeData.initialized) {
+            return undefined;
+        }
+
+        // Root route ('/'): nothing selected.
+        if (!sourceItemUuid) {
+            if (selectedDirectoryRef.current !== null) {
+                dispatch(setSelectedDirectory(null));
+            }
+            return undefined;
+        }
+
+        // Fast path: directory already loaded (tree/breadcrumb click) → select it, no fetch needed.
+        const knownDirectory = treeDataRef.current?.mapData[sourceItemUuid];
+        if (knownDirectory) {
+            if (selectedDirectoryRef.current?.elementUuid !== sourceItemUuid) {
+                dispatch(setSelectedDirectory(knownDirectory));
+            }
+            return undefined;
+        }
+
+        // Slow path: deep-link / search / not-yet-loaded element → resolve the path, expand the tree,
+        // select the directory and highlight the element. The cleanup flips `cancelled` so a resolution
+        // made stale by a newer URL change can't select/highlight the wrong directory.
+        let cancelled = false;
         (async () => {
             try {
                 const path = await fetchDirectoryElementPath(sourceItemUuid as UUID);
-                if (!path?.length) return;
+                if (cancelled || !path?.length) {
+                    return;
+                }
                 const directories = path.filter((el) => el.type === ElementType.DIRECTORY);
-                await loadPath(directories.map((dir) => dir.elementUuid));
+                // Load only the ancestors; the selected directory's content is fetched by the selection
+                // effect, so loading it here too would duplicate that request.
+                await loadPath(directories.slice(0, LAST_ELEMENT_INDEX).map((dir) => dir.elementUuid));
+                if (cancelled) {
+                    return;
+                }
 
                 const lastDirectory = directories.at(LAST_ELEMENT_INDEX);
                 if (lastDirectory) {
@@ -616,22 +673,19 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     dispatch(setSearchedElement(elementToHighlight));
                 }
             } catch (error: any) {
+                if (cancelled) {
+                    return;
+                }
                 snackError({
                     messageTxt: error.message,
                     headerId: 'pathRetrievingError',
                 });
             }
         })();
-    }, [
-        sourceItemUuid,
-        treeData.initialized,
-        loadPath,
-        handleDispatchDirectory,
-        dispatch,
-        selectedDirectoryRef,
-        navigate,
-        snackError,
-    ]);
+        return () => {
+            cancelled = true;
+        };
+    }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError]);
 
     return (
         <>

@@ -15,8 +15,7 @@ import {
     DescriptionField,
     ElementType,
     FieldConstants,
-    hasNonEmptyRows,
-    LANG_FRENCH,
+    getCsvDelimiter,
     PARAM_LANGUAGE,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
@@ -42,7 +41,7 @@ export default function ExplicitNamingForm() {
     const { getValues } = useFormContext();
     const tableRef = useRef<UseFieldArrayReturn<FieldValues, string>>(null);
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
-    const [selectedFileError, setSelectedFileError] = useState<string | undefined>();
+    const [fileErrorMessage, setFileErrorMessage] = useState<string | undefined>();
     const columnDefs = useMemo<ColDef[]>(
         () => [
             {
@@ -88,7 +87,7 @@ export default function ExplicitNamingForm() {
     );
 
     const csvInitialData = useMemo(() => {
-        const separator = languageLocal === LANG_FRENCH ? ';' : ',';
+        const separator = getCsvDelimiter(languageLocal);
         return [
             [intl.formatMessage({ id: 'CSVFileCommentContingencyList1' })],
             intl.formatMessage({ id: 'CSVFileCommentContingencyList2' }).split(separator),
@@ -106,20 +105,18 @@ export default function ExplicitNamingForm() {
         []
     );
 
-    const hasExistingData = useCallback(() => hasNonEmptyRows(getValues(FieldConstants.EQUIPMENT_TABLE)), [getValues]);
-
     const getTemplateData = useCallback(() => [csvFileHeaders, ...csvInitialData], [csvFileHeaders, csvInitialData]);
 
     const getTableData = useCallback(() => {
         const rows = (getValues(FieldConstants.EQUIPMENT_TABLE) ?? []) as Record<string, any>[];
         return [
-            csvFileHeaders,
+            ...getTemplateData(),
             ...rows.map((r) => [
                 (r[FieldConstants.EQUIPMENT_IDS] ?? []).join('|'),
                 r[FieldConstants.CONTINGENCY_NAME] ?? '',
             ]),
         ];
-    }, [csvFileHeaders, getValues]);
+    }, [getTemplateData, getValues]);
 
     return (
         <Grid container direction="column" spacing={2} sx={{ flexGrow: 1, flexWrap: 'nowrap', minHeight: 0 }}>
@@ -142,16 +139,16 @@ export default function ExplicitNamingForm() {
                         language={languageLocal}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
-                        onFileError={setSelectedFileError}
-                        hasExistingData={hasExistingData}
+                        onFileError={setFileErrorMessage}
+                        getTableData={() => getValues(FieldConstants.EQUIPMENT_TABLE)}
                         onAppend={(results) => tableRef.current?.append(getDataFromCsvFile(results.data))}
                         onReplace={(results) => tableRef.current?.replace(getDataFromCsvFile(results.data))}
                     />
                 </Grid>
             </Grid>
-            {selectedFileError && (
+            {fileErrorMessage && (
                 <Grid>
-                    <Alert severity="error">{selectedFileError}</Alert>
+                    <Alert severity="error">{fileErrorMessage}</Alert>
                 </Grid>
             )}
             <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
