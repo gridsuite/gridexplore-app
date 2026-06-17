@@ -86,6 +86,7 @@
     "PCC_MIN_PARAMETERS": "Paramètres (Pcc min N-1)",
     "NETWORK_VISUALIZATIONS_PARAMETERS": "Paramètres (Images réseau)",
     "DIAGRAM_CONFIG": "Image nodale de zone",
+    "DYNAMIC_MAPPING": "Automates et comportements dynamiques",
     "contingencyList.explicitNaming": "Par nommage",
     "contingencyList.filterBased": "Par filtres",
     "contingencyList.filterBased.filtersTableColumn": "Filtres de postes / sites",

@@ -327,6 +327,8 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/workspaces';
         case ElementType.PROCESS_CONFIG:
             return '/process-configs';
+        case ElementType.DYNAMIC_MAPPING:
+            return '/dynamic-mappings';
         default:
             return undefined;
     }
