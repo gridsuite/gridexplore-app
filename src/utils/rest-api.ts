@@ -21,6 +21,7 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
+    SecurityAnalysisProcessConfigBackend,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -36,11 +37,6 @@ import {
     isFilterBasedContingencyList,
     PrepareContingencyListForBackend,
 } from './contingency-list.type';
-import {
-    PersistedProcessConfigBackend,
-    SecurityAnalysisProcessConfig,
-    SecurityAnalysisProcessConfigBackend,
-} from '../components/dialogs/process-configs/process-configs.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
