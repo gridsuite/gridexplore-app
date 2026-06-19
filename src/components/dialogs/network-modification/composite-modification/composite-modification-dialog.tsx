@@ -84,6 +84,10 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
+    LineForm,
+    lineCreationFormSchema,
+    lineCreationDtoToForm,
+    lineCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -219,6 +223,19 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.LINE_CREATION,
+                    {
+                        formSchema: lineCreationFormSchema,
+                        dtoToForm: lineCreationDtoToForm,
+                        formToDto: lineCreationFormToDto,
+                        errorHeaderId: 'LineCreationError',
+                        titleId: 'CreateLine',
+                        ModificationForm: LineForm,
+                        isModification: false,
+                        removeOptional: false,
+                    },
+                ],
+                [
                     ModificationType.BATTERY_CREATION,
                     {
                         formSchema: batteryCreationFormSchema,
@@ -275,6 +292,7 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'LoadCreationError',
                         titleId: 'CreateLoad',
                         ModificationForm: LoadForm,
+                        isModification: false,
                         removeOptional: false,
                     },
                 ],
