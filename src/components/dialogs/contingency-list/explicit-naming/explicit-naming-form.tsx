@@ -62,6 +62,8 @@ export default function ExplicitNamingForm() {
             {
                 headerName: intl.formatMessage({ id: 'elementName' }),
                 field: FieldConstants.CONTINGENCY_NAME,
+                // force the data type instead of letting AG Grid infer it from the (CSV) cell values
+                cellDataType: 'text',
                 editable: true,
             },
         ],
