@@ -327,8 +327,6 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/diagram-config';
         case ElementType.WORKSPACE:
             return '/workspaces';
-        case ElementType.PROCESS_CONFIG:
-            return '/process-configs';
         default:
             return undefined;
     }
@@ -350,6 +348,21 @@ export function duplicateElement(
         queryParams.append('type', specificType);
     }
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?${queryParams.toString()}`;
+
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+    });
+}
+
+export function duplicateProcessConfig(sourceProcessConfigUuid: UUID, parentDirectoryUuid: UUID | undefined) {
+    console.info(`Duplicating a process config...`);
+    const queryParams = new URLSearchParams();
+    if (parentDirectoryUuid) {
+        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    }
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${sourceProcessConfigUuid}/duplicate?${queryParams.toString()}`;
 
     console.debug(url);
 
