@@ -9,7 +9,7 @@ import { ElementType, fetchDirectoryContent } from '@gridsuite/commons-ui';
 import { UUID } from 'node:crypto';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppState, IDirectory, ITreeData } from '../redux/types';
-import { setSelectedDirectory, setTreeData } from '../redux/actions';
+import { setTreeData } from '../redux/actions';
 import { updatedTree } from '../components/treeview-utils';
 import { AppDispatch } from '../redux/store';
 
@@ -18,15 +18,6 @@ export const useDirectoryPathLoader = () => {
     const treeData = useSelector((state: AppState) => state.treeData);
     const treeDataRef = useRef<ITreeData>(null);
     treeDataRef.current = treeData;
-
-    const handleDispatchDirectory = useCallback(
-        (elementUuidPath: string | undefined) => {
-            if (treeDataRef.current && elementUuidPath !== undefined) {
-                dispatch(setSelectedDirectory(treeDataRef.current.mapData[elementUuidPath]));
-            }
-        },
-        [dispatch]
-    );
 
     const updateMapData = useCallback(
         (nodeId: string, children: IDirectory[]) => {
@@ -62,5 +53,5 @@ export const useDirectoryPathLoader = () => {
         },
         [treeDataRef, updateMapData]
     );
-    return { loadPath, handleDispatchDirectory };
+    return { loadPath };
 };

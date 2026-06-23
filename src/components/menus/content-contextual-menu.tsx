@@ -406,13 +406,35 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [directoryWritable, isSingleElement]);
 
     useEffect(() => {
+        let isCurrent = true;
         if (selectedDirectory !== null) {
             Promise.all([
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then(setDirectoryReadable),
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then(setDirectoryWritable),
-            ]).finally(() => setPermissionsLoaded(true));
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryReadable(b);
+                    }
+                }),
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryWritable(b);
+                    }
+                }),
+            ]).finally(() => {
+                if (isCurrent) {
+                    setPermissionsLoaded(true);
+                }
+            });
+        } else {
+            setDirectoryReadable(false);
+            setDirectoryWritable(false);
         }
-    }, [selectedDirectory]);
+        return () => {
+            isCurrent = false;
+        };
+        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
+        // otherwise re-run these checks.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDirectory?.elementUuid]);
 
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
