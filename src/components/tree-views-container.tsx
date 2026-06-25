@@ -594,17 +594,26 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     const { loadPath } = useDirectoryPathLoader();
 
-    const scrollTreeToDirectory = useCallback((directoryUuid: UUID) => {
+    // The directory the tree should scroll to. Setting it (re)schedules the scroll declaratively below.
+    const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
+
+    useEffect(() => {
+        if (!directoryToScroll) {
+            return undefined;
+        }
         // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
         // Using a delay with timeout is not clean but is the only short and working solution we found.
-        setTimeout(() => {
-            document.getElementById(directoryUuid)?.scrollIntoView({
+        // The cleanup cancels the pending scroll when the target changes or on unmount, so only the
+        // latest directory selection can trigger scrollIntoView.
+        const timeout = setTimeout(() => {
+            document.getElementById(directoryToScroll)?.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center',
                 inline: 'nearest',
             });
         }, 700);
-    }, []);
+        return () => clearTimeout(timeout);
+    }, [directoryToScroll]);
 
     /* The URL (sourceItemUuid) is the single source of truth: this is the ONLY place that turns it into
        `selectedDirectory`. Every user action just navigates, and the selection/content follows. */
@@ -628,7 +637,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             if (selectedDirectoryRef.current?.elementUuid !== sourceItemUuid) {
                 dispatch(setSelectedDirectory(knownDirectory));
             }
-            scrollTreeToDirectory(knownDirectory.elementUuid);
+            setDirectoryToScroll(knownDirectory.elementUuid);
             return undefined;
         }
 
@@ -655,7 +664,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
-                        scrollTreeToDirectory(lastDirectory.elementUuid);
+                        setDirectoryToScroll(lastDirectory.elementUuid);
                     }
                 }
 
@@ -687,7 +696,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         return () => {
             cancelled = true;
         };
-    }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError, scrollTreeToDirectory]);
+    }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError]);
 
     return (
         <>
