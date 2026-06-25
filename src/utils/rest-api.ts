@@ -16,6 +16,7 @@ import {
     type GsLang,
     type GsTheme,
     hasElementPermission,
+    IdpSettings,
     LAST_SELECTED_DIRECTORY,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
@@ -47,6 +48,8 @@ const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/fi
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
 const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
+const IDP_SETTINGS_CACHE_KEY = 'gridsuite-idp-settings';
+export const SILENT_RENEW_CALLBACK_PATH = '/silent-renew-callback';
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -96,8 +99,34 @@ const getContingencyUriParamType = (contingencyListType: string | null | undefin
     }
 };
 
-export function fetchIdpSettings() {
-    return fetch('idpSettings.json').then((res) => res.json());
+// Always hits the network: picks up config changes on each full app load
+// AND refreshes the cache read by the silent-renew iframe.
+export function fetchIdpSettings(): Promise<IdpSettings> {
+    return fetch('idpSettings.json')
+        .then((res) => res.json())
+        .then((settings: IdpSettings) => {
+            try {
+                localStorage.setItem(IDP_SETTINGS_CACHE_KEY, JSON.stringify(settings));
+            } catch (e) {
+                console.warn('Failed to cache IdP settings:', e);
+            }
+            return settings;
+        });
+}
+
+// Used only on the silent-renew path: reads the cache (no network),
+// falls back to a real fetch if the cache is missing/corrupted.
+export function getCachedIdpSettings(): Promise<IdpSettings> {
+    try {
+        const cached = localStorage.getItem(IDP_SETTINGS_CACHE_KEY);
+        if (cached) {
+            return Promise.resolve(JSON.parse(cached) as IdpSettings);
+        }
+    } catch (e) {
+        // localStorage unavailable, or cache corrupted -> fall back to fresh fetch
+        console.warn('Failed to read cached IdP settings:', e);
+    }
+    return fetchIdpSettings();
 }
 
 export function fetchVersion() {

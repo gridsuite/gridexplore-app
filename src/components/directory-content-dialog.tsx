@@ -82,8 +82,11 @@ function DirectoryContentDialog(
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
-    const user = useSelector((state: AppState) => state.user);
-
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [elementName, setElementName] = useState('');
     const [elementDescription, setElementDescription] = useState('');
@@ -403,7 +406,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         isDeveloperMode={isDeveloperMode}
@@ -419,7 +422,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                     />
@@ -434,7 +437,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                     />
@@ -449,7 +452,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                     />
@@ -464,7 +467,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                     />
@@ -479,7 +482,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                         isDeveloperMode={isDeveloperMode}
@@ -495,7 +498,7 @@ function DirectoryContentDialog(
                         titleId="editParameters"
                         name={elementName}
                         description={activeElement.description}
-                        user={user}
+                        userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
                     />
