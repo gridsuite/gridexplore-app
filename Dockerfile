@@ -1,4 +1,4 @@
-FROM gridsuite/httpd
+FROM gridsuite/httpd:1.0.0@sha256:e054963bc0bdb0df484ad59a40072f29b3ff921a9887aa041f005c87e5ba2890
 
 # chown to www-data to allow the subsequent sed to work.
 # Note that the rest of the files from the image are already www-data:www-data
