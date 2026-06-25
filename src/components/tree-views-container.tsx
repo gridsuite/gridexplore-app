@@ -594,7 +594,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     const { loadPath } = useDirectoryPathLoader();
 
-    // The directory the tree should scroll to. Setting it (re)schedules the scroll declaratively below.
     const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
 
     useEffect(() => {
@@ -603,8 +602,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         }
         // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
         // Using a delay with timeout is not clean but is the only short and working solution we found.
-        // The cleanup cancels the pending scroll when the target changes or on unmount, so only the
-        // latest directory selection can trigger scrollIntoView.
         const timeout = setTimeout(() => {
             document.getElementById(directoryToScroll)?.scrollIntoView({
                 behavior: 'smooth',
