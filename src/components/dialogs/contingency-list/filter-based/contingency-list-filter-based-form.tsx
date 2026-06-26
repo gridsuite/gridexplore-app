@@ -16,7 +16,7 @@ import {
     ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Grid2 as Grid, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -153,7 +153,7 @@ export default function ContingencyListFilterBasedForm({
     const containerProps =
         vwBelow900px && isSubOrVlFilterIncluded
             ? {}
-            : { xs: isSubOrVlFilterIncluded ? 4 : true, sx: { height: '100%', overflow: 'hidden' } };
+            : { size: isSubOrVlFilterIncluded ? 4 : ('grow' as const), sx: { height: '100%', overflow: 'hidden' } };
 
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
@@ -165,8 +165,8 @@ export default function ContingencyListFilterBasedForm({
                     direction={vwBelow900px ? 'column' : 'row'}
                     sx={{ height: '100%' }}
                 >
-                    <Grid item container direction="column" {...containerProps}>
-                        <Grid item>
+                    <Grid container direction="column" {...containerProps}>
+                        <Grid>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
                                 label="nameProperty"
@@ -174,10 +174,10 @@ export default function ContingencyListFilterBasedForm({
                                 activeDirectory={activeDirectory}
                             />
                         </Grid>
-                        <Grid item paddingY={1}>
+                        <Grid paddingY={1}>
                             <DescriptionField />
                         </Grid>
-                        <Grid item xs>
+                        <Grid size="grow">
                             <DirectoryItemsInput
                                 titleId="FiltersListsSelection"
                                 label="Filters"

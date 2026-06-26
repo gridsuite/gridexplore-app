@@ -6,7 +6,7 @@
  */
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Grid } from '@mui/material';
+import { Grid2 as Grid } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -104,14 +104,14 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
             confirmationMessageKey={confidentialityWarningKey}
         >
             <Grid container spacing={2} marginTop="auto" direction="column">
-                <Grid item>
+                <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.CASE_NAME}
                         label="nameProperty"
                         elementType={ElementType.CASE}
                     />
                 </Grid>
-                <Grid item>
+                <Grid>
                     <DescriptionField />
                 </Grid>
             </Grid>
