@@ -92,7 +92,11 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     const [openDialog, setOpenDialog] = useState(constants.DialogsId.NONE);
 
-    const user = useSelector((state: AppState) => state.user);
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const currentPath = useSelector((state: AppState) => state.currentPath);
@@ -210,10 +214,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     /* rootDirectories initialization */
     useEffect(() => {
-        if (user != null) {
+        if (userProfile != null) {
             updateRootDirectories();
         }
-    }, [user, updateRootDirectories]);
+    }, [userProfile, updateRootDirectories]);
 
     /* Manage current path data */
     useEffect(() => {
