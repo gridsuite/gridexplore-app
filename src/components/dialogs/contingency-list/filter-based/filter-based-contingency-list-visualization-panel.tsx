@@ -23,7 +23,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Button, Grid2 as Grid, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import { DataTableOverlay } from './data-table-overlay';
 import {
@@ -198,14 +198,14 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     return (
         <Grid container direction="column" sx={{ height: '100%' }}>
-            <Grid item component="h3">
+            <Grid component="h3">
                 <FormattedMessage id="visualization" />
             </Grid>
-            <Grid item container alignItems="center" marginY={1}>
-                <Grid item paddingTop={1}>
+            <Grid container alignItems="center" marginY={1}>
+                <Grid paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs paddingLeft={1}>
+                <Grid size="grow" paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
                             {formatPathName}
@@ -214,7 +214,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item>
+                <Grid>
                     <Button
                         disabled={!hasFilters}
                         onClick={() => setIsOpen(true)}
@@ -236,7 +236,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Grid item>
+                <Grid>
                     <Button
                         onClick={scrollOnRowById}
                         fullWidth
@@ -255,7 +255,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                     </Button>
                 </Grid>
             )}
-            <Grid item xs>
+            <Grid size="grow">
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={colDef}

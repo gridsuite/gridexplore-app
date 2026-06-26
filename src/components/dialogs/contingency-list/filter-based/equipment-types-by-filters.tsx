@@ -11,7 +11,7 @@ import {
     OverflowableTableCellWithCheckbox,
 } from '@gridsuite/commons-ui';
 import {
-    Grid,
+    Grid2 as Grid,
     Paper,
     Table,
     TableBody,
@@ -89,15 +89,15 @@ function EquipmentTypesByFilters({
         [getValues, setValue, setIsDataOutdated]
     );
 
-    const containerProps = vwBelow900px ? { xs: true } : { xs: 8, sx: { height: '100%' } };
+    const containerProps = vwBelow900px ? { size: 'grow' as const } : { size: 8, sx: { height: '100%' } };
 
     return (
-        <Grid item container direction="column" {...containerProps}>
-            <Grid item component="h3">
+        <Grid container direction="column" {...containerProps}>
+            <Grid component="h3">
                 <FormattedMessage id="equipmentTypesByFilters" />
             </Grid>
-            <Grid item container xs sx={{ height: 0, flex: 1 }}>
-                <Grid item xs={6} sx={{ height: '100%', marginRight: -0.05 }}>
+            <Grid container size="grow" sx={{ height: 0, flex: 1 }}>
+                <Grid size={6} sx={{ height: '100%', marginRight: -0.05 }}>
                     <TableContainer
                         component={Paper}
                         sx={(t) => ({
@@ -130,7 +130,7 @@ function EquipmentTypesByFilters({
                         </Table>
                     </TableContainer>
                 </Grid>
-                <Grid item xs={6} sx={{ height: '100%', marginLeft: -0.05 }}>
+                <Grid size={6} sx={{ height: '100%', marginLeft: -0.05 }}>
                     <TableContainer
                         component={Paper}
                         sx={(t) => ({
