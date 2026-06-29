@@ -598,6 +598,24 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     const { loadPath } = useDirectoryPathLoader();
 
+    const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
+
+    useEffect(() => {
+        if (!directoryToScroll) {
+            return undefined;
+        }
+        // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
+        // Using a delay with timeout is not clean but is the only short and working solution we found.
+        const timeout = setTimeout(() => {
+            document.getElementById(directoryToScroll)?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+                inline: 'nearest',
+            });
+        }, 700);
+        return () => clearTimeout(timeout);
+    }, [directoryToScroll]);
+
     /* The URL (sourceItemUuid) is the single source of truth: this is the ONLY place that turns it into
        `selectedDirectory`. Every user action just navigates, and the selection/content follows. */
     useEffect(() => {
@@ -614,12 +632,13 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             return undefined;
         }
 
-        // Fast path: directory already loaded (tree/breadcrumb click) → select it, no fetch needed.
+        // Fast path: directory already loaded (root, or tree/breadcrumb click) → select it, no fetch needed.
         const knownDirectory = treeDataRef.current?.mapData[sourceItemUuid];
         if (knownDirectory) {
             if (selectedDirectoryRef.current?.elementUuid !== sourceItemUuid) {
                 dispatch(setSelectedDirectory(knownDirectory));
             }
+            setDirectoryToScroll(knownDirectory.elementUuid);
             return undefined;
         }
 
@@ -646,18 +665,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     const directoryInMap = treeDataRef.current?.mapData[lastDirectory.elementUuid];
                     if (directoryInMap) {
                         dispatch(setSelectedDirectory(directoryInMap));
-                        // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
-                        // Using a delay with timeout is not clean but is the only short and working solution we found.
-                        setTimeout(() => {
-                            const directoryHtmlElement = document.getElementById(lastDirectory.elementUuid);
-                            if (directoryHtmlElement) {
-                                directoryHtmlElement.scrollIntoView({
-                                    behavior: 'smooth',
-                                    block: 'center',
-                                    inline: 'nearest',
-                                });
-                            }
-                        }, 500);
+                        setDirectoryToScroll(lastDirectory.elementUuid);
                     }
                 }
 
