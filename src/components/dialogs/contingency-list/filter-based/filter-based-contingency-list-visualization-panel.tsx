@@ -255,7 +255,6 @@ export function FilterBasedContingencyListVisualizationPanel(
                     </Button>
                 </Box>
             )}
-            <Box sx={{ flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={colDef}
@@ -281,7 +280,6 @@ export function FilterBasedContingencyListVisualizationPanel(
                         loading: isFetching,
                     }}
                 />
-            </Box>
         </Stack>
     );
 }

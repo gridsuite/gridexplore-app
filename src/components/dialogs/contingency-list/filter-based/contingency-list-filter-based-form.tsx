@@ -166,19 +166,16 @@ export default function ContingencyListFilterBasedForm({
                     sx={{ height: '100%' }}
                 >
                     <Grid {...containerProps}>
-                        <Stack sx={{ height: '100%' }}>
-                            <Box>
+                        <Stack>
                                 <UniqueNameInput
                                     name={FieldConstants.NAME}
                                     label="nameProperty"
                                     elementType={ElementType.CONTINGENCY_LIST}
                                     activeDirectory={activeDirectory}
                                 />
-                            </Box>
                             <Box paddingY={1}>
                                 <DescriptionField />
                             </Box>
-                            <Box sx={{ flex: 1, minHeight: 0 }}>
                                 <DirectoryItemsInput
                                     titleId="FiltersListsSelection"
                                     label="Filters"
@@ -190,7 +187,6 @@ export default function ContingencyListFilterBasedForm({
                                     chipProps={{ variant: 'outlined' }}
                                     fullHeight
                                 />
-                            </Box>
                         </Stack>
                     </Grid>
                     {isSubOrVlFilterIncluded && (
