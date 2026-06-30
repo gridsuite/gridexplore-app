@@ -137,7 +137,7 @@ export default function ExplicitNamingForm() {
                 <Grid>
                     <CsvPicker<Record<string, string>>
                         label="UploadCSV"
-                        header={csvFileHeaders}
+                        requiredColumns={csvFileHeaders}
                         language={languageLocal}
                         selectedFile={selectedFile}
                         onFileChange={setSelectedFile}
