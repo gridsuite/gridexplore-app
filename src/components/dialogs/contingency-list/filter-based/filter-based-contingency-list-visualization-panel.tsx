@@ -23,7 +23,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Button, Grid2 as Grid, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import { DataTableOverlay } from './data-table-overlay';
 import {
@@ -197,10 +197,10 @@ export function FilterBasedContingencyListVisualizationPanel(
     }, [studyName]);
 
     return (
-        <Grid container direction="column" sx={{ height: '100%' }}>
-            <Grid component="h3">
+        <Stack sx={{ height: '100%' }}>
+            <Box component="h3">
                 <FormattedMessage id="visualization" />
-            </Grid>
+            </Box>
             <Grid container alignItems="center" marginY={1}>
                 <Grid paddingTop={1}>
                     <FolderOutlined />
@@ -236,7 +236,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Grid>
+                <Box>
                     <Button
                         onClick={scrollOnRowById}
                         fullWidth
@@ -253,9 +253,9 @@ export function FilterBasedContingencyListVisualizationPanel(
                             {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
                         </Alert>
                     </Button>
-                </Grid>
+                </Box>
             )}
-            <Grid size="grow">
+            <Box sx={{ flex: 1, minHeight: 0 }}>
                 <CustomAGGrid
                     ref={gridRef}
                     columnDefs={colDef}
@@ -281,7 +281,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         loading: isFetching,
                     }}
                 />
-            </Grid>
-        </Grid>
+            </Box>
+        </Stack>
     );
 }

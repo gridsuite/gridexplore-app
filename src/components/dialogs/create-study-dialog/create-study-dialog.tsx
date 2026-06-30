@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useForm } from 'react-hook-form';
-import { Grid2 as Grid } from '@mui/material';
+import { Grid2 as Grid, Stack } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { useCallback, useEffect } from 'react';
 import {
@@ -229,7 +229,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Grid container spacing={2} marginTop="auto" direction="column">
+            <Stack spacing={2} marginTop="auto">
                 <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.STUDY_NAME}
@@ -240,7 +240,7 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 <Grid>
                     <DescriptionField />
                 </Grid>
-            </Grid>
+            </Stack>
             {providedExistingCase ? (
                 <ModifyElementSelection
                     elementType={ElementType.DIRECTORY}
