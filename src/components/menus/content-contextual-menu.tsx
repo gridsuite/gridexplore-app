@@ -218,7 +218,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
-                case ElementType.PROCESS_CONFIG:
                 case ElementType.DYNAMIC_MAPPING:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
                         snackDuplicateError

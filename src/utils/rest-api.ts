@@ -344,14 +344,13 @@ export function duplicateElement(
 ) {
     console.info(`Duplicating an element of type ${type} ...`);
     const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
     if (specificType) {
         queryParams.append('type', specificType);
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}/${sourceCaseUuid}/duplicate?${queryParams.toString()}`;
 
     console.debug(url);
 
@@ -360,14 +359,14 @@ export function duplicateElement(
     });
 }
 
+// mutualiser avec duplicateElement
 export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
     console.info('Duplicating a spreadsheet config...');
     const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
+        queryParams.append('parentDirectoryUuid', parentDirectoryUuid); // faire mieux ici, on peut ne pas avoir de queryParams
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs/${sourceCaseUuid}/duplicate?${queryParams.toString()}`;
 
     console.debug(url);
 
@@ -376,14 +375,14 @@ export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectory
     });
 }
 
+// idem
 export function duplicateSpreadsheetConfigCollection(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
     console.info('Duplicating a spreadsheet config collection...');
     const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/${sourceCaseUuid}/duplicate?${queryParams.toString()}`;
 
     console.debug(url);
 
