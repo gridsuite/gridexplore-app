@@ -41,7 +41,6 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
-    duplicateProcessConfig,
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
     moveElementsToDirectory,
@@ -251,9 +250,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     break;
                 case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                     duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch(snackDuplicateError);
-                    break;
-                case ElementType.PROCESS_CONFIG:
-                    duplicateProcessConfig(activeElement.elementUuid, undefined).catch(snackDuplicateError);
                     break;
                 default: {
                     snackError({ headerId: 'unsupportedItem' });
