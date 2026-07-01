@@ -16,7 +16,7 @@ import {
     ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -153,7 +153,7 @@ export default function ContingencyListFilterBasedForm({
     const containerProps =
         vwBelow900px && isSubOrVlFilterIncluded
             ? {}
-            : { xs: isSubOrVlFilterIncluded ? 4 : true, sx: { height: '100%', overflow: 'hidden' } };
+            : { size: isSubOrVlFilterIncluded ? 4 : ('grow' as const), sx: { height: '100%', overflow: 'hidden' } };
 
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
@@ -165,19 +165,17 @@ export default function ContingencyListFilterBasedForm({
                     direction={vwBelow900px ? 'column' : 'row'}
                     sx={{ height: '100%' }}
                 >
-                    <Grid item container direction="column" {...containerProps}>
-                        <Grid item>
+                    <Grid {...containerProps}>
+                        <Stack>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
                                 label="nameProperty"
                                 elementType={ElementType.CONTINGENCY_LIST}
                                 activeDirectory={activeDirectory}
                             />
-                        </Grid>
-                        <Grid item paddingY={1}>
-                            <DescriptionField />
-                        </Grid>
-                        <Grid item xs>
+                            <Box paddingY={1}>
+                                <DescriptionField />
+                            </Box>
                             <DirectoryItemsInput
                                 titleId="FiltersListsSelection"
                                 label="Filters"
@@ -189,7 +187,7 @@ export default function ContingencyListFilterBasedForm({
                                 chipProps={{ variant: 'outlined' }}
                                 fullHeight
                             />
-                        </Grid>
+                        </Stack>
                     </Grid>
                     {isSubOrVlFilterIncluded && (
                         <EquipmentTypesByFilters

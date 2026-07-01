@@ -23,7 +23,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Button, Grid, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid2 as Grid, Stack, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import { DataTableOverlay } from './data-table-overlay';
 import {
@@ -197,15 +197,15 @@ export function FilterBasedContingencyListVisualizationPanel(
     }, [studyName]);
 
     return (
-        <Grid container direction="column" sx={{ height: '100%' }}>
-            <Grid item component="h3">
+        <Stack sx={{ height: '100%' }}>
+            <Box component="h3">
                 <FormattedMessage id="visualization" />
-            </Grid>
-            <Grid item container alignItems="center" marginY={1}>
-                <Grid item paddingTop={1}>
+            </Box>
+            <Grid container alignItems="center" marginY={1}>
+                <Grid paddingTop={1}>
                     <FolderOutlined />
                 </Grid>
-                <Grid item xs paddingLeft={1}>
+                <Grid size="grow" paddingLeft={1}>
                     {selectedStudy.length > 0 ? (
                         <Typography noWrap fontWeight="bold" title={studyName}>
                             {formatPathName}
@@ -214,7 +214,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                         <FormattedMessage id="noSelectedStudyText" />
                     )}
                 </Grid>
-                <Grid item>
+                <Grid>
                     <Button
                         disabled={!hasFilters}
                         onClick={() => setIsOpen(true)}
@@ -236,7 +236,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 </Grid>
             </Grid>
             {hasMissingFromStudy && (
-                <Grid item>
+                <Box>
                     <Button
                         onClick={scrollOnRowById}
                         fullWidth
@@ -253,35 +253,33 @@ export function FilterBasedContingencyListVisualizationPanel(
                             {intl.formatMessage({ id: 'missingEquipmentsFromStudy' })}
                         </Alert>
                     </Button>
-                </Grid>
+                </Box>
             )}
-            <Grid item xs>
-                <CustomAGGrid
-                    ref={gridRef}
-                    columnDefs={colDef}
-                    defaultColDef={defaultDef}
-                    rowData={rowsData}
-                    getRowId={getRowId}
-                    isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
-                    fullWidthCellRenderer={() => {
-                        return SeparatorCellRenderer({
-                            children: intl.formatMessage({ id: 'missingFromStudy' }),
-                            sx: {
-                                paddingLeft: 3,
-                            },
-                        });
-                    }}
-                    loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
-                    loadingOverlayComponent={DataTableOverlay}
-                    loadingOverlayComponentParams={{
-                        onClick: () => {
-                            updateRowData(selectedStudyId);
+            <CustomAGGrid
+                ref={gridRef}
+                columnDefs={colDef}
+                defaultColDef={defaultDef}
+                rowData={rowsData}
+                getRowId={getRowId}
+                isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
+                fullWidthCellRenderer={() => {
+                    return SeparatorCellRenderer({
+                        children: intl.formatMessage({ id: 'missingFromStudy' }),
+                        sx: {
+                            paddingLeft: 3,
                         },
-                        size: 'large',
-                        loading: isFetching,
-                    }}
-                />
-            </Grid>
-        </Grid>
+                    });
+                }}
+                loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
+                loadingOverlayComponent={DataTableOverlay}
+                loadingOverlayComponentParams={{
+                    onClick: () => {
+                        updateRowData(selectedStudyId);
+                    },
+                    size: 'large',
+                    loading: isFetching,
+                }}
+            />
+        </Stack>
     );
 }
