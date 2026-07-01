@@ -34,6 +34,7 @@ export const DialogsId = {
     DELETE_DIRECTORY: 'delete_directory',
     DIRECTORY_PROPERTIES: 'directory_properties',
     EDIT_PARAMETERS: 'edit_parameters',
+    EDIT_PROCESS_CONFIG: 'edit_process_config',
     NONE: 'none',
 };
 

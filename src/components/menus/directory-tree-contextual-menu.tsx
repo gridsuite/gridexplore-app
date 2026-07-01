@@ -121,6 +121,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.DYNAMIC_MAPPING:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
                         (error) => {
                             snackWithFallback(snackError, error, {
