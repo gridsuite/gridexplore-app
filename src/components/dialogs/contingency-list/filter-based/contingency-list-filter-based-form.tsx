@@ -167,26 +167,26 @@ export default function ContingencyListFilterBasedForm({
                 >
                     <Grid {...containerProps}>
                         <Stack>
-                                <UniqueNameInput
-                                    name={FieldConstants.NAME}
-                                    label="nameProperty"
-                                    elementType={ElementType.CONTINGENCY_LIST}
-                                    activeDirectory={activeDirectory}
-                                />
+                            <UniqueNameInput
+                                name={FieldConstants.NAME}
+                                label="nameProperty"
+                                elementType={ElementType.CONTINGENCY_LIST}
+                                activeDirectory={activeDirectory}
+                            />
                             <Box paddingY={1}>
                                 <DescriptionField />
                             </Box>
-                                <DirectoryItemsInput
-                                    titleId="FiltersListsSelection"
-                                    label="Filters"
-                                    name={FieldConstants.FILTERS}
-                                    elementType={ElementType.FILTER}
-                                    equipmentTypes={equipmentTypes}
-                                    onChange={handleFilterOnChange}
-                                    ChipComponent={OverflowableChipWithHelperText}
-                                    chipProps={{ variant: 'outlined' }}
-                                    fullHeight
-                                />
+                            <DirectoryItemsInput
+                                titleId="FiltersListsSelection"
+                                label="Filters"
+                                name={FieldConstants.FILTERS}
+                                elementType={ElementType.FILTER}
+                                equipmentTypes={equipmentTypes}
+                                onChange={handleFilterOnChange}
+                                ChipComponent={OverflowableChipWithHelperText}
+                                chipProps={{ variant: 'outlined' }}
+                                fullHeight
+                            />
                         </Stack>
                     </Grid>
                     {isSubOrVlFilterIncluded && (

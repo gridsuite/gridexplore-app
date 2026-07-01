@@ -255,31 +255,31 @@ export function FilterBasedContingencyListVisualizationPanel(
                     </Button>
                 </Box>
             )}
-                <CustomAGGrid
-                    ref={gridRef}
-                    columnDefs={colDef}
-                    defaultColDef={defaultDef}
-                    rowData={rowsData}
-                    getRowId={getRowId}
-                    isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
-                    fullWidthCellRenderer={() => {
-                        return SeparatorCellRenderer({
-                            children: intl.formatMessage({ id: 'missingFromStudy' }),
-                            sx: {
-                                paddingLeft: 3,
-                            },
-                        });
-                    }}
-                    loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
-                    loadingOverlayComponent={DataTableOverlay}
-                    loadingOverlayComponentParams={{
-                        onClick: () => {
-                            updateRowData(selectedStudyId);
+            <CustomAGGrid
+                ref={gridRef}
+                columnDefs={colDef}
+                defaultColDef={defaultDef}
+                rowData={rowsData}
+                getRowId={getRowId}
+                isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
+                fullWidthCellRenderer={() => {
+                    return SeparatorCellRenderer({
+                        children: intl.formatMessage({ id: 'missingFromStudy' }),
+                        sx: {
+                            paddingLeft: 3,
                         },
-                        size: 'large',
-                        loading: isFetching,
-                    }}
-                />
+                    });
+                }}
+                loading={isFetching || (selectedStudy?.length > 0 && isDataOutdated)}
+                loadingOverlayComponent={DataTableOverlay}
+                loadingOverlayComponentParams={{
+                    onClick: () => {
+                        updateRowData(selectedStudyId);
+                    },
+                    size: 'large',
+                    loading: isFetching,
+                }}
+            />
         </Stack>
     );
 }
