@@ -95,7 +95,7 @@ function EquipmentTypesByFilters({
 
     return (
         <Grid {...containerProps}>
-            <Stack>
+            <Stack sx={{ height: '100%', minHeight: 0 }}>
                 <Box component="h3">
                     <FormattedMessage id="equipmentTypesByFilters" />
                 </Box>
