@@ -492,6 +492,7 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
                     notificationType === NotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directory.uuid
                 ) {
+                    // Selected root directory deleted: go back to root (selection follows from the URL).
                     navigate(`/`, { replace: true });
                     return;
                 }
