@@ -461,51 +461,52 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
         listenerCallbackMessage: onUpdateDirectories,
     });
 
-    useEffect(() => {
-        function updateDirectory(
-            directory: DirectoryInfos,
-            isDirectoryMoving: boolean,
-            notificationType: NotificationType
-        ) {
-            // if parent uuid is null that also means that it is root directory
-            if (directory.isRoot || directory.uuid == null) {
-                updateRootDirectories();
-                if (
-                    selectedDirectoryRef.current != null && // nothing to do if nothing already selected
-                    notificationType === NotificationType.DELETE_DIRECTORY &&
-                    selectedDirectoryRef.current.elementUuid === directory.uuid
-                ) {
-                    dispatch(setSelectedDirectory(null));
-                    navigate(`/`, { replace: false });
-                    return;
-                }
-                // if it's a new root directory then do not continue because we don't need
-                // to fetch an empty content
-                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directory.uuid)) {
-                    return;
-                }
-
-                // if it's a deleted root directory then do not continue because we don't need
-                // to fetch its content anymore
-                if (notificationType === NotificationType.DELETE_DIRECTORY) {
-                    return;
-                }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    function updateDirectory(
+        directory: DirectoryInfos,
+        isDirectoryMoving: boolean,
+        notificationType: NotificationType
+    ) {
+        // if parent uuid is null that also means that it is root directory
+        if (directory.isRoot || directory.uuid == null) {
+            updateRootDirectories();
+            if (
+                selectedDirectoryRef.current != null && // nothing to do if nothing already selected
+                notificationType === NotificationType.DELETE_DIRECTORY &&
+                selectedDirectoryRef.current.elementUuid === directory.uuid
+            ) {
+                dispatch(setSelectedDirectory(null));
+                navigate(`/`, { replace: false });
+                return;
+            }
+            // if it's a new root directory then do not continue because we don't need
+            // to fetch an empty content
+            if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directory.uuid)) {
+                return;
             }
 
-            if (directory.uuid != null) {
-                // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
-                // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
-                // else expanded or not then updateDirectoryTree
-                if (selectedDirectoryRef.current != null) {
-                    if (directory.uuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directory.uuid, isDirectoryMoving);
-                        return; // break here
-                    }
-                }
-                updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
+            // if it's a deleted root directory then do not continue because we don't need
+            // to fetch its content anymore
+            if (notificationType === NotificationType.DELETE_DIRECTORY) {
+                return;
             }
         }
 
+        if (directory.uuid != null) {
+            // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
+            // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
+            // else expanded or not then updateDirectoryTree
+            if (selectedDirectoryRef.current != null) {
+                if (directory.uuid === selectedDirectoryRef.current.elementUuid) {
+                    updateDirectoryTreeAndContent(directory.uuid, isDirectoryMoving);
+                    return; // break here
+                }
+            }
+            updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
+        }
+    }
+
+    useEffect(() => {
         if (directoryUpdatedEvent.eventData?.headers) {
             const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
             const directoriesInfos = JSON.parse(
@@ -530,6 +531,7 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
         updateDirectoryTreeAndContent,
         updateRootDirectories,
         navigate,
+        updateDirectory,
     ]);
 
     /* Handle components synchronization */
