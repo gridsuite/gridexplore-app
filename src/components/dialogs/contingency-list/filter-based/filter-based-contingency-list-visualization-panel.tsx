@@ -197,7 +197,7 @@ export function FilterBasedContingencyListVisualizationPanel(
     }, [studyName]);
 
     return (
-        <Stack sx={{ height: '100%' }}>
+        <Stack sx={{ height: '100%', minHeight: 0 }}>
             <Box component="h3">
                 <FormattedMessage id="visualization" />
             </Box>
