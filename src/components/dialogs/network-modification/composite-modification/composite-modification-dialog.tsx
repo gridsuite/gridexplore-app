@@ -225,7 +225,7 @@ export default function CompositeModificationDialog({
                 [
                     ModificationType.LINE_CREATION,
                     {
-                        formSchema: lineCreationFormSchema,
+                        formSchema: lineCreationFormSchema(true),
                         dtoToForm: lineCreationDtoToForm,
                         formToDto: lineCreationFormToDto,
                         errorHeaderId: 'LineCreationError',
