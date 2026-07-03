@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Typography, Grid, Paper, RadioGroup, Radio, FormControlLabel } from '@mui/material';
+import { Typography, Grid2 as Grid, Paper, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { Group, areIdsEqual } from './utils';
@@ -44,12 +44,12 @@ function PermissionRow({
     return (
         <Paper elevation={0} sx={{ p: 2, mb: 2, border: '1px solid', borderColor: 'divider' }}>
             <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                     <Typography variant="subtitle1" fontWeight="bold">
                         <FormattedMessage id={label} />
                     </Typography>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid size={{ xs: 12, sm: 3 }}>
                     <RadioGroup
                         row
                         value={allUsersValue ? 'all' : 'restricted'}
@@ -67,7 +67,7 @@ function PermissionRow({
                         />
                     </RadioGroup>
                 </Grid>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                     <AutocompleteInput
                         name={groupsKey}
                         label="selectGroups"

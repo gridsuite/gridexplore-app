@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { getFileIcon, type MuiStyles } from '@gridsuite/commons-ui';
-import { Grid, Typography } from '@mui/material';
+import { Grid2 as Grid, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { ElementAttributesES } from '../../redux/types';
 import cyrb53 from '../../utils/cyrb53';
@@ -68,10 +68,10 @@ export function SearchItem({ matchingElement, inputValue, ...othersProps }: Read
         <li {...othersProps}>
             <span>{getFileIcon(matchingElement.type, styles.icon)}</span>
             <Grid container>
-                <Grid item xs={11} sx={styles.grid}>
+                <Grid size={11} sx={styles.grid}>
                     <HighlightedText text={matchingElement.name} highlight={inputValue} />
                 </Grid>
-                <Grid item sx={styles.grid2}>
+                <Grid sx={styles.grid2}>
                     <Typography>
                         <FormattedMessage id="path" />
                         {matchingElement.pathName?.join(' / ')}
