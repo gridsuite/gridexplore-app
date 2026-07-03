@@ -22,7 +22,7 @@ export type CustomTreeItemProps = {
     onContextMenu: (event: any, nodeId: UUID, anchorReference: PopoverReference) => void;
 };
 
-const CustomTreeItem = forwardRef(function CustomTreeItem(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
+const CustomTreeItem = forwardRef(function CustomTreeItemInner(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
     const { node, onExpand, onSelect, onContextMenu } = props;
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
