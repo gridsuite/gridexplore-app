@@ -198,7 +198,13 @@ export function FilterBasedContingencyListVisualizationPanel(
 
     return (
         <Stack sx={{ height: '100%', minHeight: 0 }}>
-            <Box component="h3">
+            <Box
+                component="h3"
+                sx={{
+                    marginTop: 0,
+                    marginBottom: 0,
+                }}
+            >
                 <FormattedMessage id="visualization" />
             </Box>
             <Grid container alignItems="center" marginY={1}>
