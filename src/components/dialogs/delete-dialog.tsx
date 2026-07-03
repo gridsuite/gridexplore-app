@@ -4,16 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Alert,
-    Button,
-    CircularProgress,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-} from '@mui/material';
+import { Alert, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type CSSProperties, type SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { CancelButton, type ElementAttributes, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
@@ -104,21 +95,13 @@ export default function DeleteDialog({
     ) =>
         gridItems &&
         (gridItems.length > 1 ? (
-            <Grid>
-                <Grid item>
-                    <FormattedMessage tagName="span" id={gridMultipleDeleteFormatMessageId} />
-                </Grid>
-            </Grid>
+            <FormattedMessage tagName="span" id={gridMultipleDeleteFormatMessageId} />
         ) : (
-            <Grid>
-                <Grid item>
-                    <FormattedMessage
-                        tagName="span"
-                        id={gridSimpleDeleteFormatMessageId}
-                        values={{ itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span> }}
-                    />
-                </Grid>
-            </Grid>
+            <FormattedMessage
+                tagName="span"
+                id={gridSimpleDeleteFormatMessageId}
+                values={{ itemName: <span>{gridItems.length === 1 && renderElement(gridItems)}</span> }}
+            />
         ));
 
     return (
