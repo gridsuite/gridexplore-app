@@ -166,7 +166,7 @@ export default function ContingencyListFilterBasedForm({
                     sx={{ height: '100%' }}
                 >
                     <Grid {...containerProps}>
-                        <Stack>
+                        <Stack sx={{ height: '100%', minHeight: 0 }}>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
                                 label="nameProperty"
@@ -176,17 +176,19 @@ export default function ContingencyListFilterBasedForm({
                             <Box paddingY={1}>
                                 <DescriptionField />
                             </Box>
-                            <DirectoryItemsInput
-                                titleId="FiltersListsSelection"
-                                label="Filters"
-                                name={FieldConstants.FILTERS}
-                                elementType={ElementType.FILTER}
-                                equipmentTypes={equipmentTypes}
-                                onChange={handleFilterOnChange}
-                                ChipComponent={OverflowableChipWithHelperText}
-                                chipProps={{ variant: 'outlined' }}
-                                fullHeight
-                            />
+                            <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+                                <DirectoryItemsInput
+                                    titleId="FiltersListsSelection"
+                                    label="Filters"
+                                    name={FieldConstants.FILTERS}
+                                    elementType={ElementType.FILTER}
+                                    equipmentTypes={equipmentTypes}
+                                    onChange={handleFilterOnChange}
+                                    ChipComponent={OverflowableChipWithHelperText}
+                                    chipProps={{ variant: 'outlined' }}
+                                    fullHeight
+                                />
+                            </Box>
                         </Stack>
                     </Grid>
                     {isSubOrVlFilterIncluded && (
