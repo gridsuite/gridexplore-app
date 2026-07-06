@@ -23,7 +23,7 @@ export default function AdvancedParameterButton({
     disabled = false,
 }: Readonly<AdvancedParameterButtonProps>) {
     return (
-        <Grid size={12} sx={{ marginTop: '30px', marginBottom: '10px' }}>
+        <Grid sx={{ width: '100%', marginTop: '30px', marginBottom: '10px' }}>
             <Button
                 startIcon={<SettingsIcon />}
                 endIcon={showOpenIcon && <CheckIcon sx={{ color: 'green' }} />}
