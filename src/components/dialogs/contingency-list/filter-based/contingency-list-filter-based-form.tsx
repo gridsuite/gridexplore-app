@@ -16,7 +16,7 @@ import {
     ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { Grid, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid2 as Grid, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -153,7 +153,7 @@ export default function ContingencyListFilterBasedForm({
     const containerProps =
         vwBelow900px && isSubOrVlFilterIncluded
             ? {}
-            : { xs: isSubOrVlFilterIncluded ? 4 : true, sx: { height: '100%', overflow: 'hidden' } };
+            : { size: isSubOrVlFilterIncluded ? 4 : ('grow' as const), sx: { height: '100%', overflow: 'hidden' } };
 
     return (
         <PanelGroup direction="horizontal" ref={panelGroupRef}>
@@ -165,31 +165,31 @@ export default function ContingencyListFilterBasedForm({
                     direction={vwBelow900px ? 'column' : 'row'}
                     sx={{ height: '100%' }}
                 >
-                    <Grid item container direction="column" {...containerProps}>
-                        <Grid item>
+                    <Grid {...containerProps}>
+                        <Stack sx={{ height: '100%', minHeight: 0 }}>
                             <UniqueNameInput
                                 name={FieldConstants.NAME}
                                 label="nameProperty"
                                 elementType={ElementType.CONTINGENCY_LIST}
                                 activeDirectory={activeDirectory}
                             />
-                        </Grid>
-                        <Grid item paddingY={1}>
-                            <DescriptionField />
-                        </Grid>
-                        <Grid item xs>
-                            <DirectoryItemsInput
-                                titleId="FiltersListsSelection"
-                                label="Filters"
-                                name={FieldConstants.FILTERS}
-                                elementType={ElementType.FILTER}
-                                equipmentTypes={equipmentTypes}
-                                onChange={handleFilterOnChange}
-                                ChipComponent={OverflowableChipWithHelperText}
-                                chipProps={{ variant: 'outlined' }}
-                                fullHeight
-                            />
-                        </Grid>
+                            <Box paddingY={1}>
+                                <DescriptionField />
+                            </Box>
+                            <Box sx={{ flexGrow: 1, minHeight: 0 }}>
+                                <DirectoryItemsInput
+                                    titleId="FiltersListsSelection"
+                                    label="Filters"
+                                    name={FieldConstants.FILTERS}
+                                    elementType={ElementType.FILTER}
+                                    equipmentTypes={equipmentTypes}
+                                    onChange={handleFilterOnChange}
+                                    ChipComponent={OverflowableChipWithHelperText}
+                                    chipProps={{ variant: 'outlined' }}
+                                    fullHeight
+                                />
+                            </Box>
+                        </Stack>
                     </Grid>
                     {isSubOrVlFilterIncluded && (
                         <EquipmentTypesByFilters

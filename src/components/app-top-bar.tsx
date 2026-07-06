@@ -18,6 +18,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
+import type { UserProfile } from 'oidc-client-ts';
 import { APP_NAME } from '../utils/config-params';
 import { fetchVersion, getServersInfos } from '../utils/rest-api';
 import GridExploreLogoLight from '../images/GridExplore_logo_light.svg?react';
@@ -31,14 +32,13 @@ import { AppState } from '../redux/types';
 
 export type AppTopBarProps = {
     userManagerInstance: UserManagerState['instance'];
+    userProfile: UserProfile | null;
 };
 
-export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarProps>) {
+export default function AppTopBar({ userProfile, userManagerInstance }: Readonly<AppTopBarProps>) {
     const navigate = useNavigate();
 
     const dispatch = useDispatch<AppDispatch>();
-
-    const user = useSelector((state: AppState) => state.user);
 
     const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
 
@@ -53,15 +53,15 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
     const searchInputRef = useRef<any | null>(null);
 
     useEffect(() => {
-        if (user !== null) {
+        if (userProfile !== null) {
             fetchAppsMetadata().then((res) => {
                 dispatch(setAppsAndUrls(res));
             });
         }
-    }, [user, dispatch]);
+    }, [userProfile, dispatch]);
 
     useEffect(() => {
-        if (user) {
+        if (userProfile) {
             const openSearch = (e: DocumentEventMap['keydown']) => {
                 if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
@@ -72,7 +72,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             return () => document.removeEventListener('keydown', openSearch);
         }
         return undefined;
-    }, [user]);
+    }, [userProfile]);
 
     return (
         <TopBar
@@ -83,7 +83,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             appLicense={AppPackage.license}
             onLogoutClick={() => logout(dispatch, userManagerInstance)}
             onLogoClick={() => navigate('/', { replace: true })}
-            user={user ?? undefined}
+            userProfile={userProfile ?? undefined}
             appsAndUrls={appsAndUrls}
             onThemeClick={handleChangeTheme}
             theme={themeLocal}
@@ -94,7 +94,7 @@ export default function AppTopBar({ userManagerInstance }: Readonly<AppTopBarPro
             globalVersionPromise={() => fetchVersion().then((res) => res?.deployVersion)}
             additionalModulesPromise={getServersInfos as () => Promise<GridSuiteModule[]>}
         >
-            {user && <SearchBar inputRef={searchInputRef} />}
+            {userProfile && <SearchBar inputRef={searchInputRef} />}
         </TopBar>
     );
 }

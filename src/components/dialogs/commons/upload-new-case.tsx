@@ -8,7 +8,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Button, CircularProgress, Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid2 as Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import {
     ErrorInput,
@@ -155,7 +155,7 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
     return (
         <>
             <Grid container alignItems="center" spacing={1} pt={1}>
-                <Grid item>
+                <Grid>
                     <Button variant="contained" color="primary" component="label">
                         <FormattedMessage id="uploadCase" />
                         <Input
@@ -168,7 +168,7 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
                         />
                     </Button>
                 </Grid>
-                <Grid item sx={{ fontWeight: 'bold' }}>
+                <Grid sx={{ fontWeight: 'bold' }}>
                     <p>{gridValue}</p>
                 </Grid>
             </Grid>

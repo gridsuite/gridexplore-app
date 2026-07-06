@@ -41,8 +41,11 @@ import PageNotFound from './page-not-found';
 export default function App() {
     const { snackError } = useSnackMessage();
 
-    const user = useSelector((state: AppState) => state.user);
-
+    const userProfile = useSelector(
+        (state: AppState) => state.user?.profile ?? null,
+        (a, b) =>
+            a === b || (a?.sub === b?.sub && a?.name === b?.name && a?.email === b?.email && a?.profile === b?.profile)
+    );
     const signInCallbackError = useSelector((state: AppState) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state: AppState) => state.authenticationRouterError);
     const showAuthenticationRouterLogin = useSelector((state: AppState) => state.showAuthenticationRouterLogin);
@@ -145,7 +148,7 @@ export default function App() {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null) {
+        if (userProfile !== null) {
             fetchConfigParameters(COMMON_APP_NAME)
                 .then((params) => updateParams(params))
                 .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
@@ -154,20 +157,20 @@ export default function App() {
                 .catch((error) => snackWithFallback(snackError, error, { headerId: 'paramsRetrievingError' }));
         }
         return undefined;
-    }, [user, dispatch, updateParams, snackError]);
+    }, [userProfile, dispatch, updateParams, snackError]);
 
     // We use <Box flex=.../> instead of <Grid/> because flex rules were too complexes or conflicts with MUI grid rules
     return (
         <Box display="flex" flexDirection="column" width="100%" height="100%">
             <Box flexShrink={0}>
-                <AppTopBar userManagerInstance={userManager.instance} />
+                <AppTopBar userProfile={userProfile} userManagerInstance={userManager.instance} />
             </Box>
             <Box flexShrink={0}>
-                <AnnouncementNotification user={user} sx={{ marginBottom: '0 !important' }} />
+                <AnnouncementNotification userProfile={userProfile} sx={{ marginBottom: '0 !important' }} />
             </Box>
             <Box marginTop={1} flexGrow={1} minHeight={0} display="flex">
                 <CardErrorBoundary>
-                    {user !== null ? (
+                    {userProfile !== null ? (
                         <Routes>
                             <Route path="/" element={<ExplorerLayout />} />
                             <Route path="/elements/:uuid" element={<ExplorerLayout />} />

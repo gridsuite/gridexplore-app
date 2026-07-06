@@ -13,7 +13,6 @@ import {
     fetchElementNames,
     fetchEnv,
     getRequestParamFromList,
-    getUserToken,
     type GsLang,
     type GsTheme,
     hasElementPermission,
@@ -22,19 +21,21 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
+    SecurityAnalysisProcessConfigBackend,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
 import type { UUID } from 'node:crypto';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
-import { PrepareContingencyListForBackend } from '../components/dialogs/contingency-list-helper';
 import { UsersIdentities } from './user-identities.type';
 import {
     FilterAttributes,
     FilterBasedContingencyList,
     FilteredIdentifiables,
     FiltersWithEquipmentTypes,
+    isFilterBasedContingencyList,
+    PrepareContingencyListForBackend,
 } from './contingency-list.type';
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
@@ -45,6 +46,7 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GAT
 const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
+const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -70,13 +72,6 @@ export interface ErrorWithStatus extends Error {
 }
 
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
-
-export function getUrlWithToken(baseUrl: string) {
-    if (baseUrl.includes('?')) {
-        return `${baseUrl}&access_token=${getUserToken()}`;
-    }
-    return `${baseUrl}?access_token=${getUserToken()}`;
-}
 
 export interface PermissionDTO {
     allUsers: boolean;
@@ -353,6 +348,10 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/diagram-config';
         case ElementType.WORKSPACE:
             return '/workspaces';
+        case ElementType.PROCESS_CONFIG:
+            return '/process-configs';
+        case ElementType.DYNAMIC_MAPPING:
+            return '/dynamic-mappings';
         default:
             return undefined;
     }
@@ -564,27 +563,48 @@ export function createFilterBasedContingency(
 }
 
 /**
- * Get contingency list by type and id
- * @returns {Promise<Response>}
+ * Enriches a `FilterBasedContingencyList` with element names; returns other types as-is.
  */
-function enrichContingencyList(contingencyList: any) {
-    const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id)) as Set<string>;
-    return filterIds.size > 0
-        ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
-              return {
-                  ...contingencyList,
-                  filters: contingencyList.filters?.map((filter: FilterAttributes) => {
-                      return {
-                          ...filter,
-                          name: elementNames[filter.id],
-                      };
-                  }),
-              };
-          })
-        : Promise.resolve(contingencyList);
+function enrichContingencyList(contingencyList: FilterBasedContingencyList | PrepareContingencyListForBackend) {
+    if (isFilterBasedContingencyList(contingencyList)) {
+        const filterIds = new Set(contingencyList.filters?.map((filter: FilterAttributes) => filter.id));
+        return filterIds.size > 0
+            ? fetchElementNames(filterIds).then((elementNames: Record<string, string>) => {
+                  return {
+                      ...contingencyList,
+                      filters: contingencyList.filters?.map((filter: FilterAttributes) => {
+                          return {
+                              ...filter,
+                              name: elementNames[filter.id],
+                          };
+                      }),
+                  };
+              })
+            : contingencyList;
+    }
+    return contingencyList;
 }
 
-export function getContingencyList(type: string, id: string) {
+/**
+ * Retrieves `FilterBasedContingencyList` based on identifier.
+ *
+ * @param {('FILTERS')} type - Must be 'FILTERS'.
+ * @param {string} id - The unique identifier associated with the contingency list.
+ * @return {Promise<FilterBasedContingencyList>} A promise that resolves to the contingency list of type `FilterBasedContingencyList`.
+ */
+export function getContingencyList(type: 'FILTERS', id: string): Promise<FilterBasedContingencyList>;
+/**
+ * Retrieves `PrepareContingencyListForBackend` based on identifier.
+ *
+ * @param {'IDENTIFIERS'} type - Must be 'IDENTIFIERS'.
+ * @param {string} id - The unique identifier associated with the contingency list.
+ * @return {Promise<PrepareContingencyListForBackend>} A promise that resolves to the contingency list of type `PrepareContingencyListForBackend`.
+ */
+export function getContingencyList(type: 'IDENTIFIERS', id: string): Promise<PrepareContingencyListForBackend>;
+export function getContingencyList(
+    type: string,
+    id: string
+): Promise<FilterBasedContingencyList | PrepareContingencyListForBackend> {
     const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
@@ -818,4 +838,35 @@ export function fetchGroups(): Promise<GroupDTO[]> {
 // Function to check if user has MANAGE permission on directory
 export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
+}
+
+export function fetchProcessConfig(processConfigUuid: UUID) {
+    console.info('Fetching SA process config from monitor server');
+    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
+    return backendFetchJson(url, {
+        method: 'get',
+    });
+}
+
+export function updateSAProcessConfig(
+    processConfigUuid: UUID,
+    name: string,
+    description: string,
+    processConfig: SecurityAnalysisProcessConfigBackend
+) {
+    console.info('Updating SA process config from monitor server');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('name', name);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
+
+    return backendFetchJson(url, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(processConfig),
+    });
 }
