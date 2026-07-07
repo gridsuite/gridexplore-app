@@ -11,8 +11,10 @@ import {
     OverflowableTableCellWithCheckbox,
 } from '@gridsuite/commons-ui';
 import {
-    Grid,
+    Box,
+    Grid2 as Grid,
     Paper,
+    Stack,
     Table,
     TableBody,
     TableCell,
@@ -89,96 +91,100 @@ function EquipmentTypesByFilters({
         [getValues, setValue, setIsDataOutdated]
     );
 
-    const containerProps = vwBelow900px ? { xs: true } : { xs: 8, sx: { height: '100%' } };
+    const containerProps = vwBelow900px ? { size: 'grow' as const } : { size: 8, sx: { height: '100%' } };
 
     return (
-        <Grid item container direction="column" {...containerProps}>
-            <Grid item component="h3">
-                <FormattedMessage id="equipmentTypesByFilters" />
-            </Grid>
-            <Grid item container xs sx={{ height: 0, flex: 1 }}>
-                <Grid item xs={6} sx={{ height: '100%', marginRight: -0.05 }}>
-                    <TableContainer
-                        component={Paper}
-                        sx={(t) => ({
-                            height: '100%',
-                            boxShadow: 'none',
-                            border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
-                            borderRadius: '4px 0 0 4px',
-                        })}
-                    >
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>
-                                        <FormattedMessage id="contingencyList.filterBased.filtersTableColumn" />
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {substationAndVLFilters.map((filterRow) => (
-                                    <TableRow
-                                        key={filterRow.id}
-                                        hover
-                                        onClick={() => handleFilterRowClick(filterRow.id, selectedFilterId)}
-                                        selected={filterRow.id === selectedFilterId}
-                                    >
-                                        <OverflowableTableCell text={filterRow.name} />
+        <Grid {...containerProps}>
+            <Stack sx={{ height: '100%', minHeight: 0 }}>
+                <Box component="h3">
+                    <FormattedMessage id="equipmentTypesByFilters" />
+                </Box>
+                <Grid container sx={{ height: 0, flex: 1 }}>
+                    <Grid size={6} sx={{ height: '100%', marginRight: -0.05 }}>
+                        <TableContainer
+                            component={Paper}
+                            sx={(t) => ({
+                                height: '100%',
+                                boxShadow: 'none',
+                                border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                                borderRadius: '4px 0 0 4px',
+                            })}
+                        >
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <FormattedMessage id="contingencyList.filterBased.filtersTableColumn" />
+                                        </TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                                </TableHead>
+                                <TableBody>
+                                    {substationAndVLFilters.map((filterRow) => (
+                                        <TableRow
+                                            key={filterRow.id}
+                                            hover
+                                            onClick={() => handleFilterRowClick(filterRow.id, selectedFilterId)}
+                                            selected={filterRow.id === selectedFilterId}
+                                        >
+                                            <OverflowableTableCell text={filterRow.name} />
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
+                    <Grid size={6} sx={{ height: '100%', marginLeft: -0.05 }}>
+                        <TableContainer
+                            component={Paper}
+                            sx={(t) => ({
+                                height: '100%',
+                                boxShadow: 'none',
+                                border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
+                                borderRadius: '0 4px 4px 0',
+                            })}
+                        >
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <FormattedMessage id="contingencyList.filterBased.subEquipmentsTableColumn" />
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {filterEquipmentTypes &&
+                                        Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
+                                            (equipmentRow: ContingencyListEquipment) => {
+                                                const isEquipmentSelected = filterEquipmentTypes.includes(
+                                                    equipmentRow.id
+                                                );
+                                                return (
+                                                    <TableRow
+                                                        key={equipmentRow.id}
+                                                        hover
+                                                        onClick={() =>
+                                                            handleEquipmentRowClick(
+                                                                equipmentRow.id,
+                                                                isEquipmentSelected,
+                                                                selectedFilterId
+                                                            )
+                                                        }
+                                                        selected={isEquipmentSelected}
+                                                    >
+                                                        <OverflowableTableCellWithCheckbox
+                                                            checked={isEquipmentSelected}
+                                                            text={<FormattedMessage id={equipmentRow.label} />}
+                                                        />
+                                                    </TableRow>
+                                                );
+                                            }
+                                        )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Grid>
                 </Grid>
-                <Grid item xs={6} sx={{ height: '100%', marginLeft: -0.05 }}>
-                    <TableContainer
-                        component={Paper}
-                        sx={(t) => ({
-                            height: '100%',
-                            boxShadow: 'none',
-                            border: `1px solid ${t.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)'}`,
-                            borderRadius: '0 4px 4px 0',
-                        })}
-                    >
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>
-                                        <FormattedMessage id="contingencyList.filterBased.subEquipmentsTableColumn" />
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {filterEquipmentTypes &&
-                                    Object.values(CONTINGENCY_LIST_EQUIPMENTS).map(
-                                        (equipmentRow: ContingencyListEquipment) => {
-                                            const isEquipmentSelected = filterEquipmentTypes.includes(equipmentRow.id);
-                                            return (
-                                                <TableRow
-                                                    key={equipmentRow.id}
-                                                    hover
-                                                    onClick={() =>
-                                                        handleEquipmentRowClick(
-                                                            equipmentRow.id,
-                                                            isEquipmentSelected,
-                                                            selectedFilterId
-                                                        )
-                                                    }
-                                                    selected={isEquipmentSelected}
-                                                >
-                                                    <OverflowableTableCellWithCheckbox
-                                                        checked={isEquipmentSelected}
-                                                        text={<FormattedMessage id={equipmentRow.label} />}
-                                                    />
-                                                </TableRow>
-                                            );
-                                        }
-                                    )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Grid>
-            </Grid>
+            </Stack>
         </Grid>
     );
 }
