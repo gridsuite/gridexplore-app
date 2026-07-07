@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementAttributes, FieldConstants, MAX_CHAR_DESCRIPTION, Parameter } from '@gridsuite/commons-ui';
+import { ElementAttributes, FieldConstants, MAX_CHAR_DESCRIPTION, NAME_EMPTY, Parameter } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import type { UUID } from 'node:crypto';
 
@@ -34,7 +34,7 @@ export const getCreateStudyDialogFormDefaultValues = ({
 });
 
 export const createStudyDialogFormValidationSchema = yup.object().shape({
-    [FieldConstants.STUDY_NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.STUDY_NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
