@@ -484,8 +484,7 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
             isDirectoryMoving: boolean,
             notificationType: NotificationType
         ) {
-            // if parent uuid is null that also means that it is root directory
-            if (directory.isRoot || directory.uuid == null) {
+            if (directory.isRoot) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
