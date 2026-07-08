@@ -21,7 +21,7 @@ import {
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
-import { Alert, Grid2 as Grid } from '@mui/material';
+import { Alert, Box, Grid2 as Grid, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
@@ -122,7 +122,7 @@ export default function ExplicitNamingForm() {
     }, [getTemplateData, getValues]);
 
     return (
-        <Grid container direction="column" spacing={2} sx={{ flexGrow: 1, flexWrap: 'nowrap', minHeight: 0 }}>
+        <Stack spacing={2} sx={{ flexGrow: 1, minHeight: 0 }}>
             <Grid>
                 <UniqueNameInput
                     name={FieldConstants.NAME}
@@ -159,11 +159,11 @@ export default function ExplicitNamingForm() {
                 </Grid>
             </Grid>
             {fileErrorMessage && (
-                <Grid>
+                <Box>
                     <Alert severity="error">{fileErrorMessage}</Alert>
-                </Grid>
+                </Box>
             )}
-            <Grid sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
                 <CustomAgGridTable
                     ref={tableRef}
                     name={FieldConstants.EQUIPMENT_TABLE}
@@ -185,7 +185,7 @@ export default function ExplicitNamingForm() {
                         getTableData,
                     }}
                 />
-            </Grid>
-        </Grid>
+            </Box>
+        </Stack>
     );
 }
