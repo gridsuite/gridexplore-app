@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    MouseEvent as ReactMouseEvent,
+    useCallback,
+    useEffect,
+    useEffectEvent,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {
@@ -478,7 +486,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     // navigation) would re-run it with the same stale event and re-fetch on each later click.
     const processedDirectoryEventRef = useRef(directoryUpdatedEvent);
 
-    useEffect(() => {
+    const processDirectoryUpdatedEvent = useEffectEvent(() => {
         function updateDirectory(
             directory: DirectoryInfos,
             isDirectoryMoving: boolean,
@@ -521,10 +529,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
             }
         }
-        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
-            return;
-        }
-        processedDirectoryEventRef.current = directoryUpdatedEvent;
+
         if (directoryUpdatedEvent.eventData?.headers) {
             const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
             const directoriesInfos = JSON.parse(
@@ -540,15 +545,15 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
             }
             directoriesInfos?.forEach((folder) => updateDirectory(folder, isDirectoryMoving, notificationType));
         }
-    }, [
-        directoryUpdatedEvent,
-        dispatch,
-        displayErrorIfExist,
-        updateDirectoryTree,
-        updateDirectoryTreeAndContent,
-        updateRootDirectories,
-        navigate,
-    ]);
+    });
+
+    useEffect(() => {
+        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
+            return;
+        }
+        processedDirectoryEventRef.current = directoryUpdatedEvent;
+        processDirectoryUpdatedEvent();
+    }, [directoryUpdatedEvent]);
 
     /* Handle components synchronization */
     // Fetch the selected directory's content.
