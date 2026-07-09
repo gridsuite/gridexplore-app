@@ -543,7 +543,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 displayErrorIfExist(error, elementNames);
                 dispatch(directoryUpdated({}));
             }
-            directoriesInfos?.forEach((folder) => updateDirectory(folder, isDirectoryMoving, notificationType));
+            directoriesInfos?.forEach((directory) => updateDirectory(directory, isDirectoryMoving, notificationType));
         }
     });
 
