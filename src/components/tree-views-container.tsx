@@ -86,7 +86,7 @@ function pathHasChanged(currentPath: ElementAttributes[], newPath: ElementAttrib
     );
 }
 
-export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
+export default function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid?: string }) {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -525,7 +525,6 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
             return;
         }
         processedDirectoryEventRef.current = directoryUpdatedEvent;
-        processedDirectoryEventRef.current = directoryUpdatedEvent;
         if (directoryUpdatedEvent.eventData?.headers) {
             const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
             const directoriesInfos = JSON.parse(
@@ -539,7 +538,7 @@ export function TreeViewsContainer({ sourceItemUuid }: { readonly sourceItemUuid
                 displayErrorIfExist(error, elementNames);
                 dispatch(directoryUpdated({}));
             }
-            directoriesInfos.forEach((folder) => updateDirectory(folder, isDirectoryMoving, notificationType));
+            directoriesInfos?.forEach((folder) => updateDirectory(folder, isDirectoryMoving, notificationType));
         }
     }, [
         directoryUpdatedEvent,
