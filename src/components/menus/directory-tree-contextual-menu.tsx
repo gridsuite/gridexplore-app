@@ -240,7 +240,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             if (isDeveloperMode) {
                 menuItems.push({
                     messageDescriptorId: 'importStudy',
-                    callback: () => handleOpenDialog(DialogsId.IMPORT_STUDY_ARCHIVE),
+                    callback: () => handleOpenDialog(DialogsId.IMPORT_STUDY_FROM_EXPORTED_STUDY),
                     icon: <AddIcon fontSize="small" data-testid="ImportStudyArchiveIcon" />,
                 });
             }
@@ -250,11 +250,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                     messageDescriptorId: 'createNewStudy',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
                     icon: <AddIcon fontSize="small" data-testid="CreateNewStudyIcon" />,
-                },
-                {
-                    messageDescriptorId: 'importStudyFromExportedStudy',
-                    callback: () => handleOpenDialog(DialogsId.IMPORT_STUDY_FROM_EXPORTED_STUDY),
-                    icon: <AddIcon fontSize="small" data-testid="ImportStudyFromExportedStudyIcon" />,
                 },
                 {
                     messageDescriptorId: 'createNewContingencyList',
@@ -382,8 +377,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
                 return <CreateStudyForm open onClose={handleCloseDialog} />;
-            case DialogsId.IMPORT_STUDY_ARCHIVE:
-                return <ImportStudyDialog open onClose={handleCloseDialog} />;
             case DialogsId.IMPORT_STUDY_FROM_EXPORTED_STUDY:
                 return <ImportStudyDialog open onClose={handleCloseDialog} />;
             case DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST:
