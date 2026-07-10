@@ -442,10 +442,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             link.remove();
             window.URL.revokeObjectURL(url);
             snackInfo({
-                messageTxt: intl.formatMessage({ id: 'exportStudyArchive' }) + ' ' + activeElement.elementName,
+                messageTxt: `${intl.formatMessage({ id: 'exportStudyArchive' })} ${activeElement.elementName}`,
             });
             handleCloseDialog();
-        } catch (error) {
+        } catch {
             snackError({ headerId: 'exportStudyArchive' });
         }
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);

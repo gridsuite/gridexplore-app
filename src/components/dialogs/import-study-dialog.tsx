@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback, FunctionComponent } from 'react';
+import { useState, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { CustomFormProvider, FieldConstants, useSnackMessage } from '@gridsuite/commons-ui';
@@ -24,35 +24,35 @@ interface ImportStudyDialogProps {
 interface ImportStudyFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]: string;
-    archiveFile: FileList;
+    archiveFile?: FileList;
 }
 
-const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, onClose }) => {
+export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStudyDialogProps>) {
     const intl = useIntl();
     const { snackError, snackInfo } = useSnackMessage();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
-    const schema = yup.object().shape({
+    const schema: yup.ObjectSchema<ImportStudyFormData> = yup.object().shape({
         [FieldConstants.NAME]: yup
             .string()
             .trim()
             .required(intl.formatMessage({ id: 'nameEmpty' })),
         [FieldConstants.DESCRIPTION]: yup.string().max(500, intl.formatMessage({ id: 'descriptionLimitError' })),
         archiveFile: yup
-            .mixed()
+            .mixed<FileList>()
             .test('required', intl.formatMessage({ id: 'uploadStudyErrorMsg' }), (value) => {
-                return value && value.length > 0;
+                return value !== undefined && value !== null && value.length > 0;
             })
             .test('fileType', intl.formatMessage({ id: 'uploadStudyErrorMsg' }), (value) => {
                 if (!value || value.length === 0) return false;
                 const file = value[0] as File;
                 return file.name.endsWith('.gz');
             }),
-    });
+    }) as yup.ObjectSchema<ImportStudyFormData>;
 
     const formMethods = useForm<ImportStudyFormData>({
-        resolver: yupResolver(schema),
+        resolver: yupResolver<ImportStudyFormData>(schema),
         defaultValues: {
             [FieldConstants.NAME]: '',
             [FieldConstants.DESCRIPTION]: '',
@@ -74,7 +74,11 @@ const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, on
 
             setIsSubmitting(true);
             try {
-                const file = data.archiveFile[0];
+                const file = data.archiveFile?.[0];
+                if (!file) {
+                    snackError({ headerId: 'uploadStudyErrorMsg' });
+                    return;
+                }
                 await importStudyArchive(
                     data[FieldConstants.NAME],
                     data[FieldConstants.DESCRIPTION],
@@ -96,14 +100,12 @@ const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, on
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>{intl.formatMessage({ id: 'importStudy' })}</DialogTitle>
-            <CustomFormProvider {...formMethods}>
+            <CustomFormProvider validationSchema={schema} {...formMethods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <DialogContent>
                         <Box display="flex" flexDirection="column" gap={2}>
                             <Box>
-                                <label htmlFor="name">
-                                    {intl.formatMessage({ id: 'nameProperty' })} *
-                                </label>
+                                <label htmlFor="name">{intl.formatMessage({ id: 'nameProperty' })} *</label>
                                 <input
                                     id="name"
                                     {...register(FieldConstants.NAME)}
@@ -121,9 +123,7 @@ const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, on
                             </Box>
 
                             <Box>
-                                <label htmlFor="description">
-                                    {intl.formatMessage({ id: 'descriptionProperty' })}
-                                </label>
+                                <label htmlFor="description">{intl.formatMessage({ id: 'descriptionProperty' })}</label>
                                 <textarea
                                     id="description"
                                     {...register(FieldConstants.DESCRIPTION)}
@@ -144,9 +144,7 @@ const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, on
                             </Box>
 
                             <Box>
-                                <label htmlFor="archiveFile">
-                                    {intl.formatMessage({ id: 'uploadStudy' })} *
-                                </label>
+                                <label htmlFor="archiveFile">{intl.formatMessage({ id: 'uploadStudy' })} *</label>
                                 <input
                                     id="archiveFile"
                                     type="file"
@@ -177,6 +175,4 @@ const ImportStudyDialog: FunctionComponent<ImportStudyDialogProps> = ({ open, on
             </CustomFormProvider>
         </Dialog>
     );
-};
-
-export default ImportStudyDialog;
+}

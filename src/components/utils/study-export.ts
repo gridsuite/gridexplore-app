@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    backendFetch,
-    backendFetchJson,
-    ElementAttributes,
-    PREFIX_STUDY_QUERIES,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { backendFetchJson, ElementAttributes, PREFIX_STUDY_QUERIES, useSnackMessage } from '@gridsuite/commons-ui';
 import { UUID } from 'node:crypto';
 import { useCallback } from 'react';
 
@@ -86,6 +80,58 @@ export function useExportStudyElements() {
     );
 }
 
+async function createStudyFromExport(
+    studyName: string,
+    description: string,
+    parentDirectoryUuid: UUID,
+    studyUuid: UUID,
+    rootNetwork: RootNetworkExport
+): Promise<void> {
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyName}`;
+    const params = new URLSearchParams({
+        description: description || '',
+        parentDirectoryUuid,
+        studyUuid,
+        caseUuid: rootNetwork.caseRef.uuid,
+        caseFormat: rootNetwork.caseFormat,
+        duplicateCase: 'false',
+    });
+
+    if (rootNetwork.name) {
+        params.append('firstRootNetworkName', rootNetwork.name);
+    }
+
+    await backendFetchJson(`${url}?${params.toString()}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rootNetwork.importParameters || {}),
+    });
+}
+
+async function addRootNetworkFromExport(studyUuid: UUID, rootNetwork: RootNetworkExport): Promise<void> {
+    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks`;
+    await backendFetchJson(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: rootNetwork.name,
+            tag: rootNetwork.tag,
+            caseUuid: rootNetwork.caseRef.uuid,
+            caseFormat: rootNetwork.caseFormat,
+            importParameters: rootNetwork.importParameters || {},
+        }),
+    });
+}
+
+async function importNodeTree(studyUuid: UUID, nodeTree: NodeTreeExport): Promise<void> {
+    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/tree/import`;
+    await backendFetchJson(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nodeTree),
+    });
+}
+
 export async function importStudy(
     studyName: string,
     description: string,
@@ -95,22 +141,12 @@ export async function importStudy(
     const [firstRootNetwork, ...remainingRootNetworks] = studyExportInfos.rootNetworks;
     const studyUuid = crypto.randomUUID() as UUID;
 
-    // 1. étude + 1er root network (flux existant, via explore-server) ; on attend le signal de fin
-    const studyReady = waitForStudyNotification(studyUuid, {
-        resolveOnUpdateTypes: ['studyCreationFinished'],
-    });
     await createStudyFromExport(studyName, description, parentDirectoryUuid, studyUuid, firstRootNetwork);
-    await studyReady;
 
-    // 2. root networks suivants, un par un
-    for (const rootNetwork of remainingRootNetworks) {
-        const rootNetworkReady = waitForStudyNotification(studyUuid, {
-            resolveOnUpdateTypes: ['rootNetworksUpdated'],
-            rejectOnUpdateTypes: ['rootNetworkUpdateFailed'],
-        });
+    await remainingRootNetworks.reduce(async (previousPromise, rootNetwork) => {
+        await previousPromise;
         await addRootNetworkFromExport(studyUuid, rootNetwork);
-        await rootNetworkReady;
-    }
+    }, Promise.resolve());
 
     await importNodeTree(studyUuid, studyExportInfos.nodeTree);
 
