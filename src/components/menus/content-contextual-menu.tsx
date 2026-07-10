@@ -43,6 +43,7 @@ import {
     duplicateElement,
     duplicateSpreadsheetConfig,
     duplicateSpreadsheetConfigCollection,
+    exportStudyArchive,
     moveElementsToDirectory,
     renameElement,
 } from '../../utils/rest-api';
@@ -57,6 +58,7 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
+import { useExportStudyElements } from '../utils/study-export';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -85,6 +87,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
+    const exportStudyElements = useExportStudyElements();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -408,6 +411,45 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
+    const couldExportStudy = useCallback(() => {
+        return (
+            isDeveloperMode &&
+            activeElement.elementUuid &&
+            (activeElement.type === ElementType.STUDY || activeElement.type === ElementType.WORKSPACE) &&
+            noCreationInProgress()
+        );
+    }, [isDeveloperMode, activeElement, noCreationInProgress]);
+
+    const couldExportStudyArchive = useCallback(() => {
+        return (
+            isSingleElement &&
+            activeElement.elementUuid &&
+            activeElement.type === ElementType.STUDY &&
+            noCreationInProgress()
+        );
+    }, [isSingleElement, activeElement, noCreationInProgress]);
+
+    const handleExportStudyArchive = useCallback(async () => {
+        try {
+            const response = await exportStudyArchive(activeElement.elementUuid);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `study-${activeElement.elementName}.gz`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+            snackInfo({
+                messageTxt: intl.formatMessage({ id: 'exportStudyArchive' }) + ' ' + activeElement.elementName,
+            });
+            handleCloseDialog();
+        } catch (error) {
+            snackError({ headerId: 'exportStudyArchive' });
+        }
+    }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);
+
     useEffect(() => {
         let isCurrent = true;
         if (selectedDirectory !== null) {
@@ -506,9 +548,30 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                             }}
                         />
                     ),
-                },
-                { isDivider: true }
+                }
             );
+        }
+
+        if (couldExportStudyArchive()) {
+            menuItems.push({
+                messageDescriptorId: 'exportStudyArchive',
+                callback: handleExportStudyArchive,
+                icon: <FileDownload fontSize="small" data-testid="ExportArchiveIcon" />,
+                withDivider: true,
+            });
+        } else if (couldCopy()) {
+            menuItems.push({ isDivider: true });
+        }
+
+        if (couldExportStudy()) {
+            menuItems.push({
+                messageDescriptorId: 'export.button',
+                callback: async () => {
+                    await exportStudyElements(activeElement);
+                    handleCloseDialog();
+                },
+                icon: <FileDownload fontSize="small" data-testid="DownloadIcon" />,
+            });
         }
 
         if (couldDelete()) {
@@ -577,6 +640,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         couldCreateNewStudyFromCase,
         couldDuplicate,
         couldCopy,
+        couldExportStudy,
+        couldExportStudyArchive,
         couldDelete,
         couldDownload,
         isDeveloperMode,
@@ -588,10 +653,13 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         duplicateItem,
         allowsDuplicateOrCopy,
         copyItem,
-        noCreationInProgress,
         copyLinkItem,
-        downloadElements,
+        handleExportStudyArchive,
+        exportStudyElements,
+        activeElement,
         handleCloseDialog,
+        downloadElements,
+        noCreationInProgress,
     ]);
 
     const renderDialog = () => {

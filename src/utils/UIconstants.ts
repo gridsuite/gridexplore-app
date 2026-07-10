@@ -18,6 +18,8 @@ export const DialogsId = {
     MOVE_DIRECTORY: 'moveDirectory',
     EXPORT: 'export',
     ADD_NEW_STUDY_FROM_CASE: 'create_study_from_case',
+    IMPORT_STUDY_FROM_EXPORTED_STUDY: 'import_study_from_exported_study',
+    IMPORT_STUDY_ARCHIVE: 'import_study_archive',
     ADD_NEW_STUDY: 'create_study',
     CONVERT_TO_EXPLICIT_NAMING_FILTER: 'convert_to_explicit_naming_filter',
     CREATE_SPREADSHEET_COLLECTION: 'create_spreadsheet_collection',

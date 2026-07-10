@@ -58,6 +58,7 @@ import { checkPermissionOnDirectory } from './menus-utils';
 import DirectoryPropertiesDialog from '../dialogs/directory-properties/directory-properties-dialog';
 import { FilterType } from '../../utils/elementType';
 import FilterBasedContingencyListDialog from '../dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
+import ImportStudyDialog from '../dialogs/import-study-dialog';
 
 export interface DirectoryTreeContextualMenuProps extends Omit<CommonContextualMenuProps, 'onClose'> {
     directory: ElementAttributes | null;
@@ -235,11 +236,25 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         }
 
         if (directory && directoryWritable) {
+            // Import study option (developer mode only)
+            if (isDeveloperMode) {
+                menuItems.push({
+                    messageDescriptorId: 'importStudy',
+                    callback: () => handleOpenDialog(DialogsId.IMPORT_STUDY_ARCHIVE),
+                    icon: <AddIcon fontSize="small" data-testid="ImportStudyArchiveIcon" />,
+                });
+            }
+
             menuItems.push(
                 {
                     messageDescriptorId: 'createNewStudy',
                     callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
                     icon: <AddIcon fontSize="small" data-testid="CreateNewStudyIcon" />,
+                },
+                {
+                    messageDescriptorId: 'importStudyFromExportedStudy',
+                    callback: () => handleOpenDialog(DialogsId.IMPORT_STUDY_FROM_EXPORTED_STUDY),
+                    icon: <AddIcon fontSize="small" data-testid="ImportStudyFromExportedStudyIcon" />,
                 },
                 {
                     messageDescriptorId: 'createNewContingencyList',
@@ -367,6 +382,10 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         switch (openDialog) {
             case DialogsId.ADD_NEW_STUDY:
                 return <CreateStudyForm open onClose={handleCloseDialog} />;
+            case DialogsId.IMPORT_STUDY_ARCHIVE:
+                return <ImportStudyDialog open onClose={handleCloseDialog} />;
+            case DialogsId.IMPORT_STUDY_FROM_EXPORTED_STUDY:
+                return <ImportStudyDialog open onClose={handleCloseDialog} />;
             case DialogsId.ADD_NEW_EXPLICIT_NAMING_CONTINGENCY_LIST:
                 return (
                     <ExplicitNamingCreationDialog open titleId="createNewContingencyList" onClose={handleCloseDialog} />
