@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -20,9 +21,20 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useState } from 'react';
 import type { UUID } from 'node:crypto';
 import { type ElementAttributes, ElementType } from '@gridsuite/commons-ui';
-import { UserCellRenderer } from '../../utils/renderers/user-cell-renderer';
+import { UserAvatar } from '../../utils/renderers/user-cell-renderer';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
+import PathBreadcrumbs from './path-breadcrumbs';
+
+/** A user name preceded by its GridExplore list avatar, in a compact size. */
+function UserAvatarWithLabel({ label }: Readonly<{ label: string }>) {
+    return (
+        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>
+            <UserAvatar label={label} size="small" />
+            {label}
+        </Box>
+    );
+}
 
 /**
  * One element using the inspected shared element (e.g. a study referencing a shared
@@ -96,16 +108,18 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                                 <TableCell>
                                     {getElementTypeTranslation(link.type, link.subtype ?? null, null, intl)}
                                 </TableCell>
-                                <TableCell>{link.pathName.join(' / ')}</TableCell>
+                                <TableCell>
+                                    <PathBreadcrumbs path={link.pathName} />
+                                </TableCell>
                                 <TableCell>{link.node}</TableCell>
                                 <TableCell>
-                                    <UserCellRenderer value={link.ownerLabel ?? ''} />
+                                    <UserAvatarWithLabel label={link.ownerLabel ?? ''} />
                                 </TableCell>
                                 <TableCell>
                                     <DateCellRenderer value={link.lastModificationDate} />
                                 </TableCell>
                                 <TableCell>
-                                    <UserCellRenderer value={link.lastModifiedByLabel ?? ''} />
+                                    <UserAvatarWithLabel label={link.lastModifiedByLabel ?? ''} />
                                 </TableCell>
                             </TableRow>
                         ))}

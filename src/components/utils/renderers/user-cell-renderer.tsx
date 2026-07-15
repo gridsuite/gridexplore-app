@@ -42,18 +42,43 @@ const styles = {
         fontSize: theme.typography.fontSize,
         backgroundColor: theme.row.hover as string,
     }),
+    avatarSmall: (theme) => ({
+        height: '24px',
+        width: '24px',
+        fontSize: theme.typography.pxToRem(11),
+        backgroundColor: theme.row.hover as string,
+    }),
 } as const satisfies MuiStyles;
+
+export type UserAvatarSize = 'small' | 'medium';
+
+export type UserAvatarProps = { label: string; size?: UserAvatarSize };
+
+/**
+ * Colored initials avatar for a user, as displayed in the GridExplore list.
+ * `size="small"` yields a more compact avatar to save horizontal space.
+ */
+export function UserAvatar({ label, size = 'medium' }: Readonly<UserAvatarProps>) {
+    return (
+        <Tooltip title={label}>
+            <Avatar
+                sx={mergeSx(
+                    size === 'small' ? styles.avatarSmall : styles.avatar,
+                    label ? { backgroundColor: stringToColor(label) } : null
+                )}
+            >
+                {getAbbreviationFromUserName(label)}
+            </Avatar>
+        </Tooltip>
+    );
+}
 
 export type UserCellRendererProps = { value: string };
 
 export function UserCellRenderer({ value }: Readonly<UserCellRendererProps>) {
     return (
         <Box sx={{ display: 'inline-flex', verticalAlign: 'middle' }}>
-            <Tooltip title={value}>
-                <Avatar sx={mergeSx(styles.avatar, value ? { backgroundColor: stringToColor(value) } : null)}>
-                    {getAbbreviationFromUserName(value)}
-                </Avatar>
-            </Tooltip>
+            <UserAvatar label={value} />
         </Box>
     );
 }
