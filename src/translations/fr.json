@@ -141,6 +141,7 @@
     "download.fileName": "Nom de fichier",
     "download.export.button": "Convertir",
     "download.exportFormat": "Format de l'export",
+    "download.exportCompression": "Compression",
     "download.message.downloadedElement": "Un élément a été téléchargé.",
     "download.message.downloadedElements": "{number} éléments ont été téléchargés.",
     "download.message.oneTypeNotDownloadable": "Les {type1} ne sont pas téléchargeables.",

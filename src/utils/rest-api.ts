@@ -719,11 +719,12 @@ export const convertCase = (
     caseUuid: UUID,
     fileName: string,
     format: string,
+    compression: string,
     formatParameters: unknown,
     abortController: AbortController
 ): Promise<UUID> =>
     backendFetchJson(
-        `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
+        `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?${compression}&fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
