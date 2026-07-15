@@ -7,6 +7,7 @@
 import { Breadcrumbs, Chip, Tooltip } from '@mui/material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 
+//TODO share with DirectoryBreadcrumbs ?
 const styles = {
     breadcrumbs: {
         '& .MuiBreadcrumbs-separator': {
@@ -21,24 +22,17 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface PathBreadcrumbsProps {
-    /** Parent directories, from root to the closest parent. */
     path: string[];
 }
 
 /**
- * Renders an element path as a MUI Breadcrumbs styled the GridExplore way (chips),
- * in a compact "small" size. When the path has more than two segments, the condensed
+ * Renders an element path as a MUI Breadcrumbs.
+ * When the path has more than two segments, the condensed
  * form is truncated in the middle: "Element 1 / ... / Element N".
  */
 export default function PathBreadcrumbs({ path }: Readonly<PathBreadcrumbsProps>) {
     return (
-        <Breadcrumbs
-            aria-label="breadcrumb"
-            maxItems={2}
-            itemsBeforeCollapse={1}
-            itemsAfterCollapse={1}
-            sx={styles.breadcrumbs}
-        >
+        <Breadcrumbs aria-label="breadcrumb" maxItems={2} sx={styles.breadcrumbs}>
             {path.map((segment, index) => (
                 <Tooltip key={path.slice(0, index + 1).join('/')} title={segment}>
                     <Chip label={segment} size="small" sx={styles.chip} />
