@@ -10,6 +10,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { FieldValues, useFormContext, UseFieldArrayReturn } from 'react-hook-form';
 import { v4 as uuid4 } from 'uuid';
 import {
+    CsvDownloadButton,
     CsvPicker,
     CustomAgGridTable,
     DescriptionField,
@@ -130,11 +131,20 @@ export default function ExplicitNamingForm() {
                     activeDirectory={activeDirectory}
                 />
             </Grid>
-            <Grid container justifyContent="space-between" alignItems="center">
+            <Grid>
+                <DescriptionField />
+            </Grid>
+            <Grid container spacing={2} justifyContent="space-between" alignItems="center">
                 <Grid>
-                    <DescriptionField />
+                    <CsvDownloadButton
+                        data={getTemplateData}
+                        fileName={intl.formatMessage({ id: 'contingencyListCreation' })}
+                        language={languageLocal}
+                        labelId="GenerateCSV"
+                        variant="contained"
+                    />
                 </Grid>
-                <Grid>
+                <Grid sx={{ flex: 1, minWidth: 0 }}>
                     <CsvPicker<Record<string, string>>
                         label="UploadCSV"
                         requiredColumns={csvFileHeaders}
@@ -172,7 +182,6 @@ export default function ExplicitNamingForm() {
                     csvProps={{
                         fileName: intl.formatMessage({ id: 'contingencyListCreation' }),
                         language: languageLocal,
-                        getTemplateData,
                         getTableData,
                     }}
                 />
