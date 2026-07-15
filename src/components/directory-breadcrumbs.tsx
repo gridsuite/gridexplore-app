@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Box, Breadcrumbs, emphasize, Link, Tooltip, Typography } from '@mui/material';
 import { FolderOpen as FolderOpenIcon } from '@mui/icons-material';
 import { type ElementAttributes, mergeSx, type MuiStyles } from '@gridsuite/commons-ui';
 import { MouseEvent } from 'react';
 import { useNavigate } from 'react-router';
-import { setSelectedDirectory } from '../redux/actions';
 import { AppState } from '../redux/types';
 
 const styles = {
@@ -66,7 +65,6 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export default function DirectoryBreadcrumbs() {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
@@ -75,8 +73,8 @@ export default function DirectoryBreadcrumbs() {
     /* Handle User interactions */
     const handleSelect = (event: MouseEvent<HTMLElement>, dir: ElementAttributes | null) => {
         event.preventDefault();
-        dispatch(setSelectedDirectory(dir));
-        navigate(dir !== null ? `/elements/${dir.elementUuid}` : '/', { replace: false });
+        // The URL is the single source of truth (selection/content handled in TreeViewsContainer).
+        navigate(dir !== null ? `/elements/${dir.elementUuid}` : '/');
     };
 
     /* Handle Rendering */

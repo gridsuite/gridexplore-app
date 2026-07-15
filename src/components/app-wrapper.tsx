@@ -79,6 +79,8 @@ import {
     errorsFr,
     equipmentTypesEn,
     equipmentTypesFr,
+    processConfigEn,
+    processConfigFr,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -247,6 +249,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...parametersEn,
         ...useUniqueNameValidationEn,
         ...commonButtonEn,
+        ...processConfigEn,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -280,6 +283,7 @@ const messages: Record<GsLangUser, IntlConfig['messages']> = {
         ...parametersFr,
         ...useUniqueNameValidationFr,
         ...commonButtonFr,
+        ...processConfigFr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

@@ -21,6 +21,7 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
+    SecurityAnalysisProcessConfigBackend,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -45,6 +46,7 @@ const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GAT
 const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
+const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -327,6 +329,8 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/workspaces';
         case ElementType.PROCESS_CONFIG:
             return '/process-configs';
+        case ElementType.DYNAMIC_MAPPING:
+            return '/dynamic-mappings';
         default:
             return undefined;
     }
@@ -813,4 +817,35 @@ export function fetchGroups(): Promise<GroupDTO[]> {
 // Function to check if user has MANAGE permission on directory
 export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
     return hasElementPermission(directoryUuid, PermissionType.MANAGE);
+}
+
+export function fetchProcessConfig(processConfigUuid: UUID) {
+    console.info('Fetching SA process config from monitor server');
+    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
+    return backendFetchJson(url, {
+        method: 'get',
+    });
+}
+
+export function updateSAProcessConfig(
+    processConfigUuid: UUID,
+    name: string,
+    description: string,
+    processConfig: SecurityAnalysisProcessConfigBackend
+) {
+    console.info('Updating SA process config from monitor server');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('name', name);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
+
+    return backendFetchJson(url, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(processConfig),
+    });
 }
