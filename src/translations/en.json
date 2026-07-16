@@ -51,6 +51,7 @@
     "linkCopied": "Link copied",
     "displaySharingLinks": "Display sharing links",
     "sharingLinksOf": "Sharing links of",
+    "sharingLinksError": "An error occurred while fetching the sharing links",
     "path": "Path",
     "node": "Node",
     "createFolder": "Create folder",

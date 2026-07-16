@@ -17,29 +17,20 @@ import {
     TableRow,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useState } from 'react';
-import type { UUID } from 'node:crypto';
-import { type ElementAttributes, ElementType } from '@gridsuite/commons-ui';
+import { useEffect, useState } from 'react';
+import { type ElementAttributes, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { UserAvatarWithLabel } from '../../utils/renderers/user-avatar';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
+import { fetchSharedElementInfos } from '../../../utils/rest-api';
+import { SharedElementInfos } from '../../../utils/shared-element-infos.type';
 import PathBreadcrumbs from './path-breadcrumbs';
 
 /**
- * One element using the inspected shared element (e.g. a study referencing a shared
- * composite modification). Shape anticipated for the future explore-server endpoint.
+ * A row carries no identifier of its own: there is one row per reference, so two rows can be
+ * strictly identical when a same node references the shared element twice. Hence the generated id.
  */
-export interface SharingLink {
-    elementUuid: UUID;
-    elementName: string;
-    type: ElementType;
-    subtype?: string | null; // for getElementTypeTranslation (filters, contingency lists…)
-    pathName: string[]; // parent directories, rendered "a / b /"
-    node?: string; // study node carrying the modification (only relevant for in-study sharing)
-    ownerLabel?: string;
-    lastModificationDate: string;
-    lastModifiedByLabel?: string;
-}
+type SharingLinkRow = SharedElementInfos & { id: string };
 
 export interface SharingLinksDialogProps {
     open: boolean;
@@ -53,9 +44,20 @@ export interface SharingLinksDialogProps {
  */
 export default function SharingLinksDialog({ open, onClose, element }: Readonly<SharingLinksDialogProps>) {
     const intl = useIntl();
+    const { snackError } = useSnackMessage();
 
-    // TODO(GRD-4774): replace with an explore-server call fetchElementSharingLinks(element.elementUuid)
-    const [links] = useState<SharingLink[]>([]);
+    const [links, setLinks] = useState<SharingLinkRow[]>([]);
+
+    useEffect(() => {
+        fetchSharedElementInfos(element.elementUuid)
+            .then((sharedElementInfos) =>
+                setLinks(sharedElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
+            )
+            .catch((error) => {
+                console.error(error);
+                snackWithFallback(snackError, error, { headerId: 'sharingLinksError' });
+            });
+    }, [element.elementUuid, snackError]);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth aria-labelledby="dialog-title-sharing-links">
@@ -92,7 +94,7 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                     </TableHead>
                     <TableBody>
                         {links.map((link) => (
-                            <TableRow key={link.elementUuid}>
+                            <TableRow key={link.id}>
                                 <TableCell>{link.elementName}</TableCell>
                                 <TableCell>
                                     {getElementTypeTranslation(link.type, link.subtype ?? null, null, intl)}

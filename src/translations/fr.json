@@ -50,6 +50,7 @@
     "linkCopied": "Lien copié",
     "displaySharingLinks": "Voir les liens de partage",
     "sharingLinksOf": "Liens de partage de",
+    "sharingLinksError": "Une erreur est survenue lors de la récupération des liens de partage",
     "path": "Chemin",
     "node": "Noeud",
     "createNewStudyFromImportedCase": "Créer étude",
