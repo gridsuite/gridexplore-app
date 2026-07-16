@@ -120,12 +120,6 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
         });
     }, []);
 
-    useEffect(() => {
-        if (selectedFormat === 'CGMES' && selectedCompression === 'gzip') {
-            setSelectedCompression('zip');
-        }
-    }, [selectedFormat, selectedCompression]);
-
     const handleParameterChange = useCallback((name: string, value: any, isEdit: boolean) => {
         if (!isEdit) {
             setCurrentParameters((prevParameters) => ({
@@ -182,7 +176,12 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                             label={<FormattedMessage id="download.exportFormat" />}
                             variant="filled"
                             id="controlled-select-format"
-                            onChange={(event) => setSelectedFormat(event.target.value)}
+                            onChange={(event) => {
+                                setSelectedFormat(event.target.value);
+                                if (event.target.value === 'CGMES' && selectedCompression === 'gzip') {
+                                    setSelectedCompression('zip');
+                                }
+                            }}
                             defaultValue=""
                             inputProps={{
                                 id: 'select-format',
@@ -206,6 +205,7 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                             id="controlled-select-compression"
                             onChange={(event) => setSelectedCompression(event.target.value)}
                             defaultValue={selectedCompression}
+                            value={selectedCompression}
                             inputProps={{
                                 id: 'select-compression',
                             }}
