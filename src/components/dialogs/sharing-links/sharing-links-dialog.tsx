@@ -96,9 +96,7 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                         {links.map((link) => (
                             <TableRow key={link.id}>
                                 <TableCell>{link.elementName}</TableCell>
-                                <TableCell>
-                                    {getElementTypeTranslation(link.type, link.subtype ?? null, null, intl)}
-                                </TableCell>
+                                <TableCell>{getElementTypeTranslation(link.type, null, null, intl)}</TableCell>
                                 <TableCell>
                                     <PathBreadcrumbs path={link.pathName} />
                                 </TableCell>

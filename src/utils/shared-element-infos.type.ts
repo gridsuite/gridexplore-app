@@ -12,11 +12,10 @@ import { ElementType } from '@gridsuite/commons-ui';
  * There is one entry per reference, so a same element appears once per node referencing it.
  */
 export type SharedElementInfos = {
-    node?: string; // study node carrying the modification
     elementName: string;
     type: ElementType;
-    subtype?: string | null; // for getElementTypeTranslation (filters, contingency lists…)
     pathName: string[]; // parent directories, rendered "a / b /"
+    node?: string; // study node carrying the modification, only relevant for in-study sharing
     ownerLabel?: string;
     lastModificationDate: string;
     lastModifiedByLabel?: string;
