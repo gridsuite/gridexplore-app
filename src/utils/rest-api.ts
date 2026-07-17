@@ -126,7 +126,7 @@ export function fetchUsersIdentities(elementUuids: string[]) {
 
 export function fetchSharedElementInfos(elementUuid: UUID) {
     console.info('fetching the elements using the shared element %s.', elementUuid);
-    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/shared-elements-infos`;
+    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/shared-element-infos`;
     return backendFetchJson(fetchParams, {
         method: 'get',
     }) as Promise<SharedElementInfos[]>;
