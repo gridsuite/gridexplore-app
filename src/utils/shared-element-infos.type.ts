@@ -14,7 +14,7 @@ import { ElementType } from '@gridsuite/commons-ui';
 export type SharedElementInfos = {
     elementName: string;
     type: ElementType;
-    pathName: string[]; // parent directories, rendered "a / b /"
+    path: string[]; // parent directories, rendered "a / b /"
     node?: string; // study node carrying the modification, only relevant for in-study sharing
     ownerLabel?: string;
     lastModificationDate: string;

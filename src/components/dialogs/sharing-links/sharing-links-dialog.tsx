@@ -27,10 +27,11 @@ import { SharedElementInfos } from '../../../utils/shared-element-infos.type';
 import PathBreadcrumbs from './path-breadcrumbs';
 
 /**
- * A row carries no identifier of its own: there is one row per reference, so two rows can be
- * strictly identical when a same node references the shared element twice. Hence the generated id.
+ * An element using the shared element. It carries no identifier of its own: there is one row per
+ * reference, so two rows can be strictly identical when a same node references the shared element
+ * twice. Hence the generated id.
  */
-type SharingLinkRow = SharedElementInfos & { id: string };
+type ConsumerElement = SharedElementInfos & { id: string };
 
 export interface SharingLinksDialogProps {
     open: boolean;
@@ -46,12 +47,12 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [links, setLinks] = useState<SharingLinkRow[]>([]);
+    const [consumerElements, setConsumerElements] = useState<ConsumerElement[]>([]);
 
     useEffect(() => {
         fetchSharedElementInfos(element.elementUuid)
             .then((sharedElementInfos) =>
-                setLinks(sharedElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
+                setConsumerElements(sharedElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
             )
             .catch((error) => {
                 console.error(error);
@@ -93,22 +94,24 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {links.map((link) => (
-                            <TableRow key={link.id}>
-                                <TableCell>{link.elementName}</TableCell>
-                                <TableCell>{getElementTypeTranslation(link.type, null, null, intl)}</TableCell>
+                        {consumerElements.map((consumerElement) => (
+                            <TableRow key={consumerElement.id}>
+                                <TableCell>{consumerElement.elementName}</TableCell>
                                 <TableCell>
-                                    <PathBreadcrumbs path={link.pathName} />
-                                </TableCell>
-                                <TableCell>{link.node}</TableCell>
-                                <TableCell>
-                                    <UserAvatarWithLabel label={link.ownerLabel ?? ''} />
+                                    {getElementTypeTranslation(consumerElement.type, null, null, intl)}
                                 </TableCell>
                                 <TableCell>
-                                    <DateCellRenderer value={link.lastModificationDate} />
+                                    <PathBreadcrumbs path={consumerElement.path} />
+                                </TableCell>
+                                <TableCell>{consumerElement.node}</TableCell>
+                                <TableCell>
+                                    <UserAvatarWithLabel label={consumerElement.ownerLabel ?? ''} />
                                 </TableCell>
                                 <TableCell>
-                                    <UserAvatarWithLabel label={link.lastModifiedByLabel ?? ''} />
+                                    <DateCellRenderer value={consumerElement.lastModificationDate} />
+                                </TableCell>
+                                <TableCell>
+                                    <UserAvatarWithLabel label={consumerElement.lastModifiedByLabel ?? ''} />
                                 </TableCell>
                             </TableRow>
                         ))}
