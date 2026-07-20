@@ -29,7 +29,7 @@ import type { UUID } from 'node:crypto';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { UsersIdentities } from './user-identities.type';
-import { SharedElementInfos } from './shared-element-infos.type';
+import { ConsumerElementInfos } from './consumer-element-infos.type';
 import {
     FilterAttributes,
     FilterBasedContingencyList,
@@ -124,12 +124,12 @@ export function fetchUsersIdentities(elementUuids: string[]) {
     }) as Promise<UsersIdentities>;
 }
 
-export function fetchSharedElementInfos(elementUuid: UUID) {
+export function fetchConsumerElementInfos(elementUuid: UUID) {
     console.info('fetching the elements using the shared element %s.', elementUuid);
-    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/shared-element-infos`;
+    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/consumer-element-infos`;
     return backendFetchJson(fetchParams, {
         method: 'get',
-    }) as Promise<SharedElementInfos[]>;
+    }) as Promise<ConsumerElementInfos[]>;
 }
 
 export type ConfigParameter =

@@ -22,8 +22,8 @@ import { type ElementAttributes, snackWithFallback, useSnackMessage } from '@gri
 import { UserAvatarWithLabel } from '../../utils/renderers/user-avatar';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
-import { fetchSharedElementInfos } from '../../../utils/rest-api';
-import { SharedElementInfos } from '../../../utils/shared-element-infos.type';
+import { fetchConsumerElementInfos } from '../../../utils/rest-api';
+import { ConsumerElementInfos } from '../../../utils/consumer-element-infos.type';
 import PathBreadcrumbs from './path-breadcrumbs';
 
 /**
@@ -31,7 +31,7 @@ import PathBreadcrumbs from './path-breadcrumbs';
  * reference, so two rows can be strictly identical when a same node references the shared element
  * twice. Hence the generated id.
  */
-type ConsumerElement = SharedElementInfos & { id: string };
+type ConsumerElement = ConsumerElementInfos & { id: string };
 
 export interface SharingLinksDialogProps {
     open: boolean;
@@ -50,9 +50,9 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
     const [consumerElements, setConsumerElements] = useState<ConsumerElement[]>([]);
 
     useEffect(() => {
-        fetchSharedElementInfos(element.elementUuid)
-            .then((sharedElementInfos) =>
-                setConsumerElements(sharedElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
+        fetchConsumerElementInfos(element.elementUuid)
+            .then((consumerElementInfos) =>
+                setConsumerElements(consumerElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
             )
             .catch((error) => {
                 console.error(error);
