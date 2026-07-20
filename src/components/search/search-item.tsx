@@ -7,7 +7,7 @@
 
 import { useMemo } from 'react';
 import { getFileIcon, type MuiStyles } from '@gridsuite/commons-ui';
-import { Grid2 as Grid, Typography } from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { ElementAttributesES } from '../../redux/types';
 import cyrb53 from '../../utils/cyrb53';
