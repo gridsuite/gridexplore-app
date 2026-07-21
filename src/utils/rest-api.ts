@@ -38,15 +38,7 @@ import {
     PrepareContingencyListForBackend,
 } from './contingency-list.type';
 
-const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
-const PREFIX_ACTIONS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/actions`;
-const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
-const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/network-conversion`;
-const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
-const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
-const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
-const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -394,7 +386,7 @@ export function duplicateSpreadsheetConfigCollection(sourceCaseUuid: UUID, paren
 
 export function downloadSpreadsheetConfig(configId: string) {
     console.info(`Downloading spreadsheet config with id: ${configId}`);
-    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${configId}`;
+    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs/${configId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -406,7 +398,7 @@ export function downloadSpreadsheetConfig(configId: string) {
 
 export function downloadSpreadsheetConfigCollection(collectionId: string) {
     console.info(`Downloading spreadsheet config collection with id: ${collectionId}`);
-    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}`;
+    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/${collectionId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -418,7 +410,7 @@ export function downloadSpreadsheetConfigCollection(collectionId: string) {
 
 export function downloadWorkspace(workspaceId: string) {
     console.info(`Downloading workspace with id: ${workspaceId}`);
-    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/workspaces/${workspaceId}`;
+    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/workspaces/${workspaceId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -458,7 +450,7 @@ export function replaceAllSpreadsheetConfigsInCollection(
     const queryParams = new URLSearchParams();
     queryParams.append('name', name);
     queryParams.append('description', description);
-    const url = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'put',
@@ -584,7 +576,7 @@ export function getContingencyList(
     type: string,
     id: string
 ): Promise<FilterBasedContingencyList | PrepareContingencyListForBackend> {
-    const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getContingencyUriParamType(type)}/${id}`;
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
     });
@@ -598,7 +590,7 @@ export function getIdentifiablesFromFilters(
 ): Promise<FilteredIdentifiables> {
     console.info('get identifiables resulting from application of filters list on study root network');
 
-    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/filters/elements`, {
+    return backendFetchJson(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}/filters/elements`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filters),
@@ -682,13 +674,13 @@ export function saveExplicitNamingContingencyList(
  * @returns {Promise<Response>}
  */
 export function getFilterById(id: string) {
-    const url = `${PREFIX_FILTERS_QUERIES}/${id}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${id}`;
     return backendFetchJson(url, { method: 'get' });
 }
 
 export function getCaseImportParameters(caseUuid: UUID) {
     console.info(`get import parameters for case '${caseUuid}' ...`);
-    const getExportFormatsUrl = `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/import-parameters`;
+    const getExportFormatsUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}/import-parameters`;
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl, {
         method: 'get',
@@ -696,7 +688,7 @@ export function getCaseImportParameters(caseUuid: UUID) {
 }
 
 export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
-    const createCaseUrl = `${PREFIX_CASE_QUERIES}/v1/cases`;
+    const createCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases`;
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('withExpiration', encodeURIComponent(true));
@@ -709,7 +701,7 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
 }
 
 export function deleteCase(caseUuid: UUID) {
-    const deleteCaseUrl = `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`;
+    const deleteCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
     });
@@ -723,7 +715,7 @@ export const convertCase = (
     abortController: AbortController
 ): Promise<UUID> =>
     backendFetchJson(
-        `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -733,20 +725,20 @@ export const convertCase = (
     );
 
 export const fetchExportNetworkFile = (exportUuid: UUID) =>
-    backendFetch(`${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/download-file/${exportUuid}`, {
+    backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/download-file/${exportUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     });
 
 export const downloadCase = (caseUuid: string) =>
-    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
+    backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     });
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, { method: 'get' }).catch(
+    return backendFetchJson(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/servers/about?view=explore`, { method: 'get' }).catch(
         (reason) => {
             console.error(`Error while fetching the servers infos : ${reason}`);
             return reason;
@@ -756,7 +748,7 @@ export function getServersInfos() {
 
 export const getExportFormats = () => {
     console.info('get export formats');
-    const url = `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/export/formats`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/export/formats`;
     console.debug(url);
     return backendFetchJson(url, {
         method: 'get',
@@ -779,7 +771,7 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
 }
 
 export const getBaseName = (caseName: string) => {
-    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/caseBaseName?caseName=${encodeURIComponent(caseName)}`;
+    const caseNameUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/caseBaseName?caseName=${encodeURIComponent(caseName)}`;
     console.info('Get base name for case', caseName);
     return backendFetchText(caseNameUrl, {
         method: 'GET',
@@ -808,7 +800,7 @@ export function updateDirectoryPermissions(directoryUuid: UUID, permissions: Per
 
 export function fetchGroups(): Promise<GroupDTO[]> {
     console.info('Fetching groups from user-admin server');
-    const url = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/groups`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/groups`;
     return backendFetchJson(url, {
         method: 'get',
     }) as Promise<GroupDTO[]>;
@@ -821,7 +813,7 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
     console.info('Fetching SA process config from monitor server');
-    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
