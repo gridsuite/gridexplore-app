@@ -39,6 +39,7 @@ import {
 } from './contingency-list.type';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
+const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -590,7 +591,7 @@ export function getIdentifiablesFromFilters(
 ): Promise<FilteredIdentifiables> {
     console.info('get identifiables resulting from application of filters list on study root network');
 
-    return backendFetchJson(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/${studyUuid}/filters/elements`, {
+    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/filters/elements`, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filters),
@@ -738,12 +739,12 @@ export const downloadCase = (caseUuid: string) =>
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/servers/about?view=explore`, { method: 'get' }).catch(
-        (reason) => {
-            console.error(`Error while fetching the servers infos : ${reason}`);
-            return reason;
-        }
-    );
+    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, {
+        method: 'get',
+    }).catch((reason) => {
+        console.error(`Error while fetching the servers infos : ${reason}`);
+        return reason;
+    });
 }
 
 export const getExportFormats = () => {
