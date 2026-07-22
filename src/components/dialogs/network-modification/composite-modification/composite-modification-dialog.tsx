@@ -88,6 +88,10 @@ import {
     lineCreationFormSchema,
     lineCreationDtoToForm,
     lineCreationFormToDto,
+    CreateVoltageLevelSectionForm,
+    createVoltageLevelSectionFormSchema,
+    createVoltageLevelSectionDtoToForm,
+    createVoltageLevelSectionFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -331,6 +335,19 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.CREATE_VOLTAGE_LEVEL_SECTION,
+                    {
+                        formSchema: createVoltageLevelSectionFormSchema,
+                        dtoToForm: createVoltageLevelSectionDtoToForm,
+                        formToDto: createVoltageLevelSectionFormToDto,
+                        errorHeaderId: 'VoltageLevelSectionCreationError',
+                        titleId: 'CreateVoltageLevelSection',
+                        ModificationForm: CreateVoltageLevelSectionForm,
+                        isModification: true,
+                        removeOptional: false,
                     },
                 ],
                 [
