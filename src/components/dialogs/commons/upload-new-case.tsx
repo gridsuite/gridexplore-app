@@ -8,7 +8,7 @@
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Button, CircularProgress, Grid2 as Grid, Input } from '@mui/material';
+import { Button, CircularProgress, Grid, Input } from '@mui/material';
 import { useController, useFormContext } from 'react-hook-form';
 import {
     ErrorInput,

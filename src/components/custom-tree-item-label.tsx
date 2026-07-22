@@ -38,7 +38,6 @@ export default function CustomTreeItemLabel({
     return (
         <Box sx={styles?.treeItemLabelRoot}>
             <Tooltip
-                TransitionComponent={Zoom}
                 disableFocusListener
                 disableTouchListener
                 enterDelay={1000}
@@ -46,6 +45,9 @@ export default function CustomTreeItemLabel({
                 title={node.elementName}
                 arrow
                 placement="bottom-start"
+                slots={{
+                    transition: Zoom,
+                }}
             >
                 <Typography noWrap sx={styles?.treeItemLabelText}>
                     {node.elementName}

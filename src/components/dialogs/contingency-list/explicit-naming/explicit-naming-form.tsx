@@ -21,7 +21,7 @@ import {
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
 import { ColDef, SuppressKeyboardEventParams } from 'ag-grid-community';
-import { Alert, Box, Grid2 as Grid, Stack } from '@mui/material';
+import { Alert, Box, Grid, Stack } from '@mui/material';
 import { useSelector } from 'react-redux';
 import ChipsArrayEditor from '../../../utils/rhf-inputs/ag-grid-table-rhf/cell-editors/chips-array-editor';
 import { makeDefaultRowData } from '../contingency-list-utils';
