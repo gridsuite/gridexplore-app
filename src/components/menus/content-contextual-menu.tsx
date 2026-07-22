@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
+    DatasetLinked as DatasetLinkedIcon,
     Delete as DeleteIcon,
     DoNotDisturbAlt as DoNotDisturbAltIcon,
     DownloadForOffline,
@@ -21,7 +22,6 @@ import {
     InsertDriveFile as InsertDriveFileIcon,
     LinkRounded as LinkRoundedIcon,
     PhotoLibrary,
-    ScreenShareOutlined as ScreenShareOutlinedIcon,
     TableView as TableViewIcon,
 } from '@mui/icons-material';
 import {
@@ -520,7 +520,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     callback: () => {
                         handleOpenDialog(DialogsId.SHARING_LINKS);
                     },
-                    icon: <ScreenShareOutlinedIcon fontSize="small" data-testid="SharingLinksIcon" />,
+                    icon: <DatasetLinkedIcon fontSize="small" data-testid="SharingLinksIcon" />,
                 },
                 { isDivider: true }
             );

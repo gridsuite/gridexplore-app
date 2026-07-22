@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -18,7 +17,7 @@ import {
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useEffect, useState } from 'react';
-import { type ElementAttributes, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
+import { CloseButton, type ElementAttributes, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { UserAvatarWithLabel } from '../../utils/renderers/user-avatar';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
@@ -41,7 +40,6 @@ export interface SharingLinksDialogProps {
 
 /**
  * Read-only dialog listing the elements that use a shared element ("sharing links").
- * Display only: the sole user action is closing the dialog.
  */
 export default function SharingLinksDialog({ open, onClose, element }: Readonly<SharingLinksDialogProps>) {
     const intl = useIntl();
@@ -62,7 +60,7 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth aria-labelledby="dialog-title-sharing-links">
-            <DialogTitle data-testid="DialogTitle">
+            <DialogTitle id="dialog-title-sharing-links" data-testid="DialogTitle">
                 <FormattedMessage id="sharingLinksOf" />
                 {` ${element.elementName}`}
             </DialogTitle>
@@ -117,9 +115,7 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                 </Table>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose} variant="outlined" data-testid="CloseButton">
-                    <FormattedMessage id="close" />
-                </Button>
+                <CloseButton onClick={onClose} />
             </DialogActions>
         </Dialog>
     );

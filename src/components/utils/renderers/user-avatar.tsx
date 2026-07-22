@@ -40,13 +40,11 @@ const styles = {
         height: '32px',
         width: '32px',
         fontSize: theme.typography.fontSize,
-        backgroundColor: theme.row.hover as string,
     }),
     avatarSmall: (theme) => ({
         height: '24px',
         width: '24px',
         fontSize: theme.typography.pxToRem(11),
-        backgroundColor: theme.row.hover as string,
     }),
 } as const satisfies MuiStyles;
 
@@ -54,18 +52,14 @@ export type UserAvatarSize = 'small' | 'medium';
 
 export type UserAvatarProps = { label: string; size?: UserAvatarSize };
 
-/**
- * Colored initials avatar for a user, as displayed in the GridExplore list.
- * `size="small"` yields a more compact avatar to save horizontal space.
- */
+/** Colored initials avatar for a user. */
 export function UserAvatar({ label, size = 'medium' }: Readonly<UserAvatarProps>) {
     return (
         <Tooltip title={label}>
             <Avatar
-                sx={mergeSx(
-                    size === 'small' ? styles.avatarSmall : styles.avatar,
-                    label ? { backgroundColor: stringToColor(label) } : null
-                )}
+                sx={mergeSx(size === 'small' ? styles.avatarSmall : styles.avatar, (theme) => ({
+                    backgroundColor: label ? stringToColor(label) : (theme.row.hover as string),
+                }))}
             >
                 {getAbbreviationFromUserName(label)}
             </Avatar>
@@ -73,7 +67,7 @@ export function UserAvatar({ label, size = 'medium' }: Readonly<UserAvatarProps>
     );
 }
 
-/** A user name preceded by its GridExplore list avatar, in a compact size. */
+/** A user name preceded by its avatar, in a compact size. */
 export function UserAvatarWithLabel({ label }: Readonly<{ label: string }>) {
     return (
         <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1 }}>

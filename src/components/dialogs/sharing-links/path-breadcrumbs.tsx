@@ -7,14 +7,20 @@
 import { Breadcrumbs, Chip, Tooltip } from '@mui/material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
 
-//TODO share with DirectoryBreadcrumbs ?
 const styles = {
-    breadcrumbs: {
+    breadcrumbs: (theme) => ({
         '& .MuiBreadcrumbs-separator': {
             marginLeft: 0.5,
             marginRight: 0.5,
         },
-    },
+        // for MuiBreadcrumbCollapsed
+        '& .MuiButtonBase-root': {
+            backgroundColor: theme.row.primary as string,
+            '&:hover, &:focus, &:active': {
+                backgroundColor: theme.row.hover as string,
+            },
+        },
+    }),
     chip: (theme) => ({
         backgroundColor: theme.row.primary as string,
         maxWidth: theme.spacing(20),
