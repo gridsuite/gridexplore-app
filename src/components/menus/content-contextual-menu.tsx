@@ -41,8 +41,6 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
-    duplicateSpreadsheetConfig,
-    duplicateSpreadsheetConfigCollection,
     exportStudyArchive,
     moveElementsToDirectory,
     renameElement,
@@ -221,6 +219,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.SPREADSHEET_CONFIG:
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                 case ElementType.PROCESS_CONFIG:
                 case ElementType.DYNAMIC_MAPPING:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
@@ -248,12 +248,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.type,
                         activeElement.type
                     ).catch(snackDuplicateError);
-                    break;
-                case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch(snackDuplicateError);
-                    break;
-                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
-                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 default: {
                     snackError({ headerId: 'unsupportedItem' });
@@ -411,15 +405,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
-    const couldExportStudy = useCallback(() => {
-        return (
-            isDeveloperMode &&
-            activeElement.elementUuid &&
-            (activeElement.type === ElementType.STUDY || activeElement.type === ElementType.WORKSPACE) &&
-            noCreationInProgress()
-        );
-    }, [isDeveloperMode, activeElement, noCreationInProgress]);
-
     const couldExportStudyArchive = useCallback(() => {
         return (
             isSingleElement &&
@@ -563,17 +548,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             menuItems.push({ isDivider: true });
         }
 
-        if (couldExportStudy()) {
-            menuItems.push({
-                messageDescriptorId: 'export.button',
-                callback: async () => {
-                    await exportStudyElements(activeElement);
-                    handleCloseDialog();
-                },
-                icon: <FileDownload fontSize="small" data-testid="DownloadIcon" />,
-            });
-        }
-
         if (couldDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
@@ -634,33 +608,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         return menuItems;
-    }, [
-        selectedElements,
-        couldRenameOrMove,
-        couldCreateNewStudyFromCase,
-        couldDuplicate,
-        couldCopy,
-        couldExportStudy,
-        couldExportStudyArchive,
-        couldDelete,
-        couldDownload,
-        isDeveloperMode,
-        couldExportCase,
-        couldCreateSpreadsheetCollection,
-        couldConvertFilterIntoExplicitNaming,
-        allowsRenameOrMoveOrCopy,
-        handleOpenDialog,
-        duplicateItem,
-        allowsDuplicateOrCopy,
-        copyItem,
-        copyLinkItem,
-        handleExportStudyArchive,
-        exportStudyElements,
-        activeElement,
-        handleCloseDialog,
-        downloadElements,
-        noCreationInProgress,
-    ]);
+    }, [selectedElements, couldRenameOrMove, couldCreateNewStudyFromCase, couldDuplicate, couldCopy, couldExportStudyArchive, couldDelete, couldDownload, isDeveloperMode, couldExportCase, couldCreateSpreadsheetCollection, couldConvertFilterIntoExplicitNaming, allowsRenameOrMoveOrCopy, handleOpenDialog, duplicateItem, allowsDuplicateOrCopy, copyItem, copyLinkItem, handleExportStudyArchive, handleCloseDialog, downloadElements, noCreationInProgress]);
 
     const renderDialog = () => {
         switch (openDialog) {
