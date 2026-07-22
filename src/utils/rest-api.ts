@@ -744,6 +744,38 @@ export const downloadCase = (caseUuid: string) =>
         headers: { 'Content-Type': 'application/json' },
     });
 
+export function exportStudyArchive(studyUuid: UUID) {
+    console.info('Exporting study archive %s', studyUuid);
+    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/export-archive`;
+    console.debug(url);
+    return backendFetch(url, {
+        method: 'get',
+    });
+}
+
+export function importStudyArchive(
+    studyName: string,
+    description: string,
+    archiveFile: File,
+    parentDirectoryUuid: UUID
+) {
+    console.info('Importing study archive...');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', studyName);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/import?${urlSearchParams.toString()}`;
+    const formData = new FormData();
+    formData.append('archiveFile', archiveFile);
+    console.debug(url);
+
+    return backendFetch(url, {
+        method: 'post',
+        body: formData,
+    });
+}
+
 export function getServersInfos() {
     console.info('get backend servers informations');
     return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, { method: 'get' }).catch(
