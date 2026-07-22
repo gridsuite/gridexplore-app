@@ -38,8 +38,6 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElement,
     duplicateElement,
-    duplicateSpreadsheetConfig,
-    duplicateSpreadsheetConfigCollection,
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
@@ -120,6 +118,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.SPREADSHEET_CONFIG:
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                 case ElementType.PROCESS_CONFIG:
                 case ElementType.DYNAMIC_MAPPING:
                     duplicateElement(selectionForPaste.sourceItemUuid, directoryUuid, selectionForPaste.typeItem).catch(
@@ -158,21 +158,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                         snackWithFallback(snackError, error, {
                             headerId: 'elementPasteFailed',
                         })
-                    );
-                    break;
-                case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(selectionForPaste.sourceItemUuid, directoryUuid).catch((error) =>
-                        snackWithFallback(snackError, error, {
-                            headerId: 'elementPasteFailed',
-                        })
-                    );
-                    break;
-                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
-                    duplicateSpreadsheetConfigCollection(selectionForPaste.sourceItemUuid, directoryUuid).catch(
-                        (error) =>
-                            snackWithFallback(snackError, error, {
-                                headerId: 'elementPasteFailed',
-                            })
                     );
                     break;
                 default:

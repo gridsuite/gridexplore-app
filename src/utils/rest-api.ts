@@ -336,6 +336,10 @@ const getDuplicateEndpoint = (type: ElementType) => {
             return '/diagram-config';
         case ElementType.WORKSPACE:
             return '/workspaces';
+        case ElementType.SPREADSHEET_CONFIG:
+            return '/spreadsheet-configs';
+        case ElementType.SPREADSHEET_CONFIG_COLLECTION:
+            return '/spreadsheet-config-collections';
         case ElementType.PROCESS_CONFIG:
             return '/process-configs';
         case ElementType.DYNAMIC_MAPPING:
@@ -346,53 +350,20 @@ const getDuplicateEndpoint = (type: ElementType) => {
 };
 
 export function duplicateElement(
-    sourceCaseUuid: UUID,
+    sourceElementUuid: UUID,
     parentDirectoryUuid: UUID | undefined,
     type: ElementType,
     specificType?: string
 ) {
     console.info(`Duplicating an element of type ${type} ...`);
     const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
     if (parentDirectoryUuid) {
         queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
     }
     if (specificType) {
         queryParams.append('type', specificType);
     }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}?${queryParams.toString()}`;
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-export function duplicateSpreadsheetConfig(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
-    console.info('Duplicating a spreadsheet config...');
-    const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs?${queryParams.toString()}`;
-
-    console.debug(url);
-
-    return backendFetch(url, {
-        method: 'post',
-    });
-}
-
-export function duplicateSpreadsheetConfigCollection(sourceCaseUuid: UUID, parentDirectoryUuid?: UUID) {
-    console.info('Duplicating a spreadsheet config collection...');
-    const queryParams = new URLSearchParams();
-    queryParams.append('duplicateFrom', sourceCaseUuid);
-    if (parentDirectoryUuid) {
-        queryParams.append('parentDirectoryUuid', parentDirectoryUuid);
-    }
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections?${queryParams.toString()}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getDuplicateEndpoint(type)}/${sourceElementUuid}/duplicate?${queryParams.toString()}`;
 
     console.debug(url);
 

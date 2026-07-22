@@ -30,6 +30,7 @@ import EquipmentTypesByFilters from './equipment-types-by-filters';
 const equipmentTypes: string[] = [
     EquipmentType.SUBSTATION,
     EquipmentType.VOLTAGE_LEVEL,
+    EquipmentType.BUSBAR_SECTION,
     EquipmentType.LINE,
     EquipmentType.TWO_WINDINGS_TRANSFORMER,
     EquipmentType.THREE_WINDINGS_TRANSFORMER,
