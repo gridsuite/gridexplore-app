@@ -41,7 +41,7 @@ import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialo
 import { DialogsId } from '../../utils/UIconstants';
 import { deleteElements, duplicateElement, moveElementsToDirectory, renameElement } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
-import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
+import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/downloadUtils';
@@ -444,7 +444,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         // build menuItems here in order
-        const menuItems = [];
+        const menuItems: MenuItemType[] = [];
 
         if (couldRenameOrMove()) {
             menuItems.push({
@@ -461,7 +461,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleOpenDialog(DialogsId.MOVE);
                 },
                 icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
-                withDivider: true,
                 disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
@@ -511,13 +510,20 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         if (couldDisplaySharingLinks()) {
-            menuItems.push({
-                messageDescriptorId: 'displaySharingLinks',
-                callback: () => {
-                    handleOpenDialog(DialogsId.SHARING_LINKS);
+            // the entry is isolated between two dividers, whatever the entries built before it
+            if (menuItems.at(-1)?.isDivider !== true) {
+                menuItems.push({ isDivider: true });
+            }
+            menuItems.push(
+                {
+                    messageDescriptorId: 'displaySharingLinks',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.SHARING_LINKS);
+                    },
+                    icon: <ScreenShareOutlinedIcon fontSize="small" data-testid="SharingLinksIcon" />,
                 },
-                icon: <ScreenShareOutlinedIcon fontSize="small" data-testid="SharingLinksIcon" />,
-            });
+                { isDivider: true }
+            );
         }
 
         if (couldDelete()) {
@@ -527,7 +533,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleOpenDialog(DialogsId.DELETE);
                 },
                 icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
-                withDivider: true,
                 disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
