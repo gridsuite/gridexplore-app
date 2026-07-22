@@ -38,14 +38,7 @@ import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
-import {
-    deleteElements,
-    duplicateElement,
-    duplicateSpreadsheetConfig,
-    duplicateSpreadsheetConfigCollection,
-    moveElementsToDirectory,
-    renameElement,
-} from '../../utils/rest-api';
+import { deleteElements, duplicateElement, moveElementsToDirectory, renameElement } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
 import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
@@ -218,6 +211,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 case ElementType.MODIFICATION:
                 case ElementType.DIAGRAM_CONFIG:
                 case ElementType.WORKSPACE:
+                case ElementType.SPREADSHEET_CONFIG:
+                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
                 case ElementType.PROCESS_CONFIG:
                 case ElementType.DYNAMIC_MAPPING:
                     duplicateElement(activeElement.elementUuid, undefined, activeElement.type).catch(
@@ -245,12 +240,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.type,
                         activeElement.type
                     ).catch(snackDuplicateError);
-                    break;
-                case ElementType.SPREADSHEET_CONFIG:
-                    duplicateSpreadsheetConfig(activeElement.elementUuid).catch(snackDuplicateError);
-                    break;
-                case ElementType.SPREADSHEET_CONFIG_COLLECTION:
-                    duplicateSpreadsheetConfigCollection(activeElement.elementUuid).catch(snackDuplicateError);
                     break;
                 default: {
                     snackError({ headerId: 'unsupportedItem' });
