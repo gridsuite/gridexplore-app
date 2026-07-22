@@ -791,20 +791,20 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 }
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
-    console.info('Fetching SA process config from monitor server');
+    console.info('Fetching process config from monitor server');
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
 }
 
-export function updateSAProcessConfig(
+export function updateProcessConfig(
     processConfigUuid: UUID,
     name: string,
     description: string,
     processConfig: SecurityAnalysisProcessConfigBackend
 ) {
-    console.info('Updating SA process config from monitor server');
+    console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
     urlSearchParams.append('name', name);

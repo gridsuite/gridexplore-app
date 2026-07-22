@@ -31,6 +31,7 @@ import {
     ShortCircuitParametersEditionDialog,
     useSnackMessage,
     VoltageInitParametersEditionDialog,
+    UpdateLFProcessConfigDialog,
     UpdateSAProcessConfigDialog,
     ProcessType,
     isProcessType,
@@ -38,7 +39,7 @@ import {
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
-import { fetchProcessConfig, getFilterById, updateElement, updateSAProcessConfig } from '../utils/rest-api';
+import { fetchProcessConfig, getFilterById, updateElement, updateProcessConfig } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
 import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/explicit-naming/explicit-naming-edition-dialog';
@@ -516,8 +517,22 @@ function DirectoryContentDialog(
                         name={elementName}
                         description={activeElement.description}
                         directory={activeDirectory}
-                        fetchSAProcessConfig={fetchProcessConfig}
-                        updateSAProcessConfig={updateSAProcessConfig}
+                        fetchProcessConfig={fetchProcessConfig}
+                        updateProcessConfig={updateProcessConfig}
+                    />
+                );
+            }
+            if (currentProcessConfigType === ProcessType.LOADFLOW) {
+                return (
+                    <UpdateLFProcessConfigDialog
+                        processConfigId={currentProcessConfigId}
+                        open
+                        onClose={handleCloseProcessConfigDialog}
+                        name={elementName}
+                        description={activeElement.description}
+                        directory={activeDirectory}
+                        fetchProcessConfig={fetchProcessConfig}
+                        updateProcessConfig={updateProcessConfig}
                     />
                 );
             }
