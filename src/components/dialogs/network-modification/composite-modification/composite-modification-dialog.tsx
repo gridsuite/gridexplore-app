@@ -91,11 +91,6 @@ import {
     lineModificationFormSchema,
     lineModificationDtoToForm,
     lineModificationFormToDto,
-    CreateVoltageLevelSectionForm,
-    createVoltageLevelSectionFormSchema,
-    createVoltageLevelSectionDtoToForm,
-    createVoltageLevelSectionFormToDto,
-    CreateVoltageLevelSectionInfos,
     CreateVoltageLevelTopologyForm,
     createVoltageLevelTopologyFormSchema,
     createVoltageLevelTopologyDtoToForm,
@@ -123,21 +118,6 @@ type SpecificModificationDialogProps = Pick<
     | 'removeOptional'
     | 'getExtraFormProps'
 >;
-
-// gridexplore-app has no live network/study context to fetch busbar section topology from, unlike
-// gridstudy-app's dedicated dialog. We derive the minimal options set from the saved modification data
-// itself, so the previously configured busbar/section stays visible and re-selectable, even though a
-// different busbar can't be picked without live network data.
-const getVoltageLevelSectionExtraFormProps = (dto: CreateVoltageLevelSectionInfos) => {
-    const knownSectionIds = dto.busbarSectionId ? [dto.busbarSectionId] : [];
-    return {
-        voltageLevelId: dto.voltageLevelId,
-        allBusbarSectionsList: knownSectionIds,
-        isSymmetricalNbBusBarSections: false,
-        isNotFoundOrNotSupported: false,
-        busBarSectionInfos: dto.busbarIndex ? { [dto.busbarIndex]: knownSectionIds } : undefined,
-    };
-};
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyInfos) => ({
     voltageLevelId: dto.voltageLevelId,
@@ -377,27 +357,6 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyVoltageLevel',
                         ModificationForm: VoltageLevelModificationForm,
                         removeOptional: true,
-                    },
-                ],
-                [
-                    ModificationType.CREATE_VOLTAGE_LEVEL_SECTION,
-                    {
-                        formSchema: createVoltageLevelSectionFormSchema,
-                        dtoToForm: createVoltageLevelSectionDtoToForm,
-                        formToDto: (form, dto: CreateVoltageLevelSectionInfos) =>
-                            createVoltageLevelSectionFormToDto(
-                                form,
-                                dto.voltageLevelId,
-                                dto.busbarIndex
-                                    ? { [dto.busbarIndex]: dto.busbarSectionId ? [dto.busbarSectionId] : [] }
-                                    : undefined
-                            ),
-                        errorHeaderId: 'VoltageLevelSectionCreationError',
-                        titleId: 'CreateVoltageLevelSection',
-                        ModificationForm: CreateVoltageLevelSectionForm,
-                        isModification: true,
-                        removeOptional: false,
-                        getExtraFormProps: getVoltageLevelSectionExtraFormProps,
                     },
                 ],
                 [
