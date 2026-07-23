@@ -47,7 +47,14 @@ type FormatParameters = {
     [parameterName: string]: any;
 };
 
-const compressions = ['zip', 'gzip'];
+enum CompressionType {
+    ZIP = 'zip',
+    GZIP = 'gzip',
+}
+
+const compressions = [CompressionType.ZIP, CompressionType.GZIP];
+const onlyZipCompression = [CompressionType.ZIP];
+const CGMES_FORMAT = 'CGMES';
 
 export interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
@@ -85,7 +92,7 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
-    const [selectedCompression, setSelectedCompression] = useState<string>('zip');
+    const [selectedCompression, setSelectedCompression] = useState<CompressionType>(CompressionType.ZIP);
 
     // a Map between case uuid and file name to export
     // by default all cases take elementName as file name
@@ -138,7 +145,13 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await onExport(selectedElements, selectedFormat!, selectedCompression, currentParameters, caseUuidFileNameMap);
+        await onExport(
+            selectedElements,
+            selectedFormat!,
+            selectedCompression.toUpperCase(),
+            currentParameters,
+            caseUuidFileNameMap
+        );
         onClose();
     }, [
         onExport,
@@ -166,7 +179,7 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                         onChange={(event) => setFileName(event.target.value)}
                     />
                 )}
-                <Stack direction="column" spacing={1}>
+                <Stack spacing={1}>
                     <FormControl fullWidth size="small">
                         <InputLabel id="select-format-label" variant="filled" margin="dense">
                             <FormattedMessage id="download.exportFormat" />
@@ -178,8 +191,11 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                             id="controlled-select-format"
                             onChange={(event) => {
                                 setSelectedFormat(event.target.value);
-                                if (event.target.value === 'CGMES' && selectedCompression === 'gzip') {
-                                    setSelectedCompression('zip');
+                                if (
+                                    event.target.value === CGMES_FORMAT &&
+                                    selectedCompression !== CompressionType.ZIP
+                                ) {
+                                    setSelectedCompression(CompressionType.ZIP);
                                 }
                             }}
                             defaultValue=""
@@ -203,20 +219,20 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                             label={<FormattedMessage id="download.exportCompression" />}
                             variant="filled"
                             id="controlled-select-compression"
-                            onChange={(event) => setSelectedCompression(event.target.value)}
+                            onChange={(event) => setSelectedCompression(event.target.value as CompressionType)}
                             defaultValue={selectedCompression}
                             value={selectedCompression}
                             inputProps={{
                                 id: 'select-compression',
                             }}
                         >
-                            {compressions
-                                .filter((compression) => !(selectedFormat === 'CGMES' && compression === 'gzip'))
-                                .map((compression) => (
+                            {(selectedFormat === CGMES_FORMAT ? onlyZipCompression : compressions).map(
+                                (compression) => (
                                     <MenuItem key={compression} value={compression}>
                                         {compression}
                                     </MenuItem>
-                                ))}
+                                )
+                            )}
                         </Select>
                     </FormControl>
                 </Stack>
