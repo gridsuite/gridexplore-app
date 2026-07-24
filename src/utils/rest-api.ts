@@ -22,6 +22,7 @@ import {
     PARAM_THEME,
     PermissionType,
     ProcessConfigBackend,
+    ProcessType,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -799,11 +800,11 @@ export function fetchProcessConfig(processConfigUuid: UUID) {
     });
 }
 
-export function updateProcessConfig(
+export function updateProcessConfig<TProcessType extends ProcessType>(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: ProcessConfigBackend
+    processConfig: ProcessConfigBackend<TProcessType> // ou any ? ou une union des PCBackend ?? ??
 ) {
     console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();
