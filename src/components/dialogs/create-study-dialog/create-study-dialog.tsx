@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { UUID } from 'node:crypto';
 import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { createStudy, deleteCase, getCaseImportParameters, importStudy } from '../../../utils/rest-api';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
@@ -146,6 +146,37 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
         currentParameters,
         directory,
     }: CreateStudyDialogFormValues) => {
+
+        const caseFormat = getValues(FieldConstants.CASE_FORMAT);
+        const caseFile = getValues(FieldConstants.CASE_FILE);
+        const isJsonImport = caseFile instanceof File && caseFile.name.toLowerCase().endsWith('.json');
+        const uploadingStudy: UploadingElement = {
+            id: keyGenerator()(),
+            elementName: studyName,
+            directory,
+            type: ElementType.STUDY,
+            owner: userId,
+            lastModifiedBy: userId,
+            uploading: true,
+            caseFormat: getValues(FieldConstants.CASE_FORMAT),
+        };
+        if (isJsonImport) {
+            importStudy(caseFile as File, [], studyName, description, directory)
+                .then(() => {
+                    dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
+                    onClose();
+                })
+                .catch((error) => {
+                    dispatch(removeUploadingElement(uploadingStudy));
+                    snackWithFallback(snackError, error, {
+                        headerId: 'studyImportError',
+                        headerValues: { studyName },
+                    });
+                });
+            dispatch(addUploadingElement(uploadingStudy));
+            return;
+        }
+
         if (!caseUuid && !providedExistingCase?.elementUuid) {
             setError(FieldConstants.CASE_NAME, {
                 type: 'custom',
@@ -160,19 +191,6 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
             });
             return;
         }
-        const caseFormat = getValues(FieldConstants.CASE_FORMAT);
-
-        const uploadingStudy: UploadingElement = {
-            id: keyGenerator()(),
-            elementName: studyName,
-            directory,
-            type: ElementType.STUDY,
-            owner: userId,
-            lastModifiedBy: userId,
-            uploading: true,
-            caseFormat,
-        };
-
         if (caseFormat && caseUuid) {
             createStudy(
                 studyName,

@@ -54,7 +54,7 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
         name: FieldConstants.CASE_UUID,
     });
 
-    const { clearErrors, setError, getValues } = useFormContext();
+    const { clearErrors, setError, getValues, setValue } = useFormContext();
 
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
@@ -85,7 +85,7 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
         [intl, setError]
     );
 
-    const onChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const onChange = async (event: ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
 
         clearErrors(FieldConstants.CASE_FILE);
@@ -101,6 +101,21 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
 
                 // Create new case
                 setCaseFileLoading(true);
+                if (currentFile.name.toLowerCase().endsWith('.json')) {
+                    try {
+                        const parsed = JSON.parse(await currentFile.text());
+                        if (parsed.studyName && !getValues(FieldConstants.STUDY_NAME)) {
+                            setValue(FieldConstants.STUDY_NAME, parsed.studyName);
+                        }
+                    } catch {
+                        /* parse fail → submit affichera l'erreur */
+                    }
+                    setValue(FieldConstants.CASE_FILE, currentFile);
+                    setValue(FieldConstants.CASE_UUID, null);
+                    setValue(FieldConstants.CASE_FORMAT, '');
+                    setValue(FieldConstants.FORMATTED_CASE_PARAMETERS, []);
+                    return; // ⬅ CRUCIAL : pas de POST vers case-server
+                }
                 createCaseWithoutDirectoryElementCreation(currentFile)
                     .then((newCaseUuid) => {
                         const prevCaseUuid = getValues(FieldConstants.CASE_UUID);

@@ -38,7 +38,11 @@ export const createStudyDialogFormValidationSchema = yup.object().shape({
     [FieldConstants.FORMATTED_CASE_PARAMETERS]: yup.mixed<Parameter[]>().required(),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CURRENT_PARAMETERS]: yup.mixed<Record<string, string>>().required(),
-    [FieldConstants.CASE_UUID]: yup.string<UUID>().nullable().uuid().required(),
+    [FieldConstants.CASE_UUID]: yup.string().nullable().when(FieldConstants.CASE_FILE, {
+             is: (file: unknown) => file instanceof File && file.name.toLowerCase().endsWith('.json'),
+         then: (schema) => schema.nullable(),
+         otherwise: (schema) => schema.required('caseRequired'),
+     }),
     [FieldConstants.CASE_FILE]: yup.mixed<ElementAttributes>().nullable().required(),
     [FieldConstants.DIRECTORY]: yup.string<UUID>().uuid().required(),
     [FieldConstants.CASE_FORMAT]: yup.string().optional(),
