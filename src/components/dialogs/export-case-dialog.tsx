@@ -55,6 +55,10 @@ enum CompressionType {
 const compressions = [CompressionType.ZIP, CompressionType.GZIP];
 const onlyZipCompression = [CompressionType.ZIP];
 const CGMES_FORMAT = 'CGMES';
+const XIIDM_FORMAT = 'XIIDM';
+const BIIDM_FORMAT = 'BIIDM';
+const JIIDM_FORMAT = 'JIIDM';
+const defaultGzipFormats = [XIIDM_FORMAT, BIIDM_FORMAT, JIIDM_FORMAT];
 
 export interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
@@ -196,6 +200,8 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                                     selectedCompression !== CompressionType.ZIP
                                 ) {
                                     setSelectedCompression(CompressionType.ZIP);
+                                } else if (defaultGzipFormats.includes(event.target.value)) {
+                                    setSelectedCompression(CompressionType.GZIP);
                                 }
                             }}
                             defaultValue=""
