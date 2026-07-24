@@ -21,7 +21,7 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
-    SecurityAnalysisProcessConfigBackend,
+    ProcessConfigBackend,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -803,7 +803,7 @@ export function updateProcessConfig(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: SecurityAnalysisProcessConfigBackend
+    processConfig: ProcessConfigBackend
 ) {
     console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();

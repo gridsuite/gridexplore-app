@@ -29,10 +29,9 @@ import {
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
     ShortCircuitParametersEditionDialog,
+    UpdateProcessConfigDialog, // rename as ProcessConfigEditionDialog
     useSnackMessage,
     VoltageInitParametersEditionDialog,
-    UpdateLFProcessConfigDialog,
-    UpdateSAProcessConfigDialog,
     ProcessType,
     isProcessType,
 } from '@gridsuite/commons-ui';
@@ -508,34 +507,19 @@ function DirectoryContentDialog(
             }
         }
         if (currentProcessConfigId && activeDirectory) {
-            if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
-                return (
-                    <UpdateSAProcessConfigDialog
-                        processConfigId={currentProcessConfigId}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        name={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
-            if (currentProcessConfigType === ProcessType.LOADFLOW) {
-                return (
-                    <UpdateLFProcessConfigDialog
-                        processConfigId={currentProcessConfigId}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        name={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
+            return (
+                <UpdateProcessConfigDialog
+                    processType={currentProcessConfigType}
+                    processConfigId={currentProcessConfigId}
+                    open
+                    onClose={handleCloseProcessConfigDialog}
+                    name={elementName}
+                    description={activeElement.description}
+                    directory={activeDirectory}
+                    fetchProcessConfig={fetchProcessConfig}
+                    updateProcessConfig={updateProcessConfig}
+                />
+            );
         }
     }
 }
