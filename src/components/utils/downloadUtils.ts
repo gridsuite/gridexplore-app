@@ -117,6 +117,7 @@ export function useDownloadUtils() {
         async (
             caseElement: ElementAttributes,
             format: string,
+            compression: string,
             formatParameters: {
                 [parameterName: string]: any;
             },
@@ -128,6 +129,7 @@ export function useDownloadUtils() {
                     caseElement.elementUuid,
                     fileName || caseElement.elementName, // if no fileName is provided or empty, the case name will be used
                     format,
+                    compression,
                     formatParameters,
                     abortController2
                 );
@@ -265,6 +267,7 @@ export function useDownloadUtils() {
         async (
             selectedElements: ElementAttributes[],
             format: string,
+            compression: string,
             formatParameters: {
                 [parameterName: string]: any;
             },
@@ -282,7 +285,14 @@ export function useDownloadUtils() {
                 // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
                 for (const c of cases) {
                     // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
-                    await exportCase(c, format, formatParameters, controller, caseUuidFileNameMap?.get(c.elementUuid));
+                    await exportCase(
+                        c,
+                        format,
+                        compression,
+                        formatParameters,
+                        controller,
+                        caseUuidFileNameMap?.get(c.elementUuid)
+                    );
                 }
             } catch (error: any) {
                 if (error.name === 'AbortError') {

@@ -47,12 +47,22 @@ type FormatParameters = {
     [parameterName: string]: any;
 };
 
+enum CompressionType {
+    ZIP = 'zip',
+    GZIP = 'gzip',
+}
+
+const compressions = [CompressionType.ZIP, CompressionType.GZIP];
+const onlyZipCompression = [CompressionType.ZIP];
+const CGMES_FORMAT = 'CGMES';
+
 export interface ExportCaseDialogProps {
     selectedElements: ElementAttributes[];
     onClose: () => void;
     onExport: (
         selectedElements: ElementAttributes[],
         format: string,
+        compression: string,
         parameters: FormatParameters,
         caseUuidFileNameMap?: Map<UUID, string>
     ) => Promise<void>;
@@ -82,6 +92,7 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
     const [loading, setLoading] = useState<boolean>(false);
     const [formats, setFormats] = useState<ExportFormats>([]);
     const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
+    const [selectedCompression, setSelectedCompression] = useState<CompressionType>(CompressionType.ZIP);
 
     // a Map between case uuid and file name to export
     // by default all cases take elementName as file name
@@ -134,9 +145,23 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
 
     const handleExport = useCallback(async () => {
         setLoading(true);
-        await onExport(selectedElements, selectedFormat!, currentParameters, caseUuidFileNameMap);
+        await onExport(
+            selectedElements,
+            selectedFormat!,
+            selectedCompression.toUpperCase(),
+            currentParameters,
+            caseUuidFileNameMap
+        );
         onClose();
-    }, [onExport, onClose, selectedElements, selectedFormat, currentParameters, caseUuidFileNameMap]);
+    }, [
+        onExport,
+        onClose,
+        selectedElements,
+        selectedFormat,
+        selectedCompression,
+        currentParameters,
+        caseUuidFileNameMap,
+    ]);
 
     return (
         <Dialog open fullWidth maxWidth="sm" onClose={handleClose} aria-labelledby="dialog-title-export-case">
@@ -154,40 +179,75 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                         onChange={(event) => setFileName(event.target.value)}
                     />
                 )}
-                <FormControl fullWidth size="small">
-                    <InputLabel id="select-format-label" variant="filled" margin="dense">
-                        <FormattedMessage id="download.exportFormat" />
-                    </InputLabel>
-                    <Select
-                        labelId="select-format-label"
-                        label={<FormattedMessage id="download.exportFormat" />}
-                        variant="filled"
-                        id="controlled-select-format"
-                        onChange={(event) => setSelectedFormat(event.target.value)}
-                        defaultValue=""
-                        inputProps={{
-                            id: 'select-format',
-                        }}
-                    >
-                        {Object.keys(formats).map((formatKey) => (
-                            <MenuItem key={formatKey} value={formatKey}>
-                                {formatKey}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
-                        <Typography
-                            component="span"
-                            color={selectedFormat ? 'text.main' : 'text.disabled'}
-                            sx={{ fontWeight: 'bold' }}
+                <Stack spacing={1}>
+                    <FormControl fullWidth size="small">
+                        <InputLabel id="select-format-label" variant="filled" margin="dense">
+                            <FormattedMessage id="download.exportFormat" />
+                        </InputLabel>
+                        <Select
+                            labelId="select-format-label"
+                            label={<FormattedMessage id="download.exportFormat" />}
+                            variant="filled"
+                            id="controlled-select-format"
+                            onChange={(event) => {
+                                setSelectedFormat(event.target.value);
+                                if (
+                                    event.target.value === CGMES_FORMAT &&
+                                    selectedCompression !== CompressionType.ZIP
+                                ) {
+                                    setSelectedCompression(CompressionType.ZIP);
+                                }
+                            }}
+                            defaultValue=""
+                            inputProps={{
+                                id: 'select-format',
+                            }}
                         >
-                            <FormattedMessage id="parameters" />
-                        </Typography>
-                        <IconButton onClick={() => setExpanded((prevState) => !prevState)} disabled={!selectedFormat}>
-                            {expanded ? <ExpandLess /> : <ExpandMore />}
-                        </IconButton>
-                    </Stack>
-                </FormControl>
+                            {Object.keys(formats).map((formatKey) => (
+                                <MenuItem key={formatKey} value={formatKey}>
+                                    {formatKey}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    <FormControl fullWidth size="small">
+                        <InputLabel id="select-compression-label" variant="filled" margin="dense">
+                            <FormattedMessage id="download.exportCompression" />
+                        </InputLabel>
+                        <Select
+                            labelId="select-compression-label"
+                            label={<FormattedMessage id="download.exportCompression" />}
+                            variant="filled"
+                            id="controlled-select-compression"
+                            onChange={(event) => setSelectedCompression(event.target.value as CompressionType)}
+                            defaultValue={selectedCompression}
+                            value={selectedCompression}
+                            inputProps={{
+                                id: 'select-compression',
+                            }}
+                        >
+                            {(selectedFormat === CGMES_FORMAT ? onlyZipCompression : compressions).map(
+                                (compression) => (
+                                    <MenuItem key={compression} value={compression}>
+                                        {compression}
+                                    </MenuItem>
+                                )
+                            )}
+                        </Select>
+                    </FormControl>
+                </Stack>
+                <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
+                    <Typography
+                        component="span"
+                        color={selectedFormat ? 'text.main' : 'text.disabled'}
+                        sx={{ fontWeight: 'bold' }}
+                    >
+                        <FormattedMessage id="parameters" />
+                    </Typography>
+                    <IconButton onClick={() => setExpanded((prevState) => !prevState)} disabled={!selectedFormat}>
+                        {expanded ? <ExpandLess /> : <ExpandMore />}
+                    </IconButton>
+                </Stack>
                 <Collapse in={expanded}>
                     <FlatParameters
                         paramsAsArray={selectedFormat ? (formats as any)[selectedFormat].parameters : []}
@@ -213,7 +273,11 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={onClose} />
-                <Button onClick={handleExport} variant="outlined" disabled={loading || !selectedFormat || !fileName}>
+                <Button
+                    onClick={handleExport}
+                    variant="outlined"
+                    disabled={loading || !selectedFormat || !selectedCompression || !fileName}
+                >
                     <FormattedMessage id="download.export.button" />
                 </Button>
             </DialogActions>
