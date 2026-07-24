@@ -195,13 +195,10 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                             id="controlled-select-format"
                             onChange={(event) => {
                                 setSelectedFormat(event.target.value);
-                                if (
-                                    event.target.value === CGMES_FORMAT &&
-                                    selectedCompression !== CompressionType.ZIP
-                                ) {
-                                    setSelectedCompression(CompressionType.ZIP);
-                                } else if (defaultGzipFormats.includes(event.target.value)) {
+                                if (defaultGzipFormats.includes(event.target.value)) {
                                     setSelectedCompression(CompressionType.GZIP);
+                                } else {
+                                    setSelectedCompression(CompressionType.ZIP);
                                 }
                             }}
                             defaultValue=""
