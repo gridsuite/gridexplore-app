@@ -31,6 +31,7 @@
     "uploadErrorMsg": "Veuillez télécharger la situation",
     "uploadFileExceedingLimitSizeErrorMsg": "Le fichier sélectionné dépasse la taille limite ({maxSize} Mo). Veuillez compresser ce fichier au format zip, gzip ou bzip2 puis réessayez de l'importer à nouveau.",
     "creationInProgress": "création en cours",
+    "deletionInProgress": "suppression en cours",
     "uploading": "téléversement en cours",
     "studyCreatingError": "Une erreur est survenue lors de la création de l'étude : {studyName}",
     "ImportNewCase": "Importer une situation",
