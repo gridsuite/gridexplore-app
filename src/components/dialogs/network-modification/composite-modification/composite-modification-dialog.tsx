@@ -88,6 +88,9 @@ import {
     lineCreationFormSchema,
     lineCreationDtoToForm,
     lineCreationFormToDto,
+    lineModificationFormSchema,
+    lineModificationDtoToForm,
+    lineModificationFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -233,6 +236,19 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineForm,
                         isModification: false,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.LINE_MODIFICATION,
+                    {
+                        formSchema: lineModificationFormSchema,
+                        dtoToForm: (lineDto) => lineModificationDtoToForm(lineDto, false),
+                        formToDto: (lineDto) => lineModificationFormToDto(lineDto, intl),
+                        errorHeaderId: 'LineModificationError',
+                        titleId: 'ModifyLine',
+                        ModificationForm: LineForm,
+                        isModification: true,
+                        removeOptional: true,
                     },
                 ],
                 [
