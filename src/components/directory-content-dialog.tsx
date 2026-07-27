@@ -30,10 +30,10 @@ import {
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
     ShortCircuitParametersEditionDialog,
-    UpdateLFProcessConfigDialog,
-    UpdateSAProcessConfigDialog, // rename as ProcessConfigEditionDialog
     useSnackMessage,
     VoltageInitParametersEditionDialog,
+    SAProcessConfigEditionDialog,
+    LFProcessConfigEditionDialog,
     isProcessType,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -510,7 +510,7 @@ function DirectoryContentDialog(
         if (currentProcessConfigId && activeDirectory) {
             if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
                 return (
-                    <UpdateSAProcessConfigDialog
+                    <SAProcessConfigEditionDialog
                         processConfigId={currentProcessConfigId}
                         open
                         onClose={handleCloseProcessConfigDialog}
@@ -524,7 +524,7 @@ function DirectoryContentDialog(
             }
             if (currentProcessConfigType === ProcessType.LOADFLOW) {
                 return (
-                    <UpdateLFProcessConfigDialog
+                    <LFProcessConfigEditionDialog
                         processConfigId={currentProcessConfigId}
                         open
                         onClose={handleCloseProcessConfigDialog}
