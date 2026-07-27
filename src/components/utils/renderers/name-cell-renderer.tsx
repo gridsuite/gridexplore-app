@@ -15,11 +15,10 @@ import {
     mergeSx,
     type MuiStyles,
     OverflowableText,
+    ElementStatus,
 } from '@gridsuite/commons-ui';
 
-const DELETING_STATUS = 'DELETING';
-
-const isDeleting = (data: ElementAttributes) => data.status === DELETING_STATUS;
+const isDeleting = (data: ElementAttributes) => data.status === ElementStatus.DELETING;
 
 const isAwaitingAsyncCreation = (metadata: ElementAttributes, objectType: ElementType) =>
     !metadata && (objectType === ElementType.STUDY || objectType === ElementType.CASE);
