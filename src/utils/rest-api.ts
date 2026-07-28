@@ -804,7 +804,7 @@ export function updateProcessConfig<TProcessType extends ProcessType>(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: ProcessConfigBackend<TProcessType> // ou any ? ou une union des PCBackend ?? ??
+    processConfig: ProcessConfigBackend<TProcessType>
 ) {
     console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();
@@ -813,10 +813,9 @@ export function updateProcessConfig<TProcessType extends ProcessType>(
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
 
-    return backendFetchJson(url, {
+    return backendFetch(url, {
         method: 'put',
         headers: {
-            Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(processConfig),
