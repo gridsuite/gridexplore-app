@@ -56,7 +56,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
-import { useExportStudyElements } from '../utils/study-export';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -85,7 +84,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
     const [hideMenu, setHideMenu] = useState(false);
     const { downloadElements, handleConvertCases, stopCasesExports } = useDownloadUtils();
-    const exportStudyElements = useExportStudyElements();
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
@@ -608,7 +606,30 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         return menuItems;
-    }, [selectedElements, couldRenameOrMove, couldCreateNewStudyFromCase, couldDuplicate, couldCopy, couldExportStudyArchive, couldDelete, couldDownload, isDeveloperMode, couldExportCase, couldCreateSpreadsheetCollection, couldConvertFilterIntoExplicitNaming, allowsRenameOrMoveOrCopy, handleOpenDialog, duplicateItem, allowsDuplicateOrCopy, copyItem, copyLinkItem, handleExportStudyArchive, handleCloseDialog, downloadElements, noCreationInProgress]);
+    }, [
+        selectedElements,
+        couldRenameOrMove,
+        couldCreateNewStudyFromCase,
+        couldDuplicate,
+        couldCopy,
+        couldExportStudyArchive,
+        couldDelete,
+        couldDownload,
+        isDeveloperMode,
+        couldExportCase,
+        couldCreateSpreadsheetCollection,
+        couldConvertFilterIntoExplicitNaming,
+        allowsRenameOrMoveOrCopy,
+        handleOpenDialog,
+        duplicateItem,
+        allowsDuplicateOrCopy,
+        copyItem,
+        copyLinkItem,
+        handleExportStudyArchive,
+        handleCloseDialog,
+        downloadElements,
+        noCreationInProgress,
+    ]);
 
     const renderDialog = () => {
         switch (openDialog) {
