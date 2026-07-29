@@ -5,7 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MouseEvent as ReactMouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+    MouseEvent as ReactMouseEvent,
+    useCallback,
+    useEffect,
+    useEffectEvent,
+    useMemo,
+    useRef,
+    useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {
@@ -32,7 +40,7 @@ import {
     setUploadingElements,
 } from '../redux/actions';
 import DirectoryTreeView from './directory-tree-view';
-import { isExportCaseNotification, NotificationType } from '../utils/notificationType';
+import { DirectoryInfos, isExportCaseNotification, NotificationType } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -429,12 +437,12 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
     /* Manage Studies updating with Web Socket */
     const displayErrorIfExist = useCallback(
-        (error: string, studyName: string) => {
+        (error: string, studyNames: string[]) => {
             if (error) {
                 snackError({
                     messageTxt: error,
                     headerId: 'studyCreatingError',
-                    headerValues: { studyName },
+                    headerValues: { studyName: studyNames.join(', ') },
                 });
             }
         },
@@ -469,7 +477,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         },
         [dispatch, handleUserMessage]
     );
-
     useNotificationsListener(NotificationsUrlKeys.DIRECTORY, {
         listenerCallbackMessage: onUpdateDirectories,
     });
@@ -479,28 +486,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     // navigation) would re-run it with the same stale event and re-fetch on each later click.
     const processedDirectoryEventRef = useRef(directoryUpdatedEvent);
 
-    useEffect(() => {
-        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
-            return;
-        }
-        processedDirectoryEventRef.current = directoryUpdatedEvent;
-        if (directoryUpdatedEvent.eventData?.headers) {
-            const { notificationType, isRootDirectory } = directoryUpdatedEvent.eventData.headers;
-            const directoryUuid = directoryUpdatedEvent.eventData.headers.directoryUuid as UUID;
-            const error = directoryUpdatedEvent.eventData.headers.error as string;
-            const elementName = directoryUpdatedEvent.eventData.headers.elementName as string;
-            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
-            if (error) {
-                displayErrorIfExist(error, elementName);
-                dispatch(directoryUpdated({}));
-            }
-
-            if (isRootDirectory) {
+    const processDirectoryUpdatedEvent = useEffectEvent(() => {
+        function updateDirectory(
+            directory: DirectoryInfos,
+            isDirectoryMoving: boolean,
+            notificationType: NotificationType
+        ) {
+            if (directory.isRoot) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
                     notificationType === NotificationType.DELETE_DIRECTORY &&
-                    selectedDirectoryRef.current.elementUuid === directoryUuid
+                    selectedDirectoryRef.current.elementUuid === directory.uuid
                 ) {
                     // Selected root directory deleted: go back to root (selection follows from the URL).
                     navigate(`/`, { replace: true });
@@ -508,7 +505,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 }
                 // if it's a new root directory then do not continue because we don't need
                 // to fetch an empty content
-                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directoryUuid)) {
+                if (!treeDataRef.current?.rootDirectories.some((n) => n.elementUuid === directory.uuid)) {
                     return;
                 }
 
@@ -518,28 +515,45 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-            if (directoryUuid) {
+
+            if (directory.uuid != null) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
                 if (selectedDirectoryRef.current != null) {
-                    if (directoryUuid === selectedDirectoryRef.current.elementUuid) {
-                        updateDirectoryTreeAndContent(directoryUuid, isDirectoryMoving);
+                    if (directory.uuid === selectedDirectoryRef.current.elementUuid) {
+                        updateDirectoryTreeAndContent(directory.uuid, isDirectoryMoving);
                         return; // break here
                     }
                 }
-                updateDirectoryTree(directoryUuid, false, isDirectoryMoving);
+                updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
             }
         }
-    }, [
-        directoryUpdatedEvent,
-        dispatch,
-        displayErrorIfExist,
-        updateDirectoryTree,
-        updateDirectoryTreeAndContent,
-        updateRootDirectories,
-        navigate,
-    ]);
+
+        if (directoryUpdatedEvent.eventData?.headers) {
+            const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
+            const directoriesInfos = JSON.parse(
+                directoryUpdatedEvent.eventData.headers.directoriesInfos as string
+            ) as DirectoryInfos[];
+            const error = directoryUpdatedEvent.eventData.headers.error as string;
+            const elementNames = directoryUpdatedEvent.eventData.headers.elementNames as string[];
+            const isDirectoryMoving = directoryUpdatedEvent.eventData.headers.isDirectoryMoving as boolean;
+
+            if (error) {
+                displayErrorIfExist(error, elementNames);
+                dispatch(directoryUpdated({}));
+            }
+            directoriesInfos?.forEach((directory) => updateDirectory(directory, isDirectoryMoving, notificationType));
+        }
+    });
+
+    useEffect(() => {
+        if (processedDirectoryEventRef.current === directoryUpdatedEvent) {
+            return;
+        }
+        processedDirectoryEventRef.current = directoryUpdatedEvent;
+        processDirectoryUpdatedEvent();
+    }, [directoryUpdatedEvent]);
 
     /* Handle components synchronization */
     // Fetch the selected directory's content.
