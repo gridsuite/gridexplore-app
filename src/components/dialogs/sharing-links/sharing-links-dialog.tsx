@@ -21,8 +21,8 @@ import { CloseButton, type ElementAttributes, snackWithFallback, useSnackMessage
 import { UserAvatarWithLabel } from '../../utils/renderers/user-avatar';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
-import { fetchConsumerElementInfos } from '../../../utils/rest-api';
-import { ConsumerElementInfos } from '../../../utils/consumer-element-infos.type';
+import { fetchReferencingElementInfos } from '../../../utils/rest-api';
+import { ReferencingElementInfos } from '../../../utils/referencing-element-infos.type';
 import PathBreadcrumbs from './path-breadcrumbs';
 
 /**
@@ -30,7 +30,7 @@ import PathBreadcrumbs from './path-breadcrumbs';
  * reference, so two rows can be strictly identical when a same node references the shared element
  * twice. Hence the generated id.
  */
-type ConsumerElement = ConsumerElementInfos & { id: string };
+type ReferencingElement = ReferencingElementInfos & { id: string };
 
 export interface SharingLinksDialogProps {
     open: boolean;
@@ -45,12 +45,12 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [consumerElements, setConsumerElements] = useState<ConsumerElement[]>([]);
+    const [referencingElements, setReferencingElements] = useState<ReferencingElement[]>([]);
 
     useEffect(() => {
-        fetchConsumerElementInfos(element.elementUuid)
-            .then((consumerElementInfos) =>
-                setConsumerElements(consumerElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
+        fetchReferencingElementInfos(element.elementUuid)
+            .then((referencingElementInfos) =>
+                setReferencingElements(referencingElementInfos.map((infos) => ({ ...infos, id: crypto.randomUUID() })))
             )
             .catch((error) => {
                 console.error(error);
@@ -90,24 +90,24 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {consumerElements.map((consumerElement) => (
-                            <TableRow key={consumerElement.id}>
-                                <TableCell>{consumerElement.elementName}</TableCell>
+                        {referencingElements.map((referencingElement) => (
+                            <TableRow key={referencingElement.id}>
+                                <TableCell>{referencingElement.elementName}</TableCell>
                                 <TableCell>
-                                    {getElementTypeTranslation(consumerElement.type, null, null, intl)}
+                                    {getElementTypeTranslation(referencingElement.type, null, null, intl)}
                                 </TableCell>
                                 <TableCell>
-                                    <PathBreadcrumbs path={consumerElement.path} />
+                                    <PathBreadcrumbs path={referencingElement.path} />
                                 </TableCell>
-                                <TableCell>{consumerElement.node}</TableCell>
+                                <TableCell>{referencingElement.node}</TableCell>
                                 <TableCell>
-                                    <UserAvatarWithLabel label={consumerElement.ownerLabel ?? ''} />
-                                </TableCell>
-                                <TableCell>
-                                    <DateCellRenderer value={consumerElement.lastModificationDate} />
+                                    <UserAvatarWithLabel label={referencingElement.ownerLabel ?? ''} />
                                 </TableCell>
                                 <TableCell>
-                                    <UserAvatarWithLabel label={consumerElement.lastModifiedByLabel ?? ''} />
+                                    <DateCellRenderer value={referencingElement.lastModificationDate} />
+                                </TableCell>
+                                <TableCell>
+                                    <UserAvatarWithLabel label={referencingElement.lastModifiedByLabel ?? ''} />
                                 </TableCell>
                             </TableRow>
                         ))}

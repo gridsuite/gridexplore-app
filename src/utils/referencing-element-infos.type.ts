@@ -11,7 +11,7 @@ import { ElementType } from '@gridsuite/commons-ui';
  * One element using a shared element, as returned by the explore-server.
  * There is one entry per reference, so a same element appears once per node referencing it.
  */
-export type ConsumerElementInfos = {
+export type ReferencingElementInfos = {
     elementName: string;
     type: ElementType;
     path: string[]; // parent directories
