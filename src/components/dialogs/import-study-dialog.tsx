@@ -5,16 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState, useCallback } from 'react';
-import { useIntl } from 'react-intl';
+import { ChangeEvent, useCallback } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { CustomFormProvider, FieldConstants, useSnackMessage } from '@gridsuite/commons-ui';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import {
+    CustomMuiDialog,
+    DescriptionField,
+    ElementType,
+    ErrorInput,
+    extractErrorMessageDescriptor,
+    FieldConstants,
+    FieldErrorAlert,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { Button, Grid2, Input, Stack } from '@mui/material';
+import { FieldValues, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { AppState } from '../../redux/types';
 import { importStudyArchive } from '../../utils/rest-api';
+import PrefilledNameInput from './commons/prefilled-name-input';
 
 interface ImportStudyDialogProps {
     open: boolean;
@@ -24,13 +34,12 @@ interface ImportStudyDialogProps {
 interface ImportStudyFormData {
     [FieldConstants.NAME]: string;
     [FieldConstants.DESCRIPTION]: string;
-    archiveFile?: FileList;
+    studyFiles?: FileList;
 }
 
 export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStudyDialogProps>) {
     const intl = useIntl();
-    const { snackError, snackInfo } = useSnackMessage();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { snackError } = useSnackMessage();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
     const schema: yup.ObjectSchema<ImportStudyFormData> = yup.object().shape({
@@ -39,7 +48,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             .trim()
             .required(intl.formatMessage({ id: 'nameEmpty' })),
         [FieldConstants.DESCRIPTION]: yup.string().max(500, intl.formatMessage({ id: 'descriptionLimitError' })),
-        archiveFile: yup
+        studyFiles: yup
             .mixed<FileList>()
             .test('required', intl.formatMessage({ id: 'uploadStudyErrorMsg' }), (value) => {
                 return value !== undefined && value !== null && value.length > 0;
@@ -51,128 +60,104 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             }),
     }) as yup.ObjectSchema<ImportStudyFormData>;
 
-    const formMethods = useForm<ImportStudyFormData>({
+    const importStudyFormMethods = useForm<ImportStudyFormData>({
         resolver: yupResolver<ImportStudyFormData>(schema),
         defaultValues: {
             [FieldConstants.NAME]: '',
             [FieldConstants.DESCRIPTION]: '',
         },
     });
-
     const {
-        formState: { errors },
-        handleSubmit,
-        register,
-    } = formMethods;
+        field: { ref, value: studyFiles, onChange: onStudyFilesChange },
+    } = useController({
+        name: 'studyFiles',
+        control: importStudyFormMethods.control,
+    });
 
-    const onSubmit: SubmitHandler<ImportStudyFormData> = useCallback(
-        async (data) => {
+    const studyFileName = (studyFiles as FileList | undefined)?.[0]?.name;
+
+    const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        onStudyFilesChange(event.target.files);
+    };
+    const {
+        formState: { isValid: isFormValid },
+        setError,
+    } = importStudyFormMethods;
+
+    const handleImportStudy = useCallback(
+        async (data: FieldValues) => {
             if (!selectedDirectory?.elementUuid) {
                 snackError({ headerId: 'studyImportError' });
                 return;
             }
-
-            setIsSubmitting(true);
-            try {
-                const file = data.archiveFile?.[0];
-                if (!file) {
-                    snackError({ headerId: 'uploadStudyErrorMsg' });
-                    return;
-                }
-                await importStudyArchive(
-                    data[FieldConstants.NAME],
-                    data[FieldConstants.DESCRIPTION],
-                    file,
-                    selectedDirectory.elementUuid
-                );
-                snackInfo({ headerId: 'studyImportInProgress' });
-                onClose();
-            } catch (error) {
-                console.error('Error importing study:', error);
-                snackError({ headerId: 'studyImportError' });
-            } finally {
-                setIsSubmitting(false);
-            }
+            await importStudyArchive(
+                data[FieldConstants.NAME],
+                data[FieldConstants.DESCRIPTION],
+                data.studyFiles?.[0] as File,
+                selectedDirectory.elementUuid
+            )
+                .then(() => onClose())
+                .catch((error) => {
+                    const { descriptor, values } = extractErrorMessageDescriptor(error, 'studyImportError');
+                    setError(`root.${FieldConstants.API_CALL}`, {
+                        message: intl.formatMessage(descriptor, values).toString(),
+                    });
+                });
         },
-        [selectedDirectory, snackError, snackInfo, onClose]
+        [intl, onClose, selectedDirectory?.elementUuid, setError, snackError]
     );
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-            <DialogTitle>{intl.formatMessage({ id: 'importStudy' })}</DialogTitle>
-            <CustomFormProvider validationSchema={schema} {...formMethods}>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <DialogContent>
-                        <Box display="flex" flexDirection="column" gap={2}>
-                            <Box>
-                                <label htmlFor="name">{intl.formatMessage({ id: 'nameProperty' })} *</label>
-                                <input
-                                    id="name"
-                                    {...register(FieldConstants.NAME)}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        marginTop: '4px',
-                                    }}
-                                />
-                                {errors[FieldConstants.NAME] && (
-                                    <span style={{ color: 'red', fontSize: '0.875rem' }}>
-                                        {errors[FieldConstants.NAME]?.message}
-                                    </span>
-                                )}
-                            </Box>
-
-                            <Box>
-                                <label htmlFor="description">{intl.formatMessage({ id: 'descriptionProperty' })}</label>
-                                <textarea
-                                    id="description"
-                                    {...register(FieldConstants.DESCRIPTION)}
-                                    rows={3}
-                                    style={{
-                                        width: '100%',
-                                        padding: '8px',
-                                        marginTop: '4px',
-                                        fontFamily: 'inherit',
-                                    }}
-                                    disabled
-                                />
-                                {errors[FieldConstants.DESCRIPTION] && (
-                                    <span style={{ color: 'red', fontSize: '0.875rem' }}>
-                                        {errors[FieldConstants.DESCRIPTION]?.message}
-                                    </span>
-                                )}
-                            </Box>
-
-                            <Box>
-                                <label htmlFor="archiveFile">{intl.formatMessage({ id: 'uploadStudy' })} *</label>
-                                <input
-                                    id="archiveFile"
-                                    type="file"
-                                    accept=".gz"
-                                    {...register('archiveFile')}
-                                    style={{
-                                        width: '100%',
-                                        marginTop: '4px',
-                                    }}
-                                />
-                                {errors.archiveFile && (
-                                    <span style={{ color: 'red', fontSize: '0.875rem' }}>
-                                        {errors.archiveFile?.message}
-                                    </span>
-                                )}
-                            </Box>
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={onClose} disabled={isSubmitting}>
-                            {intl.formatMessage({ id: 'cancel' })}
+        <CustomMuiDialog
+            titleId="importStudy"
+            formContext={{
+                ...importStudyFormMethods,
+                validationSchema: schema,
+                removeOptional: true,
+            }}
+            open={open}
+            onClose={onClose}
+            onSave={handleImportStudy}
+            onCancel={onClose}
+            disabledSave={!isFormValid}
+        >
+            <Stack spacing={2} marginTop="auto">
+                <Grid2>
+                    <PrefilledNameInput
+                        name={FieldConstants.NAME}
+                        label="nameProperty"
+                        elementType={ElementType.STUDY}
+                    />
+                </Grid2>
+                <Grid2
+                    sx={{
+                        opacity: 0.5,
+                        pointerEvents: 'none',
+                    }}
+                >
+                    <DescriptionField />
+                </Grid2>
+                <Grid2 container alignItems="center" spacing={1} pt={1}>
+                    <Grid2>
+                        <Button variant="contained" color="primary" component="label">
+                            <FormattedMessage id="uploadStudy" />
+                            <Input
+                                ref={ref}
+                                type="file"
+                                name="studyFiles"
+                                inputProps={{ accept: '.gz' }}
+                                onChange={onFileChange}
+                                sx={{ display: 'none' }}
+                                data-testid="ArchiveFileUpload"
+                            />
                         </Button>
-                        <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-                            {intl.formatMessage({ id: 'validate' })}
-                        </Button>
-                    </DialogActions>
-                </form>
-            </CustomFormProvider>
-        </Dialog>
+                    </Grid2>
+                    <Grid2 sx={{ fontWeight: 'bold' }}>
+                        <p>{studyFileName ?? intl.formatMessage({ id: 'uploadMessage' })}</p>
+                    </Grid2>
+                </Grid2>
+            </Stack>
+            <ErrorInput name="studyFiles" InputField={FieldErrorAlert} />
+        </CustomMuiDialog>
     );
 }

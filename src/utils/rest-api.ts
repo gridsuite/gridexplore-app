@@ -733,7 +733,7 @@ export function importStudyArchive(
 ) {
     console.info('Importing study archive...');
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', studyName);
+    urlSearchParams.append('studyName', studyName);
     urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
 
