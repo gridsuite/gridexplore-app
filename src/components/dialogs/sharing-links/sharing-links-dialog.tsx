@@ -68,7 +68,9 @@ export default function SharingLinksDialog({ open, onClose, element }: Readonly<
                 <Table size="small">
                     <TableHead>
                         <TableRow>
-                            <TableCell />
+                            <TableCell>
+                                <FormattedMessage id="elementName" />
+                            </TableCell>
                             <TableCell>
                                 <FormattedMessage id="type" />
                             </TableCell>
