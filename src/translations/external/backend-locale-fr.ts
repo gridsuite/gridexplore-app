@@ -21,7 +21,7 @@ const BackendLocaleFr = {
     IDENTIFIER_LIST_FILTER: 'Filtre (Par nommage)',
     SECURITY_ANALYSIS_PROCESS_CONFIG: 'Configuration de chaînes (Analyse de sécurité)',
     LOADFLOW_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de répartition)',
-    SHORT_CIRCUIT_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de court-circuits)',
+    SHORT_CIRCUIT_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de court-circuit)',
 
     // spreadsheet config metadata
     Load: 'Consommation',
