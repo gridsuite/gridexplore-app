@@ -740,8 +740,6 @@ export function importStudyArchive(
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/import?${urlSearchParams.toString()}`;
     const formData = new FormData();
     formData.append('archiveFile', archiveFile);
-    console.debug(url);
-
     return backendFetch(url, {
         method: 'post',
         body: formData,

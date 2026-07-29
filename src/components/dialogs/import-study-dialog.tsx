@@ -61,6 +61,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
     }) as yup.ObjectSchema<ImportStudyFormData>;
 
     const importStudyFormMethods = useForm<ImportStudyFormData>({
+        mode: 'onChange',
         resolver: yupResolver<ImportStudyFormData>(schema),
         defaultValues: {
             [FieldConstants.NAME]: '',
