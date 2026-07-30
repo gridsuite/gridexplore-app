@@ -8,15 +8,17 @@
 import { useIntl } from 'react-intl';
 import { ElementAttributes, ElementType, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
 import type { UUID } from 'node:crypto';
 import {
     convertCase,
-    downloadCase,
     downloadSpreadsheetConfig,
     downloadSpreadsheetConfigCollection,
     downloadWorkspace,
+    getCaseDownloadUrl,
 } from '../../utils/rest-api';
 import { buildExportIdentifier, setExportSubscription } from '../../utils/case-export-utils';
+import { AppState } from '../../redux/types';
 
 interface DownloadData {
     blob: Blob;
@@ -34,13 +36,25 @@ export const triggerDownload = ({ blob, filename }: DownloadData): void => {
     window.URL.revokeObjectURL(href);
 };
 
+// Triggers a native browser download by navigating a hidden iframe to the given url.
+// This lets the browser handle the download (and the Content-Disposition response header) natively,
+// instead of fetching the file content ourselves and building a blob.
+export const triggerIframeDownload = (url: string): void => {
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    setTimeout(() => {
+        document.body.removeChild(iframe);
+    }, 10000);
+};
+
+const buildCaseDownloadUrl = (caseUuid: UUID, token?: string): string => {
+    const url = getCaseDownloadUrl(caseUuid);
+    return token ? `${url}?access_token=${encodeURIComponent(token)}` : url;
+};
+
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
-    [ElementType.CASE]: async (element: ElementAttributes) => {
-        const result = await downloadCase(element.elementUuid);
-        const extension = result.headers.get('extension') ?? '';
-        const filename = `${element.elementName}.${extension}`;
-        return { blob: await result.blob(), filename };
-    },
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
         const result = await downloadSpreadsheetConfig(element.elementUuid);
         const filename = `${element.elementName}.json`;
@@ -97,6 +111,7 @@ const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) 
 export function useDownloadUtils() {
     const intl = useIntl();
     const { snackError, snackInfo } = useSnackMessage();
+    const userToken = useSelector((state: AppState) => state.user?.id_token);
     const capitalizeFirstLetter = useCallback(
         (string: string) => `${string.charAt(0).toUpperCase()}${string.slice(1)}`,
         []
@@ -320,17 +335,26 @@ export function useDownloadUtils() {
 
     const downloadElements = useCallback(
         async (selectedElements: ElementAttributes[]): Promise<void> => {
-            const downloadableElements = selectedElements.filter((element) => downloadStrategies[element.type]);
-            const undownloadableElements = selectedElements.filter((element) => !downloadStrategies[element.type]);
+            const downloadableElements = selectedElements.filter(
+                (element) => element.type === ElementType.CASE || downloadStrategies[element.type]
+            );
+            const undownloadableElements = selectedElements.filter(
+                (element) => element.type !== ElementType.CASE && !downloadStrategies[element.type]
+            );
 
             // eslint-disable-next-line no-restricted-syntax -- usage of async/await syntax
             for (const element of downloadableElements) {
                 try {
-                    const downloadStrategy = downloadStrategies[element.type];
-                    if (downloadStrategy) {
-                        // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
-                        const downloadData = await downloadStrategy(element);
-                        triggerDownload(downloadData);
+                    if (element.type === ElementType.CASE) {
+                        // Cases are downloaded natively by the browser through a hidden iframe, with the token passed in the url
+                        triggerIframeDownload(buildCaseDownloadUrl(element.elementUuid, userToken));
+                    } else {
+                        const downloadStrategy = downloadStrategies[element.type];
+                        if (downloadStrategy) {
+                            // eslint-disable-next-line no-await-in-loop -- it's wanted because we don't want to download in parallel
+                            const downloadData = await downloadStrategy(element);
+                            triggerDownload(downloadData);
+                        }
                     }
                 } catch (error: unknown) {
                     handleDownloadError(element, error);
@@ -342,7 +366,7 @@ export function useDownloadUtils() {
                 snackInfo({ messageTxt: message });
             }
         },
-        [handleDownloadError, snackInfo, buildPartialDownloadMessage]
+        [handleDownloadError, snackInfo, buildPartialDownloadMessage, userToken]
     );
 
     return { downloadElements, handleConvertCases, stopCasesExports };
