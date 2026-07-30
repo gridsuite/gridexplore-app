@@ -8,6 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
+    isDisabledValidationButton,
     MAX_CHAR_DESCRIPTION,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
@@ -79,9 +80,6 @@ export default function ExplicitNamingEditionDialog({
         formState: { errors },
     } = methods;
 
-    const nameError = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
-
     useEffect(() => {
         setIsFetching(true);
         getContingencyList(ContingencyListType.EXPLICIT_NAMING.id, contingencyListId)
@@ -139,7 +137,7 @@ export default function ExplicitNamingEditionDialog({
                 removeOptional: true,
             }}
             titleId={titleId}
-            disabledSave={Boolean(!!nameError || isValidating)}
+            disabledSave={isDisabledValidationButton(errors)}
             isDataFetching={isFetching}
             unscrollableFullHeight
         >

@@ -84,6 +84,7 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
+    isDisabledValidationButton,
     LineForm,
     lineCreationFormSchema,
     lineCreationDtoToForm,
@@ -183,8 +184,6 @@ export default function CompositeModificationDialog({
     const {
         formState: { errors },
     } = methods;
-    const nameError: any = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
 
     const editableModificationDialogs = useMemo(
         () =>
@@ -475,7 +474,7 @@ export default function CompositeModificationDialog({
                     validationSchema: schema,
                     removeOptional: true,
                 }}
-                disabledSave={!!nameError || !!isValidating}
+                disabledSave={isDisabledValidationButton(errors)}
                 isDataFetching={isFetching}
                 unscrollableFullHeight
                 sx={{
