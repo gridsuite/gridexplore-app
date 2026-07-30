@@ -36,23 +36,45 @@ export const triggerDownload = ({ blob, filename }: DownloadData): void => {
     window.URL.revokeObjectURL(href);
 };
 
-// Triggers a native browser download by navigating a hidden iframe to the given url.
+// Triggers a native browser download by POSTing a hidden form, targeted at a hidden iframe.
 // This lets the browser handle the download (and the Content-Disposition response header) natively,
-// instead of fetching the file content ourselves and building a blob.
-export const triggerIframeDownload = (url: string): void => {
+// instead of fetching the file content ourselves and building a blob, while still allowing sensitive
+// data (such as the auth token) to be sent as a form field instead of appearing in the url.
+export const triggerIframeFormDownload = (url: string, params: Record<string, string | undefined> = {}): void => {
+    const iframeName = `download-iframe-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
-    iframe.src = url;
+    iframe.name = iframeName;
     document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = url;
+    form.target = iframeName;
+    form.style.display = 'none';
+
+    Object.entries(params).forEach(([name, value]) => {
+        if (value === undefined) {
+            return;
+        }
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
     setTimeout(() => {
+        document.body.removeChild(form);
         document.body.removeChild(iframe);
     }, 10000);
 };
 
-const buildCaseDownloadUrl = (caseUuid: UUID, token?: string): string => {
-    const url = getCaseDownloadUrl(caseUuid);
-    return token ? `${url}?access_token=${encodeURIComponent(token)}` : url;
-};
+const buildCaseDownloadUrl = (caseUuid: UUID): string => getCaseDownloadUrl(caseUuid);
 
 const downloadStrategies: { [key in ElementType]?: (element: ElementAttributes) => Promise<DownloadData> } = {
     [ElementType.SPREADSHEET_CONFIG]: async (element: ElementAttributes) => {
@@ -346,8 +368,11 @@ export function useDownloadUtils() {
             for (const element of downloadableElements) {
                 try {
                     if (element.type === ElementType.CASE) {
-                        // Cases are downloaded natively by the browser through a hidden iframe, with the token passed in the url
-                        triggerIframeDownload(buildCaseDownloadUrl(element.elementUuid, userToken));
+                        // Cases are downloaded natively by the browser through a hidden form POSTed to a hidden iframe,
+                        // with the token passed as a hidden form field instead of appearing in the url
+                        triggerIframeFormDownload(buildCaseDownloadUrl(element.elementUuid), {
+                            access_token: userToken,
+                        });
                     } else {
                         const downloadStrategy = downloadStrategies[element.type];
                         if (downloadStrategy) {
