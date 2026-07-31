@@ -32,8 +32,7 @@ import {
     ShortCircuitParametersEditionDialog,
     useSnackMessage,
     VoltageInitParametersEditionDialog,
-    SAProcessConfigEditionDialog,
-    LFProcessConfigEditionDialog,
+    ProcessConfigEditionDialog,
     isProcessType,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -507,35 +506,20 @@ function DirectoryContentDialog(
                 );
             }
         }
-        if (currentProcessConfigId && activeDirectory) {
-            if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
-                return (
-                    <SAProcessConfigEditionDialog
-                        processConfigId={currentProcessConfigId}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        name={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
-            if (currentProcessConfigType === ProcessType.LOADFLOW) {
-                return (
-                    <LFProcessConfigEditionDialog
-                        processConfigId={currentProcessConfigId}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        name={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
+        if (currentProcessConfigId && currentProcessConfigType && activeDirectory) {
+            return (
+                <ProcessConfigEditionDialog
+                    processType={currentProcessConfigType}
+                    processConfigUuid={currentProcessConfigId}
+                    name={elementName}
+                    description={activeElement.description}
+                    directory={activeDirectory}
+                    open
+                    onClose={handleCloseProcessConfigDialog}
+                    fetchProcessConfig={fetchProcessConfig}
+                    updateProcessConfig={updateProcessConfig}
+                />
+            );
         }
     }
 }
