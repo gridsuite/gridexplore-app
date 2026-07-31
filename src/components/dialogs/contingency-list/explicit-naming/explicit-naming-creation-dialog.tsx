@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import {
     CustomMuiDialog,
     FieldConstants,
+    isDisabledValidationButton,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     PARAM_LANGUAGE,
@@ -60,9 +61,6 @@ export default function ExplicitNamingCreationDialog({
         formState: { errors },
     } = methods;
 
-    const nameError = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
-
     const closeAndClear = () => {
         reset(emptyFormData);
         onClose();
@@ -98,7 +96,7 @@ export default function ExplicitNamingCreationDialog({
                 language: languageLocal,
             }}
             titleId={titleId}
-            disabledSave={Boolean(nameError || isValidating)}
+            disabledSave={isDisabledValidationButton(errors)}
             unscrollableFullHeight
         >
             <ExplicitNamingForm />
