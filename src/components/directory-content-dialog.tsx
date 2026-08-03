@@ -22,17 +22,18 @@ import {
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
     isStudyMetadata,
+    LFProcessConfigEditionDialog,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
     PARAM_LANGUAGE,
     PccMinParametersEditionDialog,
     ProcessType,
+    SAProcessConfigEditionDialog,
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
     ShortCircuitParametersEditionDialog,
     useSnackMessage,
     VoltageInitParametersEditionDialog,
-    ProcessConfigEditionDialog,
     isProcessType,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
@@ -507,19 +508,34 @@ function DirectoryContentDialog(
             }
         }
         if (currentProcessConfigId && currentProcessConfigType && activeDirectory) {
-            return (
-                <ProcessConfigEditionDialog
-                    processType={currentProcessConfigType}
-                    processConfigUuid={currentProcessConfigId}
-                    name={elementName}
-                    description={activeElement.description}
-                    directory={activeDirectory}
-                    open
-                    onClose={handleCloseProcessConfigDialog}
-                    fetchProcessConfig={fetchProcessConfig}
-                    updateProcessConfig={updateProcessConfig}
-                />
-            );
+            if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
+                return (
+                    <SAProcessConfigEditionDialog
+                        processConfigUuid={currentProcessConfigId}
+                        processConfigName={elementName}
+                        description={activeElement.description}
+                        directory={activeDirectory}
+                        open
+                        onClose={handleCloseProcessConfigDialog}
+                        fetchProcessConfig={fetchProcessConfig}
+                        updateProcessConfig={updateProcessConfig}
+                    />
+                );
+            }
+            if (currentProcessConfigType === ProcessType.LOADFLOW) {
+                return (
+                    <LFProcessConfigEditionDialog
+                        processConfigUuid={currentProcessConfigId}
+                        processConfigName={elementName}
+                        description={activeElement.description}
+                        directory={activeDirectory}
+                        open
+                        onClose={handleCloseProcessConfigDialog}
+                        fetchProcessConfig={fetchProcessConfig}
+                        updateProcessConfig={updateProcessConfig}
+                    />
+                );
+            }
         }
     }
 }
