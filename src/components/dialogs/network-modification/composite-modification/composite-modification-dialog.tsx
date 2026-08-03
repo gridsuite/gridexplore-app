@@ -84,6 +84,7 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
+    NAME_EMPTY,
     isDisabledValidationButton,
     LineForm,
     lineCreationFormSchema,
@@ -115,7 +116,7 @@ type SpecificModificationDialogProps = Pick<
 >;
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().trim(),
 });
 
