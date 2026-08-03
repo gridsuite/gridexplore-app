@@ -32,6 +32,7 @@
     "uploadErrorMsg": "Please upload the case file",
     "uploadFileExceedingLimitSizeErrorMsg": "Selected file exceeds size limit ({maxSize} MB). \nPlease compress the file in zip, gzip or bzip2 format then try to upload it again",
     "creationInProgress": "creation in progress",
+    "deletionInProgress": "deletion in progress",
     "uploading": "upload in progress",
     "studyCreatingError": "An error occurred while creating the study: {studyName}",
     "ImportNewCase": "Upload a case",
