@@ -21,6 +21,7 @@ const BackendLocaleEn = {
     IDENTIFIER_LIST_FILTER: 'Filter (Explicit naming)',
     SECURITY_ANALYSIS_PROCESS_CONFIG: 'Process configuration (Security analysis)',
     LOADFLOW_PROCESS_CONFIG: 'Process configuration (Loadflow)',
+    SHORT_CIRCUIT_PROCESS_CONFIG: 'Process configuration (Short circuit)',
 
     // spreadsheet config metadata
     Load: 'Load',
