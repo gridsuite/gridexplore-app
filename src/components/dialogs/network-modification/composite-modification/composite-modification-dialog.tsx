@@ -93,6 +93,10 @@ import {
     lineModificationFormSchema,
     lineModificationDtoToForm,
     lineModificationFormToDto,
+    modificationByFormulaFormSchema,
+    modificationByFormulaDtoToForm,
+    modificationByFormulaFormToDto,
+    ModificationByFormulaForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -383,6 +387,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'ModifyByAssignment',
                         titleId: 'ModifyByAssignment',
                         ModificationForm: ModificationByAssignmentForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.BY_FORMULA_MODIFICATION,
+                    {
+                        formSchema: modificationByFormulaFormSchema,
+                        dtoToForm: modificationByFormulaDtoToForm,
+                        formToDto: modificationByFormulaFormToDto,
+                        errorHeaderId: 'ModifyByFormula',
+                        titleId: 'ModifyByFormula',
+                        ModificationForm: ModificationByFormulaForm,
                         removeOptional: false,
                     },
                 ],
