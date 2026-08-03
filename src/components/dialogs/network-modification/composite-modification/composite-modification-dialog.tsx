@@ -84,6 +84,7 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
+    NAME_EMPTY,
     isDisabledValidationButton,
     LineForm,
     lineCreationFormSchema,
@@ -92,6 +93,10 @@ import {
     lineModificationFormSchema,
     lineModificationDtoToForm,
     lineModificationFormToDto,
+    modificationByFormulaFormSchema,
+    modificationByFormulaDtoToForm,
+    modificationByFormulaFormToDto,
+    ModificationByFormulaForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -115,7 +120,7 @@ type SpecificModificationDialogProps = Pick<
 >;
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().trim(),
 });
 
@@ -382,6 +387,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'ModifyByAssignment',
                         titleId: 'ModifyByAssignment',
                         ModificationForm: ModificationByAssignmentForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.BY_FORMULA_MODIFICATION,
+                    {
+                        formSchema: modificationByFormulaFormSchema,
+                        dtoToForm: modificationByFormulaDtoToForm,
+                        formToDto: modificationByFormulaFormToDto,
+                        errorHeaderId: 'ModifyByFormula',
+                        titleId: 'ModifyByFormula',
+                        ModificationForm: ModificationByFormulaForm,
                         removeOptional: false,
                     },
                 ],
