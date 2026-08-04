@@ -16,6 +16,8 @@ import {
     extractErrorMessageDescriptor,
     FieldConstants,
     FieldErrorAlert,
+    MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, Grid2, Input, Stack } from '@mui/material';
@@ -43,11 +45,8 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
     const schema: yup.ObjectSchema<ImportStudyFormData> = yup.object().shape({
-        [FieldConstants.NAME]: yup
-            .string()
-            .trim()
-            .required(intl.formatMessage({ id: 'nameEmpty' })),
-        [FieldConstants.DESCRIPTION]: yup.string().max(500, intl.formatMessage({ id: 'descriptionLimitError' })),
+        [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
+        [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
         studyFiles: yup
             .mixed<FileList>()
             .test('required', intl.formatMessage({ id: 'uploadStudyErrorMsg' }), (value) => {
@@ -77,13 +76,19 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
 
     const studyFileName = (studyFiles as FileList | undefined)?.[0]?.name;
 
-    const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-        onStudyFilesChange(event.target.files);
-    };
     const {
         formState: { isValid: isFormValid },
         setError,
+        setValue,
     } = importStudyFormMethods;
+
+    const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files as FileList;
+        if (files && files.length > 0) {
+            onStudyFilesChange(event.target.files);
+            setValue(FieldConstants.NAME, files[0].name.replace(/\.gz$/i, ''), { shouldValidate: true });
+        }
+    };
 
     const handleImportStudy = useCallback(
         async (data: FieldValues) => {

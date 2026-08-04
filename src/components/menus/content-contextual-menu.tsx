@@ -419,7 +419,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `study-${activeElement.elementName}.gz`;
+            link.download = `${activeElement.elementName}.gz`;
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -531,7 +531,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                             }}
                         />
                     ),
-                }
+                },
+                { isDivider: true }
             );
         }
 
@@ -542,8 +543,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 icon: <FileDownload fontSize="small" data-testid="ExportArchiveIcon" />,
                 withDivider: true,
             });
-        } else if (couldCopy()) {
-            menuItems.push({ isDivider: true });
         }
 
         if (couldDelete()) {
