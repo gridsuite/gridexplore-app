@@ -38,8 +38,10 @@ import {
     PrepareContingencyListForBackend,
 } from './contingency-list.type';
 
+const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
+const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -358,7 +360,7 @@ export function duplicateElement(
 
 export function downloadSpreadsheetConfig(configId: string) {
     console.info(`Downloading spreadsheet config with id: ${configId}`);
-    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-configs/${configId}`;
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${configId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -370,7 +372,7 @@ export function downloadSpreadsheetConfig(configId: string) {
 
 export function downloadSpreadsheetConfigCollection(collectionId: string) {
     console.info(`Downloading spreadsheet config collection with id: ${collectionId}`);
-    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/${collectionId}`;
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -382,7 +384,7 @@ export function downloadSpreadsheetConfigCollection(collectionId: string) {
 
 export function downloadWorkspace(workspaceId: string) {
     console.info(`Downloading workspace with id: ${workspaceId}`);
-    const fetchUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/workspaces/${workspaceId}`;
+    const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/workspaces/${workspaceId}`;
 
     return backendFetch(fetchUrl, {
         method: 'GET',
@@ -422,7 +424,7 @@ export function replaceAllSpreadsheetConfigsInCollection(
     const queryParams = new URLSearchParams();
     queryParams.append('name', name);
     queryParams.append('description', description);
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
+    const url = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-config-collections/${collectionId}/spreadsheet-configs/replace-all?${queryParams.toString()}`;
     console.debug(url);
     return backendFetch(url, {
         method: 'put',
@@ -772,7 +774,7 @@ export function updateDirectoryPermissions(directoryUuid: UUID, permissions: Per
 
 export function fetchGroups(): Promise<GroupDTO[]> {
     console.info('Fetching groups from user-admin server');
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/groups`;
+    const url = `${PREFIX_USER_ADMIN_SERVER_QUERIES}/v1/groups`;
     return backendFetchJson(url, {
         method: 'get',
     }) as Promise<GroupDTO[]>;
