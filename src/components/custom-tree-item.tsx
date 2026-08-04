@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { forwardRef, MouseEventHandler, Ref, useCallback, useEffect, useState } from 'react';
+import { MouseEventHandler, useCallback, useEffect, useState } from 'react';
 import type { UUID } from 'node:crypto';
 import { PopoverReference } from '@mui/material';
 import { TreeItem, TreeItemSlotProps } from '@mui/x-tree-view';
@@ -14,16 +14,20 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/types';
 import { styles } from './treeview-utils';
 import CustomTreeItemLabel from './custom-tree-item-label';
+import { useScrollIntoViewRef } from '../hooks/use-scroll-into-view-ref';
 
 export type CustomTreeItemProps = {
     node: ElementAttributes;
     onExpand: (itemId: UUID) => void;
     onSelect: (itemId: UUID) => void;
     onContextMenu: (event: any, nodeId: UUID, anchorReference: PopoverReference) => void;
+    // Directory this item should scroll itself to when (and as soon as) it is mounted in the DOM
+    directoryToScroll?: UUID;
+    onScrolledToDirectory?: () => void;
 };
 
-const CustomTreeItem = forwardRef(function CustomTreeItemInner(props: CustomTreeItemProps, ref: Ref<HTMLLIElement>) {
-    const { node, onExpand, onSelect, onContextMenu } = props;
+function CustomTreeItem(props: CustomTreeItemProps) {
+    const { node, onExpand, onSelect, onContextMenu, directoryToScroll, onScrolledToDirectory } = props;
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
 
@@ -77,9 +81,12 @@ const CustomTreeItem = forwardRef(function CustomTreeItemInner(props: CustomTree
         }
     }, [isMenuOpen, setHover]);
 
+    const isScrollTarget = directoryToScroll === node.elementUuid;
+    const handleScrollTargetRef = useScrollIntoViewRef(isScrollTarget, onScrolledToDirectory);
+
     return (
         <TreeItem
-            ref={ref}
+            ref={handleScrollTargetRef}
             id={node.elementUuid}
             itemId={node.elementUuid}
             onContextMenu={(e) => onContextMenu(e, node.elementUuid, 'anchorPosition')}
@@ -120,14 +127,11 @@ const CustomTreeItem = forwardRef(function CustomTreeItemInner(props: CustomTree
             {hasChildren &&
                 node.children
                     .filter((childNode) => !!childNode)
-                    .map((childNode) => (
-                        // @ts-ignore : TS issue with the ref
-                        <CustomTreeItem {...props} key={childNode.elementUuid} node={childNode} />
-                    ))}
+                    .map((childNode) => <CustomTreeItem {...props} key={childNode.elementUuid} node={childNode} />)}
             {/* Placeholder to simulate children so MUI TreeItem displays the expand icon before data is loaded */}
             {!hasChildren && hasSubdirectories && <span key="placeholder" style={{ display: 'none' }} />}
         </TreeItem>
     );
-});
+}
 
 export default CustomTreeItem;
