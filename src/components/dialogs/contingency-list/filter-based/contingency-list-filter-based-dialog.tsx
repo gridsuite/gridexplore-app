@@ -8,6 +8,7 @@
 import {
     CustomMuiDialog,
     FieldConstants,
+    isDisabledValidationButton,
     MAX_CHAR_DESCRIPTION,
     snackWithFallback,
     useSnackMessage,
@@ -171,9 +172,6 @@ export default function FilterBasedContingencyListDialog({
         [activeDirectory, closeAndClear, id, snackError]
     );
 
-    const nameError = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
-
     return (
         <CustomMuiDialog
             titleId={titleId}
@@ -184,7 +182,7 @@ export default function FilterBasedContingencyListDialog({
                 ...methods,
                 validationSchema: schema,
             }}
-            disabledSave={Boolean(!!nameError || isValidating)}
+            disabledSave={isDisabledValidationButton(errors)}
             isDataFetching={isFetching}
             sx={{
                 '.MuiDialog-paper': {
