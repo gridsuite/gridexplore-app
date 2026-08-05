@@ -52,12 +52,15 @@ export const useTextValue = ({
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
-                FormHelperTextProps={{
-                    sx: styles.helperText,
-                }}
                 {...formProps}
-                InputProps={{
-                    endAdornment: adornment,
+                slotProps={{
+                    input: {
+                        endAdornment: adornment,
+                    },
+
+                    formHelperText: {
+                        sx: styles.helperText,
+                    },
                 }}
             />
         ),
