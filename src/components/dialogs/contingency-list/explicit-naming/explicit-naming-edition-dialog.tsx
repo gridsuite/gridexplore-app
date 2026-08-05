@@ -8,7 +8,9 @@
 import {
     CustomMuiDialog,
     FieldConstants,
+    isDisabledValidationButton,
     MAX_CHAR_DESCRIPTION,
+    NAME_EMPTY,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
     useSnackMessage,
@@ -40,7 +42,7 @@ interface ExplicitNamingEditionFormData {
 }
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     ...getExplicitNamingEditSchema(),
 });
@@ -78,9 +80,6 @@ export default function ExplicitNamingEditionDialog({
         reset,
         formState: { errors },
     } = methods;
-
-    const nameError = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
 
     useEffect(() => {
         setIsFetching(true);
@@ -139,7 +138,7 @@ export default function ExplicitNamingEditionDialog({
                 removeOptional: true,
             }}
             titleId={titleId}
-            disabledSave={Boolean(!!nameError || isValidating)}
+            disabledSave={isDisabledValidationButton(errors)}
             isDataFetching={isFetching}
             unscrollableFullHeight
         >

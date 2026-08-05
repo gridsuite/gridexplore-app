@@ -84,10 +84,8 @@ import {
     generatorModificationDtoToForm,
     generatorModificationFormToDto,
     GeneratorModificationForm,
-    TwoWindingsTransformerForm,
-    twoWindingsTransformerCreationFormSchema,
-    twoWindingsTransformerCreationDtoToForm,
-    twoWindingsTransformerCreationFormToDto,
+    NAME_EMPTY,
+    isDisabledValidationButton,
     LineForm,
     lineCreationFormSchema,
     lineCreationDtoToForm,
@@ -95,6 +93,14 @@ import {
     lineModificationFormSchema,
     lineModificationDtoToForm,
     lineModificationFormToDto,
+    modificationByFormulaFormSchema,
+    modificationByFormulaDtoToForm,
+    modificationByFormulaFormToDto,
+    ModificationByFormulaForm,
+    TwoWindingsTransformerForm,
+    twoWindingsTransformerCreationFormSchema,
+    twoWindingsTransformerCreationDtoToForm,
+    twoWindingsTransformerCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -118,7 +124,7 @@ type SpecificModificationDialogProps = Pick<
 >;
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().trim(),
 });
 
@@ -187,8 +193,6 @@ export default function CompositeModificationDialog({
     const {
         formState: { errors },
     } = methods;
-    const nameError: any = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
 
     const editableModificationDialogs = useMemo(
         () =>
@@ -404,6 +408,18 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.BY_FORMULA_MODIFICATION,
+                    {
+                        formSchema: modificationByFormulaFormSchema,
+                        dtoToForm: modificationByFormulaDtoToForm,
+                        formToDto: modificationByFormulaFormToDto,
+                        errorHeaderId: 'ModifyByFormula',
+                        titleId: 'ModifyByFormula',
+                        ModificationForm: ModificationByFormulaForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
                     ModificationType.BY_FILTER_DELETION,
                     {
                         formSchema: byFilterDeletionFormSchema,
@@ -492,7 +508,7 @@ export default function CompositeModificationDialog({
                     validationSchema: schema,
                     removeOptional: true,
                 }}
-                disabledSave={!!nameError || !!isValidating}
+                disabledSave={isDisabledValidationButton(errors)}
                 isDataFetching={isFetching}
                 unscrollableFullHeight
                 sx={{
