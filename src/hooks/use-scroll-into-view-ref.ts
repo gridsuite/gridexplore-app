@@ -33,6 +33,9 @@ export function useScrollIntoViewRef(isScrollTarget: boolean, onScrolled?: () =>
             if (!element || !isScrollTarget) {
                 return;
             }
+            // The nearest ancestor that actually scrolls. Not needed to scroll — scrollIntoView finds its own —
+            // but as the frame of reference for the position below: measured within that ancestor's content, the
+            // position is invariant under scrolling, so a manual user scroll doesn't read as the layout moving.
             let scrollParent: HTMLElement | null = element.parentElement;
             while (scrollParent && !/auto|scroll/.test(getComputedStyle(scrollParent).overflowY)) {
                 scrollParent = scrollParent.parentElement;
@@ -46,15 +49,11 @@ export function useScrollIntoViewRef(isScrollTarget: boolean, onScrolled?: () =>
                       }
                     : { top, scrollHeight: 0 };
             };
-            /* The element mounts while its surroundings may still be settling: transitions are
-               resizing wrappers and pending fetches may still insert content, so a scroll issued
-               now would aim at a stale position — and a smooth animation cannot track a moving
-               target: restarting it stutters, correcting it afterwards double-jumps. So scroll
-               LAST: watch the element's position within the scrollable content — invariant under
-               scrolling itself, so a manual user scroll doesn't count as movement — and glide to
-               it in one go once it stopped moving (or when the bounded time budget runs out).
-               setTimeout (not requestAnimationFrame) so it also works in a hidden/background tab,
-               where rAF never fires. */
+            /* Why wait: transitions and pending fetches are still moving things, so a scroll issued now would aim at
+               a stale position — and a smooth animation cannot track a moving target: restarting it stutters, fixing
+               it afterwards double-jumps. Hence sample until the position holds still (or the budget runs out), then
+               scroll once. setTimeout gives the fixed sampling interval — and unlike requestAnimationFrame it
+               still fires in a hidden tab. */
             let previous: { top: number; scrollHeight: number } | undefined;
             let quietSamples = 0;
             let remainingChecks = MAX_CHECKS;

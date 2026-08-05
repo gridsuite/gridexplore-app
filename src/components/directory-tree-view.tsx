@@ -26,7 +26,7 @@ export interface DirectoryTreeViewProps {
     ) => void;
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean, isDirectoryMoving: boolean) => void;
     directoryToScroll?: UUID;
-    onScrolledToDirectory: () => void;
+    onScrolledToDirectory?: () => void;
 }
 
 export default function DirectoryTreeView({

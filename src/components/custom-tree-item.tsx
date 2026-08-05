@@ -21,7 +21,6 @@ export type CustomTreeItemProps = {
     onExpand: (itemId: UUID) => void;
     onSelect: (itemId: UUID) => void;
     onContextMenu: (event: any, nodeId: UUID, anchorReference: PopoverReference) => void;
-    // Directory this item should scroll itself to when (and as soon as) it is mounted in the DOM
     directoryToScroll?: UUID;
     onScrolledToDirectory?: () => void;
 };
@@ -81,6 +80,10 @@ function CustomTreeItem(props: CustomTreeItemProps) {
         }
     }, [isMenuOpen, setHover]);
 
+    // A ref, not an effect: MUI mounts a group's items after the expansion state that revealed them, so no state
+    // change signals that the target's DOM node exists — a callback ref does. React calls it with this item's root
+    // <li> on attach and with null on detach, and re-runs it when its identity changes. Here it depends on
+    // isScrollTarget, so a directory already mounted when it becomes the target is scrolled to as well.
     const isScrollTarget = directoryToScroll === node.elementUuid;
     const handleScrollTargetRef = useScrollIntoViewRef(isScrollTarget, onScrolledToDirectory);
 

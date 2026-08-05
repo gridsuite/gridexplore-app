@@ -595,9 +595,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     );
 
     const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
-
-    // The scroll itself is performed by the DirectoryTreeView owning the directory, once the whole
-    // path is loaded, expanded and rendered; it calls back here to clear the request.
+    // once scrolled, we reset the state
     const handleScrolledToDirectory = useCallback(() => setDirectoryToScroll(undefined), []);
 
     // TODO TypeScript say that treeData.mapData is never falsy?...
