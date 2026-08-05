@@ -35,6 +35,7 @@ export const DialogsId = {
     DIRECTORY_PROPERTIES: 'directory_properties',
     EDIT_PARAMETERS: 'edit_parameters',
     EDIT_PROCESS_CONFIG: 'edit_process_config',
+    SHARING_LINKS: 'sharing_links',
     NONE: 'none',
 };
 

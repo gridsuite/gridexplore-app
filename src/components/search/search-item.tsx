@@ -73,7 +73,7 @@ export function SearchItem({ matchingElement, inputValue, ...othersProps }: Read
                 </Grid>
                 <Grid sx={styles.grid2}>
                     <Typography>
-                        <FormattedMessage id="path" />
+                        <FormattedMessage id="searchItemPath" />
                         {matchingElement.pathName?.join(' / ')}
                     </Typography>
                 </Grid>
