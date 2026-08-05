@@ -16,6 +16,7 @@ import {
     extractErrorMessageDescriptor,
     FieldConstants,
     FieldErrorAlert,
+    isObjectEmpty,
     MAX_CHAR_DESCRIPTION,
     NAME_EMPTY,
     useSnackMessage,
@@ -77,7 +78,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
     const studyFileName = (studyFiles as FileList | undefined)?.[0]?.name;
 
     const {
-        formState: { isValid: isFormValid },
+        formState: { errors, isValid },
         setError,
         setValue,
     } = importStudyFormMethods;
@@ -112,7 +113,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
         },
         [intl, onClose, selectedDirectory?.elementUuid, setError, snackError]
     );
-
+    const isFormValid = isObjectEmpty(errors) && isValid;
     return (
         <CustomMuiDialog
             titleId="importStudy"
