@@ -6,12 +6,8 @@
  */
 import { RefCallback, useCallback, useRef } from 'react';
 
-const RECHECK_INTERVAL_MS = 100;
-const MAX_CHECKS = 20;
-// Consecutive quiet samples required to declare the layout settled: a single quiet interval can
-// just be a lull between two async shifts (a transition ending, then a fetch response inserting
-// rows), two in a row make that much less likely.
-const QUIET_SAMPLES_TO_SETTLE = 2;
+const RECHECK_INTERVAL_MS = 200;
+const MAX_CHECKS = 10;
 
 /**
  * Returns a callback ref that, once its element is attached to the DOM, waits for the surrounding
@@ -68,7 +64,9 @@ export function useScrollIntoViewRef(isScrollTarget: boolean, onScrolled?: () =>
                 }
                 previous = current;
                 remainingChecks -= 1;
-                if (quietSamples >= QUIET_SAMPLES_TO_SETTLE || remainingChecks <= 0) {
+                // Two consecutive quiet samples, not one: a single quiet interval can just be a lull between two
+                // async shifts (a transition ending, then a fetch response inserting rows).
+                if (quietSamples >= 2 || remainingChecks <= 0) {
                     element.scrollIntoView({
                         // A smooth scroll is animated by the rendering pipeline, which is paused in
                         // a hidden tab (e.g. a link opened in a background tab): it would never move.
