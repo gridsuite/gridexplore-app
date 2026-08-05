@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
+    DatasetLinked as DatasetLinkedIcon,
     Delete as DeleteIcon,
     DoNotDisturbAlt as DoNotDisturbAltIcon,
     DownloadForOffline,
@@ -46,7 +47,7 @@ import {
     renameElement,
 } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
-import CommonContextualMenu, { CommonContextualMenuProps } from './common-contextual-menu';
+import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
 import { useDownloadUtils } from '../utils/downloadUtils';
@@ -55,6 +56,7 @@ import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
+import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
@@ -403,6 +405,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return isSingleElement && directoryWritable;
     }, [directoryWritable, isSingleElement]);
 
+    const couldDisplaySharingLinks = useCallback(() => {
+        return (
+            isSingleElement &&
+            selectedElements[0].type === ElementType.MODIFICATION &&
+            (selectedElements[0].references?.length ?? 0) > 0
+        );
+    }, [isSingleElement, selectedElements]);
+
     const couldExportStudyArchive = useCallback(() => {
         return (
             isSingleElement &&
@@ -470,7 +480,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
 
         // build menuItems here in order
-        const menuItems = [];
+        const menuItems: MenuItemType[] = [];
 
         if (couldRenameOrMove()) {
             menuItems.push({
@@ -487,7 +497,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleOpenDialog(DialogsId.MOVE);
                 },
                 icon: <DriveFileMoveIcon fontSize="small" data-testid="MoveIcon" />,
-                withDivider: true,
                 disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
@@ -536,12 +545,28 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
+        if (couldDisplaySharingLinks()) {
+            // the entry is isolated between two dividers, whatever the entries built before it
+            if (menuItems.at(-1)?.isDivider !== true) {
+                menuItems.push({ isDivider: true });
+            }
+            menuItems.push(
+                {
+                    messageDescriptorId: 'displaySharingLinks',
+                    callback: () => {
+                        handleOpenDialog(DialogsId.SHARING_LINKS);
+                    },
+                    icon: <DatasetLinkedIcon fontSize="small" data-testid="SharingLinksIcon" />,
+                },
+                { isDivider: true }
+            );
+        }
+
         if (couldExportStudyArchive()) {
             menuItems.push({
                 messageDescriptorId: 'exportStudyArchive',
                 callback: handleExportStudyArchive,
                 icon: <FileDownload fontSize="small" data-testid="ExportArchiveIcon" />,
-                withDivider: true,
             });
         }
 
@@ -552,7 +577,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                     handleOpenDialog(DialogsId.DELETE);
                 },
                 icon: <DeleteIcon fontSize="small" data-testid="DeleteIcon" />,
-                withDivider: true,
                 disabled: !allowsRenameOrMoveOrCopy(),
             });
         }
@@ -613,6 +637,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         couldCopy,
         couldExportStudyArchive,
         couldDelete,
+        couldDisplaySharingLinks,
         couldDownload,
         isDeveloperMode,
         couldExportCase,
@@ -711,6 +736,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                 );
             case DialogsId.ADD_NEW_STUDY_FROM_CASE:
                 return <CreateStudyDialog open onClose={handleCloseDialog} providedExistingCase={activeElement} />;
+            case DialogsId.SHARING_LINKS:
+                return <SharingLinksDialog open onClose={handleCloseDialog} element={activeElement} />;
             default:
                 return null;
         }
