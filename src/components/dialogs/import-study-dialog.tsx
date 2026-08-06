@@ -21,7 +21,7 @@ import {
     NAME_EMPTY,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, Grid2, Input, Stack } from '@mui/material';
+import { Button, Grid, Input, Stack } from '@mui/material';
 import { FieldValues, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -129,23 +129,23 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             disabledSave={!isFormValid}
         >
             <Stack spacing={2} marginTop="auto">
-                <Grid2>
+                <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.NAME}
                         label="nameProperty"
                         elementType={ElementType.STUDY}
                     />
-                </Grid2>
-                <Grid2
+                </Grid>
+                <Grid
                     sx={{
                         opacity: 0.5,
                         pointerEvents: 'none',
                     }}
                 >
                     <DescriptionField />
-                </Grid2>
-                <Grid2 container alignItems="center" spacing={1} pt={1}>
-                    <Grid2>
+                </Grid>
+                <Grid container alignItems="center" spacing={1} pt={1}>
+                    <Grid>
                         <Button variant="contained" color="primary" component="label">
                             <FormattedMessage id="uploadStudy" />
                             <Input
@@ -158,11 +158,11 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                                 data-testid="ArchiveFileUpload"
                             />
                         </Button>
-                    </Grid2>
-                    <Grid2 sx={{ fontWeight: 'bold' }}>
+                    </Grid>
+                    <Grid sx={{ fontWeight: 'bold' }}>
                         <p>{studyFileName ?? intl.formatMessage({ id: 'uploadMessage' })}</p>
-                    </Grid2>
-                </Grid2>
+                    </Grid>
+                </Grid>
             </Stack>
             <ErrorInput name="studyFiles" InputField={FieldErrorAlert} />
         </CustomMuiDialog>
