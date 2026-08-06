@@ -121,6 +121,7 @@ type SpecificModificationDialogProps = Pick<
     | 'ModificationForm'
     | 'isModification'
     | 'removeOptional'
+    | 'dialogWidth'
 >;
 
 const schema = yup.object().shape({
@@ -244,6 +245,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: TwoWindingsTransformerForm,
                         isModification: false,
                         removeOptional: false,
+                        dialogWidth: 'xl', // for steps table
                     },
                 ],
                 [

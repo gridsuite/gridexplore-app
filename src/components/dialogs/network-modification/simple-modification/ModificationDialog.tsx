@@ -18,6 +18,7 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
+import { Breakpoint } from '@mui/material';
 
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
@@ -31,6 +32,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     errorHeaderId: string;
     isModification?: boolean;
     removeOptional?: boolean;
+    dialogWidth?: Breakpoint;
 }
 
 interface WithId {
@@ -47,6 +49,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dtoToForm,
     formToDto,
     errorHeaderId,
+    dialogWidth,
     isModification = false,
     removeOptional = true,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
@@ -101,6 +104,9 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
+            maxWidth={dialogWidth}
+            fullWidth
+            sx={{ '.MuiDialog-paper': { minWidth: '60vw', margin: 'auto' } }} // to make fullWidth/maxWidth effective (CustomMuiDialog override)
         >
             <ModificationForm isModification={isModification} />
         </CustomMuiDialog>
