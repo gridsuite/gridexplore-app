@@ -720,11 +720,7 @@ export const fetchExportNetworkFile = (exportUuid: UUID) =>
         headers: { 'Content-Type': 'application/json' },
     });
 
-export const downloadCase = (caseUuid: string) =>
-    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
-        method: 'get',
-        headers: { 'Content-Type': 'application/json' },
-    });
+export const getCaseDownloadUrl = (caseUuid: string) => `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`;
 
 export function getServersInfos() {
     console.info('get backend servers informations');
