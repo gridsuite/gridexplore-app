@@ -18,13 +18,12 @@ import {
     ElementStatus,
 } from '@gridsuite/commons-ui';
 
+const isCreating = (data: ElementAttributes) => data.status === ElementStatus.CREATING;
+
 const isDeleting = (data: ElementAttributes) => data.status === ElementStatus.DELETING;
 
-const isAwaitingAsyncCreation = (metadata: ElementAttributes, objectType: ElementType) =>
-    !metadata && (objectType === ElementType.STUDY || objectType === ElementType.CASE);
-
 function isPending(data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) {
-    return isDeleting(data) || isAwaitingAsyncCreation(childrenMetadata[data.elementUuid], data.type);
+    return isCreating(data) || isDeleting(data);
 }
 
 function getDisplayedElementName(
@@ -40,7 +39,7 @@ function getDisplayedElementName(
     if (isDeleting(data)) {
         return `${elementName}\n${formatMessage({ id: 'deletionInProgress' })}`;
     }
-    if (isAwaitingAsyncCreation(childrenMetadata[elementUuid], data.type)) {
+    if (isCreating(data)) {
         return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid]?.elementName ?? elementName;
