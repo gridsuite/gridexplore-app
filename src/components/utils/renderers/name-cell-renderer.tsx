@@ -10,7 +10,6 @@ import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
 import {
     type ElementAttributes,
-    ElementType,
     getFileIcon,
     mergeSx,
     type MuiStyles,
@@ -22,7 +21,7 @@ const isCreating = (data: ElementAttributes) => data.status === ElementStatus.CR
 
 const isDeleting = (data: ElementAttributes) => data.status === ElementStatus.DELETING;
 
-function isPending(data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) {
+function isPending(data: ElementAttributes) {
     return isCreating(data) || isDeleting(data);
 }
 
@@ -85,7 +84,7 @@ export type NameCellRendererProps = {
 export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     const metadata = childrenMetadata[data.elementUuid];
-    const pending = isPending(data, childrenMetadata);
+    const pending = isPending(data);
 
     return (
         <Box sx={styles.tableCell}>
