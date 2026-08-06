@@ -47,7 +47,7 @@ export default function CreateDirectoryDialog({
         style: {
             width: '90%',
         },
-        inputProps: { 'data-testid': 'NameInputField', maxLength: MAX_DIRECTORY_NAME_LENGTH },
+        slotProps: { htmlInput: { 'data-testid': 'NameInputField', maxLength: MAX_DIRECTORY_NAME_LENGTH } },
     });
 
     const handleClose = (_: SyntheticEvent, reason?: string) => {
