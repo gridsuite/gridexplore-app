@@ -62,7 +62,7 @@ export default function RenameDialog({
             id: 'nameAlreadyUsed',
         }),
         style: { width: '90%' },
-        inputProps: type === ElementType.DIRECTORY ? { maxLength: MAX_DIRECTORY_NAME_LENGTH } : undefined,
+        slotProps: { htmlInput: type === ElementType.DIRECTORY ? { maxLength: MAX_DIRECTORY_NAME_LENGTH } : undefined },
     });
 
     const handleClick = () => {

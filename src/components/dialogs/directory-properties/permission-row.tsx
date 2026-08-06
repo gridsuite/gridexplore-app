@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Typography, Grid2 as Grid, Paper, RadioGroup, Radio, FormControlLabel } from '@mui/material';
+import { Typography, Grid, Paper, RadioGroup, Radio, FormControlLabel } from '@mui/material';
 import { AutocompleteInput, Option } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import { Group, areIdsEqual } from './utils';
@@ -82,7 +82,7 @@ function PermissionRow({
                         freeSolo={false}
                         disabled={isFormDisabled || allUsersValue}
                         multiple
-                        ChipProps={{ size: 'small' }}
+                        slotProps={{ chip: { size: 'small' } }}
                     />
                 </Grid>
             </Grid>
