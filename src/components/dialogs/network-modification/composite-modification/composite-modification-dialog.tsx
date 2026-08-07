@@ -97,6 +97,10 @@ import {
     modificationByFormulaDtoToForm,
     modificationByFormulaFormToDto,
     ModificationByFormulaForm,
+    TwoWindingsTransformerForm,
+    twoWindingsTransformerCreationFormSchema,
+    twoWindingsTransformerCreationDtoToForm,
+    twoWindingsTransformerCreationFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -117,6 +121,7 @@ type SpecificModificationDialogProps = Pick<
     | 'ModificationForm'
     | 'isModification'
     | 'removeOptional'
+    | 'dialogWidth'
 >;
 
 const schema = yup.object().shape({
@@ -227,6 +232,20 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.TWO_WINDINGS_TRANSFORMER_CREATION,
+                    {
+                        formSchema: twoWindingsTransformerCreationFormSchema,
+                        dtoToForm: twoWindingsTransformerCreationDtoToForm,
+                        formToDto: twoWindingsTransformerCreationFormToDto,
+                        errorHeaderId: 'TwoWindingsTransformerCreationError',
+                        titleId: 'CreateTwoWindingsTransformer',
+                        ModificationForm: TwoWindingsTransformerForm,
+                        isModification: false,
+                        removeOptional: false,
+                        dialogWidth: 'xl', // for steps table
                     },
                 ],
                 [
