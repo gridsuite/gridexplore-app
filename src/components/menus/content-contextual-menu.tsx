@@ -439,7 +439,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
             handleCloseDialog();
         } catch {
-            snackError({ headerId: 'exportStudyArchive' });
+            snackError({ headerId: 'exportStudyArchiveError' });
         }
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);
 

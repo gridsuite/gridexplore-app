@@ -833,7 +833,7 @@ export function updateProcessConfig<TProcessType extends ProcessType>(
 
 export function exportStudyArchive(studyUuid: UUID) {
     console.info('Exporting study archive %s', studyUuid);
-    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/export-archive`;
+    const url = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/export`;
     console.debug(url);
     return backendFetch(url, {
         method: 'get',
