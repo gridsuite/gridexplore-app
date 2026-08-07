@@ -23,7 +23,7 @@ import {
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Alert, Box, Button, Grid2 as Grid, Stack, Typography } from '@mui/material';
+import { Alert, Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { FolderOutlined } from '@mui/icons-material';
 import { DataTableOverlay } from './data-table-overlay';
 import {

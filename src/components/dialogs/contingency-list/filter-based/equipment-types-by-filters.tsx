@@ -12,7 +12,7 @@ import {
 } from '@gridsuite/commons-ui';
 import {
     Box,
-    Grid2 as Grid,
+    Grid,
     Paper,
     Stack,
     Table,

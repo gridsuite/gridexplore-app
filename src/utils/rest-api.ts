@@ -21,7 +21,8 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
-    SecurityAnalysisProcessConfigBackend,
+    ProcessConfigBackend,
+    ProcessType,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -29,6 +30,7 @@ import type { UUID } from 'node:crypto';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { UsersIdentities } from './user-identities.type';
+import { ReferencingElementInfos } from './referencing-element-infos.type';
 import {
     FilterAttributes,
     FilterBasedContingencyList,
@@ -117,6 +119,14 @@ export function fetchUsersIdentities(elementUuids: string[]) {
     return backendFetchJson(fetchParams, {
         method: 'get',
     }) as Promise<UsersIdentities>;
+}
+
+export function fetchReferencingElementInfos(elementUuid: UUID) {
+    console.info('fetching the elements using the shared element %s.', elementUuid);
+    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/referencing-element-infos`;
+    return backendFetchJson(fetchParams, {
+        method: 'get',
+    }) as Promise<ReferencingElementInfos[]>;
 }
 
 export type ConfigParameter =
@@ -686,11 +696,12 @@ export const convertCase = (
     caseUuid: UUID,
     fileName: string,
     format: string,
+    compression: string,
     formatParameters: unknown,
     abortController: AbortController
 ): Promise<UUID> =>
     backendFetchJson(
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?compression=${compression}&fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -787,30 +798,29 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 }
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
-    console.info('Fetching SA process config from monitor server');
+    console.info('Fetching process config from monitor server');
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
 }
 
-export function updateSAProcessConfig(
+export function updateProcessConfig<TProcessType extends ProcessType>(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: SecurityAnalysisProcessConfigBackend
+    processConfig: ProcessConfigBackend<TProcessType>
 ) {
-    console.info('Updating SA process config from monitor server');
+    console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
     urlSearchParams.append('name', name);
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
 
-    return backendFetchJson(url, {
+    return backendFetch(url, {
         method: 'put',
         headers: {
-            Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(processConfig),
