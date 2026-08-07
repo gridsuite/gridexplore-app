@@ -42,6 +42,7 @@ const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/us
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
+const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -787,7 +788,7 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
     console.info('Fetching SA process config from monitor server');
-    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}`;
+    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
