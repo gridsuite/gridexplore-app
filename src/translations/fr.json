@@ -207,5 +207,7 @@
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Téléchargement du {fileName} a réussi",
     "export.message.failed": "Échec du téléchargement du fichier {error}",
-    "PageNotFound": "Page introuvable"
+    "PageNotFound": "Page introuvable",
+    "export.button": "Exporter étude",
+    "exportStudyArchive": "Exporter étude"
 }
