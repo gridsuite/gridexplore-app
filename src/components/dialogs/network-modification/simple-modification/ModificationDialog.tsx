@@ -104,9 +104,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
-            maxWidth={dialogWidth}
-            fullWidth
-            sx={{ '.MuiDialog-paper': { minWidth: '60vw', margin: 'auto' } }} // to make fullWidth/maxWidth effective (CustomMuiDialog override)
+            dialogWidth={dialogWidth}
         >
             <ModificationForm isModification={isModification} />
         </CustomMuiDialog>
