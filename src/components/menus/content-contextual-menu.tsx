@@ -39,12 +39,18 @@ import RenameDialog from '../dialogs/rename-dialog';
 import DeleteDialog from '../dialogs/delete-dialog';
 import CreateStudyDialog from '../dialogs/create-study-dialog/create-study-dialog';
 import { DialogsId } from '../../utils/UIconstants';
-import { deleteElements, duplicateElement, moveElementsToDirectory, renameElement } from '../../utils/rest-api';
+import {
+    deleteElements,
+    duplicateElement,
+    exportStudy,
+    moveElementsToDirectory,
+    renameElement,
+} from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { useDownloadUtils } from '../utils/downloadUtils';
+import { triggerDownload, useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
@@ -407,6 +413,39 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         );
     }, [isSingleElement, selectedElements]);
 
+    const couldExportStudy = useCallback(() => {
+        return (
+            isDeveloperMode &&
+            isSingleElement &&
+            activeElement.elementUuid &&
+            activeElement.type === ElementType.STUDY &&
+            noCreationInProgress()
+        );
+    }, [isDeveloperMode, isSingleElement, activeElement.elementUuid, activeElement.type, noCreationInProgress]);
+
+    const handleExportStudy = useCallback(async () => {
+        try {
+            const response = await exportStudy(activeElement.elementUuid, activeElement.elementName);
+            let fileName = `${activeElement.elementName}.zip`;
+            const contentDisposition = response.headers.get('Content-Disposition');
+            if (contentDisposition?.includes('filename=')) {
+                const regex = /filename="?([^"]+)"?/;
+                const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
+                if (extractedFilename) {
+                    fileName = extractedFilename;
+                }
+            }
+            const blob = await response.blob();
+            triggerDownload({ blob, filename: fileName });
+            snackInfo({
+                messageTxt: `${intl.formatMessage({ id: 'exportStudy' })} ${activeElement.elementName}`,
+            });
+            handleCloseDialog();
+        } catch {
+            snackError({ headerId: 'exportStudyFailed' });
+        }
+    }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);
+
     useEffect(() => {
         let isCurrent = true;
         if (selectedDirectory !== null) {
@@ -526,6 +565,14 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
+        if (couldExportStudy()) {
+            menuItems.push({
+                messageDescriptorId: 'exportStudy',
+                callback: handleExportStudy,
+                icon: <FileDownload fontSize="small" data-testid="ExportStudyIcon" />,
+            });
+        }
+
         if (couldDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
@@ -591,8 +638,9 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         couldCreateNewStudyFromCase,
         couldDuplicate,
         couldCopy,
-        couldDelete,
         couldDisplaySharingLinks,
+        couldExportStudy,
+        couldDelete,
         couldDownload,
         isDeveloperMode,
         couldExportCase,
@@ -603,10 +651,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         duplicateItem,
         allowsDuplicateOrCopy,
         copyItem,
-        noCreationInProgress,
         copyLinkItem,
+        handleExportStudy,
         downloadElements,
         handleCloseDialog,
+        noCreationInProgress,
     ]);
 
     const renderDialog = () => {

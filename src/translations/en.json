@@ -208,5 +208,8 @@
     "export.message.started": "Export {fileName} started",
     "export.message.succeeded": "Export {fileName} succeeded",
     "export.message.failed": "Export file failed {error}",
-    "PageNotFound": "Page not found"
+    "PageNotFound": "Page not found",
+    "export.button": "Export study",
+    "exportStudy": "Export study succeeded",
+    "exportStudyFailed": "Export study failed"
 }
