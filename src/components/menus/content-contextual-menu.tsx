@@ -42,7 +42,7 @@ import { DialogsId } from '../../utils/UIconstants';
 import {
     deleteElements,
     duplicateElement,
-    exportStudyArchive,
+    exportStudy,
     moveElementsToDirectory,
     renameElement,
 } from '../../utils/rest-api';
@@ -50,7 +50,7 @@ import { FilterType } from '../../utils/elementType';
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { useDownloadUtils } from '../utils/downloadUtils';
+import { triggerDownload, useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
@@ -413,33 +413,36 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         );
     }, [isSingleElement, selectedElements]);
 
-    const couldExportStudyArchive = useCallback(() => {
+    const couldExportStudy = useCallback(() => {
         return (
+            isDeveloperMode &&
             isSingleElement &&
             activeElement.elementUuid &&
             activeElement.type === ElementType.STUDY &&
             noCreationInProgress()
         );
-    }, [isSingleElement, activeElement, noCreationInProgress]);
+    }, [isDeveloperMode, isSingleElement, activeElement.elementUuid, activeElement.type, noCreationInProgress]);
 
-    const handleExportStudyArchive = useCallback(async () => {
+    const handleExportStudy = useCallback(async () => {
         try {
-            const response = await exportStudyArchive(activeElement.elementUuid);
+            const response = await exportStudy(activeElement.elementUuid, activeElement.elementName);
+            let fileName = `${activeElement.elementName}.zip`;
+            const contentDisposition = response.headers.get('Content-Disposition');
+            if (contentDisposition?.includes('filename=')) {
+                const regex = /filename="?([^"]+)"?/;
+                const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
+                if (extractedFilename) {
+                    fileName = extractedFilename;
+                }
+            }
             const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `${activeElement.elementName}.gz`;
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            window.URL.revokeObjectURL(url);
+            triggerDownload({ blob, filename: fileName });
             snackInfo({
-                messageTxt: `${intl.formatMessage({ id: 'exportStudyArchive' })} ${activeElement.elementName}`,
+                messageTxt: `${intl.formatMessage({ id: 'exportStudy' })} ${activeElement.elementName}`,
             });
             handleCloseDialog();
         } catch {
-            snackError({ headerId: 'exportStudyArchiveFailed' });
+            snackError({ headerId: 'exportStudyFailed' });
         }
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);
 
@@ -562,11 +565,11 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             );
         }
 
-        if (couldExportStudyArchive()) {
+        if (couldExportStudy()) {
             menuItems.push({
-                messageDescriptorId: 'exportStudyArchive',
-                callback: handleExportStudyArchive,
-                icon: <FileDownload fontSize="small" data-testid="ExportArchiveIcon" />,
+                messageDescriptorId: 'exportStudy',
+                callback: handleExportStudy,
+                icon: <FileDownload fontSize="small" data-testid="ExportStudyIcon" />,
             });
         }
 
@@ -636,7 +639,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         couldDuplicate,
         couldCopy,
         couldDisplaySharingLinks,
-        couldExportStudyArchive,
+        couldExportStudy,
         couldDelete,
         couldDownload,
         isDeveloperMode,
@@ -649,7 +652,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         allowsDuplicateOrCopy,
         copyItem,
         copyLinkItem,
-        handleExportStudyArchive,
+        handleExportStudy,
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,

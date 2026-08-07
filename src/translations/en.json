@@ -210,6 +210,6 @@
     "export.message.failed": "Export file failed {error}",
     "PageNotFound": "Page not found",
     "export.button": "Export study",
-    "exportStudyArchive": "Export study",
-    "exportStudyArchiveFailed": "Export study failed"
+    "exportStudy": "Export study succeeded",
+    "exportStudyFailed": "Export study failed"
 }
