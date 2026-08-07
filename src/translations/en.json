@@ -211,5 +211,5 @@
     "PageNotFound": "Page not found",
     "export.button": "Export study",
     "exportStudyArchive": "Export study",
-    "exportStudyArchiveError": "Export study failed"
+    "exportStudyArchiveFailed": "Export study failed"
 }
