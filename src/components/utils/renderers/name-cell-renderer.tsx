@@ -10,7 +10,6 @@ import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
 import {
     type ElementAttributes,
-    ElementType,
     getFileIcon,
     mergeSx,
     type MuiStyles,
@@ -18,13 +17,12 @@ import {
     ElementStatus,
 } from '@gridsuite/commons-ui';
 
+const isCreating = (data: ElementAttributes) => data.status === ElementStatus.CREATING;
+
 const isDeleting = (data: ElementAttributes) => data.status === ElementStatus.DELETING;
 
-const isAwaitingAsyncCreation = (metadata: ElementAttributes, objectType: ElementType) =>
-    !metadata && (objectType === ElementType.STUDY || objectType === ElementType.CASE);
-
-function isPending(data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) {
-    return isDeleting(data) || isAwaitingAsyncCreation(childrenMetadata[data.elementUuid], data.type);
+function isPending(data: ElementAttributes) {
+    return isCreating(data) || isDeleting(data);
 }
 
 function getDisplayedElementName(
@@ -40,7 +38,7 @@ function getDisplayedElementName(
     if (isDeleting(data)) {
         return `${elementName}\n${formatMessage({ id: 'deletionInProgress' })}`;
     }
-    if (isAwaitingAsyncCreation(childrenMetadata[elementUuid], data.type)) {
+    if (isCreating(data)) {
         return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid]?.elementName ?? elementName;
@@ -86,7 +84,7 @@ export type NameCellRendererProps = {
 export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     const metadata = childrenMetadata[data.elementUuid];
-    const pending = isPending(data, childrenMetadata);
+    const pending = isPending(data);
 
     return (
         <Box sx={styles.tableCell}>
