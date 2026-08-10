@@ -567,7 +567,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
         if (couldExportStudy()) {
             menuItems.push({
-                messageDescriptorId: 'exportStudy',
+                messageDescriptorId: 'export.button',
                 callback: handleExportStudy,
                 icon: <FileDownload fontSize="small" data-testid="ExportStudyIcon" />,
             });
