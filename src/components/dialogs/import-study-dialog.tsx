@@ -56,7 +56,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             .test('fileType', intl.formatMessage({ id: 'uploadStudyErrorMsg' }), (value) => {
                 if (!value || value.length === 0) return false;
                 const file = value[0] as File;
-                return file.name.endsWith('.gz');
+                return file.name.endsWith('.zip');
             }),
     }) as yup.ObjectSchema<ImportStudyFormData>;
 
@@ -87,7 +87,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
         const files = event.target.files as FileList;
         if (files && files.length > 0) {
             onStudyFilesChange(event.target.files);
-            setValue(FieldConstants.NAME, files[0].name.replace(/\.gz$/i, ''), { shouldValidate: true });
+            setValue(FieldConstants.NAME, files[0].name.replace(/\.zip$/i, ''), { shouldValidate: true });
         }
     };
 
@@ -152,7 +152,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                                 ref={ref}
                                 type="file"
                                 name="studyFiles"
-                                inputProps={{ accept: '.gz' }}
+                                inputProps={{ accept: '.zip' }}
                                 onChange={onFileChange}
                                 sx={{ display: 'none' }}
                                 data-testid="ArchiveFileUpload"
