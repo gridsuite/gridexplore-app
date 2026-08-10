@@ -211,5 +211,8 @@
     "PageNotFound": "Page not found",
     "export.button": "Export study",
     "exportStudy": "Export study succeeded",
-    "exportStudyFailed": "Export study failed"
+    "exportStudyFailed": "Export study failed",
+    "importStudy": "Import a study",
+    "uploadStudyErrorMsg": "Please upload study archive (.zip)",
+    "studyImportError": "Error while importing study"
 }
