@@ -7,7 +7,7 @@
 
 import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { CircularProgress, InputAdornment, mergeSlotProps, TextField, TextFieldProps } from '@mui/material';
+import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
 import { ElementType, type MuiStyles, NAME_EMPTY, useDebounce } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -42,6 +42,8 @@ export const useTextValue = ({
         setHasChanged(true);
     }, []);
 
+    const { input: slotPropsInput, formHelperText: slotPropsFormHelperText, ...slotProps } = formProps?.slotProps ?? {};
+
     const field = useMemo(
         () => (
             <TextField
@@ -54,17 +56,19 @@ export const useTextValue = ({
                 onChange={handleChangeValue}
                 {...formProps}
                 slotProps={{
-                    ...formProps.slotProps,
-                    input: mergeSlotProps(formProps.slotProps?.input, {
+                    ...slotProps,
+                    input: {
+                        ...slotPropsInput,
                         endAdornment: adornment,
-                    }),
-                    formHelperText: mergeSlotProps(formProps.slotProps?.formHelperText, {
+                    },
+                    formHelperText: {
                         sx: styles.helperText,
-                    }),
+                        ...slotPropsFormHelperText,
+                    },
                 }}
             />
         ),
-        [id, label, value, handleChangeValue, formProps, adornment]
+        [id, label, value, handleChangeValue, formProps, slotProps, slotPropsInput, adornment, slotPropsFormHelperText]
     );
 
     useEffect(() => setValue(defaultValue), [defaultValue]);
