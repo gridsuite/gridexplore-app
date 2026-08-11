@@ -50,7 +50,7 @@ import { FilterType } from '../../utils/elementType';
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
-import { triggerDownload, useDownloadUtils } from '../utils/downloadUtils';
+import { extractFilenameFromContentDisposition, triggerDownload, useDownloadUtils } from '../utils/downloadUtils';
 import ExportCaseDialog from '../dialogs/export-case-dialog';
 import { setItemSelectionForCopy } from '../../redux/actions';
 import { useParameterState } from '../dialogs/use-parameters-dialog';
@@ -426,15 +426,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const handleExportStudy = useCallback(async () => {
         try {
             const response = await exportStudy(activeElement.elementUuid, activeElement.elementName);
-            let fileName = `${activeElement.elementName}.zip`;
-            const contentDisposition = response.headers.get('Content-Disposition');
-            if (contentDisposition?.includes('filename=')) {
-                const regex = /filename="?([^"]+)"?/;
-                const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
-                if (extractedFilename) {
-                    fileName = extractedFilename;
-                }
-            }
+            const fileName = extractFilenameFromContentDisposition(response, `${activeElement.elementName}.zip`);
             const blob = await response.blob();
             triggerDownload({ blob, filename: fileName });
             snackInfo({
