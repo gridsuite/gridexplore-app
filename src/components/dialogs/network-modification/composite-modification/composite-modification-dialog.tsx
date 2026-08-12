@@ -101,7 +101,7 @@ import {
     createVoltageLevelTopologyFormSchema,
     createVoltageLevelTopologyDtoToForm,
     createVoltageLevelTopologyFormToDto,
-    CreateVoltageLevelTopologyInfos,
+    CreateVoltageLevelTopologyDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -125,7 +125,7 @@ type SpecificModificationDialogProps = Pick<
     | 'getExtraFormProps'
 >;
 
-const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyInfos) => ({
+const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
     voltageLevelId: dto.voltageLevelId,
 });
 
@@ -368,7 +368,7 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: createVoltageLevelTopologyFormSchema,
                         dtoToForm: (dto) => createVoltageLevelTopologyDtoToForm(dto, intl),
-                        formToDto: (form, dto: CreateVoltageLevelTopologyInfos) =>
+                        formToDto: (form, dto: CreateVoltageLevelTopologyDto) =>
                             createVoltageLevelTopologyFormToDto(form, dto.voltageLevelId),
                         errorHeaderId: 'CreateVoltageLevelTopologyError',
                         titleId: 'CreateVoltageLevelTopology',
