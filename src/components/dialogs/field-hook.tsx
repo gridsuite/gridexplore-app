@@ -9,7 +9,7 @@ import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } fro
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
-import { ElementType, type MuiStyles, useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, type MuiStyles, NAME_EMPTY, useDebounce } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
 
@@ -42,6 +42,8 @@ export const useTextValue = ({
         setHasChanged(true);
     }, []);
 
+    const { input: slotPropsInput, formHelperText: slotPropsFormHelperText, ...slotProps } = formProps?.slotProps ?? {};
+
     const field = useMemo(
         () => (
             <TextField
@@ -52,16 +54,21 @@ export const useTextValue = ({
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
-                FormHelperTextProps={{
-                    sx: styles.helperText,
-                }}
                 {...formProps}
-                InputProps={{
-                    endAdornment: adornment,
+                slotProps={{
+                    ...slotProps,
+                    input: {
+                        ...slotPropsInput,
+                        endAdornment: adornment,
+                    },
+                    formHelperText: {
+                        sx: styles.helperText,
+                        ...slotPropsFormHelperText,
+                    },
                 }}
             />
         ),
-        [id, label, value, handleChangeValue, formProps, adornment]
+        [id, label, value, handleChangeValue, formProps, slotProps, slotPropsInput, adornment, slotPropsFormHelperText]
     );
 
     useEffect(() => setValue(defaultValue), [defaultValue]);
@@ -102,7 +109,7 @@ export const useNameField = ({
             const defaultFormatted = (props.defaultValue || '').trim();
 
             if (nameFormatted === '' && touched) {
-                setError(intl.formatMessage({ id: 'nameEmpty' }));
+                setError(intl.formatMessage({ id: NAME_EMPTY }));
                 setChecking(false);
                 return;
             }

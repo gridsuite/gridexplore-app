@@ -16,7 +16,7 @@ import {
     ResizeHandle,
     UniqueNameInput,
 } from '@gridsuite/commons-ui';
-import { Box, Grid2 as Grid, Stack, useMediaQuery, useTheme } from '@mui/material';
+import { Box, Grid, Stack, useMediaQuery, useTheme } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';

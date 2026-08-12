@@ -21,7 +21,8 @@ import {
     PARAM_LANGUAGE,
     PARAM_THEME,
     PermissionType,
-    SecurityAnalysisProcessConfigBackend,
+    ProcessConfigBackend,
+    ProcessType,
 } from '@gridsuite/commons-ui';
 import type { LiteralUnion } from 'type-fest';
 import { IncomingHttpHeaders } from 'node:http';
@@ -29,6 +30,7 @@ import type { UUID } from 'node:crypto';
 import { ContingencyListType } from './elementType';
 import { CONTINGENCY_ENDPOINTS } from './constants-endpoints';
 import { UsersIdentities } from './user-identities.type';
+import { ReferencingElementInfos } from './referencing-element-infos.type';
 import {
     FilterAttributes,
     FilterBasedContingencyList,
@@ -40,10 +42,6 @@ import {
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
-const PREFIX_ACTIONS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/actions`;
-const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
-const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/network-conversion`;
-const PREFIX_FILTERS_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/filter/v1/filters`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
 const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
@@ -121,6 +119,14 @@ export function fetchUsersIdentities(elementUuids: string[]) {
     return backendFetchJson(fetchParams, {
         method: 'get',
     }) as Promise<UsersIdentities>;
+}
+
+export function fetchReferencingElementInfos(elementUuid: UUID) {
+    console.info('fetching the elements using the shared element %s.', elementUuid);
+    const fetchParams = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/referencing-element-infos`;
+    return backendFetchJson(fetchParams, {
+        method: 'get',
+    }) as Promise<ReferencingElementInfos[]>;
 }
 
 export type ConfigParameter =
@@ -555,7 +561,7 @@ export function getContingencyList(
     type: string,
     id: string
 ): Promise<FilterBasedContingencyList | PrepareContingencyListForBackend> {
-    const url = `${PREFIX_ACTIONS_QUERIES}/v1${getContingencyUriParamType(type)}/${id}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore${getContingencyUriParamType(type)}/${id}`;
     const contingencyListPromise = backendFetchJson(url, {
         method: 'get',
     });
@@ -653,13 +659,13 @@ export function saveExplicitNamingContingencyList(
  * @returns {Promise<Response>}
  */
 export function getFilterById(id: string) {
-    const url = `${PREFIX_FILTERS_QUERIES}/${id}`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/filters/${id}`;
     return backendFetchJson(url, { method: 'get' });
 }
 
 export function getCaseImportParameters(caseUuid: UUID) {
     console.info(`get import parameters for case '${caseUuid}' ...`);
-    const getExportFormatsUrl = `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/import-parameters`;
+    const getExportFormatsUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}/import-parameters`;
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl, {
         method: 'get',
@@ -667,7 +673,7 @@ export function getCaseImportParameters(caseUuid: UUID) {
 }
 
 export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
-    const createCaseUrl = `${PREFIX_CASE_QUERIES}/v1/cases`;
+    const createCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases`;
     const formData = new FormData();
     formData.append('file', selectedFile);
     formData.append('withExpiration', encodeURIComponent(true));
@@ -680,7 +686,7 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
 }
 
 export function deleteCase(caseUuid: UUID) {
-    const deleteCaseUrl = `${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`;
+    const deleteCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`;
     return backendFetch(deleteCaseUrl, {
         method: 'delete',
     });
@@ -690,11 +696,12 @@ export const convertCase = (
     caseUuid: UUID,
     fileName: string,
     format: string,
+    compression: string,
     formatParameters: unknown,
     abortController: AbortController
 ): Promise<UUID> =>
     backendFetchJson(
-        `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?fileName=${fileName}`,
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/cases/${caseUuid}/convert/${format}?compression=${compression}&fileName=${fileName}`,
         {
             method: 'post',
             headers: { 'Content-Type': 'application/json' },
@@ -704,30 +711,30 @@ export const convertCase = (
     );
 
 export const fetchExportNetworkFile = (exportUuid: UUID) =>
-    backendFetch(`${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/download-file/${exportUuid}`, {
+    backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/download-file/${exportUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     });
 
 export const downloadCase = (caseUuid: string) =>
-    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
+    backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     });
 
 export function getServersInfos() {
     console.info('get backend servers informations');
-    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, { method: 'get' }).catch(
-        (reason) => {
-            console.error(`Error while fetching the servers infos : ${reason}`);
-            return reason;
-        }
-    );
+    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/servers/about?view=explore`, {
+        method: 'get',
+    }).catch((reason) => {
+        console.error(`Error while fetching the servers infos : ${reason}`);
+        return reason;
+    });
 }
 
 export const getExportFormats = () => {
     console.info('get export formats');
-    const url = `${PREFIX_NETWORK_CONVERSION_SERVER_QUERIES}/v1/export/formats`;
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/export/formats`;
     console.debug(url);
     return backendFetchJson(url, {
         method: 'get',
@@ -750,7 +757,7 @@ export function searchElementsInfos(searchTerm: string, currentDirectoryUuid: UU
 }
 
 export const getBaseName = (caseName: string) => {
-    const caseNameUrl = `${PREFIX_CASE_QUERIES}/v1/cases/caseBaseName?caseName=${encodeURIComponent(caseName)}`;
+    const caseNameUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/caseBaseName?caseName=${encodeURIComponent(caseName)}`;
     console.info('Get base name for case', caseName);
     return backendFetchText(caseNameUrl, {
         method: 'GET',
@@ -791,30 +798,29 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 }
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
-    console.info('Fetching SA process config from monitor server');
+    console.info('Fetching process config from monitor server');
     const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
 }
 
-export function updateSAProcessConfig(
+export function updateProcessConfig<TProcessType extends ProcessType>(
     processConfigUuid: UUID,
     name: string,
     description: string,
-    processConfig: SecurityAnalysisProcessConfigBackend
+    processConfig: ProcessConfigBackend<TProcessType>
 ) {
-    console.info('Updating SA process config from monitor server');
+    console.info('Updating process config from monitor server');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
     urlSearchParams.append('name', name);
 
     const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}?${urlSearchParams.toString()}`;
 
-    return backendFetchJson(url, {
+    return backendFetch(url, {
         method: 'put',
         headers: {
-            Accept: 'application/json',
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(processConfig),

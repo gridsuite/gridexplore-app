@@ -10,27 +10,35 @@ import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { Lock as LockIcon } from '@mui/icons-material';
 import {
     type ElementAttributes,
-    ElementType,
     getFileIcon,
     mergeSx,
     type MuiStyles,
     OverflowableText,
+    ElementStatus,
 } from '@gridsuite/commons-ui';
 
-const waitingForAsyncCreation = (metadata: ElementAttributes, objectType: ElementType) =>
-    !metadata && (objectType === ElementType.STUDY || objectType === ElementType.CASE);
+const isCreating = (data: ElementAttributes) => data.status === ElementStatus.CREATING;
+
+const isDeleting = (data: ElementAttributes) => data.status === ElementStatus.DELETING;
+
+function isPending(data: ElementAttributes) {
+    return isCreating(data) || isDeleting(data);
+}
 
 function getDisplayedElementName(
     data: ElementAttributes,
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape
 ) {
-    const { elementName, uploading, elementUuid, type } = data;
+    const { elementName, uploading, elementUuid } = data;
     const { formatMessage } = intl;
     if (uploading) {
         return `${elementName}\n${formatMessage({ id: 'uploading' })}`;
     }
-    if (waitingForAsyncCreation(childrenMetadata[elementUuid], type)) {
+    if (isDeleting(data)) {
+        return `${elementName}\n${formatMessage({ id: 'deletionInProgress' })}`;
+    }
+    if (isCreating(data)) {
         return `${elementName}\n${formatMessage({ id: 'creationInProgress' })}`;
     }
     return childrenMetadata[elementUuid]?.elementName ?? elementName;
@@ -76,17 +84,18 @@ export type NameCellRendererProps = {
 export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     const metadata = childrenMetadata[data.elementUuid];
-    const waiting = waitingForAsyncCreation(metadata, data.type);
+    const pending = isPending(data);
+
     return (
         <Box sx={styles.tableCell}>
-            {/*  Icon */}
-            {waiting && <CircularProgress size={18} sx={styles.icon} />}
-            {metadata && getFileIcon(data.type, styles.icon)}
+            {/* Icon */}
+            {pending && <CircularProgress size={18} sx={styles.icon} />}
+            {metadata && !isDeleting(data) && getFileIcon(data.type, styles.icon)}
             {/* Name */}
             <OverflowableText
                 text={getDisplayedElementName(data, childrenMetadata, intl)}
                 tooltipSx={styles.tooltip}
-                style={waiting ? styles.waitingName : styles.singleName}
+                style={pending ? styles.waitingName : styles.singleName}
                 data-testid="ElementName"
             />
             {!directoryWritable && (

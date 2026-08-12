@@ -9,10 +9,12 @@ import { useSelector } from 'react-redux';
 import {
     CustomMuiDialog,
     FieldConstants,
+    isDisabledValidationButton,
     MAX_CHAR_DESCRIPTION,
     useSnackMessage,
     PARAM_LANGUAGE,
     snackWithFallback,
+    NAME_EMPTY,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
@@ -25,7 +27,7 @@ import { getExplicitNamingSchema } from './explicit-naming-utils';
 import ExplicitNamingForm from './explicit-naming-form';
 
 const schema = yup.object().shape({
-    [FieldConstants.NAME]: yup.string().trim().required('nameEmpty'),
+    [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
     [FieldConstants.DESCRIPTION]: yup.string().max(MAX_CHAR_DESCRIPTION),
     [FieldConstants.CONTINGENCY_LIST_TYPE]: yup.string().nullable(),
     ...getExplicitNamingSchema(),
@@ -58,9 +60,6 @@ export default function ExplicitNamingCreationDialog({
         reset,
         formState: { errors },
     } = methods;
-
-    const nameError = errors[FieldConstants.NAME];
-    const isValidating = errors.root?.isValidating;
 
     const closeAndClear = () => {
         reset(emptyFormData);
@@ -97,7 +96,7 @@ export default function ExplicitNamingCreationDialog({
                 language: languageLocal,
             }}
             titleId={titleId}
-            disabledSave={Boolean(nameError || isValidating)}
+            disabledSave={isDisabledValidationButton(errors)}
             unscrollableFullHeight
         >
             <ExplicitNamingForm />

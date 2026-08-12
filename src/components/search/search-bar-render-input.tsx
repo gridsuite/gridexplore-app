@@ -25,14 +25,16 @@ export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>)
                 id: 'searchPlaceholder',
             })}
             variant="outlined"
-            InputProps={{
-                ...InputProps,
-                startAdornment: (
-                    <>
-                        <Search />
-                        {InputProps.startAdornment}
-                    </>
-                ),
+            slotProps={{
+                input: {
+                    ...InputProps,
+                    startAdornment: (
+                        <>
+                            <Search />
+                            {InputProps.startAdornment}
+                        </>
+                    ),
+                },
             }}
         />
     );
