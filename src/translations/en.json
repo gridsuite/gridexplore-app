@@ -48,8 +48,6 @@
     "duplicate": "Duplicate",
     "copy": "Copy",
     "paste": "Paste",
-    "copyLink": "Copy link",
-    "linkCopied": "Link copied",
     "displaySharingLinks": "Display sharing links",
     "sharingLinksOf": "Sharing links of",
     "sharingLinksError": "An error occurred while fetching the sharing links",
