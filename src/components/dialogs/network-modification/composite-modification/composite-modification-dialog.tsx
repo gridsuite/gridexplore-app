@@ -97,6 +97,10 @@ import {
     modificationByFormulaDtoToForm,
     modificationByFormulaFormToDto,
     ModificationByFormulaForm,
+    staticVarCompensatorCreationFormSchema,
+    staticVarCompensatorDtoToForm,
+    staticVarCompensatorCreationFormToDto,
+    StaticVarCompensatorCreationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -376,6 +380,18 @@ export default function CompositeModificationDialog({
                         ModificationForm: ShuntCompensatorModificationForm,
                         isModification: true,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.STATIC_VAR_COMPENSATOR_CREATION,
+                    {
+                        formSchema: staticVarCompensatorCreationFormSchema,
+                        dtoToForm: staticVarCompensatorDtoToForm,
+                        formToDto: staticVarCompensatorCreationFormToDto,
+                        errorHeaderId: 'StaticVarCompensatorCreationError',
+                        titleId: 'CreateStaticVarCompensator',
+                        ModificationForm: StaticVarCompensatorCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [
