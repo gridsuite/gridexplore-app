@@ -47,8 +47,6 @@
     "duplicate": "Dupliquer",
     "copy": "Copier",
     "paste": "Coller",
-    "copyLink": "Copier le lien",
-    "linkCopied": "Lien copié",
     "displaySharingLinks": "Voir les liens de partage",
     "sharingLinksOf": "Liens de partage de",
     "sharingLinksError": "Une erreur est survenue lors de la récupération des liens de partage",
@@ -207,5 +205,8 @@
     "export.message.started": "Export du {fileName} a commencé",
     "export.message.succeeded": "Téléchargement du {fileName} a réussi",
     "export.message.failed": "Échec du téléchargement du fichier {error}",
-    "PageNotFound": "Page introuvable"
+    "PageNotFound": "Page introuvable",
+    "export.button": "Exporter l'étude",
+    "exportStudy": "L'export de l'étude a réussi",
+    "exportStudyFailed": "L'export de l'étude a échoué"
 }
