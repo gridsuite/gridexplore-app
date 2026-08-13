@@ -256,7 +256,8 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: twoWindingsTransformerModificationFormSchema,
                         dtoToForm: (twtDto) => twoWindingsTransformerModificationDtoToForm(twtDto, false),
-                        formToDto: (twtForm, editData) => twoWindingsTransformerModificationFormToDto(twtForm, editData, intl, null),
+                        formToDto: (twtForm, editData) =>
+                            twoWindingsTransformerModificationFormToDto(twtForm, editData, intl, null),
                         errorHeaderId: 'TwoWindingsTransformerModificationError',
                         titleId: 'ModifyTwoWindingsTransformer',
                         ModificationForm: TwoWindingsTransformerForm,
