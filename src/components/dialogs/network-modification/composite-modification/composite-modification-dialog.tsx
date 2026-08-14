@@ -101,6 +101,10 @@ import {
     staticVarCompensatorDtoToForm,
     staticVarCompensatorCreationFormToDto,
     StaticVarCompensatorCreationForm,
+    couplingDeviceCreationFormSchema,
+    couplingDeviceCreationDtoToForm,
+    couplingDeviceCreationFormToDto,
+    CouplingDeviceCreationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -391,6 +395,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'StaticVarCompensatorCreationError',
                         titleId: 'CreateStaticVarCompensator',
                         ModificationForm: StaticVarCompensatorCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.CREATE_COUPLING_DEVICE,
+                    {
+                        formSchema: couplingDeviceCreationFormSchema,
+                        dtoToForm: couplingDeviceCreationDtoToForm,
+                        formToDto: couplingDeviceCreationFormToDto,
+                        errorHeaderId: 'CreateCouplingDeviceError',
+                        titleId: 'CreateCouplingDevice',
+                        ModificationForm: CouplingDeviceCreationForm,
                         removeOptional: false,
                     },
                 ],
