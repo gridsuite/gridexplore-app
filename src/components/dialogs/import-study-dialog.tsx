@@ -7,7 +7,7 @@
 
 import { ChangeEvent, useCallback } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -17,6 +17,7 @@ import {
     FieldConstants,
     FieldErrorAlert,
     isObjectEmpty,
+    keyGenerator,
     MAX_CHAR_DESCRIPTION,
     NAME_EMPTY,
     useSnackMessage,
@@ -25,8 +26,9 @@ import { Button, Grid, Input, Stack } from '@mui/material';
 import { FieldValues, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { AppState } from '../../redux/types';
+import { AppState, UploadingElement } from '../../redux/types';
 import { importStudy } from '../../utils/rest-api';
+import { addUploadingElement, removeUploadingElement } from '../../redux/actions';
 import PrefilledNameInput from './commons/prefilled-name-input';
 
 interface ImportStudyDialogProps {
@@ -43,7 +45,9 @@ interface ImportStudyFormData {
 export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStudyDialogProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
     const selectedDirectory = useSelector((state: AppState) => state.selectedDirectory);
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
 
     const schema: yup.ObjectSchema<ImportStudyFormData> = yup.object().shape({
         [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
@@ -97,21 +101,37 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 snackError({ headerId: 'studyImportError' });
                 return;
             }
-            await importStudy(
-                data[FieldConstants.NAME],
+            const studyName = data[FieldConstants.NAME];
+            const uploadingStudy: UploadingElement = {
+                id: keyGenerator()(),
+                elementName: studyName,
+                directory: selectedDirectory.elementUuid,
+                type: ElementType.STUDY,
+                owner: userId,
+                lastModifiedBy: userId,
+                uploading: true,
+            };
+
+            importStudy(
+                studyName,
                 data[FieldConstants.DESCRIPTION],
                 data.studyFiles?.[0] as File,
                 selectedDirectory.elementUuid
             )
                 .then(() => onClose())
                 .catch((error) => {
+                    dispatch(removeUploadingElement(uploadingStudy));
                     const { descriptor, values } = extractErrorMessageDescriptor(error, 'studyImportError');
                     setError(`root.${FieldConstants.API_CALL}`, {
                         message: intl.formatMessage(descriptor, values).toString(),
                     });
                 });
+
+            // the uploadingStudy ghost element will be removed when directory
+            // content updated by fetch
+            dispatch(addUploadingElement(uploadingStudy));
         },
-        [intl, onClose, selectedDirectory?.elementUuid, setError, snackError]
+        [dispatch, intl, onClose, selectedDirectory?.elementUuid, setError, snackError, userId]
     );
     const isFormValid = isObjectEmpty(errors) && isValid;
     return (
