@@ -101,6 +101,19 @@ import {
     twoWindingsTransformerCreationFormSchema,
     twoWindingsTransformerCreationDtoToForm,
     twoWindingsTransformerCreationFormToDto,
+    staticVarCompensatorCreationFormSchema,
+    staticVarCompensatorDtoToForm,
+    staticVarCompensatorCreationFormToDto,
+    StaticVarCompensatorCreationForm,
+    couplingDeviceCreationFormSchema,
+    couplingDeviceCreationDtoToForm,
+    couplingDeviceCreationFormToDto,
+    CouplingDeviceCreationForm,
+    CreateVoltageLevelTopologyForm,
+    createVoltageLevelTopologyFormSchema,
+    createVoltageLevelTopologyDtoToForm,
+    createVoltageLevelTopologyFormToDto,
+    CreateVoltageLevelTopologyDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -122,7 +135,12 @@ type SpecificModificationDialogProps = Pick<
     | 'isModification'
     | 'removeOptional'
     | 'dialogWidth'
+    | 'getExtraFormProps'
 >;
+
+const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
+    voltageLevelId: dto.voltageLevelId,
+});
 
 const schema = yup.object().shape({
     [FieldConstants.NAME]: yup.string().trim().required(NAME_EMPTY),
@@ -373,6 +391,21 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.CREATE_VOLTAGE_LEVEL_TOPOLOGY,
+                    {
+                        formSchema: createVoltageLevelTopologyFormSchema,
+                        dtoToForm: (dto) => createVoltageLevelTopologyDtoToForm(dto, intl),
+                        formToDto: (form, dto: CreateVoltageLevelTopologyDto) =>
+                            createVoltageLevelTopologyFormToDto(form, dto.voltageLevelId),
+                        errorHeaderId: 'CreateVoltageLevelTopologyError',
+                        titleId: 'CreateVoltageLevelTopology',
+                        ModificationForm: CreateVoltageLevelTopologyForm,
+                        isModification: true,
+                        removeOptional: false,
+                        getExtraFormProps: getVoltageLevelTopologyExtraFormProps,
+                    },
+                ],
+                [
                     ModificationType.SHUNT_COMPENSATOR_CREATION,
                     {
                         formSchema: shuntCompensatorCreationFormSchema,
@@ -395,6 +428,30 @@ export default function CompositeModificationDialog({
                         ModificationForm: ShuntCompensatorModificationForm,
                         isModification: true,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.STATIC_VAR_COMPENSATOR_CREATION,
+                    {
+                        formSchema: staticVarCompensatorCreationFormSchema,
+                        dtoToForm: staticVarCompensatorDtoToForm,
+                        formToDto: staticVarCompensatorCreationFormToDto,
+                        errorHeaderId: 'StaticVarCompensatorCreationError',
+                        titleId: 'CreateStaticVarCompensator',
+                        ModificationForm: StaticVarCompensatorCreationForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.CREATE_COUPLING_DEVICE,
+                    {
+                        formSchema: couplingDeviceCreationFormSchema,
+                        dtoToForm: couplingDeviceCreationDtoToForm,
+                        formToDto: couplingDeviceCreationFormToDto,
+                        errorHeaderId: 'CreateCouplingDeviceError',
+                        titleId: 'CreateCouplingDevice',
+                        ModificationForm: CouplingDeviceCreationForm,
+                        removeOptional: false,
                     },
                 ],
                 [

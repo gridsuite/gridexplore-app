@@ -33,6 +33,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     isModification?: boolean;
     removeOptional?: boolean;
     dialogWidth?: Breakpoint;
+    getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
 }
 
 interface WithId {
@@ -52,6 +53,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dialogWidth,
     isModification = false,
     removeOptional = true,
+    getExtraFormProps,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -106,7 +108,10 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             isDataFetching={!modificationData}
             dialogWidth={dialogWidth}
         >
-            <ModificationForm isModification={isModification} />
+            <ModificationForm
+                isModification={isModification}
+                {...(modificationData && getExtraFormProps?.(modificationData))}
+            />
         </CustomMuiDialog>
     );
 }
