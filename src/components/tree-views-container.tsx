@@ -17,8 +17,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {
-    directoriesNotificationType,
-    type DirectoriesNotificationType,
+    DirectoriesNotificationType,
     type ElementAttributes,
     ElementType,
     fetchDirectoryContent,
@@ -498,7 +497,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
-                    notificationType === directoriesNotificationType.DELETE_DIRECTORY &&
+                    notificationType === DirectoriesNotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directory.uuid
                 ) {
                     // Selected root directory deleted: go back to root (selection follows from the URL).
@@ -513,7 +512,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
                 // if it's a deleted root directory then do not continue because we don't need
                 // to fetch its content anymore
-                if (notificationType === directoriesNotificationType.DELETE_DIRECTORY) {
+                if (notificationType === DirectoriesNotificationType.DELETE_DIRECTORY) {
                     return;
                 }
             }

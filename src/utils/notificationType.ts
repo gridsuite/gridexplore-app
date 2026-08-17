@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { directoriesNotificationType } from '@gridsuite/commons-ui';
+
+const CASE_EXPORT_FINISHED = 'caseExportFinished';
 
 export interface DirectoryInfos {
     uuid: UUID;
@@ -18,14 +19,12 @@ export interface ExportCaseEventData {
 }
 
 interface ExportCaseEventDataHeaders {
-    notificationType: typeof directoriesNotificationType.CASE_EXPORT_FINISHED;
+    notificationType: typeof CASE_EXPORT_FINISHED;
     userId: string;
     exportUuid: UUID;
     error: string | null;
 }
 
 export function isExportCaseNotification(notif: unknown): notif is ExportCaseEventData {
-    return (
-        (notif as ExportCaseEventData).headers?.notificationType === directoriesNotificationType.CASE_EXPORT_FINISHED
-    );
+    return (notif as ExportCaseEventData).headers?.notificationType === CASE_EXPORT_FINISHED;
 }
