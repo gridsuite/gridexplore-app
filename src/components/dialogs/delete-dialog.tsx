@@ -176,7 +176,7 @@ export default function DeleteDialog({
                 <Button
                     onClick={handleClick}
                     variant="outlined"
-                    // TODO remove later while fixed : a shared element cannot be deleted while other elements still reference it
+                    // TODO remove later when fixed : a shared element cannot be deleted while other elements still reference it
                     disabled={loadingState || sharedItems.length > 0}
                     data-testid="DeleteButton"
                 >
