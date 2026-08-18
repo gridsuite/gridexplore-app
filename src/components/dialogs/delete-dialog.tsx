@@ -173,7 +173,13 @@ export default function DeleteDialog({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} disabled={loadingState} data-testid="CancelButton" />
-                <Button onClick={handleClick} variant="outlined" disabled={loadingState} data-testid="DeleteButton">
+                <Button
+                    onClick={handleClick}
+                    variant="outlined"
+                    // TODO remove later while fixed : a shared element cannot be deleted while other elements still reference it
+                    disabled={loadingState || sharedItems.length > 0}
+                    data-testid="DeleteButton"
+                >
                     {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
                 </Button>
             </DialogActions>
