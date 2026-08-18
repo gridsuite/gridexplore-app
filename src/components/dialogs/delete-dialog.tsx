@@ -4,9 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Alert, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import {
+    Alert,
+    Box,
+    Button,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    List,
+    ListItem,
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { type CSSProperties, type SyntheticEvent, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { CancelButton, type ElementAttributes, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 
 export interface DeleteDialogProps {
@@ -22,6 +33,14 @@ export interface DeleteDialogProps {
 const styles = {
     tooltip: {
         maxWidth: '1000px',
+    },
+    sharedItemsList: {
+        listStyleType: 'disc',
+        marginTop: 0.5,
+        paddingLeft: 3,
+    },
+    sharedItem: {
+        display: 'list-item',
     },
 } as const satisfies MuiStyles;
 
@@ -49,6 +68,9 @@ export default function DeleteDialog({
     const [loadingState, setLoadingState] = useState(false);
 
     const openRef = useRef<boolean | null>(null);
+
+    // an element is shared as soon as another element references it, each reference being a "sharing link"
+    const sharedItems = useMemo(() => itemsState.filter((item) => (item.references?.length ?? 0) > 0), [itemsState]);
 
     useEffect(() => {
         if ((open && !openRef.current) || error !== '') {
@@ -104,6 +126,41 @@ export default function DeleteDialog({
             />
         ));
 
+    const buildSharedItems = () => {
+        if (sharedItems.length === 0) {
+            return false;
+        }
+        // a single shared element needs no list
+        if (sharedItems.length === 1) {
+            return (
+                <Box marginTop={2}>
+                    <FormattedMessage
+                        id="deleteDialogSharedItemMessage"
+                        values={{ count: sharedItems[0].references?.length ?? 0 }}
+                    />
+                </Box>
+            );
+        }
+        return (
+            <Box marginTop={2}>
+                <FormattedMessage id="deleteDialogSharedItemsMessage" />
+                <List dense disablePadding sx={styles.sharedItemsList}>
+                    {sharedItems.map((item) => (
+                        <ListItem key={item.elementUuid} disableGutters disablePadding sx={styles.sharedItem}>
+                            <Box display="grid" gridTemplateColumns="minmax(0, 1fr) auto" columnGap={2} width="100%">
+                                <OverflowableText text={item.elementName} tooltipSx={styles.tooltip} />
+                                <FormattedMessage
+                                    id="sharingLinksCount"
+                                    values={{ count: item.references?.length ?? 0 }}
+                                />
+                            </Box>
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+        );
+    };
+
     return (
         <Dialog open={open} onClose={handleClose} aria-labelledby="dialog-title-delete">
             <DialogTitle style={{ display: 'flex' }} data-testid="DialogTitle">
@@ -111,6 +168,7 @@ export default function DeleteDialog({
             </DialogTitle>
             <DialogContent>
                 {buildItemsToDeleteGrid(itemsState, multipleDeleteFormatMessageId, simpleDeleteFormatMessageId)}
+                {buildSharedItems()}
                 {error !== '' && <Alert severity="error">{error}</Alert>}
             </DialogContent>
             <DialogActions>
