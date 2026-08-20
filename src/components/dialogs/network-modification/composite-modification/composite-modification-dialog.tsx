@@ -114,6 +114,10 @@ import {
     createVoltageLevelTopologyDtoToForm,
     createVoltageLevelTopologyFormToDto,
     CreateVoltageLevelTopologyDto,
+    voltageLevelSectionCreationFormSchema,
+    voltageLevelSectionCreationDtoToForm,
+    voltageLevelSectionCreationFormToDto,
+    VoltageLevelSectionCreationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -487,6 +491,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'UnableToDeleteEquipment',
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.CREATE_VOLTAGE_LEVEL_SECTION,
+                    {
+                        formSchema: voltageLevelSectionCreationFormSchema,
+                        dtoToForm: voltageLevelSectionCreationDtoToForm,
+                        formToDto: (form) => voltageLevelSectionCreationFormToDto(form),
+                        errorHeaderId: 'VoltageLevelSectionCreationError',
+                        titleId: 'CreateVoltageLevelSection',
+                        ModificationForm: VoltageLevelSectionCreationForm,
                         removeOptional: false,
                     },
                 ],
