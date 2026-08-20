@@ -125,6 +125,11 @@ import {
     moveVoltageLevelFeederBaysFormToDto,
     moveVoltageLevelFeederBaysFormSchema,
     moveVoltageLevelFeederBaysDtoToForm,
+    voltageLevelTopologyModificationFormSchema,
+    voltageLevelTopologyModificationFormToDto,
+    VoltageLevelTopologyModificationForm,
+    voltageLevelTopologyModificationDtoToForm,
+    TopologyVoltageLevelModificationDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -152,6 +157,10 @@ type SpecificModificationDialogProps = Pick<
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
     voltageLevelId: dto.voltageLevelId,
+});
+
+const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageLevelModificationDto) => ({
+    voltageLevelToModify: dto,
 });
 
 const schema = yup.object().shape({
@@ -417,6 +426,23 @@ export default function CompositeModificationDialog({
                         removeOptional: true,
                     },
                 ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION,
+                    {
+                        formSchema: voltageLevelTopologyModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelTopologyModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelTopologyModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelModificationError',
+                        titleId: 'ModifyVoltageLevel',
+                        ModificationForm: VoltageLevelTopologyModificationForm,
+                        removeOptional: true,
+                        isModification: true,
+                        getExtraFormProps: getVoltageLevelTopologyModificationExtraFormProps,
+                        unscrollableFullHeight: true,
+                        dialogWidth: 'md',
+                    },
+                ],
+
                 [
                     ModificationType.CREATE_VOLTAGE_LEVEL_TOPOLOGY,
                     {
