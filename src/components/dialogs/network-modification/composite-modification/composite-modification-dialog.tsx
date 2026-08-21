@@ -263,7 +263,7 @@ export default function CompositeModificationDialog({
                 [
                     ModificationType.VSC_CREATION,
                     {
-                        formSchema: vscHvdcLineCreationFormSchema(),
+                        formSchema: vscHvdcLineCreationFormSchema,
                         dtoToForm: vscHvdcLineCreationDtoToForm,
                         formToDto: vscHvdcLineCreationFormToDto,
                         errorHeaderId: 'HvdcCreationError',
