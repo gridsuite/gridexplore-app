@@ -101,6 +101,9 @@ import {
     twoWindingsTransformerCreationFormSchema,
     twoWindingsTransformerCreationDtoToForm,
     twoWindingsTransformerCreationFormToDto,
+    twoWindingsTransformerModificationFormSchema,
+    twoWindingsTransformerModificationDtoToForm,
+    twoWindingsTransformerModificationFormToDto,
     staticVarCompensatorCreationFormSchema,
     staticVarCompensatorDtoToForm,
     staticVarCompensatorCreationFormToDto,
@@ -271,6 +274,21 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.TWO_WINDINGS_TRANSFORMER_MODIFICATION,
+                    {
+                        formSchema: twoWindingsTransformerModificationFormSchema,
+                        dtoToForm: (twtDto) => twoWindingsTransformerModificationDtoToForm(twtDto, false),
+                        formToDto: (twtForm, editData) =>
+                            twoWindingsTransformerModificationFormToDto(twtForm, editData, intl, null),
+                        errorHeaderId: 'TwoWindingsTransformerModificationError',
+                        titleId: 'ModifyTwoWindingsTransformer',
+                        ModificationForm: TwoWindingsTransformerForm,
+                        isModification: true,
+                        removeOptional: true,
+                        dialogWidth: 'xl',
+                    },
+                ],
+                [
                     ModificationType.LINE_CREATION,
                     {
                         formSchema: lineCreationFormSchema(true),
@@ -288,7 +306,7 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: lineModificationFormSchema,
                         dtoToForm: (lineDto) => lineModificationDtoToForm(lineDto, false),
-                        formToDto: (lineDto) => lineModificationFormToDto(lineDto, intl),
+                        formToDto: (lineForm) => lineModificationFormToDto(lineForm, intl),
                         errorHeaderId: 'LineModificationError',
                         titleId: 'ModifyLine',
                         ModificationForm: LineForm,
