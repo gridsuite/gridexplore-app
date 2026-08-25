@@ -18,7 +18,17 @@ import {
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { type CSSProperties, type SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { CancelButton, type ElementAttributes, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    type ElementAttributes,
+    ElementType,
+    fetchDirectoryContent,
+    type MuiStyles,
+    OverflowableText,
+    snackWithFallback,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { getSharingLinksCount, isElementShared } from '../../utils/element-utils';
 
 export interface DeleteDialogProps {
     open: boolean;
@@ -63,14 +73,27 @@ export default function DeleteDialog({
     simpleDeleteFormatMessageId,
     error,
 }: Readonly<DeleteDialogProps>) {
+    const { snackError, snackWarning } = useSnackMessage();
+
     const [itemsState, setItemsState] = useState<ElementAttributes[]>([]);
 
     const [loadingState, setLoadingState] = useState(false);
 
+    // shared elements held by the directory to delete
+    const [sharedDescendants, setSharedDescendants] = useState<ElementAttributes[]>([]);
+
+    const [loadingSharedDescendants, setLoadingSharedDescendants] = useState(false);
+
     const openRef = useRef<boolean | null>(null);
 
-    // an element is shared as soon as another element references it, each reference being a "sharing link"
-    const sharedItems = useMemo(() => itemsState.filter((item) => (item.references?.length ?? 0) > 0), [itemsState]);
+    // The shared elements that will be included in the deletion
+    const sharedItems = useMemo(
+        () => [...itemsState.filter(isElementShared), ...sharedDescendants],
+        [itemsState, sharedDescendants]
+    );
+
+    // directories are only deleted one at a time, from the tree
+    const directoryToDeleteUuid = itemsState.find((item) => item.type === ElementType.DIRECTORY)?.elementUuid;
 
     useEffect(() => {
         if ((open && !openRef.current) || error !== '') {
@@ -80,6 +103,33 @@ export default function DeleteDialog({
         openRef.current = open;
     }, [open, items, error]);
 
+    useEffect(() => {
+        if (!open || !directoryToDeleteUuid) {
+            setSharedDescendants([]);
+            return undefined;
+        }
+        let cancelled = false;
+        setLoadingSharedDescendants(true);
+        fetchDirectoryContent(directoryToDeleteUuid, undefined, true)
+            .then((directoryContent) => {
+                if (!cancelled) {
+                    setSharedDescendants(directoryContent.filter(isElementShared));
+                }
+            })
+            .catch((fetchError) => {
+                console.error(fetchError);
+                snackWithFallback(snackError, fetchError, { headerId: 'sharedDescendantsError' });
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setLoadingSharedDescendants(false);
+                }
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [open, directoryToDeleteUuid, snackError]);
+
     const handleClose = (_: SyntheticEvent, reason?: string) => {
         if (reason === 'backdropClick') {
             return;
@@ -88,6 +138,11 @@ export default function DeleteDialog({
     };
 
     const handleClick = () => {
+        // TODO remove later when fixed : a shared element cannot be deleted while other elements still reference it
+        if (sharedItems.length > 0) {
+            snackWarning({ messageId: 'deleteSharedItemsForbidden' });
+            return;
+        }
         console.debug('Request for deletion');
         setLoadingState(true);
         onClick();
@@ -131,12 +186,16 @@ export default function DeleteDialog({
             return false;
         }
         // a single shared element needs no list
-        if (sharedItems.length === 1) {
+        if (
+            itemsState.length === 1 &&
+            sharedItems.length === 1 &&
+            sharedItems[0].elementUuid === itemsState[0].elementUuid
+        ) {
             return (
                 <Box marginTop={2}>
                     <FormattedMessage
                         id="deleteDialogSharedItemMessage"
-                        values={{ count: sharedItems[0].references?.length ?? 0 }}
+                        values={{ count: getSharingLinksCount(sharedItems[0]) }}
                     />
                 </Box>
             );
@@ -151,7 +210,7 @@ export default function DeleteDialog({
                                 <OverflowableText text={item.elementName} tooltipSx={styles.tooltip} />
                                 <FormattedMessage
                                     id="sharingLinksCount"
-                                    values={{ count: item.references?.length ?? 0 }}
+                                    values={{ count: getSharingLinksCount(item) }}
                                 />
                             </Box>
                         </ListItem>
@@ -176,8 +235,7 @@ export default function DeleteDialog({
                 <Button
                     onClick={handleClick}
                     variant="outlined"
-                    // TODO remove later when fixed : a shared element cannot be deleted while other elements still reference it
-                    disabled={loadingState || sharedItems.length > 0}
+                    disabled={loadingState || loadingSharedDescendants}
                     data-testid="DeleteButton"
                 >
                     {(loadingState && <CircularProgress size={24} />) || <FormattedMessage id="delete" />}
