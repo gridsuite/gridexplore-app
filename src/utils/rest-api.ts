@@ -720,6 +720,10 @@ export const fetchExportNetworkFile = (exportUuid: UUID) =>
     });
 
 export const downloadCase = (caseUuid: string) =>
+    // TODO : do not work throught the explore-server for now.
+    // Direct case-server endpoint querying to download a case has been restored
+    // Investigate and fix before reactivating this endpoint
+    //backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`, {
     backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
