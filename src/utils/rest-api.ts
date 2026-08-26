@@ -42,6 +42,9 @@ import {
 
 const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/user-admin`;
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
+// TODO remove when endpoint throught explore-server works
+const PREFIX_CASE_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/case`;
+//
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
 const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
@@ -717,7 +720,11 @@ export const fetchExportNetworkFile = (exportUuid: UUID) =>
     });
 
 export const downloadCase = (caseUuid: string) =>
-    backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`, {
+    // TODO : do not work throught the explore-server for now.
+    // Direct case-server endpoint querying to download a case has been restored
+    // Investigate and fix before reactivating this endpoint
+    //backendFetch(`${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`, {
+    backendFetch(`${PREFIX_CASE_QUERIES}/v1/cases/${caseUuid}`, {
         method: 'get',
         headers: { 'Content-Type': 'application/json' },
     });
