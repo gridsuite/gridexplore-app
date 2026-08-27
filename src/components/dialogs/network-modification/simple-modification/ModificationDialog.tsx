@@ -32,6 +32,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     errorHeaderId: string;
     isModification?: boolean;
     removeOptional?: boolean;
+    unscrollableFullHeight?: boolean;
     dialogWidth?: Breakpoint;
     getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
 }
@@ -53,6 +54,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dialogWidth,
     isModification = false,
     removeOptional = true,
+    unscrollableFullHeight = false,
     getExtraFormProps,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
@@ -106,6 +108,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
+            unscrollableFullHeight={unscrollableFullHeight}
             dialogWidth={dialogWidth}
         >
             <ModificationForm

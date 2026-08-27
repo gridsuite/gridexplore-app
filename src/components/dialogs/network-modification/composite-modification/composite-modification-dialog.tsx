@@ -128,6 +128,10 @@ import {
     voltageLevelSectionCreationDtoToForm,
     voltageLevelSectionCreationFormToDto,
     VoltageLevelSectionCreationForm,
+    MoveVoltageLevelFeederBaysForm,
+    moveVoltageLevelFeederBaysFormToDto,
+    moveVoltageLevelFeederBaysFormSchema,
+    moveVoltageLevelFeederBaysDtoToForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -149,6 +153,7 @@ type SpecificModificationDialogProps = Pick<
     | 'isModification'
     | 'removeOptional'
     | 'dialogWidth'
+    | 'unscrollableFullHeight'
     | 'getExtraFormProps'
 >;
 
@@ -507,6 +512,19 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateCouplingDevice',
                         ModificationForm: CouplingDeviceCreationForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.MOVE_VOLTAGE_LEVEL_FEEDER_BAYS,
+                    {
+                        formSchema: moveVoltageLevelFeederBaysFormSchema,
+                        dtoToForm: moveVoltageLevelFeederBaysDtoToForm,
+                        formToDto: moveVoltageLevelFeederBaysFormToDto,
+                        errorHeaderId: 'MoveVoltageLevelFeederBaysError',
+                        titleId: 'MoveVoltageLevelFeederBays',
+                        ModificationForm: MoveVoltageLevelFeederBaysForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
                     },
                 ],
                 [
