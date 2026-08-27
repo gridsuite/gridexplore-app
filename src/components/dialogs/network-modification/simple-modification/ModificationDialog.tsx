@@ -18,6 +18,7 @@ import { FieldValues, useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
+import { Breakpoint } from '@mui/material';
 
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
@@ -31,6 +32,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     errorHeaderId: string;
     isModification?: boolean;
     removeOptional?: boolean;
+    dialogWidth?: Breakpoint;
     getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
 }
 
@@ -48,6 +50,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     dtoToForm,
     formToDto,
     errorHeaderId,
+    dialogWidth,
     isModification = false,
     removeOptional = true,
     getExtraFormProps,
@@ -103,6 +106,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             onSave={onSubmit}
             titleId={titleId}
             isDataFetching={!modificationData}
+            dialogWidth={dialogWidth}
         >
             <ModificationForm
                 isModification={isModification}

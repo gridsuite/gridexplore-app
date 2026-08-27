@@ -97,6 +97,13 @@ import {
     modificationByFormulaDtoToForm,
     modificationByFormulaFormToDto,
     ModificationByFormulaForm,
+    TwoWindingsTransformerForm,
+    twoWindingsTransformerCreationFormSchema,
+    twoWindingsTransformerCreationDtoToForm,
+    twoWindingsTransformerCreationFormToDto,
+    twoWindingsTransformerModificationFormSchema,
+    twoWindingsTransformerModificationDtoToForm,
+    twoWindingsTransformerModificationFormToDto,
     staticVarCompensatorCreationFormSchema,
     staticVarCompensatorDtoToForm,
     staticVarCompensatorCreationFormToDto,
@@ -110,6 +117,10 @@ import {
     createVoltageLevelTopologyDtoToForm,
     createVoltageLevelTopologyFormToDto,
     CreateVoltageLevelTopologyDto,
+    voltageLevelSectionCreationFormSchema,
+    voltageLevelSectionCreationDtoToForm,
+    voltageLevelSectionCreationFormToDto,
+    VoltageLevelSectionCreationForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -130,6 +141,7 @@ type SpecificModificationDialogProps = Pick<
     | 'ModificationForm'
     | 'isModification'
     | 'removeOptional'
+    | 'dialogWidth'
     | 'getExtraFormProps'
 >;
 
@@ -248,6 +260,35 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.TWO_WINDINGS_TRANSFORMER_CREATION,
+                    {
+                        formSchema: twoWindingsTransformerCreationFormSchema,
+                        dtoToForm: twoWindingsTransformerCreationDtoToForm,
+                        formToDto: twoWindingsTransformerCreationFormToDto,
+                        errorHeaderId: 'TwoWindingsTransformerCreationError',
+                        titleId: 'CreateTwoWindingsTransformer',
+                        ModificationForm: TwoWindingsTransformerForm,
+                        isModification: false,
+                        removeOptional: false,
+                        dialogWidth: 'xl', // for steps table
+                    },
+                ],
+                [
+                    ModificationType.TWO_WINDINGS_TRANSFORMER_MODIFICATION,
+                    {
+                        formSchema: twoWindingsTransformerModificationFormSchema,
+                        dtoToForm: (twtDto) => twoWindingsTransformerModificationDtoToForm(twtDto, false),
+                        formToDto: (twtForm, editData) =>
+                            twoWindingsTransformerModificationFormToDto(twtForm, editData, intl, null),
+                        errorHeaderId: 'TwoWindingsTransformerModificationError',
+                        titleId: 'ModifyTwoWindingsTransformer',
+                        ModificationForm: TwoWindingsTransformerForm,
+                        isModification: true,
+                        removeOptional: true,
+                        dialogWidth: 'xl',
+                    },
+                ],
+                [
                     ModificationType.LINE_CREATION,
                     {
                         formSchema: lineCreationFormSchema(true),
@@ -265,7 +306,7 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: lineModificationFormSchema,
                         dtoToForm: (lineDto) => lineModificationDtoToForm(lineDto, false),
-                        formToDto: (lineDto) => lineModificationFormToDto(lineDto, intl),
+                        formToDto: (lineForm) => lineModificationFormToDto(lineForm, intl),
                         errorHeaderId: 'LineModificationError',
                         titleId: 'ModifyLine',
                         ModificationForm: LineForm,
@@ -468,6 +509,18 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'UnableToDeleteEquipment',
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
+                        removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.CREATE_VOLTAGE_LEVEL_SECTION,
+                    {
+                        formSchema: voltageLevelSectionCreationFormSchema,
+                        dtoToForm: voltageLevelSectionCreationDtoToForm,
+                        formToDto: (form) => voltageLevelSectionCreationFormToDto(form),
+                        errorHeaderId: 'VoltageLevelSectionCreationError',
+                        titleId: 'CreateVoltageLevelSection',
+                        ModificationForm: VoltageLevelSectionCreationForm,
                         removeOptional: false,
                     },
                 ],
