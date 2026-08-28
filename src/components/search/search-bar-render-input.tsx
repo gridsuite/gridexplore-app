@@ -30,7 +30,7 @@ export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>)
                     ...InputProps,
                     startAdornment: (
                         <>
-                            <Search />
+                            <Search data-testid="SearchIcon" />
                             {InputProps.startAdornment}
                         </>
                     ),
