@@ -125,6 +125,16 @@ import {
     moveVoltageLevelFeederBaysFormToDto,
     moveVoltageLevelFeederBaysFormSchema,
     moveVoltageLevelFeederBaysDtoToForm,
+    tabularCreationDtoToForm,
+    tabularCreationFormToDto,
+    tabularFormSchema,
+    tabularModificationDtoToForm,
+    tabularModificationFormToDto,
+    voltageLevelTopologyModificationFormSchema,
+    voltageLevelTopologyModificationFormToDto,
+    VoltageLevelTopologyModificationForm,
+    voltageLevelTopologyModificationDtoToForm,
+    TopologyVoltageLevelModificationDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -134,6 +144,7 @@ import { fetchCompositeModificationContent, saveCompositeModification } from '..
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
+import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -152,6 +163,10 @@ type SpecificModificationDialogProps = Pick<
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
     voltageLevelId: dto.voltageLevelId,
+});
+
+const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageLevelModificationDto) => ({
+    voltageLevelToModify: dto,
 });
 
 const schema = yup.object().shape({
@@ -418,6 +433,23 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION,
+                    {
+                        formSchema: voltageLevelTopologyModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelTopologyModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelTopologyModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelTopologyModificationError',
+                        titleId: 'ModifyVoltageLevelTopology',
+                        ModificationForm: VoltageLevelTopologyModificationForm,
+                        removeOptional: true,
+                        isModification: true,
+                        getExtraFormProps: getVoltageLevelTopologyModificationExtraFormProps,
+                        unscrollableFullHeight: true,
+                        dialogWidth: 'md',
+                    },
+                ],
+
+                [
                     ModificationType.CREATE_VOLTAGE_LEVEL_TOPOLOGY,
                     {
                         formSchema: createVoltageLevelTopologyFormSchema,
@@ -528,6 +560,32 @@ export default function CompositeModificationDialog({
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_CREATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularCreationDtoToForm,
+                        formToDto: tabularCreationFormToDto,
+                        errorHeaderId: 'TabularCreationError',
+                        titleId: 'TabularCreation',
+                        ModificationForm: TabularCreationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_MODIFICATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularModificationDtoToForm,
+                        formToDto: tabularModificationFormToDto,
+                        errorHeaderId: 'TabularModificationError',
+                        titleId: 'TabularModification',
+                        ModificationForm: TabularModificationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
                     },
                 ],
                 [
