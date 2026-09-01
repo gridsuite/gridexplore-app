@@ -132,6 +132,30 @@ import {
     moveVoltageLevelFeederBaysFormToDto,
     moveVoltageLevelFeederBaysFormSchema,
     moveVoltageLevelFeederBaysDtoToForm,
+    tabularCreationDtoToForm,
+    tabularCreationFormToDto,
+    tabularFormSchema,
+    tabularModificationDtoToForm,
+    tabularModificationFormToDto,
+    voltageLevelTopologyModificationFormSchema,
+    voltageLevelTopologyModificationFormToDto,
+    VoltageLevelTopologyModificationForm,
+    voltageLevelTopologyModificationDtoToForm,
+    TopologyVoltageLevelModificationDto,
+    BatteryDialogTab,
+    BATTERY_TAB_FIELDS,
+    GeneratorDialogTab,
+    GENERATOR_TAB_FIELDS,
+    LineDialogTab,
+    LINE_TAB_FIELDS,
+    LoadDialogTab,
+    LOAD_TAB_FIELDS,
+    StaticVarCompensatorDialogTab,
+    STATIC_VAR_COMPENSATOR_TAB_FIELDS,
+    TwoWindingsTransformerDialogTab,
+    TWT_TAB_FIELDS,
+    VoltageLevelTab,
+    VOLTAGE_LEVEL_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -141,6 +165,7 @@ import { fetchCompositeModificationContent, saveCompositeModification } from '..
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
+import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -155,10 +180,15 @@ type SpecificModificationDialogProps = Pick<
     | 'dialogWidth'
     | 'unscrollableFullHeight'
     | 'getExtraFormProps'
+    | 'tabsProps'
 >;
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
     voltageLevelId: dto.voltageLevelId,
+});
+
+const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageLevelModificationDto) => ({
+    voltageLevelToModify: dto,
 });
 
 const schema = yup.object().shape({
@@ -309,6 +339,10 @@ export default function CompositeModificationDialog({
                         isModification: false,
                         removeOptional: false,
                         dialogWidth: 'xl', // for steps table
+                        tabsProps: {
+                            defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+                            tabFields: TWT_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
@@ -324,6 +358,10 @@ export default function CompositeModificationDialog({
                         isModification: true,
                         removeOptional: true,
                         dialogWidth: 'xl',
+                        tabsProps: {
+                            defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+                            tabFields: TWT_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
@@ -337,6 +375,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineForm,
                         isModification: false,
                         removeOptional: false,
+                        tabsProps: { defaultTab: LineDialogTab.CONNECTIVITY_TAB, tabFields: LINE_TAB_FIELDS },
                     },
                 ],
                 [
@@ -350,6 +389,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineForm,
                         isModification: true,
                         removeOptional: true,
+                        tabsProps: { defaultTab: LineDialogTab.CONNECTIVITY_TAB, tabFields: LINE_TAB_FIELDS },
                     },
                 ],
                 [
@@ -374,6 +414,7 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyBattery',
                         ModificationForm: BatteryModificationForm,
                         removeOptional: true,
+                        tabsProps: { defaultTab: BatteryDialogTab.CONNECTIVITY_TAB, tabFields: BATTERY_TAB_FIELDS },
                     },
                 ],
                 [
@@ -398,6 +439,7 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyGenerator',
                         ModificationForm: GeneratorModificationForm,
                         removeOptional: true,
+                        tabsProps: { defaultTab: GeneratorDialogTab.CONNECTIVITY_TAB, tabFields: GENERATOR_TAB_FIELDS },
                     },
                 ],
                 [
@@ -411,6 +453,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LoadForm,
                         isModification: false,
                         removeOptional: false,
+                        tabsProps: { defaultTab: LoadDialogTab.CONNECTIVITY_TAB, tabFields: LOAD_TAB_FIELDS },
                     },
                 ],
                 [
@@ -424,6 +467,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LoadForm,
                         isModification: true,
                         removeOptional: true,
+                        tabsProps: { defaultTab: LoadDialogTab.CONNECTIVITY_TAB, tabFields: LOAD_TAB_FIELDS },
                     },
                 ],
                 [
@@ -436,6 +480,7 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateVoltageLevel',
                         ModificationForm: VoltageLevelCreationForm,
                         removeOptional: false,
+                        tabsProps: { defaultTab: VoltageLevelTab.SUBSTATION_TAB, tabFields: VOLTAGE_LEVEL_TAB_FIELDS },
                     },
                 ],
                 [
@@ -450,6 +495,23 @@ export default function CompositeModificationDialog({
                         removeOptional: true,
                     },
                 ],
+                [
+                    ModificationType.VOLTAGE_LEVEL_TOPOLOGY_MODIFICATION,
+                    {
+                        formSchema: voltageLevelTopologyModificationFormSchema,
+                        dtoToForm: (dto) => voltageLevelTopologyModificationDtoToForm(dto, false),
+                        formToDto: voltageLevelTopologyModificationFormToDto,
+                        errorHeaderId: 'VoltageLevelTopologyModificationError',
+                        titleId: 'ModifyVoltageLevelTopology',
+                        ModificationForm: VoltageLevelTopologyModificationForm,
+                        removeOptional: true,
+                        isModification: true,
+                        getExtraFormProps: getVoltageLevelTopologyModificationExtraFormProps,
+                        unscrollableFullHeight: true,
+                        dialogWidth: 'md',
+                    },
+                ],
+
                 [
                     ModificationType.CREATE_VOLTAGE_LEVEL_TOPOLOGY,
                     {
@@ -500,6 +562,10 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateStaticVarCompensator',
                         ModificationForm: StaticVarCompensatorCreationForm,
                         removeOptional: false,
+                        tabsProps: {
+                            defaultTab: StaticVarCompensatorDialogTab.CONNECTIVITY_TAB,
+                            tabFields: STATIC_VAR_COMPENSATOR_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
@@ -561,6 +627,32 @@ export default function CompositeModificationDialog({
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_CREATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularCreationDtoToForm,
+                        formToDto: tabularCreationFormToDto,
+                        errorHeaderId: 'TabularCreationError',
+                        titleId: 'TabularCreation',
+                        ModificationForm: TabularCreationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_MODIFICATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularModificationDtoToForm,
+                        formToDto: tabularModificationFormToDto,
+                        errorHeaderId: 'TabularModificationError',
+                        titleId: 'TabularModification',
+                        ModificationForm: TabularModificationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
                     },
                 ],
                 [
