@@ -125,6 +125,11 @@ import {
     moveVoltageLevelFeederBaysFormToDto,
     moveVoltageLevelFeederBaysFormSchema,
     moveVoltageLevelFeederBaysDtoToForm,
+    tabularCreationDtoToForm,
+    tabularCreationFormToDto,
+    tabularFormSchema,
+    tabularModificationDtoToForm,
+    tabularModificationFormToDto,
     voltageLevelTopologyModificationFormSchema,
     voltageLevelTopologyModificationFormToDto,
     VoltageLevelTopologyModificationForm,
@@ -139,6 +144,7 @@ import { fetchCompositeModificationContent, saveCompositeModification } from '..
 import CompositeModificationForm from './composite-modification-form';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
+import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -554,6 +560,32 @@ export default function CompositeModificationDialog({
                         titleId: 'DeleteEquipmentByFilter',
                         ModificationForm: ByFilterDeletionForm,
                         removeOptional: false,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_CREATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularCreationDtoToForm,
+                        formToDto: tabularCreationFormToDto,
+                        errorHeaderId: 'TabularCreationError',
+                        titleId: 'TabularCreation',
+                        ModificationForm: TabularCreationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
+                    },
+                ],
+                [
+                    ModificationType.TABULAR_MODIFICATION,
+                    {
+                        formSchema: tabularFormSchema,
+                        dtoToForm: tabularModificationDtoToForm,
+                        formToDto: tabularModificationFormToDto,
+                        errorHeaderId: 'TabularModificationError',
+                        titleId: 'TabularModification',
+                        ModificationForm: TabularModificationForm,
+                        removeOptional: false,
+                        unscrollableFullHeight: true,
                     },
                 ],
                 [
