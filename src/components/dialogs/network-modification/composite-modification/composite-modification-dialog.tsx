@@ -135,6 +135,20 @@ import {
     VoltageLevelTopologyModificationForm,
     voltageLevelTopologyModificationDtoToForm,
     TopologyVoltageLevelModificationDto,
+    BatteryDialogTab,
+    BATTERY_TAB_FIELDS,
+    GeneratorDialogTab,
+    GENERATOR_TAB_FIELDS,
+    LineDialogTab,
+    LINE_TAB_FIELDS,
+    LoadDialogTab,
+    LOAD_TAB_FIELDS,
+    StaticVarCompensatorDialogTab,
+    STATIC_VAR_COMPENSATOR_TAB_FIELDS,
+    TwoWindingsTransformerDialogTab,
+    TWT_TAB_FIELDS,
+    VoltageLevelTab,
+    VOLTAGE_LEVEL_TAB_FIELDS,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -159,6 +173,7 @@ type SpecificModificationDialogProps = Pick<
     | 'dialogWidth'
     | 'unscrollableFullHeight'
     | 'getExtraFormProps'
+    | 'tabsProps'
 >;
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
@@ -291,6 +306,10 @@ export default function CompositeModificationDialog({
                         isModification: false,
                         removeOptional: false,
                         dialogWidth: 'xl', // for steps table
+                        tabsProps: {
+                            defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+                            tabFields: TWT_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
@@ -306,6 +325,10 @@ export default function CompositeModificationDialog({
                         isModification: true,
                         removeOptional: true,
                         dialogWidth: 'xl',
+                        tabsProps: {
+                            defaultTab: TwoWindingsTransformerDialogTab.CONNECTIVITY_TAB,
+                            tabFields: TWT_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
@@ -319,6 +342,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineForm,
                         isModification: false,
                         removeOptional: false,
+                        tabsProps: { defaultTab: LineDialogTab.CONNECTIVITY_TAB, tabFields: LINE_TAB_FIELDS },
                     },
                 ],
                 [
@@ -332,6 +356,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineForm,
                         isModification: true,
                         removeOptional: true,
+                        tabsProps: { defaultTab: LineDialogTab.CONNECTIVITY_TAB, tabFields: LINE_TAB_FIELDS },
                     },
                 ],
                 [
@@ -356,6 +381,7 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyBattery',
                         ModificationForm: BatteryModificationForm,
                         removeOptional: true,
+                        tabsProps: { defaultTab: BatteryDialogTab.CONNECTIVITY_TAB, tabFields: BATTERY_TAB_FIELDS },
                     },
                 ],
                 [
@@ -380,6 +406,7 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifyGenerator',
                         ModificationForm: GeneratorModificationForm,
                         removeOptional: true,
+                        tabsProps: { defaultTab: GeneratorDialogTab.CONNECTIVITY_TAB, tabFields: GENERATOR_TAB_FIELDS },
                     },
                 ],
                 [
@@ -393,6 +420,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LoadForm,
                         isModification: false,
                         removeOptional: false,
+                        tabsProps: { defaultTab: LoadDialogTab.CONNECTIVITY_TAB, tabFields: LOAD_TAB_FIELDS },
                     },
                 ],
                 [
@@ -406,6 +434,7 @@ export default function CompositeModificationDialog({
                         ModificationForm: LoadForm,
                         isModification: true,
                         removeOptional: true,
+                        tabsProps: { defaultTab: LoadDialogTab.CONNECTIVITY_TAB, tabFields: LOAD_TAB_FIELDS },
                     },
                 ],
                 [
@@ -418,6 +447,7 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateVoltageLevel',
                         ModificationForm: VoltageLevelCreationForm,
                         removeOptional: false,
+                        tabsProps: { defaultTab: VoltageLevelTab.SUBSTATION_TAB, tabFields: VOLTAGE_LEVEL_TAB_FIELDS },
                     },
                 ],
                 [
@@ -499,6 +529,10 @@ export default function CompositeModificationDialog({
                         titleId: 'CreateStaticVarCompensator',
                         ModificationForm: StaticVarCompensatorCreationForm,
                         removeOptional: false,
+                        tabsProps: {
+                            defaultTab: StaticVarCompensatorDialogTab.CONNECTIVITY_TAB,
+                            tabFields: STATIC_VAR_COMPENSATOR_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
