@@ -320,7 +320,7 @@ export default function CompositeModificationDialog({
                         formSchema: vscHvdcLineModificationFormSchema,
                         dtoToForm: (lineDto) => vscHvdcLineModificationDtoToForm(lineDto, false),
                         formToDto: vscHvdcLineModificationFormToDto,
-                        errorHeaderId: 'HvdcCreationError',
+                        errorHeaderId: 'HvdcModificationError',
                         titleId: 'ModifyVsc',
                         ModificationForm: VscHvdcLineForm,
                         isModification: true,
