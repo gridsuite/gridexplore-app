@@ -6,12 +6,7 @@
  */
 import type { UUID } from 'node:crypto';
 
-export enum NotificationType {
-    DELETE_DIRECTORY = 'DELETE_DIRECTORY',
-    ADD_DIRECTORY = 'ADD_DIRECTORY',
-    UPDATE_DIRECTORY = 'UPDATE_DIRECTORY',
-    CASE_EXPORT_FINISHED = 'caseExportFinished',
-}
+const CASE_EXPORT_FINISHED = 'caseExportFinished';
 
 export interface DirectoryInfos {
     uuid: UUID;
@@ -24,12 +19,12 @@ export interface ExportCaseEventData {
 }
 
 interface ExportCaseEventDataHeaders {
-    notificationType: NotificationType.CASE_EXPORT_FINISHED;
+    notificationType: typeof CASE_EXPORT_FINISHED;
     userId: string;
     exportUuid: UUID;
     error: string | null;
 }
 
 export function isExportCaseNotification(notif: unknown): notif is ExportCaseEventData {
-    return (notif as ExportCaseEventData).headers?.notificationType === NotificationType.CASE_EXPORT_FINISHED;
+    return (notif as ExportCaseEventData).headers?.notificationType === CASE_EXPORT_FINISHED;
 }
