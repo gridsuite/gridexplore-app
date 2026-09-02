@@ -25,6 +25,8 @@ export interface DirectoryTreeViewProps {
         anchorReference: PopoverReference
     ) => void;
     onDirectoryUpdate: (nodeId: UUID, isClose: boolean, isDirectoryMoving: boolean) => void;
+    directoryToScroll?: UUID;
+    onScrolledToDirectory?: () => void;
 }
 
 export default function DirectoryTreeView({
@@ -32,6 +34,8 @@ export default function DirectoryTreeView({
     mapData,
     onContextMenu,
     onDirectoryUpdate,
+    directoryToScroll,
+    onScrolledToDirectory,
 }: Readonly<DirectoryTreeViewProps>) {
     const navigate = useNavigate();
     const { uuid: urlElementUuid } = useParams<{ uuid?: string }>();
@@ -127,6 +131,8 @@ export default function DirectoryTreeView({
                     onExpand={handleIconClick}
                     onSelect={handleLabelClick}
                     onContextMenu={onContextMenu}
+                    directoryToScroll={directoryToScroll}
+                    onScrolledToDirectory={onScrolledToDirectory}
                 />
             )}
         </SimpleTreeView>
