@@ -213,5 +213,8 @@
     "PageNotFound": "Page introuvable",
     "export.button": "Exporter l'étude",
     "exportStudy": "L'export de l'étude a réussi",
-    "exportStudyFailed": "L'export de l'étude a échoué"
+    "exportStudyFailed": "L'export de l'étude a échoué",
+    "importStudy": "Importer une étude",
+    "uploadStudyErrorMsg": "Veuillez télécharger l'étude (.zip)",
+    "studyImportError": "Erreur lors de l'importation de l'étude"
 }

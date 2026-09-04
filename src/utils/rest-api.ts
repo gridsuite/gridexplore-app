@@ -841,3 +841,19 @@ export function exportStudy(studyUuid: UUID, studyName: string) {
         method: 'get',
     });
 }
+
+export function importStudy(studyName: string, description: string, archiveFile: File, parentDirectoryUuid: UUID) {
+    console.info('Importing study ...');
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('studyName', studyName);
+    urlSearchParams.append('description', description);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/studies/import?${urlSearchParams.toString()}`;
+    const formData = new FormData();
+    formData.append('archiveFile', archiveFile);
+    return backendFetch(url, {
+        method: 'post',
+        body: formData,
+    });
+}
