@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ElementAttributes, ElementType, type MuiStyles } from '@gridsuite/commons-ui';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import type {
     AgGridEvent,
@@ -62,6 +62,33 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
             return indexA - indexB;
         });
 };
+
+const styles = {
+    grid: {
+        // Tighten the horizontal padding of every cell and header (alpine default is 18px)
+        '--ag-cell-horizontal-padding': '8px',
+        // "select all" header checkbox: drop its right margin (defaults to --ag-cell-horizontal-padding)
+        // so the first column header sits right next to the checkbox column
+        '& .ag-header-select-all': {
+            marginRight: 0,
+        },
+        // First column ("Name"): trim its left padding so its label hugs the checkbox,
+        // in both the header and the body.
+        '& .ag-header-cell[col-id="elementName"], & .ag-cell[col-id="elementName"]': {
+            paddingLeft: '4px',
+        },
+        // Sort arrow: the "unsorted" icon always reserves its space (unSortIcon in defaultColumnDefinition)
+        // so the header label never reflows; hidden at rest, revealed when hovering the header.
+        // The asc/desc icons use their own classes and stay visible whatever the pointer does.
+        '& .ag-header-cell .ag-sort-indicator-icon.ag-sort-none-icon': {
+            opacity: 0,
+            transition: 'opacity 0.15s',
+        },
+        '& .ag-header-cell:hover .ag-sort-indicator-icon.ag-sort-none-icon': {
+            opacity: 1,
+        },
+    },
+} as const satisfies MuiStyles;
 
 export function DirectoryContentTable({
     gridRef,
@@ -137,7 +164,16 @@ export function DirectoryContentTable({
                 checkboxes: selectedDirectoryWritable,
                 headerCheckbox: selectedDirectoryWritable,
             }}
-            selectionColumnDef={{ pinned: 'left' }}
+            selectionColumnDef={{
+                pinned: 'left',
+                // Tighten the gap between the checkbox and the first column's title, in both
+                // the body and the header (default width is 50, default cell/header padding
+                // is --ag-cell-horizontal-padding).
+                width: 32,
+                cellStyle: { paddingLeft: '8px', paddingRight: 0 },
+                headerStyle: { paddingLeft: '8px', paddingRight: 0 },
+            }}
+            sx={styles.grid}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
