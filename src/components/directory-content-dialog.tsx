@@ -35,6 +35,7 @@ import {
     useSnackMessage,
     VoltageInitParametersEditionDialog,
     isProcessType,
+    SCProcessConfigEditionDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -525,6 +526,20 @@ function DirectoryContentDialog(
             if (currentProcessConfigType === ProcessType.LOADFLOW) {
                 return (
                     <LFProcessConfigEditionDialog
+                        processConfigUuid={currentProcessConfigId}
+                        processConfigName={elementName}
+                        description={activeElement.description}
+                        directory={activeDirectory}
+                        open
+                        onClose={handleCloseProcessConfigDialog}
+                        fetchProcessConfig={fetchProcessConfig}
+                        updateProcessConfig={updateProcessConfig}
+                    />
+                );
+            }
+            if (currentProcessConfigType === ProcessType.SHORT_CIRCUIT) {
+                return (
+                    <SCProcessConfigEditionDialog
                         processConfigUuid={currentProcessConfigId}
                         processConfigName={elementName}
                         description={activeElement.description}

@@ -9,7 +9,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { UUID } from 'node:crypto';
 import { useIntl } from 'react-intl';
-import { triggerDownload } from '../components/utils/downloadUtils';
+import { extractFilenameFromContentDisposition, triggerDownload } from '../components/utils/downloadUtils';
 import { fetchExportNetworkFile } from '../utils/rest-api';
 
 export function useExportDownload() {
@@ -18,18 +18,9 @@ export function useExportDownload() {
 
     const downloadExportFile = useCallback(
         (exportUuid: UUID) => {
-            let filename = 'export.zip';
             fetchExportNetworkFile(exportUuid)
                 .then(async (response) => {
-                    const contentDisposition = response.headers.get('Content-Disposition');
-                    if (contentDisposition?.includes('filename=')) {
-                        const regex = /filename="?([^"]+)"?/;
-                        const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
-                        if (extractedFilename) {
-                            filename = extractedFilename;
-                        }
-                    }
-
+                    const filename = extractFilenameFromContentDisposition(response, 'export.zip');
                     const blob = await response.blob();
                     triggerDownload({ blob, filename });
                     snackSuccess({

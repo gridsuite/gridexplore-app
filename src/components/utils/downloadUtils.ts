@@ -23,6 +23,20 @@ interface DownloadData {
     filename: string;
 }
 
+// extracts the filename from a Content-Disposition header (e.g. `attachment; filename="foo.zip"`),
+// falling back to fallbackFilename when the header is missing or has no filename
+export const extractFilenameFromContentDisposition = (response: Response, fallbackFilename: string): string => {
+    const contentDisposition = response.headers.get('Content-Disposition');
+    if (contentDisposition?.includes('filename=')) {
+        const regex = /filename="?([^"]+)"?/;
+        const [, extractedFilename] = regex.exec(contentDisposition) ?? [];
+        if (extractedFilename) {
+            return extractedFilename;
+        }
+    }
+    return fallbackFilename;
+};
+
 export const triggerDownload = ({ blob, filename }: DownloadData): void => {
     const href = window.URL.createObjectURL(blob);
     const link = document.createElement('a');

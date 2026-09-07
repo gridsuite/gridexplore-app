@@ -13,11 +13,13 @@ import {
     snackWithFallback,
     updateModification,
     useSnackMessage,
+    useTabs,
 } from '@gridsuite/commons-ui';
 import { FieldValues, useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
+import { Breakpoint } from '@mui/material';
 
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
@@ -31,7 +33,16 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     errorHeaderId: string;
     isModification?: boolean;
     removeOptional?: boolean;
+    unscrollableFullHeight?: boolean;
+    dialogWidth?: Breakpoint;
+    getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
+    tabsProps?: UseTabsProps;
 }
+
+export type UseTabsProps = {
+    defaultTab: any;
+    tabFields: Partial<Record<number, string[]>>;
+};
 
 interface WithId {
     uuid: UUID;
@@ -46,15 +57,27 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     formSchema,
     dtoToForm,
     formToDto,
+    tabsProps,
     errorHeaderId,
+    dialogWidth,
     isModification = false,
     removeOptional = true,
+    unscrollableFullHeight = false,
+    getExtraFormProps,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
 
     const formMethods = useForm<FormData>({
         resolver: yupResolver(formSchema) as any, // really difficult to type with yup inferred types
+    });
+
+    const { errors } = formMethods.formState;
+
+    const useTabsReturn = useTabs({
+        defaultTab: tabsProps?.defaultTab,
+        errors,
+        tabFields: tabsProps?.tabFields,
     });
 
     useEffect(() => {
@@ -99,10 +122,17 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             }}
             onClose={onClose}
             onSave={onSubmit}
+            onValidationError={useTabsReturn?.onError}
             titleId={titleId}
             isDataFetching={!modificationData}
+            unscrollableFullHeight={unscrollableFullHeight}
+            dialogWidth={dialogWidth}
         >
-            <ModificationForm isModification={isModification} />
+            <ModificationForm
+                isModification={isModification}
+                useTabsReturn={useTabsReturn}
+                {...(modificationData && getExtraFormProps?.(modificationData))}
+            />
         </CustomMuiDialog>
     );
 }

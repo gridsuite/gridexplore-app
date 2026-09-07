@@ -270,7 +270,7 @@ export function FilterBasedContingencyListVisualizationPanel(
                 isFullWidthRow={(params) => params.rowNode.data.id === 'SEPARATOR'}
                 fullWidthCellRenderer={() => {
                     return SeparatorCellRenderer({
-                        children: intl.formatMessage({ id: 'missingFromStudy' }),
+                        value: intl.formatMessage({ id: 'missingFromStudy' }),
                         sx: {
                             paddingLeft: 3,
                         },
