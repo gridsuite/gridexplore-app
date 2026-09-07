@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ChangeEvent, useCallback } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import {ChangeEvent, useCallback} from 'react';
+import {FormattedMessage, useIntl} from 'react-intl';
+import {useDispatch, useSelector} from 'react-redux';
 import {
     CustomMuiDialog,
     DescriptionField,
@@ -22,13 +22,13 @@ import {
     NAME_EMPTY,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Button, Grid, Input, Stack } from '@mui/material';
-import { FieldValues, useController, useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import {Button, Grid, Input, Stack} from '@mui/material';
+import {FieldValues, useController, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { AppState, UploadingElement } from '../../redux/types';
-import { importStudy } from '../../utils/rest-api';
-import { addUploadingElement, removeUploadingElement } from '../../redux/actions';
+import {AppState, UploadingElement} from '../../redux/types';
+import {importStudy} from '../../utils/rest-api';
+import {removeUploadingElement} from '../../redux/actions';
 import PrefilledNameInput from './commons/prefilled-name-input';
 
 interface ImportStudyDialogProps {
