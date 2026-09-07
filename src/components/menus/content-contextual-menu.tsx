@@ -47,6 +47,7 @@ import {
     renameElement,
 } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
+import { isElementShared } from '../../utils/element-utils';
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
 import { useDeferredFetch, useMultipleDeferredFetch } from '../../utils/custom-hooks';
 import MoveDialog from '../dialogs/move-dialog';
@@ -409,7 +410,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return (
             isSingleElement &&
             selectedElements[0].type === ElementType.MODIFICATION &&
-            (selectedElements[0].references?.length ?? 0) > 0
+            isElementShared(selectedElements[0])
         );
     }, [isSingleElement, selectedElements]);
 
