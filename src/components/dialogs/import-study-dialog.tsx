@@ -129,7 +129,6 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                         message: intl.formatMessage(descriptor, values).toString(),
                     });
                 });
-            dispatch(addUploadingElement(uploadingStudy));
         },
         [dispatch, intl, onClose, selectedDirectory?.elementUuid, setError, snackError, userId]
     );
