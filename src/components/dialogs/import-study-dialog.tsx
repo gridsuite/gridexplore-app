@@ -118,7 +118,10 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 data.studyFiles?.[0] as File,
                 selectedDirectory.elementUuid
             )
-                .then(() => onClose())
+                .then(() => {
+                    dispatch(removeUploadingElement(uploadingStudy));
+                    onClose();
+                })
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
                     const { descriptor, values } = extractErrorMessageDescriptor(error, 'studyImportError');
@@ -126,9 +129,6 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                         message: intl.formatMessage(descriptor, values).toString(),
                     });
                 });
-
-            // the uploadingStudy ghost element will be removed when directory
-            // content updated by fetch
             dispatch(addUploadingElement(uploadingStudy));
         },
         [dispatch, intl, onClose, selectedDirectory?.elementUuid, setError, snackError, userId]
@@ -167,7 +167,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 <Grid container alignItems="center" spacing={1} pt={1}>
                     <Grid>
                         <Button variant="contained" color="primary" component="label">
-                            <FormattedMessage id="uploadStudy" />
+                            <FormattedMessage id="importStudy" />
                             <Input
                                 ref={ref}
                                 type="file"
