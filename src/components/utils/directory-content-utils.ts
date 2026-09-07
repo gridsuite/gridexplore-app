@@ -141,7 +141,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'directoryContent.column.sharingStatus',
+            id: DirectoryField.SHARING,
         }),
         field: DirectoryField.SHARING,
         sortable: true,

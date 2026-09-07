@@ -12,7 +12,7 @@
     "modified": "Modif.",
     "modifiedBy": "Modif. by",
     "directoryContent.column.description": "Desc.",
-    "directoryContent.column.sharingStatus": "Status",
+    "sharingStatus": "Status",
     "directoryContent.column.shared": "Shared",
     "private": "private",
     "public": "public",

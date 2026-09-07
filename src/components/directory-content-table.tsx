@@ -158,9 +158,6 @@ export function DirectoryContentTable({
             }}
             selectionColumnDef={{
                 pinned: 'left',
-                // Tighten the gap between the checkbox and the first column's title, in both
-                // the body and the header (default width is 50, default cell/header padding
-                // is --ag-cell-horizontal-padding).
                 width: 32,
                 cellStyle: { paddingLeft: '8px', paddingRight: 0 },
                 headerStyle: { paddingLeft: '8px', paddingRight: 0 },
