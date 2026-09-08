@@ -12,7 +12,6 @@ import { isElementShared } from '../../../utils/element-utils';
 
 const styles = {
     tableCell: {
-        fontSize: '1rem',
         display: 'flex',
         alignItems: 'center',
         gap: 0.5,
@@ -33,7 +32,7 @@ export function SharingStatusCellRenderer({ data }: Readonly<SharingStatusCellRe
     }
     return (
         <Box sx={styles.tableCell} data-testid="ElementSharingStatus">
-            <DatasetLinkedIcon fontSize="small" />
+            <DatasetLinkedIcon fontSize="medium" />
             <FormattedMessage id="directoryContent.column.shared" />
         </Box>
     );
