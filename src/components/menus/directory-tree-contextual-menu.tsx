@@ -221,6 +221,11 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         }
 
         if (directory && directoryWritable) {
+            menuItems.push({
+                messageDescriptorId: 'createNewStudy',
+                callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
+                icon: <AddIcon fontSize="small" data-testid="CreateNewStudyIcon" />,
+            });
             if (isDeveloperMode) {
                 menuItems.push({
                     messageDescriptorId: 'importStudy',
@@ -229,11 +234,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                 });
             }
             menuItems.push(
-                {
-                    messageDescriptorId: 'createNewStudy',
-                    callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
-                    icon: <AddIcon fontSize="small" data-testid="CreateNewStudyIcon" />,
-                },
                 {
                     messageDescriptorId: 'createNewContingencyList',
                     icon: <AddIcon fontSize="small" data-testid="CreateNewContingencyListIcon" />,
