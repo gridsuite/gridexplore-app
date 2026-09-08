@@ -6,6 +6,7 @@
  */
 
 import { CustomAGGrid, ElementAttributes, ElementType, type MuiStyles } from '@gridsuite/commons-ui';
+import { useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import type {
     AgGridEvent,
@@ -64,13 +65,10 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
 };
 
 const styles = {
-    grid: {
-        '--ag-cell-horizontal-padding': '8px',
+    grid: (theme) => ({
+        '--ag-cell-horizontal-padding': theme.spacing(1),
         '& .ag-header-select-all': {
             marginRight: 0,
-        },
-        '& .ag-header-cell[col-id="elementName"], & .ag-cell[col-id="elementName"]': {
-            paddingLeft: '4px',
         },
         '& .ag-header-cell .ag-sort-indicator-icon.ag-sort-none-icon': {
             opacity: 0,
@@ -79,7 +77,7 @@ const styles = {
         '& .ag-header-cell:hover .ag-sort-indicator-icon.ag-sort-none-icon': {
             opacity: 1,
         },
-    },
+    }),
 } as const satisfies MuiStyles;
 
 export function DirectoryContentTable({
@@ -93,6 +91,7 @@ export function DirectoryContentTable({
     colDef,
     selectedDirectoryWritable,
 }: Readonly<DirectoryContentTableProps>) {
+    const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
 
     const getCustomRowStyle = useCallback(
@@ -159,8 +158,8 @@ export function DirectoryContentTable({
             selectionColumnDef={{
                 pinned: 'left',
                 width: 32,
-                cellStyle: { paddingLeft: '8px', paddingRight: 0 },
-                headerStyle: { paddingLeft: '8px', paddingRight: 0 },
+                cellStyle: { paddingLeft: theme.spacing(1), paddingRight: 0 },
+                headerStyle: { paddingLeft: theme.spacing(1), paddingRight: 0 },
             }}
             sx={styles.grid}
             onGridReady={onGridReady}

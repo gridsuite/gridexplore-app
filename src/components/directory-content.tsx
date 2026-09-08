@@ -8,7 +8,7 @@
 import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, type BoxProps, Button, type ButtonProps, CircularProgress } from '@mui/material';
+import { Box, type BoxProps, Button, type ButtonProps, CircularProgress, useTheme } from '@mui/material';
 import {
     type ElementAttributes,
     type ItemSelectionForCopy,
@@ -105,6 +105,7 @@ export default function DirectoryContent() {
     const [isMissingDataAfterDirChange, setIsMissingDataAfterDirChange] = useState(true);
 
     const intl = useIntl();
+    const theme = useTheme();
     const [rows, childrenMetadata] = useDirectoryContent();
     const [checkedRows, setCheckedRows] = useState<ElementAttributes[]>([]);
 
@@ -317,7 +318,7 @@ export default function DirectoryContent() {
                 handleCellContextualMenu={onCellContextMenu}
                 handleRowSelected={updateCheckedRows}
                 handleCellClick={handleCellClick}
-                colDef={getColumnsDefinition(childrenMetadata, intl, directoryWritable)}
+                colDef={getColumnsDefinition(childrenMetadata, intl, theme, directoryWritable)}
                 getRowStyle={getRowStyle}
                 onGridReady={onGridReady}
                 selectedDirectoryWritable={directoryWritable}

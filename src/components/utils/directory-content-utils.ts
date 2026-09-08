@@ -6,6 +6,7 @@
  */
 
 import { IntlShape } from 'react-intl';
+import type { Theme } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { RefObject } from 'react';
@@ -73,14 +74,18 @@ export const defaultColumnDefinition: ColDef<unknown> = {
 export const getColumnsDefinition = (
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape,
+    theme: Theme,
     directoryWritable: boolean
 ): ColDef[] => [
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.NAME,
+            id: 'directoryContent.column.name',
         }),
         field: DirectoryField.NAME,
         pinned: true,
+        // Reduce the gap between the selection checkbox and the element name.
+        cellStyle: { paddingLeft: theme.spacing(0.75) },
+        headerStyle: { paddingLeft: theme.spacing(0.75) },
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata,
@@ -104,7 +109,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.TYPE,
+            id: 'directoryContent.column.type',
         }),
         field: DirectoryField.TYPE,
         sortable: true,
@@ -141,7 +146,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.SHARING,
+            id: 'directoryContent.column.sharingStatus',
         }),
         field: DirectoryField.SHARING,
         sortable: true,
@@ -153,7 +158,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'creator',
+            id: 'directoryContent.column.creator',
         }),
         field: DirectoryField.OWNER,
         cellRenderer: UserCellRenderer,
@@ -162,7 +167,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'created',
+            id: 'directoryContent.column.created',
         }),
         field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
@@ -171,7 +176,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'modifiedBy',
+            id: 'directoryContent.column.modifiedBy',
         }),
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
@@ -180,7 +185,7 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'modified',
+            id: 'directoryContent.column.modified',
         }),
         field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
