@@ -6,6 +6,7 @@
  */
 
 import { IntlShape } from 'react-intl';
+import type { Theme } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { RefObject } from 'react';
@@ -16,12 +17,15 @@ import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
 import { TypeCellRenderer } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
+import { SharingStatusCellRenderer } from './renderers/sharing-status-cell-renderer';
 import { getElementTypeTranslation } from './translation-utils';
+import { isElementShared } from '../../utils/element-utils';
 
 export enum DirectoryField {
     NAME = 'elementName',
     DESCRIPTION = 'description',
     TYPE = 'type',
+    SHARING = 'sharingStatus',
     OWNER = 'ownerLabel',
     CREATION_DATE = 'creationDate',
     LAST_UPDATE_LABEL = 'lastModifiedByLabel',
@@ -56,6 +60,7 @@ export const defaultColumnDefinition: ColDef<unknown> = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     lockVisible: true,
+    unSortIcon: true,
     comparator: (valueA: string | null | undefined, valueB: string | null | undefined) => {
         // Need to check because ghost elements (uploading ones) don't have
         // created or modification dates yet
@@ -69,25 +74,29 @@ export const defaultColumnDefinition: ColDef<unknown> = {
 export const getColumnsDefinition = (
     childrenMetadata: Record<UUID, ElementAttributes>,
     intl: IntlShape,
+    theme: Theme,
     directoryWritable: boolean
 ): ColDef[] => [
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.NAME,
+            id: 'directoryContent.column.name',
         }),
         field: DirectoryField.NAME,
         pinned: true,
+        // Reduce the gap between the selection checkbox and the element name.
+        cellStyle: { paddingLeft: theme.spacing(0.75) },
+        headerStyle: { paddingLeft: theme.spacing(0.75) },
         cellRenderer: NameCellRenderer,
         cellRendererParams: {
             childrenMetadata,
             directoryWritable,
         },
-        flex: 2,
-        minWidth: 400,
+        width: 300,
+        minWidth: 125,
     },
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.DESCRIPTION,
+            id: 'directoryContent.column.description',
         }),
         field: DirectoryField.DESCRIPTION,
         cellRenderer: DescriptionCellRenderer,
@@ -95,12 +104,12 @@ export const getColumnsDefinition = (
             directoryWritable,
         },
         sortable: false,
-        minWidth: 110,
+        minWidth: 90,
         flex: 1,
     },
     {
         headerName: intl.formatMessage({
-            id: DirectoryField.TYPE,
+            id: 'directoryContent.column.type',
         }),
         field: DirectoryField.TYPE,
         sortable: true,
@@ -108,7 +117,7 @@ export const getColumnsDefinition = (
         cellRendererParams: {
             childrenMetadata,
         },
-        minWidth: 200,
+        minWidth: 230,
         flex: 2,
         comparator: (
             valueA: string,
@@ -137,38 +146,50 @@ export const getColumnsDefinition = (
     },
     {
         headerName: intl.formatMessage({
-            id: 'creator',
+            id: 'directoryContent.column.sharingStatus',
         }),
-        field: DirectoryField.OWNER,
-        cellRenderer: UserCellRenderer,
-        minWidth: 110,
+        field: DirectoryField.SHARING,
+        sortable: true,
+        cellRenderer: SharingStatusCellRenderer,
+        valueGetter: (params) => (params.data && isElementShared(params.data as ElementAttributes) ? 1 : 0),
+        comparator: (valueA: number, valueB: number) => valueA - valueB,
+        minWidth: 120,
         flex: 1,
     },
     {
         headerName: intl.formatMessage({
-            id: 'created',
+            id: 'directoryContent.column.creator',
+        }),
+        field: DirectoryField.OWNER,
+        cellRenderer: UserCellRenderer,
+        minWidth: 100,
+        flex: 1,
+    },
+    {
+        headerName: intl.formatMessage({
+            id: 'directoryContent.column.created',
         }),
         field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
-        minWidth: 130,
+        minWidth: 120,
         flex: 2,
     },
     {
         headerName: intl.formatMessage({
-            id: 'modifiedBy',
+            id: 'directoryContent.column.modifiedBy',
         }),
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
-        minWidth: 110,
+        minWidth: 120,
         flex: 1,
     },
     {
         headerName: intl.formatMessage({
-            id: 'modified',
+            id: 'directoryContent.column.modified',
         }),
         field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
-        minWidth: 130,
+        minWidth: 110,
         flex: 2,
     },
 ];
