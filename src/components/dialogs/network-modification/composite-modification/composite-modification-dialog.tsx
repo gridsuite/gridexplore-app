@@ -86,6 +86,13 @@ import {
     GeneratorModificationForm,
     NAME_EMPTY,
     isDisabledValidationButton,
+    VscHvdcLineForm,
+    vscHvdcLineCreationFormSchema,
+    vscHvdcLineCreationDtoToForm,
+    vscHvdcLineCreationFormToDto,
+    vscHvdcLineModificationFormSchema,
+    vscHvdcLineModificationDtoToForm,
+    vscHvdcLineModificationFormToDto,
     LineForm,
     lineCreationFormSchema,
     lineCreationDtoToForm,
@@ -149,6 +156,8 @@ import {
     TWT_TAB_FIELDS,
     VoltageLevelTab,
     VOLTAGE_LEVEL_TAB_FIELDS,
+    HVDC_LINE_TAB_FIELDS,
+    VscHvdcLineDialogTab,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -292,6 +301,40 @@ export default function CompositeModificationDialog({
                         titleId: 'ModifySubstation',
                         ModificationForm: SubstationModificationForm,
                         removeOptional: true,
+                    },
+                ],
+                [
+                    ModificationType.VSC_CREATION,
+                    {
+                        formSchema: vscHvdcLineCreationFormSchema,
+                        dtoToForm: vscHvdcLineCreationDtoToForm,
+                        formToDto: vscHvdcLineCreationFormToDto,
+                        errorHeaderId: 'HvdcCreationError',
+                        titleId: 'CreateVsc',
+                        ModificationForm: VscHvdcLineForm,
+                        isModification: false,
+                        removeOptional: false,
+                        tabsProps: {
+                            defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LINE_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
+                    ModificationType.VSC_MODIFICATION,
+                    {
+                        formSchema: vscHvdcLineModificationFormSchema,
+                        dtoToForm: (lineDto) => vscHvdcLineModificationDtoToForm(lineDto, false),
+                        formToDto: vscHvdcLineModificationFormToDto,
+                        errorHeaderId: 'HvdcModificationError',
+                        titleId: 'ModifyVsc',
+                        ModificationForm: VscHvdcLineForm,
+                        isModification: true,
+                        removeOptional: true,
+                        tabsProps: {
+                            defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LINE_TAB_FIELDS,
+                        },
                     },
                 ],
                 [
