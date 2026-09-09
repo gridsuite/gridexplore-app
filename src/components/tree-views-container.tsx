@@ -17,6 +17,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
 import {
+    DirectoriesNotificationType,
     type ElementAttributes,
     ElementType,
     fetchDirectoryContent,
@@ -40,7 +41,7 @@ import {
     setUploadingElements,
 } from '../redux/actions';
 import DirectoryTreeView from './directory-tree-view';
-import { DirectoryInfos, isExportCaseNotification, NotificationType } from '../utils/notificationType';
+import { DirectoryInfos, isExportCaseNotification } from '../utils/notificationType';
 import * as constants from '../utils/UIconstants';
 import { LAST_ELEMENT_INDEX } from '../utils/UIconstants';
 import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu';
@@ -490,13 +491,13 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         function updateDirectory(
             directory: DirectoryInfos,
             isDirectoryMoving: boolean,
-            notificationType: NotificationType
+            notificationType: DirectoriesNotificationType
         ) {
             if (directory.isRoot) {
                 updateRootDirectories();
                 if (
                     selectedDirectoryRef.current != null && // nothing to do if nothing already selected
-                    notificationType === NotificationType.DELETE_DIRECTORY &&
+                    notificationType === DirectoriesNotificationType.DELETE_DIRECTORY &&
                     selectedDirectoryRef.current.elementUuid === directory.uuid
                 ) {
                     // Selected root directory deleted: go back to root (selection follows from the URL).
@@ -511,7 +512,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
                 // if it's a deleted root directory then do not continue because we don't need
                 // to fetch its content anymore
-                if (notificationType === NotificationType.DELETE_DIRECTORY) {
+                if (notificationType === DirectoriesNotificationType.DELETE_DIRECTORY) {
                     return;
                 }
             }
@@ -531,7 +532,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         }
 
         if (directoryUpdatedEvent.eventData?.headers) {
-            const notificationType = directoryUpdatedEvent.eventData.headers.notificationType as NotificationType;
+            const notificationType = directoryUpdatedEvent.eventData.headers
+                .notificationType as DirectoriesNotificationType;
             const directoriesInfos = JSON.parse(
                 directoryUpdatedEvent.eventData.headers.directoriesInfos as string
             ) as DirectoryInfos[];
