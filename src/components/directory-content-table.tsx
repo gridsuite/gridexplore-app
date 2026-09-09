@@ -65,11 +65,7 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
 };
 
 const styles = {
-    grid: (theme) => ({
-        '--ag-cell-horizontal-padding': theme.spacing(1),
-        '& .ag-header-select-all': {
-            marginRight: 0,
-        },
+    grid: () => ({
         '& .ag-header-cell .ag-sort-indicator-icon.ag-sort-none-icon': {
             opacity: 0,
             transition: 'opacity 0.15s',
