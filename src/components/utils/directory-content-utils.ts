@@ -10,10 +10,11 @@ import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { RefObject } from 'react';
 import { ColDef, IRowNode } from 'ag-grid-community';
-import { ElementAttributes, UserCellRenderer } from '@gridsuite/commons-ui';
+import type { ElementAttributes } from '@gridsuite/commons-ui';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
 import { TypeCellRenderer } from './renderers/type-cell-renderer';
+import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { getElementTypeTranslation } from './translation-utils';
 
