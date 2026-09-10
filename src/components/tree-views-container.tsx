@@ -594,6 +594,10 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         [handleCloseDirectoryMenu, openDialog]
     );
 
+    const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
+    // once scrolled, we reset the state
+    const handleScrolledToDirectory = useCallback(() => setDirectoryToScroll(undefined), []);
+
     // TODO TypeScript say that treeData.mapData is never falsy?...
     const directoryViews = useMemo(
         () =>
@@ -605,30 +609,21 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     mapData={treeDataRef.current?.mapData}
                     onContextMenu={onContextMenu}
                     onDirectoryUpdate={updateDirectoryTree}
+                    directoryToScroll={directoryToScroll}
+                    onScrolledToDirectory={handleScrolledToDirectory}
                 />
             )),
-        [onContextMenu, treeData.mapData, treeData.rootDirectories, updateDirectoryTree]
+        [
+            onContextMenu,
+            treeData.mapData,
+            treeData.rootDirectories,
+            updateDirectoryTree,
+            directoryToScroll,
+            handleScrolledToDirectory,
+        ]
     );
 
     const { loadPath } = useDirectoryPathLoader();
-
-    const [directoryToScroll, setDirectoryToScroll] = useState<UUID | undefined>(undefined);
-
-    useEffect(() => {
-        if (!directoryToScroll) {
-            return undefined;
-        }
-        // Even if the directoryHtmlElement below exists, there are still new renders that will break the scroll on nested directories.
-        // Using a delay with timeout is not clean but is the only short and working solution we found.
-        const timeout = setTimeout(() => {
-            document.getElementById(directoryToScroll)?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center',
-                inline: 'nearest',
-            });
-        }, 700);
-        return () => clearTimeout(timeout);
-    }, [directoryToScroll]);
 
     /* The URL (sourceItemUuid) is the single source of truth: this is the ONLY place that turns it into
        `selectedDirectory`. Every user action just navigates, and the selection/content follows. */
