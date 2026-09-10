@@ -42,7 +42,7 @@ export const useTextValue = ({
         setHasChanged(true);
     }, []);
 
-    const { input: slotPropsInput, formHelperText: slotPropsFormHelperText, ...slotProps } = formProps?.slotProps ?? {};
+    const { slotProps, ...otherFormProps } = formProps;
 
     const field = useMemo(
         () => (
@@ -54,21 +54,19 @@ export const useTextValue = ({
                 value={value}
                 style={{ width: '100%' }}
                 onChange={handleChangeValue}
-                {...formProps}
+                {...otherFormProps}
                 slotProps={{
-                    ...slotProps,
-                    input: {
-                        ...slotPropsInput,
-                        endAdornment: adornment,
-                    },
                     formHelperText: {
                         sx: styles.helperText,
-                        ...slotPropsFormHelperText,
+                    },
+                    ...slotProps,
+                    input: {
+                        endAdornment: adornment,
                     },
                 }}
             />
         ),
-        [id, label, value, handleChangeValue, formProps, slotProps, slotPropsInput, adornment, slotPropsFormHelperText]
+        [id, label, value, handleChangeValue, otherFormProps, slotProps, adornment]
     );
 
     useEffect(() => setValue(defaultValue), [defaultValue]);
