@@ -18,7 +18,7 @@
     "directoryContent.column.creator": "Owner",
     "directoryContent.column.created": "Created",
     "directoryContent.column.modifiedBy": "Modif. by",
-    "directoryContent.column.modified": "Modif.",
+    "directoryContent.column.modified": "Modified",
     "private": "private",
     "public": "public",
     "emptyDir": "Empty directory",
