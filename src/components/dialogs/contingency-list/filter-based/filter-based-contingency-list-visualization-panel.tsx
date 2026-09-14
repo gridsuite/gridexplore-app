@@ -207,13 +207,34 @@ export function FilterBasedContingencyListVisualizationPanel(
             >
                 <FormattedMessage id="visualization" />
             </Box>
-            <Grid container alignItems="center" marginY={1}>
-                <Grid paddingTop={1}>
+            <Grid
+                container
+                sx={{
+                    alignItems: 'center',
+                    marginY: 1,
+                }}
+            >
+                <Grid
+                    sx={{
+                        paddingTop: 1,
+                    }}
+                >
                     <FolderOutlined />
                 </Grid>
-                <Grid size="grow" paddingLeft={1}>
+                <Grid
+                    size="grow"
+                    sx={{
+                        paddingLeft: 1,
+                    }}
+                >
                     {selectedStudy.length > 0 ? (
-                        <Typography noWrap fontWeight="bold" title={studyName}>
+                        <Typography
+                            noWrap
+                            title={studyName}
+                            sx={{
+                                fontWeight: 'bold',
+                            }}
+                        >
                             {formatPathName}
                         </Typography>
                     ) : (

@@ -15,7 +15,7 @@ export interface SearchBarRenderInputProps extends AutocompleteRenderInputParams
 
 export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>) {
     const intl = useIntl();
-    const { InputProps } = props;
+    const { slotProps } = props;
 
     return (
         <TextField
@@ -27,11 +27,11 @@ export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>)
             variant="outlined"
             slotProps={{
                 input: {
-                    ...InputProps,
+                    ...slotProps.input,
                     startAdornment: (
                         <>
                             <Search data-testid="SearchIcon" />
-                            {InputProps.startAdornment}
+                            {slotProps.input.startAdornment}
                         </>
                     ),
                 },
