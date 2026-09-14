@@ -180,7 +180,7 @@ export const getColumnsDefinition = (
         }),
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
-        minWidth: 120,
+        minWidth: 130,
         flex: 1,
     },
     {
