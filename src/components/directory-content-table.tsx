@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomAGGrid, ElementAttributes, ElementType } from '@gridsuite/commons-ui';
+import { CustomAGGrid, ElementAttributes, ElementType, type MuiStyles } from '@gridsuite/commons-ui';
+import { useTheme } from '@mui/material';
 import { AgGridReact, AgGridReactProps } from 'ag-grid-react';
 import type {
     AgGridEvent,
@@ -63,6 +64,18 @@ const reorderColumns = (colDef: ColDef[], newFieldOrder: string[] | undefined): 
         });
 };
 
+const styles = {
+    grid: () => ({
+        '& .ag-header-cell .ag-sort-indicator-icon.ag-sort-none-icon': {
+            opacity: 0,
+            transition: 'opacity 0.15s',
+        },
+        '& .ag-header-cell:hover .ag-sort-indicator-icon.ag-sort-none-icon': {
+            opacity: 1,
+        },
+    }),
+} as const satisfies MuiStyles;
+
 export function DirectoryContentTable({
     gridRef,
     rows,
@@ -74,6 +87,7 @@ export function DirectoryContentTable({
     colDef,
     selectedDirectoryWritable,
 }: Readonly<DirectoryContentTableProps>) {
+    const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
 
     const getCustomRowStyle = useCallback(
@@ -137,7 +151,13 @@ export function DirectoryContentTable({
                 checkboxes: selectedDirectoryWritable,
                 headerCheckbox: selectedDirectoryWritable,
             }}
-            selectionColumnDef={{ pinned: 'left' }}
+            selectionColumnDef={{
+                pinned: 'left',
+                width: 32,
+                cellStyle: { paddingLeft: theme.spacing(1), paddingRight: 0 },
+                headerStyle: { paddingLeft: theme.spacing(1), paddingRight: 0 },
+            }}
+            sx={styles.grid}
             onGridReady={onGridReady}
             onCellContextMenu={handleCellContextualMenu}
             onCellClicked={handleCellClick}
