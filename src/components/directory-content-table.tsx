@@ -21,7 +21,11 @@ import type {
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReorderedColumns } from '../redux/actions';
-import { defaultColumnDefinition, DirectoryField } from './utils/directory-content-utils';
+import {
+    defaultColumnDefinition,
+    type DirectoryContentGridContext,
+    DirectoryField,
+} from './utils/directory-content-utils';
 import { AppState } from '../redux/types';
 import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
@@ -35,10 +39,13 @@ export interface DirectoryContentTableProps extends Pick<
     handleRowSelected: () => void;
     handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
+    context: DirectoryContentGridContext;
     selectedDirectoryWritable: boolean;
 }
 
 const OVERFLOWABLE_COLUMNS = [DirectoryField.NAME.toString(), DirectoryField.TYPE.toString()];
+
+const CONTEXT_DEPENDENT_COLUMNS = [...OVERFLOWABLE_COLUMNS, DirectoryField.DESCRIPTION.toString()];
 
 const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
@@ -85,10 +92,18 @@ export function DirectoryContentTable({
     handleCellClick,
     onGridReady,
     colDef,
+    context,
     selectedDirectoryWritable,
 }: Readonly<DirectoryContentTableProps>) {
     const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
+
+    useEffect(() => {
+        const api = gridRef.current?.api;
+        // ag-grid-react may apply the context prop later: set it here so the refreshed cells read the new one
+        api?.setGridOption('context', context);
+        api?.refreshCells({ force: true, columns: CONTEXT_DEPENDENT_COLUMNS });
+    }, [context, gridRef]);
 
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
@@ -167,6 +182,7 @@ export function DirectoryContentTable({
             onColumnMoved={onColumnMoved}
             animateRows
             columnDefs={columnDefs}
+            context={context}
             getRowStyle={getCustomRowStyle}
             // We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}

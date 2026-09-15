@@ -6,9 +6,9 @@
  */
 import { type ElementAttributes, ElementType, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import type { UUID } from 'node:crypto';
 import { Box } from '@mui/material';
 import { getElementTypeTranslation } from '../translation-utils';
+import type { DirectoryContentGridContext } from '../directory-content-utils';
 
 // This function is used to lowercase all the characters in a string except the first one
 const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -26,10 +26,10 @@ const styles = {
 
 export type TypeCellRendererProps = {
     data: ElementAttributes;
-    childrenMetadata: Record<UUID, ElementAttributes>;
+    context: DirectoryContentGridContext;
 };
 
-export function TypeCellRenderer({ data, childrenMetadata }: Readonly<TypeCellRendererProps>) {
+export function TypeCellRenderer({ data, context: { childrenMetadata } }: Readonly<TypeCellRendererProps>) {
     const intl = useIntl();
 
     const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;

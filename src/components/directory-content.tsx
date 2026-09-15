@@ -26,6 +26,7 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,
+    type DirectoryContentGridContext,
     formatMetadata,
     getColumnsDefinition,
     isRowUnchecked,
@@ -140,6 +141,13 @@ export default function DirectoryContent() {
         // changes reference on every tree update, which would otherwise re-run this check.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDirectory?.elementUuid]);
+
+    const columnDefinitions = useMemo(() => getColumnsDefinition(intl, theme), [intl, theme]);
+
+    const gridContext = useMemo<DirectoryContentGridContext>(
+        () => ({ childrenMetadata, directoryWritable }),
+        [childrenMetadata, directoryWritable]
+    );
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
@@ -318,7 +326,8 @@ export default function DirectoryContent() {
                 handleCellContextualMenu={onCellContextMenu}
                 handleRowSelected={updateCheckedRows}
                 handleCellClick={handleCellClick}
-                colDef={getColumnsDefinition(childrenMetadata, intl, theme, directoryWritable)}
+                colDef={columnDefinitions}
+                context={gridContext}
                 getRowStyle={getRowStyle}
                 onGridReady={onGridReady}
                 selectedDirectoryWritable={directoryWritable}
