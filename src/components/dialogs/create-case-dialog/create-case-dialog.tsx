@@ -103,7 +103,12 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Stack spacing={2} marginTop="auto">
+            <Stack
+                spacing={2}
+                sx={{
+                    marginTop: 'auto',
+                }}
+            >
                 <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.CASE_NAME}

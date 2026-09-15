@@ -229,7 +229,12 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
-            <Stack spacing={2} marginTop="auto">
+            <Stack
+                spacing={2}
+                sx={{
+                    marginTop: 'auto',
+                }}
+            >
                 <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.STUDY_NAME}
@@ -252,7 +257,11 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
                 <UploadNewCase getCurrentCaseImportParams={getCurrentCaseImportParams} />
             )}
             <ImportParametersSection />
-            <Grid pt={1}>
+            <Grid
+                sx={{
+                    pt: 1,
+                }}
+            >
                 <ErrorInput name={`root.${FieldConstants.API_CALL}`} InputField={FieldErrorAlert} />
             </Grid>
         </CustomMuiDialog>
