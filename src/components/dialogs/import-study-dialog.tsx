@@ -106,7 +106,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 id: keyGenerator()(),
                 elementName: studyName,
                 directory: selectedDirectory.elementUuid,
-                type: ElementType.STUDY,
+                type: ElementType.DIRECTORY,
                 owner: userId,
                 lastModifiedBy: userId,
                 uploading: true,
@@ -152,7 +152,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                     <PrefilledNameInput
                         name={FieldConstants.NAME}
                         label="nameProperty"
-                        elementType={ElementType.STUDY}
+                        elementType={ElementType.DIRECTORY}
                     />
                 </Grid>
                 <Grid
