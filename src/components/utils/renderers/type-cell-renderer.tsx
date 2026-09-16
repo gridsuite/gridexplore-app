@@ -4,14 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { type ElementAttributes, ElementType, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
-import { useIntl } from 'react-intl';
+import { type ElementAttributes, type MuiStyles, OverflowableText } from '@gridsuite/commons-ui';
 import { Box } from '@mui/material';
-import { getElementTypeTranslation } from '../translation-utils';
 import type { DirectoryContentGridContext } from '../directory-content-utils';
-
-// This function is used to lowercase all the characters in a string except the first one
-const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
 const styles = {
     tooltip: {
@@ -26,29 +21,16 @@ const styles = {
 
 export type TypeCellRendererProps = {
     data: ElementAttributes;
+    // The cell value is already the translated label, computed once by the column valueGetter.
+    value: string;
     context: DirectoryContentGridContext;
 };
 
-export function TypeCellRenderer({ data, context: { childrenMetadata } }: Readonly<TypeCellRendererProps>) {
-    const intl = useIntl();
-
-    const specificMetadata = childrenMetadata[data?.elementUuid]?.specificMetadata;
-
+export function TypeCellRenderer({ data, value, context: { childrenMetadata } }: Readonly<TypeCellRendererProps>) {
     return (
         childrenMetadata[data?.elementUuid] && (
             <Box sx={styles.tableCell}>
-                <OverflowableText
-                    text={getElementTypeTranslation(
-                        data?.type,
-                        specificMetadata?.type?.toString(),
-                        data?.type === ElementType.SPREADSHEET_CONFIG
-                            ? (toTitleCase(specificMetadata.sheetType ?? 'no-type') ?? null)
-                            : (specificMetadata.format?.toString() ?? null),
-                        intl
-                    )}
-                    tooltipSx={styles.tooltip}
-                    data-testid="ElementType"
-                />
+                <OverflowableText text={value} tooltipSx={styles.tooltip} data-testid="ElementType" />
             </Box>
         )
     );

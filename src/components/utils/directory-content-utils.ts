@@ -18,7 +18,7 @@ import { TypeCellRenderer } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { SharingStatusCellRenderer } from './renderers/sharing-status-cell-renderer';
-import { getElementTypeTranslation } from './translation-utils';
+import { getElementTypeLabel } from './translation-utils';
 import { isElementShared } from '../../utils/element-utils';
 
 export enum DirectoryField {
@@ -113,10 +113,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
             if (!data?.type) {
                 return '';
             }
-            const metaData = data.elementUuid ? context.childrenMetadata[data.elementUuid]?.specificMetadata : null;
-            const subtype = metaData?.type?.toString() ?? null;
-            const formatCase = metaData?.format?.toString() ?? null;
-            return getElementTypeTranslation(data.type, subtype, formatCase, intl);
+            return getElementTypeLabel(data.type, context.childrenMetadata[data.elementUuid]?.specificMetadata, intl);
         },
         comparator: (valueA: string, valueB: string) => valueA.localeCompare(valueB),
     },
