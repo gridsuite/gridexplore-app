@@ -13,13 +13,13 @@ import {
     DescriptionField,
     ElementType,
     ErrorInput,
-    extractErrorMessageDescriptor,
     FieldConstants,
     FieldErrorAlert,
     isObjectEmpty,
     keyGenerator,
     MAX_CHAR_DESCRIPTION,
     NAME_EMPTY,
+    snackWithFallback,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, Grid, Input, Stack } from '@mui/material';
@@ -83,7 +83,6 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
 
     const {
         formState: { errors, isValid },
-        setError,
         setValue,
     } = importStudyFormMethods;
 
@@ -106,7 +105,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 id: keyGenerator()(),
                 elementName: studyName,
                 directory: selectedDirectory.elementUuid,
-                type: ElementType.DIRECTORY,
+                type: ElementType.STUDY,
                 owner: userId,
                 lastModifiedBy: userId,
                 uploading: true,
@@ -124,13 +123,15 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 })
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
-                    const { descriptor, values } = extractErrorMessageDescriptor(error, 'studyImportError');
-                    setError(`root.${FieldConstants.API_CALL}`, {
-                        message: intl.formatMessage(descriptor, values).toString(),
+                    snackWithFallback(snackError, error, {
+                        headerId: 'studyCreationError',
+                        headerValues: {
+                            studyName,
+                        },
                     });
                 });
         },
-        [dispatch, intl, onClose, selectedDirectory?.elementUuid, setError, snackError, userId]
+        [dispatch, onClose, selectedDirectory?.elementUuid, snackError, userId]
     );
     const isFormValid = isObjectEmpty(errors) && isValid;
     return (
