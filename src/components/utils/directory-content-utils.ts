@@ -10,7 +10,7 @@ import type { Theme } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { RefObject } from 'react';
-import { ColDef, IRowNode } from 'ag-grid-community';
+import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
@@ -31,6 +31,11 @@ export enum DirectoryField {
     LAST_UPDATE_LABEL = 'lastModifiedByLabel',
     LAST_UPDATE_DATE = 'lastModificationDate',
 }
+
+export type DirectoryContentGridContext = {
+    childrenMetadata: Record<UUID, ElementAttributes>;
+    directoryWritable: boolean;
+};
 
 export const formatMetadata = (
     data: ElementAttributes,
@@ -71,12 +76,7 @@ export const defaultColumnDefinition: ColDef<unknown> = {
     },
 };
 
-export const getColumnsDefinition = (
-    childrenMetadata: Record<UUID, ElementAttributes>,
-    intl: IntlShape,
-    theme: Theme,
-    directoryWritable: boolean
-): ColDef[] => [
+export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] => [
     {
         headerName: intl.formatMessage({
             id: 'directoryContent.column.name',
@@ -87,10 +87,6 @@ export const getColumnsDefinition = (
         cellStyle: { paddingLeft: theme.spacing(0.75) },
         headerStyle: { paddingLeft: theme.spacing(0.75) },
         cellRenderer: NameCellRenderer,
-        cellRendererParams: {
-            childrenMetadata,
-            directoryWritable,
-        },
         width: 300,
         minWidth: 125,
     },
@@ -100,9 +96,6 @@ export const getColumnsDefinition = (
         }),
         field: DirectoryField.DESCRIPTION,
         cellRenderer: DescriptionCellRenderer,
-        cellRendererParams: {
-            directoryWritable,
-        },
         sortable: false,
         minWidth: 90,
         flex: 1,
@@ -114,35 +107,19 @@ export const getColumnsDefinition = (
         field: DirectoryField.TYPE,
         sortable: true,
         cellRenderer: TypeCellRenderer,
-        cellRendererParams: {
-            childrenMetadata,
-        },
         minWidth: 230,
         flex: 2,
-        comparator: (
-            valueA: string,
-            valueB: string,
-            nodeA: IRowNode<ElementAttributes>,
-            nodeB: IRowNode<ElementAttributes>
-        ) => {
-            const getTranslatedOrOriginalValue = (node: IRowNode<ElementAttributes>): string => {
-                const { type, elementUuid } = node.data ?? {};
-                if (!type) {
-                    return '';
-                }
-
-                const metaData = elementUuid ? childrenMetadata[elementUuid]?.specificMetadata : null;
-                const subtype = metaData?.type?.toString() ?? null;
-                const formatCase = metaData?.format?.toString() ?? null;
-
-                return getElementTypeTranslation(type, subtype, formatCase, intl);
-            };
-
-            const translatedA = getTranslatedOrOriginalValue(nodeA);
-            const translatedB = getTranslatedOrOriginalValue(nodeB);
-
-            return translatedA.localeCompare(translatedB);
+        // The sort relies on the metadata, which the comparator can't reach: expose the translated type as the value.
+        valueGetter: ({ data, context }: ValueGetterParams<ElementAttributes, string, DirectoryContentGridContext>) => {
+            if (!data?.type) {
+                return '';
+            }
+            const metaData = data.elementUuid ? context.childrenMetadata[data.elementUuid]?.specificMetadata : null;
+            const subtype = metaData?.type?.toString() ?? null;
+            const formatCase = metaData?.format?.toString() ?? null;
+            return getElementTypeTranslation(data.type, subtype, formatCase, intl);
         },
+        comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
     },
     {
         headerName: intl.formatMessage({
