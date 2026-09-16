@@ -330,7 +330,6 @@ export default function DirectoryContent() {
                 context={gridContext}
                 getRowStyle={getRowStyle}
                 onGridReady={onGridReady}
-                selectedDirectoryWritable={directoryWritable}
             />
         );
     };

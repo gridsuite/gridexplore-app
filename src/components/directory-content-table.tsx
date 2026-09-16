@@ -40,12 +40,15 @@ export interface DirectoryContentTableProps extends Pick<
     handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
     context: DirectoryContentGridContext;
-    selectedDirectoryWritable: boolean;
 }
 
 const OVERFLOWABLE_COLUMNS = [DirectoryField.NAME.toString(), DirectoryField.TYPE.toString()];
 
-const CONTEXT_DEPENDENT_COLUMNS = [...OVERFLOWABLE_COLUMNS, DirectoryField.DESCRIPTION.toString()];
+const CONTEXT_DEPENDENT_COLUMNS = [
+    DirectoryField.NAME.toString(),
+    DirectoryField.TYPE.toString(),
+    DirectoryField.DESCRIPTION.toString(),
+];
 
 const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
@@ -93,16 +96,20 @@ export function DirectoryContentTable({
     onGridReady,
     colDef,
     context,
-    selectedDirectoryWritable,
 }: Readonly<DirectoryContentTableProps>) {
     const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
+    const { directoryWritable } = context;
 
+    // ag-grid-react pushes the new context to the grid on its own (its prop sync effect runs before this one,
+    // being a child), but the cells and sort need to be refreshed manually.
     useEffect(() => {
         const api = gridRef.current?.api;
-        // ag-grid-react may apply the context prop later: set it here so the refreshed cells read the new one
-        api?.setGridOption('context', context);
-        api?.refreshCells({ force: true, columns: CONTEXT_DEPENDENT_COLUMNS });
+        if (!api) {
+            return;
+        }
+        api.refreshCells({ force: true, columns: CONTEXT_DEPENDENT_COLUMNS });
+        api.refreshClientSideRowModel('sort');
     }, [context, gridRef]);
 
     const getCustomRowStyle = useCallback(
@@ -118,7 +125,7 @@ export function DirectoryContentTable({
                 return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
             };
 
-            if (selectedDirectoryWritable && editableElement()) {
+            if (directoryWritable && editableElement()) {
                 style.cursor = 'pointer';
             }
             return {
@@ -126,7 +133,7 @@ export function DirectoryContentTable({
                 ...getRowStyle?.(cellData),
             };
         },
-        [getRowStyle, selectedDirectoryWritable]
+        [getRowStyle, directoryWritable]
     );
 
     const dispatch = useDispatch();
@@ -163,8 +170,8 @@ export function DirectoryContentTable({
             rowSelection={{
                 mode: 'multiRow',
                 enableClickSelection: false,
-                checkboxes: selectedDirectoryWritable,
-                headerCheckbox: selectedDirectoryWritable,
+                checkboxes: directoryWritable,
+                headerCheckbox: directoryWritable,
             }}
             selectionColumnDef={{
                 pinned: 'left',

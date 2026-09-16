@@ -119,7 +119,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
             const formatCase = metaData?.format?.toString() ?? null;
             return getElementTypeTranslation(data.type, subtype, formatCase, intl);
         },
-        comparator: (valueA: string, valueB: string) => valueA.localeCompare(valueB),
+        comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
     },
     {
         headerName: intl.formatMessage({
