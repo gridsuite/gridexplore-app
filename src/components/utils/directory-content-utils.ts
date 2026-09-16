@@ -109,7 +109,6 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         cellRenderer: TypeCellRenderer,
         minWidth: 230,
         flex: 2,
-        // The sort relies on the metadata, which the comparator can't reach: expose the translated type as the value.
         valueGetter: ({ data, context }: ValueGetterParams<ElementAttributes, string, DirectoryContentGridContext>) => {
             if (!data?.type) {
                 return '';
@@ -119,7 +118,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
             const formatCase = metaData?.format?.toString() ?? null;
             return getElementTypeTranslation(data.type, subtype, formatCase, intl);
         },
-        comparator: (valueA: string, valueB: string) => valueA.toLowerCase().localeCompare(valueB.toLowerCase()),
+        comparator: (valueA: string, valueB: string) => valueA.localeCompare(valueB),
     },
     {
         headerName: intl.formatMessage({
