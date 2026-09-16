@@ -91,7 +91,7 @@ export const getColumnsDefinition = (
             childrenMetadata,
             directoryWritable,
         },
-        width: 300,
+        initialWidth: 300,
         minWidth: 125,
     },
     {
@@ -105,7 +105,7 @@ export const getColumnsDefinition = (
         },
         sortable: false,
         minWidth: 90,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -118,7 +118,7 @@ export const getColumnsDefinition = (
             childrenMetadata,
         },
         minWidth: 230,
-        flex: 2,
+        initialFlex: 2,
         comparator: (
             valueA: string,
             valueB: string,
@@ -154,7 +154,7 @@ export const getColumnsDefinition = (
         valueGetter: (params) => (params.data && isElementShared(params.data as ElementAttributes) ? 1 : 0),
         comparator: (valueA: number, valueB: number) => valueA - valueB,
         minWidth: 120,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -163,7 +163,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.OWNER,
         cellRenderer: UserCellRenderer,
         minWidth: 100,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -172,7 +172,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 120,
-        flex: 2,
+        initialFlex: 2,
     },
     {
         headerName: intl.formatMessage({
@@ -181,7 +181,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
         minWidth: 130,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -190,6 +190,6 @@ export const getColumnsDefinition = (
         field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 110,
-        flex: 2,
+        initialFlex: 2,
     },
 ];
