@@ -102,8 +102,7 @@ export function DirectoryContentTable({
     const { directoryWritable } = context;
 
     // ag-grid-react pushes the new context to the grid on its own (its prop sync effect runs before this one,
-    // being a child), but a row data update only refreshes the cells whose value changed: these ones render
-    // the metadata presence and the write permission, which are not their value. So we refresh them explicitly.
+    // being a child), but we need to refresh the cells manually.
     useEffect(() => {
         const api = gridRef.current?.api;
         if (!api) {
