@@ -59,6 +59,11 @@
         "uuid": "^13.0.0",
         "yup": "^1.7.0"
     },
+    "overrides": {
+        "mui-nested-menu": {
+            "@mui/material": ">=5.0.0"
+        }
+    },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "^7.27.1",
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
