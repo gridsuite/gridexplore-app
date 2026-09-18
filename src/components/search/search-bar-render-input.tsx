@@ -26,6 +26,7 @@ export function SearchBarRenderInput(props: Readonly<SearchBarRenderInputProps>)
             })}
             variant="outlined"
             slotProps={{
+                ...slotProps,
                 input: {
                     ...slotProps.input,
                     startAdornment: (
