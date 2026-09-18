@@ -163,8 +163,7 @@ export default function ContingencyListFilterBasedForm({
                     container
                     wrap="nowrap"
                     columnSpacing={1.5}
-                    direction={vwBelow900px ? 'column' : 'row'}
-                    sx={{ height: '100%' }}
+                    sx={{ height: '100%', flexDirection: vwBelow900px ? 'column' : 'row' }}
                 >
                     <Grid {...containerProps}>
                         <Stack sx={{ height: '100%', minHeight: 0 }}>
@@ -174,7 +173,11 @@ export default function ContingencyListFilterBasedForm({
                                 elementType={ElementType.CONTINGENCY_LIST}
                                 activeDirectory={activeDirectory}
                             />
-                            <Box paddingY={1}>
+                            <Box
+                                sx={{
+                                    paddingY: 1,
+                                }}
+                            >
                                 <DescriptionField />
                             </Box>
                             <Box sx={{ flexGrow: 1, minHeight: 0 }}>
