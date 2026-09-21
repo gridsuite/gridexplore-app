@@ -7,7 +7,7 @@
 import { RefObject, useCallback } from 'react';
 import { ElementSearchInput, ElementSearchInputProps, Paginated, useElementSearch } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { TextFieldProps } from '@mui/material';
+import { PaperProps, TextFieldProps } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { searchElementsInfos } from '../../utils/rest-api';
 import { SearchItem } from './search-item';
@@ -53,8 +53,8 @@ export function SearchBar({ inputRef }: Readonly<SearchBarProps>) {
         [elementsFound, navigate]
     );
 
-    const displayComponent = useCallback<NonNullable<ElementSearchInputProps<ElementAttributesES>['PaperComponent']>>(
-        (props) => (
+    const displayComponent = useCallback(
+        (props: PaperProps) => (
             <SearchBarPaperDisplayedElementWarning
                 elementFoundLength={elementsFound.length}
                 elementFoundTotal={totalElements}
