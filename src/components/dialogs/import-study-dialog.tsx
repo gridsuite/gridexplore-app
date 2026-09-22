@@ -101,7 +101,18 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 return;
             }
             const studyName = data[FieldConstants.NAME];
-            const newDirectory = await insertDirectory(studyName, selectedDirectory.elementUuid, userId);
+            let newDirectory;
+            try {
+                newDirectory = await insertDirectory(studyName, selectedDirectory.elementUuid, userId);
+            } catch (error) {
+                snackWithFallback(snackError, error, {
+                    headerId: 'studyImportError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
+                return;
+            }
             const uploadingStudy: UploadingElement = {
                 id: keyGenerator()(),
                 elementName: studyName,
@@ -124,7 +135,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
                     snackWithFallback(snackError, error, {
-                        headerId: 'studyCreationError',
+                        headerId: 'studyImportError',
                         headerValues: {
                             studyName,
                         },
