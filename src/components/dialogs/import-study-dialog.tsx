@@ -116,7 +116,7 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             const uploadingStudy: UploadingElement = {
                 id: keyGenerator()(),
                 elementName: studyName,
-                directory: newDirectory.elementUuid,
+                directory: newDirectory?.elementUuid,
                 type: ElementType.STUDY,
                 owner: userId,
                 lastModifiedBy: userId,
