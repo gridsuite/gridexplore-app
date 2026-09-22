@@ -26,13 +26,13 @@
     "dependencies": {
         "@emotion/react": "^11.14.0",
         "@emotion/styled": "^11.14.1",
-        "@gridsuite/commons-ui": "0.293.0",
+        "@gridsuite/commons-ui": "0.297.0",
         "@hello-pangea/dnd": "^18.0.1",
         "@hookform/resolvers": "^4.1.3",
-        "@mui/icons-material": "^7.3.11",
-        "@mui/lab": "7.0.1-beta.25",
-        "@mui/material": "^7.3.11",
-        "@mui/x-tree-view": "^8.21.0",
+        "@mui/icons-material": "^9.4.0",
+        "@mui/lab": "^9.0.0-beta.9",
+        "@mui/material": "^9.4.0",
+        "@mui/x-tree-view": "^9.13.0",
         "@reduxjs/toolkit": "^2.9.0",
         "@tanstack/react-table": "^8.21.3",
         "@tanstack/react-virtual": "^3.13.18",
@@ -56,6 +56,11 @@
         "typeface-roboto": "^1.1.13",
         "uuid": "^13.0.0",
         "yup": "^1.7.0"
+    },
+    "overrides": {
+        "mui-nested-menu": {
+            "@mui/material": ">=5.0.0"
+        }
     },
     "devDependencies": {
         "@babel/helper-builder-react-jsx": "^7.27.1",

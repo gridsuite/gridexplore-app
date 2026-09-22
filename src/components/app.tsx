@@ -161,14 +161,36 @@ export default function App() {
 
     // We use <Box flex=.../> instead of <Grid/> because flex rules were too complexes or conflicts with MUI grid rules
     return (
-        <Box display="flex" flexDirection="column" width="100%" height="100%">
-            <Box flexShrink={0}>
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+            <Box
+                sx={{
+                    flexShrink: 0,
+                }}
+            >
                 <AppTopBar userProfile={userProfile} userManagerInstance={userManager.instance} />
             </Box>
-            <Box flexShrink={0}>
+            <Box
+                sx={{
+                    flexShrink: 0,
+                }}
+            >
                 <AnnouncementNotification userProfile={userProfile} sx={{ marginBottom: '0 !important' }} />
             </Box>
-            <Box marginTop={1} flexGrow={1} minHeight={0} display="flex">
+            <Box
+                sx={{
+                    marginTop: 1,
+                    flexGrow: 1,
+                    minHeight: 0,
+                    display: 'flex',
+                }}
+            >
                 <CardErrorBoundary>
                     {userProfile !== null ? (
                         <Routes>

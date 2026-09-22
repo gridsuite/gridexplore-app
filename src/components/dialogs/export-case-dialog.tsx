@@ -239,7 +239,14 @@ export default function ExportCaseDialog({ selectedElements, onClose, onExport }
                         </Select>
                     </FormControl>
                 </Stack>
-                <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
+                <Stack
+                    direction="row"
+                    sx={{
+                        marginTop: '0.7em',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
                     <Typography
                         component="span"
                         color={selectedFormat ? 'text.main' : 'text.disabled'}

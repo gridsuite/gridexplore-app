@@ -26,6 +26,7 @@ import DirectoryTreeContextualMenu from './menus/directory-tree-contextual-menu'
 import { useDirectoryContent } from '../hooks/useDirectoryContent';
 import {
     computeCheckedElements,
+    type DirectoryContentGridContext,
     formatMetadata,
     getColumnsDefinition,
     isRowUnchecked,
@@ -140,6 +141,13 @@ export default function DirectoryContent() {
         // changes reference on every tree update, which would otherwise re-run this check.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedDirectory?.elementUuid]);
+
+    const columnDefinitions = useMemo(() => getColumnsDefinition(intl, theme), [intl, theme]);
+
+    const gridContext = useMemo<DirectoryContentGridContext>(
+        () => ({ childrenMetadata, directoryWritable }),
+        [childrenMetadata, directoryWritable]
+    );
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenContentMenu(true);
@@ -318,10 +326,10 @@ export default function DirectoryContent() {
                 handleCellContextualMenu={onCellContextMenu}
                 handleRowSelected={updateCheckedRows}
                 handleCellClick={handleCellClick}
-                colDef={getColumnsDefinition(childrenMetadata, intl, theme, directoryWritable)}
+                colDef={columnDefinitions}
+                context={gridContext}
                 getRowStyle={getRowStyle}
                 onGridReady={onGridReady}
-                selectedDirectoryWritable={directoryWritable}
             />
         );
     };
@@ -332,7 +340,14 @@ export default function DirectoryContent() {
                 // ContentToolbar needs to be outside the DirectoryContentTable container otherwise it
                 // creates a visual offset rendering the last elements of a full table inaccessible
                 rows && rows.length > 0 && (
-                    <Box flexShrink={0} sx={styles.toolBarContainer}>
+                    <Box
+                        sx={[
+                            {
+                                flexShrink: 0,
+                            },
+                            styles.toolBarContainer,
+                        ]}
+                    >
                         <ContentToolbar
                             selectedElements={checkedRows}
                             selectedDirectory={selectedDirectory}
@@ -351,13 +366,17 @@ export default function DirectoryContent() {
                 )
             }
             <Box
-                width="100%"
-                flexGrow={1}
-                minHeight={0}
-                overflow="auto"
-                sx={styles.highlightedElementAnimation}
                 onContextMenu={onContextMenu}
                 data-testid="DirectoryContent"
+                sx={[
+                    {
+                        width: '100%',
+                        flexGrow: 1,
+                        minHeight: 0,
+                        overflow: 'auto',
+                    },
+                    styles.highlightedElementAnimation,
+                ]}
             >
                 {renderDirectoryContent()}
             </Box>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import Container from '@mui/material/Container';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
 import { FormattedMessage } from 'react-intl';
 
 const styles = {
@@ -23,7 +23,7 @@ export default function PageNotFound() {
     return (
         <Container sx={styles.container}>
             <br />
-            <ErrorOutlineIcon sx={styles.error} />
+            <ErrorOutlinedIcon sx={styles.error} />
             <h1 style={{ textAlign: 'center' }}>
                 <FormattedMessage id="PageNotFound" />
             </h1>
