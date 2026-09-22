@@ -192,7 +192,11 @@ export default function DeleteDialog({
             sharedItems[0].elementUuid === itemsState[0].elementUuid
         ) {
             return (
-                <Box marginTop={2}>
+                <Box
+                    sx={{
+                        marginTop: 2,
+                    }}
+                >
                     <FormattedMessage
                         id="deleteDialogSharedItemMessage"
                         values={{ count: getSharingLinksCount(sharedItems[0]) }}
@@ -201,12 +205,23 @@ export default function DeleteDialog({
             );
         }
         return (
-            <Box marginTop={2}>
+            <Box
+                sx={{
+                    marginTop: 2,
+                }}
+            >
                 <FormattedMessage id="deleteDialogSharedItemsMessage" />
                 <List dense disablePadding sx={styles.sharedItemsList}>
                     {sharedItems.map((item) => (
                         <ListItem key={item.elementUuid} disableGutters disablePadding sx={styles.sharedItem}>
-                            <Box display="grid" gridTemplateColumns="minmax(0, 1fr) auto" columnGap={2} width="100%">
+                            <Box
+                                sx={{
+                                    display: 'grid',
+                                    gridTemplateColumns: 'minmax(0, 1fr) auto',
+                                    columnGap: 2,
+                                    width: '100%',
+                                }}
+                            >
                                 <OverflowableText text={item.elementName} tooltipSx={styles.tooltip} />
                                 <FormattedMessage
                                     id="sharingLinksCount"

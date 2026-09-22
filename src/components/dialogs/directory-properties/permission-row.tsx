@@ -43,9 +43,20 @@ function PermissionRow({
 
     return (
         <Paper elevation={0} sx={{ p: 2, mb: 2, border: '1px solid', borderColor: 'divider' }}>
-            <Grid container spacing={2} alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    alignItems: 'center',
+                }}
+            >
                 <Grid size={{ xs: 12, sm: 3 }}>
-                    <Typography variant="subtitle1" fontWeight="bold">
+                    <Typography
+                        variant="subtitle1"
+                        sx={{
+                            fontWeight: 'bold',
+                        }}
+                    >
                         <FormattedMessage id={label} />
                     </Typography>
                 </Grid>

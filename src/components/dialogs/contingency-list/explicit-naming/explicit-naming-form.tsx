@@ -134,7 +134,14 @@ export default function ExplicitNamingForm() {
             <Grid>
                 <DescriptionField />
             </Grid>
-            <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+            <Grid
+                container
+                spacing={2}
+                sx={{
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
                 <Grid>
                     <CsvDownloadButton
                         data={getTemplateData}

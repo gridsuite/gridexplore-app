@@ -87,7 +87,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         cellStyle: { paddingLeft: theme.spacing(0.75) },
         headerStyle: { paddingLeft: theme.spacing(0.75) },
         cellRenderer: NameCellRenderer,
-        width: 300,
+        initialWidth: 300,
         minWidth: 125,
     },
     {
@@ -98,7 +98,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         cellRenderer: DescriptionCellRenderer,
         sortable: false,
         minWidth: 90,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -108,7 +108,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         sortable: true,
         cellRenderer: TypeCellRenderer,
         minWidth: 230,
-        flex: 2,
+        initialFlex: 2,
         valueGetter: ({ data, context }: ValueGetterParams<ElementAttributes, string, DirectoryContentGridContext>) => {
             if (!data?.type) {
                 return '';
@@ -127,7 +127,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         valueGetter: (params) => (params.data && isElementShared(params.data as ElementAttributes) ? 1 : 0),
         comparator: (valueA: number, valueB: number) => valueA - valueB,
         minWidth: 120,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -136,7 +136,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         field: DirectoryField.OWNER,
         cellRenderer: UserCellRenderer,
         minWidth: 100,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -145,7 +145,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 120,
-        flex: 2,
+        initialFlex: 2,
     },
     {
         headerName: intl.formatMessage({
@@ -154,7 +154,7 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
         minWidth: 130,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -163,6 +163,6 @@ export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] =>
         field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 110,
-        flex: 2,
+        initialFlex: 2,
     },
 ];

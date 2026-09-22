@@ -14,12 +14,36 @@ export default function ExplorerLayout() {
     const { uuid } = useParams<{ uuid?: string }>();
 
     return (
-        <Box display="flex" width="100%" height="100%">
-            <Box width="30%" height="100%" overflow="auto" style={{ borderRight: '1px solid #515151' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+            }}
+        >
+            <Box
+                style={{ borderRight: '1px solid #515151' }}
+                sx={{
+                    width: '30%',
+                    height: '100%',
+                    overflow: 'auto',
+                }}
+            >
                 <TreeViewsContainer sourceItemUuid={uuid} />
             </Box>
-            <Box width="70%" height="100%" display="flex" flexDirection="column">
-                <Box flexShrink={0}>
+            <Box
+                sx={{
+                    width: '70%',
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <Box
+                    sx={{
+                        flexShrink: 0,
+                    }}
+                >
                     <DirectoryBreadcrumbs />
                 </Box>
                 <DirectoryContent />
