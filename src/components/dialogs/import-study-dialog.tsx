@@ -149,7 +149,12 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
             onCancel={onClose}
             disabledSave={!isFormValid}
         >
-            <Stack spacing={2} marginTop="auto">
+            <Stack
+                spacing={2}
+                sx={{
+                    marginTop: 'auto',
+                }}
+            >
                 <Grid>
                     <PrefilledNameInput
                         name={FieldConstants.NAME}
@@ -165,7 +170,14 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 >
                     <DescriptionField />
                 </Grid>
-                <Grid container alignItems="center" spacing={1} pt={1}>
+                <Grid
+                    container
+                    spacing={1}
+                    sx={{
+                        alignItems: 'center',
+                        paddingTop: 1,
+                    }}
+                >
                     <Grid>
                         <Button variant="contained" color="primary" component="label">
                             <FormattedMessage id="importStudy" />
