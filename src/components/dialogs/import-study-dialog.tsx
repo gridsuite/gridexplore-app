@@ -27,8 +27,8 @@ import { FieldValues, useController, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { AppState, UploadingElement } from '../../redux/types';
-import { importStudy } from '../../utils/rest-api';
-import { removeUploadingElement } from '../../redux/actions';
+import { importStudy, insertDirectory } from '../../utils/rest-api';
+import { addUploadingElement, removeUploadingElement } from '../../redux/actions';
 import PrefilledNameInput from './commons/prefilled-name-input';
 
 interface ImportStudyDialogProps {
@@ -96,15 +96,27 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
 
     const handleImportStudy = useCallback(
         async (data: FieldValues) => {
-            if (!selectedDirectory?.elementUuid) {
+            if (!selectedDirectory?.elementUuid || !userId) {
                 snackError({ headerId: 'studyImportError' });
                 return;
             }
             const studyName = data[FieldConstants.NAME];
+            let newDirectory;
+            try {
+                newDirectory = await insertDirectory(studyName, selectedDirectory.elementUuid, userId);
+            } catch (error) {
+                snackWithFallback(snackError, error, {
+                    headerId: 'studyImportError',
+                    headerValues: {
+                        studyName,
+                    },
+                });
+                return;
+            }
             const uploadingStudy: UploadingElement = {
                 id: keyGenerator()(),
                 elementName: studyName,
-                directory: selectedDirectory.elementUuid,
+                directory: newDirectory?.elementUuid,
                 type: ElementType.STUDY,
                 owner: userId,
                 lastModifiedBy: userId,
@@ -115,21 +127,21 @@ export default function ImportStudyDialog({ open, onClose }: Readonly<ImportStud
                 studyName,
                 data[FieldConstants.DESCRIPTION],
                 data.studyFiles?.[0] as File,
-                selectedDirectory.elementUuid
+                newDirectory.elementUuid
             )
                 .then(() => {
-                    dispatch(removeUploadingElement(uploadingStudy));
                     onClose();
                 })
                 .catch((error) => {
                     dispatch(removeUploadingElement(uploadingStudy));
                     snackWithFallback(snackError, error, {
-                        headerId: 'studyCreationError',
+                        headerId: 'studyImportError',
                         headerValues: {
                             studyName,
                         },
                     });
                 });
+            dispatch(addUploadingElement(uploadingStudy));
         },
         [dispatch, onClose, selectedDirectory?.elementUuid, snackError, userId]
     );
