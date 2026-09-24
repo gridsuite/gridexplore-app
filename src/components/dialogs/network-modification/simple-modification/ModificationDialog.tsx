@@ -16,7 +16,7 @@ import {
     useTabs,
 } from '@gridsuite/commons-ui';
 import { FieldValues, useForm } from 'react-hook-form';
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, ReactNode, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
 import { Breakpoint } from '@mui/material';
@@ -37,6 +37,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     dialogWidth?: Breakpoint;
     getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
     tabsProps?: UseTabsProps;
+    subtitle?: ReactNode;
 }
 
 export type UseTabsProps = {
@@ -64,6 +65,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     removeOptional = true,
     unscrollableFullHeight = false,
     getExtraFormProps,
+    subtitle,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -127,6 +129,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
             isDataFetching={!modificationData}
             unscrollableFullHeight={unscrollableFullHeight}
             dialogWidth={dialogWidth}
+            subtitle={subtitle}
         >
             <ModificationForm
                 isModification={isModification}
