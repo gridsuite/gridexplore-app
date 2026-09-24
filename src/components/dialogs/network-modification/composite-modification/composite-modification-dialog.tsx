@@ -61,6 +61,11 @@ import {
     ShuntCompensatorCreationForm,
     shuntCompensatorCreationFormSchema,
     shuntCompensatorCreationFormToDto,
+    lineSplitWithVoltageLevelCreationDtoToForm,
+    LineSplitWithVoltageLevelCreationForm,
+    lineSplitWithVoltageLevelCreationFormSchema,
+    lineSplitWithVoltageLevelCreationFormToDto,
+    LineSplitWithVoltageLevelIllustration,
     shuntCompensatorModificationDtoToForm,
     ShuntCompensatorModificationForm,
     shuntCompensatorModificationFormSchema,
@@ -183,6 +188,7 @@ type SpecificModificationDialogProps = Pick<
     | 'unscrollableFullHeight'
     | 'getExtraFormProps'
     | 'tabsProps'
+    | 'subtitle'
 >;
 
 const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDto) => ({
@@ -573,6 +579,21 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'ShuntCompensatorCreationError',
                         titleId: 'CreateShuntCompensator',
                         ModificationForm: ShuntCompensatorCreationForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINE_SPLIT_WITH_VOLTAGE_LEVEL,
+                    {
+                        formSchema: lineSplitWithVoltageLevelCreationFormSchema,
+                        dtoToForm: lineSplitWithVoltageLevelCreationDtoToForm,
+                        formToDto: (form, dto) =>
+                            lineSplitWithVoltageLevelCreationFormToDto(form, dto?.mayNewVoltageLevelInfos ?? null),
+                        errorHeaderId: 'LineDivisionError',
+                        titleId: 'LineSplitWithVoltageLevel',
+                        ModificationForm: LineSplitWithVoltageLevelCreationForm,
+                        subtitle: <LineSplitWithVoltageLevelIllustration />,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
