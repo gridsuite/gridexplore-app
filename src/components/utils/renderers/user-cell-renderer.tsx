@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box } from '@mui/material';
-import { UserAvatar } from './user-avatar';
+import { UserAvatar } from '@gridsuite/commons-ui';
 
 export type UserCellRendererProps = { value: string };
 

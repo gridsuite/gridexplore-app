@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ElementType } from '@gridsuite/commons-ui';
+import { type ElementAttributes, ElementType } from '@gridsuite/commons-ui';
 import { IntlShape } from 'react-intl';
 
 export const getElementTypeTranslation = (
@@ -33,4 +33,22 @@ export const getElementTypeTranslation = (
     const translatedFormat = formatCase ? ` (${intl.formatMessage({ id: formatCase })})` : '';
 
     return `${translatedType}${translatedFormat}`;
+};
+
+// This function is used to lowercase all the characters in a string except the first one
+const toTitleCase = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+export const getElementTypeLabel = (
+    type: ElementType,
+    specificMetadata: ElementAttributes['specificMetadata'] | undefined,
+    intl: IntlShape
+) => {
+    if (!specificMetadata) {
+        return getElementTypeTranslation(type, null, null, intl);
+    }
+    const formatCase =
+        type === ElementType.SPREADSHEET_CONFIG
+            ? toTitleCase(specificMetadata.sheetType ?? 'no-type')
+            : (specificMetadata.format?.toString() ?? null);
+    return getElementTypeTranslation(type, specificMetadata.type?.toString() ?? null, formatCase, intl);
 };

@@ -17,8 +17,13 @@ import {
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useEffect, useState } from 'react';
-import { CloseButton, type ElementAttributes, snackWithFallback, useSnackMessage } from '@gridsuite/commons-ui';
-import { UserAvatarWithLabel } from '../../utils/renderers/user-avatar';
+import {
+    CloseButton,
+    type ElementAttributes,
+    snackWithFallback,
+    UserAvatarWithLabel,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
 import { fetchReferencingElementInfos } from '../../../utils/rest-api';

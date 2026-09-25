@@ -139,7 +139,14 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
 
     return (
         <>
-            <Grid container alignItems="center" spacing={1} pt={1}>
+            <Grid
+                container
+                spacing={1}
+                sx={{
+                    alignItems: 'center',
+                    pt: 1,
+                }}
+            >
                 <Grid>
                     <Button variant="contained" color="primary" component="label">
                         <FormattedMessage id="uploadCase" />

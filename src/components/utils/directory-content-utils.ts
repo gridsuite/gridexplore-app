@@ -10,7 +10,7 @@ import type { Theme } from '@mui/material';
 import type { UUID } from 'node:crypto';
 import { AgGridReact } from 'ag-grid-react';
 import { RefObject } from 'react';
-import { ColDef, IRowNode } from 'ag-grid-community';
+import { ColDef, ValueGetterParams } from 'ag-grid-community';
 import type { ElementAttributes } from '@gridsuite/commons-ui';
 import { NameCellRenderer } from './renderers/name-cell-renderer';
 import { DescriptionCellRenderer } from './renderers/description-cell-renderer';
@@ -18,7 +18,7 @@ import { TypeCellRenderer } from './renderers/type-cell-renderer';
 import { UserCellRenderer } from './renderers/user-cell-renderer';
 import { DateCellRenderer } from './renderers/date-cell-renderer';
 import { SharingStatusCellRenderer } from './renderers/sharing-status-cell-renderer';
-import { getElementTypeTranslation } from './translation-utils';
+import { getElementTypeLabel } from './translation-utils';
 import { isElementShared } from '../../utils/element-utils';
 
 export enum DirectoryField {
@@ -31,6 +31,11 @@ export enum DirectoryField {
     LAST_UPDATE_LABEL = 'lastModifiedByLabel',
     LAST_UPDATE_DATE = 'lastModificationDate',
 }
+
+export type DirectoryContentGridContext = {
+    childrenMetadata: Record<UUID, ElementAttributes>;
+    directoryWritable: boolean;
+};
 
 export const formatMetadata = (
     data: ElementAttributes,
@@ -71,12 +76,7 @@ export const defaultColumnDefinition: ColDef<unknown> = {
     },
 };
 
-export const getColumnsDefinition = (
-    childrenMetadata: Record<UUID, ElementAttributes>,
-    intl: IntlShape,
-    theme: Theme,
-    directoryWritable: boolean
-): ColDef[] => [
+export const getColumnsDefinition = (intl: IntlShape, theme: Theme): ColDef[] => [
     {
         headerName: intl.formatMessage({
             id: 'directoryContent.column.name',
@@ -87,11 +87,7 @@ export const getColumnsDefinition = (
         cellStyle: { paddingLeft: theme.spacing(0.75) },
         headerStyle: { paddingLeft: theme.spacing(0.75) },
         cellRenderer: NameCellRenderer,
-        cellRendererParams: {
-            childrenMetadata,
-            directoryWritable,
-        },
-        width: 300,
+        initialWidth: 300,
         minWidth: 125,
     },
     {
@@ -100,12 +96,9 @@ export const getColumnsDefinition = (
         }),
         field: DirectoryField.DESCRIPTION,
         cellRenderer: DescriptionCellRenderer,
-        cellRendererParams: {
-            directoryWritable,
-        },
         sortable: false,
         minWidth: 90,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -114,35 +107,15 @@ export const getColumnsDefinition = (
         field: DirectoryField.TYPE,
         sortable: true,
         cellRenderer: TypeCellRenderer,
-        cellRendererParams: {
-            childrenMetadata,
-        },
         minWidth: 230,
-        flex: 2,
-        comparator: (
-            valueA: string,
-            valueB: string,
-            nodeA: IRowNode<ElementAttributes>,
-            nodeB: IRowNode<ElementAttributes>
-        ) => {
-            const getTranslatedOrOriginalValue = (node: IRowNode<ElementAttributes>): string => {
-                const { type, elementUuid } = node.data ?? {};
-                if (!type) {
-                    return '';
-                }
-
-                const metaData = elementUuid ? childrenMetadata[elementUuid]?.specificMetadata : null;
-                const subtype = metaData?.type?.toString() ?? null;
-                const formatCase = metaData?.format?.toString() ?? null;
-
-                return getElementTypeTranslation(type, subtype, formatCase, intl);
-            };
-
-            const translatedA = getTranslatedOrOriginalValue(nodeA);
-            const translatedB = getTranslatedOrOriginalValue(nodeB);
-
-            return translatedA.localeCompare(translatedB);
+        initialFlex: 2,
+        valueGetter: ({ data, context }: ValueGetterParams<ElementAttributes, string, DirectoryContentGridContext>) => {
+            if (!data?.type) {
+                return '';
+            }
+            return getElementTypeLabel(data.type, context.childrenMetadata[data.elementUuid]?.specificMetadata, intl);
         },
+        comparator: (valueA: string, valueB: string) => valueA.localeCompare(valueB),
     },
     {
         headerName: intl.formatMessage({
@@ -154,7 +127,7 @@ export const getColumnsDefinition = (
         valueGetter: (params) => (params.data && isElementShared(params.data as ElementAttributes) ? 1 : 0),
         comparator: (valueA: number, valueB: number) => valueA - valueB,
         minWidth: 120,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -163,7 +136,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.OWNER,
         cellRenderer: UserCellRenderer,
         minWidth: 100,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -172,7 +145,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.CREATION_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 120,
-        flex: 2,
+        initialFlex: 2,
     },
     {
         headerName: intl.formatMessage({
@@ -181,7 +154,7 @@ export const getColumnsDefinition = (
         field: DirectoryField.LAST_UPDATE_LABEL,
         cellRenderer: UserCellRenderer,
         minWidth: 130,
-        flex: 1,
+        initialFlex: 1,
     },
     {
         headerName: intl.formatMessage({
@@ -190,6 +163,6 @@ export const getColumnsDefinition = (
         field: DirectoryField.LAST_UPDATE_DATE,
         cellRenderer: DateCellRenderer,
         minWidth: 110,
-        flex: 2,
+        initialFlex: 2,
     },
 ];

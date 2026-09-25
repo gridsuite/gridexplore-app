@@ -204,7 +204,13 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                 </DialogTitle>
                 <DialogContent>
                     {loading ? (
-                        <Box display="flex" justifyContent="center" p={3}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                p: 3,
+                            }}
+                        >
                             <CircularProgress />
                         </Box>
                     ) : (
@@ -218,7 +224,13 @@ function DirectoryPropertiesDialog({ open, onClose, directory }: Readonly<Direct
                             </Typography>
 
                             {!canManage && (
-                                <Typography color="warning.main" gutterBottom sx={{ mb: 2 }}>
+                                <Typography
+                                    gutterBottom
+                                    sx={{
+                                        color: 'warning.main',
+                                        mb: 2,
+                                    }}
+                                >
                                     <FormattedMessage id="directoryPermissionsViewOnly" />
                                 </Typography>
                             )}

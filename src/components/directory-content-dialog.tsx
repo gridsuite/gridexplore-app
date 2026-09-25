@@ -22,20 +22,16 @@ import {
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
     isStudyMetadata,
-    LFProcessConfigEditionDialog,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
     PARAM_LANGUAGE,
     PccMinParametersEditionDialog,
-    ProcessType,
-    SAProcessConfigEditionDialog,
+    ProcessConfigEditionDialog,
     SecurityAnalysisParametersDialog,
     SensitivityAnalysisParametersDialog,
     ShortCircuitParametersEditionDialog,
     useSnackMessage,
     VoltageInitParametersEditionDialog,
-    isProcessType,
-    SCProcessConfigEditionDialog,
 } from '@gridsuite/commons-ui';
 import type { CellClickedEvent } from 'ag-grid-community';
 import { useDispatch, useSelector } from 'react-redux';
@@ -162,10 +158,8 @@ function DirectoryContentDialog(
     }, [closeDialog]);
 
     const [currentProcessConfigId, setCurrentProcessConfigId] = useState<UUID>();
-    const [currentProcessConfigType, setCurrentProcessConfigType] = useState<ProcessType>();
     const handleCloseProcessConfigDialog = useCallback(() => {
         setCurrentProcessConfigId(undefined);
-        setCurrentProcessConfigType(undefined);
         closeDialog();
     }, [closeDialog]);
 
@@ -229,12 +223,9 @@ function DirectoryContentDialog(
     );
 
     const openProcessConfigDialog = useCallback(
-        (elementId: UUID, processType: string) => {
-            if (isProcessType(processType)) {
-                setCurrentProcessConfigId(elementId);
-                setCurrentProcessConfigType(processType);
-                setOpenDialog(constants.DialogsId.EDIT_PROCESS_CONFIG);
-            }
+        (elementId: UUID) => {
+            setCurrentProcessConfigId(elementId);
+            setOpenDialog(constants.DialogsId.EDIT_PROCESS_CONFIG);
         },
         [setOpenDialog]
     );
@@ -288,7 +279,7 @@ function DirectoryContentDialog(
                             openParametersDialog(elementId, event.data.type);
                             break;
                         case ElementType.PROCESS_CONFIG:
-                            openProcessConfigDialog(elementId, subtype);
+                            openProcessConfigDialog(elementId);
                             break;
                         default:
                             break;
@@ -508,49 +499,19 @@ function DirectoryContentDialog(
                 );
             }
         }
-        if (currentProcessConfigId && currentProcessConfigType && activeDirectory) {
-            if (currentProcessConfigType === ProcessType.SECURITY_ANALYSIS) {
-                return (
-                    <SAProcessConfigEditionDialog
-                        processConfigUuid={currentProcessConfigId}
-                        processConfigName={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
-            if (currentProcessConfigType === ProcessType.LOADFLOW) {
-                return (
-                    <LFProcessConfigEditionDialog
-                        processConfigUuid={currentProcessConfigId}
-                        processConfigName={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
-            if (currentProcessConfigType === ProcessType.SHORT_CIRCUIT) {
-                return (
-                    <SCProcessConfigEditionDialog
-                        processConfigUuid={currentProcessConfigId}
-                        processConfigName={elementName}
-                        description={activeElement.description}
-                        directory={activeDirectory}
-                        open
-                        onClose={handleCloseProcessConfigDialog}
-                        fetchProcessConfig={fetchProcessConfig}
-                        updateProcessConfig={updateProcessConfig}
-                    />
-                );
-            }
+        if (currentProcessConfigId && activeDirectory) {
+            return (
+                <ProcessConfigEditionDialog
+                    processConfigUuid={currentProcessConfigId}
+                    processConfigName={elementName}
+                    description={activeElement.description}
+                    directory={activeDirectory}
+                    open
+                    onClose={handleCloseProcessConfigDialog}
+                    fetchProcessConfig={fetchProcessConfig}
+                    updateProcessConfig={updateProcessConfig}
+                />
+            );
         }
     }
 }
