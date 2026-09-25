@@ -158,6 +158,15 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    lccHvdcLineCreationFormSchema,
+    lccHvdcLineCreationDtoToForm,
+    lccHvdcLineCreationFormToDto,
+    LccHvdcLineDialogTab,
+    LccHvdcLineForm,
+    HVDC_LCC_LINE_TAB_FIELDS,
+    lccHvdcLineModificationFormSchema,
+    lccHvdcLineModificationDtoToForm,
+    lccHvdcLineModificationFormToDto,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -340,6 +349,44 @@ export default function CompositeModificationDialog({
                         tabsProps: {
                             defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
                             tabFields: HVDC_LINE_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
+                    ModificationType.LCC_CREATION,
+                    {
+                        formSchema: lccHvdcLineCreationFormSchema,
+                        dtoToForm: lccHvdcLineCreationDtoToForm,
+                        formToDto: lccHvdcLineCreationFormToDto,
+                        errorHeaderId: 'LccCreationError',
+                        titleId: 'CreateLcc',
+                        ModificationForm: LccHvdcLineForm,
+                        dialogWidth: 'md',
+                        unscrollableFullHeight: true,
+                        isModification: false,
+                        removeOptional: false,
+                        tabsProps: {
+                            defaultTab: LccHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LCC_LINE_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
+                    ModificationType.LCC_MODIFICATION,
+                    {
+                        formSchema: lccHvdcLineModificationFormSchema,
+                        dtoToForm: (lineDto) => lccHvdcLineModificationDtoToForm(lineDto, false),
+                        formToDto: lccHvdcLineModificationFormToDto,
+                        errorHeaderId: 'HvdcLccModificationError',
+                        titleId: 'ModifyLcc',
+                        ModificationForm: LccHvdcLineForm,
+                        dialogWidth: 'md',
+                        unscrollableFullHeight: true,
+                        isModification: true,
+                        removeOptional: true,
+                        tabsProps: {
+                            defaultTab: LccHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LCC_LINE_TAB_FIELDS,
                         },
                     },
                 ],
