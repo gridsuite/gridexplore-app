@@ -676,7 +676,6 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
     const createCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases`;
     const formData = new FormData();
     formData.append('file', selectedFile);
-    formData.append('withExpiration', encodeURIComponent(true));
     console.debug(createCaseUrl);
 
     return backendFetchJson(createCaseUrl, {
