@@ -684,13 +684,6 @@ export function createCaseWithoutDirectoryElementCreation(selectedFile: Blob) {
     });
 }
 
-export function deleteCase(caseUuid: UUID) {
-    const deleteCaseUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/cases/${caseUuid}`;
-    return backendFetch(deleteCaseUrl, {
-        method: 'delete',
-    });
-}
-
 export const convertCase = (
     caseUuid: UUID,
     fileName: string,

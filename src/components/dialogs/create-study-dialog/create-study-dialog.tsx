@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
 import type { UUID } from 'node:crypto';
 import UploadNewCase from '../commons/upload-new-case';
-import { createStudy, deleteCase, getCaseImportParameters } from '../../../utils/rest-api';
+import { createStudy, getCaseImportParameters } from '../../../utils/rest-api';
 import ImportParametersSection from './importParametersSection';
 import { addUploadingElement, removeUploadingElement, setActiveDirectory } from '../../../redux/actions';
 import {
@@ -130,15 +130,6 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
         [intl, setError, setValue]
     );
 
-    // Methods
-    const handleDeleteCase = () => {
-        const caseUuid = getValues(FieldConstants.CASE_UUID);
-        // if we cancel case creation, we need to delete the associated newly created case (if we created one)
-        if (caseUuid && !providedExistingCase) {
-            deleteCase(caseUuid);
-        }
-    };
-
     const handleCreateNewStudy = ({
         caseUuid,
         studyName,
@@ -225,7 +216,6 @@ export default function CreateStudyDialog({ open, onClose, providedExistingCase 
             open={open}
             onClose={onClose}
             onSave={handleCreateNewStudy}
-            onCancel={handleDeleteCase}
             disabledSave={!isFormValid}
             confirmationMessageKey={confidentialityWarningKey}
         >
