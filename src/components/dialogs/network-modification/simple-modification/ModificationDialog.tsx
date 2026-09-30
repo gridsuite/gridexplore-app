@@ -20,6 +20,8 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ObjectSchema } from 'yup';
 import { Breakpoint } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/types';
 
 export interface ModificationDialogProps<FormData extends FieldValues, ModificationData extends WithId> {
     open: CustomMuiDialogProps['open'];
@@ -66,6 +68,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     getExtraFormProps,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
+    const userId = useSelector((state: AppState) => state.user?.profile.sub);
     const [modificationData, setModificationData] = useState<ModificationData>();
 
     const formMethods = useForm<FormData>({
@@ -100,16 +103,17 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
 
     const onSubmit = useCallback(
         (form: FormData) => {
-            if (modificationData) {
+            if (modificationData && userId) {
                 updateModification({
                     modificationUuid: modificationData.uuid,
                     body: JSON.stringify(formToDto(form, modificationData)),
+                    userId,
                 }).catch((error: unknown) => {
                     snackWithFallback(snackError, error, { headerId: errorHeaderId });
                 });
             }
         },
-        [modificationData, formToDto, snackError, errorHeaderId]
+        [modificationData, userId, formToDto, snackError, errorHeaderId]
     );
 
     return (
