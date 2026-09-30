@@ -66,6 +66,13 @@ import {
     lineSplitWithVoltageLevelCreationFormSchema,
     lineSplitWithVoltageLevelCreationFormToDto,
     LineSplitWithVoltageLevelIllustration,
+    lineAttachToVoltageLevelCreationDtoToForm,
+    LineAttachToVoltageLevelCreationForm,
+    lineAttachToVoltageLevelCreationFormSchema,
+    lineAttachToVoltageLevelCreationFormToDto,
+    lineAttachToVoltageLevelEmptyAttachmentPoint,
+    LineAttachToVoltageLevelIllustration,
+    LineCreationDto,
     shuntCompensatorModificationDtoToForm,
     ShuntCompensatorModificationForm,
     shuntCompensatorModificationFormSchema,
@@ -594,6 +601,27 @@ export default function CompositeModificationDialog({
                         titleId: 'LineSplitWithVoltageLevel',
                         ModificationForm: LineSplitWithVoltageLevelCreationForm,
                         subtitle: <LineSplitWithVoltageLevelIllustration />,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINE_ATTACH_TO_VOLTAGE_LEVEL,
+                    {
+                        formSchema: lineAttachToVoltageLevelCreationFormSchema,
+                        dtoToForm: lineAttachToVoltageLevelCreationDtoToForm,
+                        formToDto: (form, dto) =>
+                            lineAttachToVoltageLevelCreationFormToDto(form, {
+                                attachmentPoint:
+                                    dto?.attachmentPointDetailInformation ??
+                                    lineAttachToVoltageLevelEmptyAttachmentPoint,
+                                attachmentLine: dto?.attachmentLine ?? ({} as LineCreationDto),
+                                newVoltageLevel: dto?.mayNewVoltageLevelInfos ?? null,
+                            }),
+                        errorHeaderId: 'LineAttachmentError',
+                        titleId: 'LineAttachToVoltageLevel',
+                        ModificationForm: LineAttachToVoltageLevelCreationForm,
+                        subtitle: <LineAttachToVoltageLevelIllustration />,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
