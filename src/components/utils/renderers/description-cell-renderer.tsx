@@ -6,6 +6,7 @@
  */
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
+import type { DirectoryContentGridContext } from '../directory-content-utils';
 
 const styles = {
     descriptionTooltip: {
@@ -22,9 +23,12 @@ const styles = {
     }),
 } as const satisfies MuiStyles;
 
-export type DescriptionCellRendererProps = { data: ElementAttributes; directoryWritable: boolean };
+export type DescriptionCellRendererProps = { data: ElementAttributes; context: DirectoryContentGridContext };
 
-export function DescriptionCellRenderer({ data, directoryWritable }: Readonly<DescriptionCellRendererProps>) {
+export function DescriptionCellRenderer({
+    data,
+    context: { directoryWritable },
+}: Readonly<DescriptionCellRendererProps>) {
     const { description } = data;
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {

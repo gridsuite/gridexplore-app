@@ -21,7 +21,11 @@ import type {
 import { RefObject, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReorderedColumns } from '../redux/actions';
-import { defaultColumnDefinition, DirectoryField } from './utils/directory-content-utils';
+import {
+    defaultColumnDefinition,
+    type DirectoryContentGridContext,
+    DirectoryField,
+} from './utils/directory-content-utils';
 import { AppState } from '../redux/types';
 import { AGGRID_LOCALES } from '../translations/not-intl/aggrid-locales';
 
@@ -35,10 +39,16 @@ export interface DirectoryContentTableProps extends Pick<
     handleRowSelected: () => void;
     handleCellClick: (event: CellClickedEvent) => void;
     colDef: ColDef[];
-    selectedDirectoryWritable: boolean;
+    context: DirectoryContentGridContext;
 }
 
 const OVERFLOWABLE_COLUMNS = [DirectoryField.NAME.toString(), DirectoryField.TYPE.toString()];
+
+const CONTEXT_DEPENDENT_COLUMNS = [
+    DirectoryField.NAME.toString(),
+    DirectoryField.TYPE.toString(),
+    DirectoryField.DESCRIPTION.toString(),
+];
 
 const getRowId = (params: GetRowIdParams<ElementAttributes>) => params.data?.elementUuid;
 
@@ -85,10 +95,21 @@ export function DirectoryContentTable({
     handleCellClick,
     onGridReady,
     colDef,
-    selectedDirectoryWritable,
+    context,
 }: Readonly<DirectoryContentTableProps>) {
     const theme = useTheme();
     const [columnDefs, setColumnDefs] = useState<ColDef[]>(colDef);
+    const { directoryWritable } = context;
+
+    // ag-grid-react pushes the new context to the grid on its own (its prop sync effect runs before this one,
+    // being a child), but we need to refresh the cells manually.
+    useEffect(() => {
+        const api = gridRef.current?.api;
+        if (!api) {
+            return;
+        }
+        api.refreshCells({ force: true, columns: CONTEXT_DEPENDENT_COLUMNS });
+    }, [context, gridRef]);
 
     const getCustomRowStyle = useCallback(
         (cellData: RowClassParams<ElementAttributes>) => {
@@ -103,7 +124,7 @@ export function DirectoryContentTable({
                 return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
             };
 
-            if (selectedDirectoryWritable && editableElement()) {
+            if (directoryWritable && editableElement()) {
                 style.cursor = 'pointer';
             }
             return {
@@ -111,7 +132,7 @@ export function DirectoryContentTable({
                 ...getRowStyle?.(cellData),
             };
         },
-        [getRowStyle, selectedDirectoryWritable]
+        [getRowStyle, directoryWritable]
     );
 
     const dispatch = useDispatch();
@@ -148,8 +169,8 @@ export function DirectoryContentTable({
             rowSelection={{
                 mode: 'multiRow',
                 enableClickSelection: false,
-                checkboxes: selectedDirectoryWritable,
-                headerCheckbox: selectedDirectoryWritable,
+                checkboxes: directoryWritable,
+                headerCheckbox: directoryWritable,
             }}
             selectionColumnDef={{
                 pinned: 'left',
@@ -167,6 +188,7 @@ export function DirectoryContentTable({
             onColumnMoved={onColumnMoved}
             animateRows
             columnDefs={columnDefs}
+            context={context}
             getRowStyle={getCustomRowStyle}
             // We set a custom className for rows in order to easily determine if a context menu event is happening on a row or not
             rowClass={CUSTOM_ROW_CLASS}
