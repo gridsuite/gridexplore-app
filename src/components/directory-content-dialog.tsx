@@ -21,6 +21,7 @@ import {
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
+    FieldConstants,
     isStudyMetadata,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
@@ -238,16 +239,20 @@ function DirectoryContentDialog(
                     /** no element can be opened */
                     return;
                 }
+                const elementId = event.data.elementUuid;
+                const metadata = childrenMetadata[elementId];
+
                 if (event.colDef.field === DirectoryField.DESCRIPTION) {
                     /** open description dialog */
                     setActiveElement(event.data);
+                    if (metadata) {
+                        setElementDescription(metadata.description);
+                    }
                     setOpenDescModificationDialog(true);
                     return;
                 }
 
                 /** open element */
-                const elementId = event.data.elementUuid;
-                const metadata = childrenMetadata[elementId];
                 if (metadata) {
                     setActiveElement(event.data);
                     setElementName(metadata.elementName);
@@ -307,9 +312,11 @@ function DirectoryContentDialog(
             return (
                 <DescriptionModificationDialog
                     open
-                    description={activeElement.description}
+                    description={elementDescription}
                     onClose={handleDescDialogClose}
-                    updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, data)}
+                    updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, activeElement.type, data)}
+                    updateForm={(data: Record<string, string>) => {
+                        setElementDescription(data[FieldConstants.DESCRIPTION]?.trim() ?? '')}}
                 />
             );
         }
