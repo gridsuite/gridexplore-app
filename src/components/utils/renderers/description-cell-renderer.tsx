@@ -36,7 +36,6 @@ export function DescriptionCellRenderer({
     context: { childrenMetadata, directoryWritable },
 }: Readonly<DescriptionCellRendererProps>) {
     const description = getDisplayedDescription(data, childrenMetadata);
-    console.log('description', description);
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';

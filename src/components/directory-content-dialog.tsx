@@ -315,8 +315,6 @@ function DirectoryContentDialog(
                     description={elementDescription}
                     onClose={handleDescDialogClose}
                     updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, activeElement.type, data)}
-                    updateForm={(data: Record<string, string>) => {
-                        setElementDescription(data[FieldConstants.DESCRIPTION]?.trim() ?? '')}}
                 />
             );
         }
