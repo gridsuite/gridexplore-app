@@ -391,6 +391,7 @@ export default function DirectoryContent() {
                         onClose={handleCloseContentMenu}
                         {...directoryMenuAnchorStates}
                         broadcastChannel={broadcastChannel}
+                        childrenMetadata={childrenMetadata}
                     />
                 )}
                 <DirectoryTreeContextualMenu
