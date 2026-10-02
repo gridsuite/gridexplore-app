@@ -162,6 +162,14 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    loadScalingFormSchema,
+    loadScalingDtoToForm,
+    loadScalingFormToDto,
+    LoadScalingForm,
+    GeneratorScalingForm,
+    generatorScalingFormSchema,
+    generatorScalingFormToDto,
+    generatorScalingDtoToForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -729,6 +737,32 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelSectionCreationError',
                         titleId: 'CreateVoltageLevelSection',
                         ModificationForm: VoltageLevelSectionCreationForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.GENERATOR_SCALING,
+                    {
+                        formSchema: generatorScalingFormSchema,
+                        dtoToForm: generatorScalingDtoToForm,
+                        formToDto: generatorScalingFormToDto,
+                        errorHeaderId: 'GeneratorScalingError',
+                        titleId: 'GeneratorScaling',
+                        ModificationForm: GeneratorScalingForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LOAD_SCALING,
+                    {
+                        formSchema: loadScalingFormSchema,
+                        dtoToForm: loadScalingDtoToForm,
+                        formToDto: loadScalingFormToDto,
+                        errorHeaderId: 'LoadScalingError',
+                        titleId: 'LoadScaling',
+                        ModificationForm: LoadScalingForm,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
