@@ -16,6 +16,7 @@ import {
     OverflowableText,
     ElementStatus,
 } from '@gridsuite/commons-ui';
+import type { DirectoryContentGridContext } from '../directory-content-utils';
 
 const isCreating = (data: ElementAttributes) => data.status === ElementStatus.CREATING;
 
@@ -77,11 +78,13 @@ const styles = {
 
 export type NameCellRendererProps = {
     data: ElementAttributes;
-    childrenMetadata: Record<UUID, ElementAttributes>;
-    directoryWritable: boolean;
+    context: DirectoryContentGridContext;
 };
 
-export function NameCellRenderer({ data, childrenMetadata, directoryWritable }: Readonly<NameCellRendererProps>) {
+export function NameCellRenderer({
+    data,
+    context: { childrenMetadata, directoryWritable },
+}: Readonly<NameCellRendererProps>) {
     const intl = useIntl();
     const metadata = childrenMetadata[data.elementUuid];
     const pending = isPending(data);

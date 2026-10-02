@@ -19,7 +19,7 @@ import {
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
 import { HTTP_CONNECTION_FAILED_MESSAGE, HTTP_UNPROCESSABLE_ENTITY_STATUS } from 'utils/UIconstants';
-import { createCaseWithoutDirectoryElementCreation, deleteCase } from '../../../utils/rest-api';
+import { createCaseWithoutDirectoryElementCreation } from '../../../utils/rest-api';
 import type { AppState } from '../../../redux/types';
 
 export interface UploadNewCaseProps {
@@ -54,7 +54,7 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
         name: FieldConstants.CASE_UUID,
     });
 
-    const { clearErrors, setError, getValues } = useFormContext();
+    const { clearErrors, setError } = useFormContext();
 
     const caseFile = value as File;
     const { name: caseFileName } = caseFile || {};
@@ -103,12 +103,6 @@ export default function UploadNewCase({ getCurrentCaseImportParams }: Readonly<U
                 setCaseFileLoading(true);
                 createCaseWithoutDirectoryElementCreation(currentFile)
                     .then((newCaseUuid) => {
-                        const prevCaseUuid = getValues(FieldConstants.CASE_UUID);
-
-                        if (prevCaseUuid && prevCaseUuid !== newCaseUuid) {
-                            deleteCase(prevCaseUuid);
-                        }
-
                         onCaseUuidChange(newCaseUuid);
 
                         if (getCurrentCaseImportParams) {

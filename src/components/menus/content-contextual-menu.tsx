@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
+import { CircularProgress } from '@mui/material';
 import {
     ContentCopyRounded as ContentCopyRoundedIcon,
     DatasetLinked as DatasetLinkedIcon,
@@ -81,6 +82,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const [directoryReadable, setDirectoryReadable] = useState(false);
     const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [isExportingStudy, setIsExportingStudy] = useState(false);
 
     const { snackError, snackInfo } = useSnackMessage();
 
@@ -425,6 +427,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [isDeveloperMode, isSingleElement, activeElement.elementUuid, activeElement.type, noCreationInProgress]);
 
     const handleExportStudy = useCallback(async () => {
+        if (isExportingStudy) {
+            return;
+        }
+        setIsExportingStudy(true);
         try {
             const response = await exportStudy(activeElement.elementUuid, activeElement.elementName);
             const fileName = extractFilenameFromContentDisposition(response, `${activeElement.elementName}.zip`);
@@ -436,8 +442,10 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             handleCloseDialog();
         } catch {
             snackError({ headerId: 'exportStudyFailed' });
+        } finally {
+            setIsExportingStudy(false);
         }
-    }, [activeElement, handleCloseDialog, intl, snackInfo, snackError]);
+    }, [activeElement, handleCloseDialog, intl, snackInfo, snackError, isExportingStudy]);
 
     useEffect(() => {
         let isCurrent = true;
@@ -562,7 +570,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             menuItems.push({
                 messageDescriptorId: 'export.button',
                 callback: handleExportStudy,
-                icon: <FileDownload fontSize="small" data-testid="ExportStudyIcon" />,
+                icon: isExportingStudy ? (
+                    <CircularProgress size={20} data-testid="ExportStudyProgress" />
+                ) : (
+                    <FileDownload fontSize="small" data-testid="ExportStudyIcon" />
+                ),
+                disabled: isExportingStudy,
             });
         }
 
@@ -649,6 +662,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         downloadElements,
         handleCloseDialog,
         noCreationInProgress,
+        isExportingStudy,
     ]);
 
     const renderDialog = () => {
