@@ -678,7 +678,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const renderDialog = () => {
         switch (openDialog) {
-            case DialogsId.RENAME:
+            case DialogsId.RENAME: {
                 let currentName = '';
                 if (activeElement) {
                     if (childrenMetadata) {
@@ -701,6 +701,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         error={renameErrorMessage}
                     />
                 );
+            }
             case DialogsId.DELETE:
                 return (
                     <DeleteDialog
