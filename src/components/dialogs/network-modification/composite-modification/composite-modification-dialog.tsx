@@ -171,6 +171,7 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    DeleteVoltageLevelOnLineIllustration,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -766,6 +767,7 @@ export default function CompositeModificationDialog({
                         formToDto: deleteVoltageLevelOnLineFormToDto,
                         errorHeaderId: 'DeleteVoltageLevelOnLineError',
                         titleId: 'DeleteVoltageLevelOnLine',
+                        subtitle: <DeleteVoltageLevelOnLineIllustration />,
                         ModificationForm: DeleteVoltageLevelOnLineForm,
                         removeOptional: false,
                         dialogWidth: 'md',
