@@ -73,8 +73,17 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
 }
 
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
-    const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, childrenMetadata, ...others } =
-        props;
+    const {
+        activeElement,
+        selectedElements,
+        open,
+        onClose,
+        openDialog,
+        setOpenDialog,
+        broadcastChannel,
+        childrenMetadata,
+        ...others
+    } = props;
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);

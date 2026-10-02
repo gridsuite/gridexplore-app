@@ -21,7 +21,6 @@ import {
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
-    FieldConstants,
     isStudyMetadata,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
@@ -39,14 +38,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useIntl } from 'react-intl';
 import { fetchProcessConfig, getFilterById, updateElement, updateProcessConfig } from '../utils/rest-api';
 import { ContingencyListType, FilterType, NetworkModificationType } from '../utils/elementType';
-import CompositeModificationDialog from './dialogs/network-modification/composite-modification/composite-modification-dialog';
+import CompositeModificationDialog
+    from './dialogs/network-modification/composite-modification/composite-modification-dialog';
 import ExplicitNamingEditionDialog from './dialogs/contingency-list/explicit-naming/explicit-naming-edition-dialog';
 import { setActiveDirectory, setItemSelectionForCopy } from '../redux/actions';
 import * as constants from '../utils/UIconstants';
 import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
-import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
+import FilterBasedContingencyListDialog
+    from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 import { DirectoryField } from './utils/directory-content-utils';
 
 export type DirectoryContentDialogApi = {
