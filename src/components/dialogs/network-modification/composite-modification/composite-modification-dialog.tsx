@@ -81,6 +81,10 @@ import {
     batteryModificationFormSchema,
     batteryModificationFormToDto,
     BatteryModificationForm,
+    deleteVoltageLevelOnLineFormSchema,
+    deleteVoltageLevelOnLineDtoToForm,
+    deleteVoltageLevelOnLineFormToDto,
+    DeleteVoltageLevelOnLineForm,
     generatorCreationFormSchema,
     generatorCreationDtoToForm,
     generatorCreationFormToDto,
@@ -167,6 +171,7 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    DeleteVoltageLevelOnLineIllustration,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -750,6 +755,20 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelSectionCreationError',
                         titleId: 'CreateVoltageLevelSection',
                         ModificationForm: VoltageLevelSectionCreationForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.DELETE_VOLTAGE_LEVEL_ON_LINE,
+                    {
+                        formSchema: deleteVoltageLevelOnLineFormSchema,
+                        dtoToForm: deleteVoltageLevelOnLineDtoToForm,
+                        formToDto: deleteVoltageLevelOnLineFormToDto,
+                        errorHeaderId: 'DeleteVoltageLevelOnLineError',
+                        titleId: 'DeleteVoltageLevelOnLine',
+                        subtitle: <DeleteVoltageLevelOnLineIllustration />,
+                        ModificationForm: DeleteVoltageLevelOnLineForm,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
