@@ -368,7 +368,7 @@ export default function CompositeModificationDialog({
                         formSchema: lccHvdcLineCreationFormSchema,
                         dtoToForm: lccHvdcLineCreationDtoToForm,
                         formToDto: lccHvdcLineCreationFormToDto,
-                        errorHeaderId: 'LccCreationError',
+                        errorHeaderId: 'HvdcLccCreationError',
                         titleId: 'CreateLcc',
                         ModificationForm: LccHvdcLineForm,
                         dialogWidth: 'md',
