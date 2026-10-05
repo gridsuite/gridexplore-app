@@ -111,6 +111,7 @@ function DirectoryContentDialog(
     const handleDescDialogClose = useCallback(() => {
         setActiveElement(undefined);
         setOpenDescModificationDialog(false);
+        setElementDescription('');
     }, [setActiveElement]);
 
     const closeDialog = useCallback(() => {
@@ -244,9 +245,7 @@ function DirectoryContentDialog(
                 if (event.colDef.field === DirectoryField.DESCRIPTION) {
                     /** open description dialog */
                     setActiveElement(event.data);
-                    if (metadata) {
-                        setElementDescription(metadata.description);
-                    }
+                    setElementDescription(metadata?.description ?? event.data.description ?? '');
                     setOpenDescModificationDialog(true);
                     return;
                 }

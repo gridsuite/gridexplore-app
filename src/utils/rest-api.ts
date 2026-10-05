@@ -185,7 +185,7 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
 
 export function updateElement(elementUuid: UUID, elementType: string, element: unknown) {
     console.info(`Updating element info for ${elementUuid}`);
-    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/type/${elementType}`;
+    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/types/${elementType}`;
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
@@ -232,7 +232,7 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
 
 export function renameElement(elementUuid: UUID, elementType: string, newElementName: string) {
     console.info(`Renaming element ${elementUuid}`);
-    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/type/${elementType}`;
+    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/types/${elementType}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
         method: 'put',
