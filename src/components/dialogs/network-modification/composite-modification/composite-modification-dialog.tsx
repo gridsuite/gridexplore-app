@@ -782,19 +782,24 @@ export default function CompositeModificationDialog({
         setSelectedModification(undefined);
     }, []);
 
+    const fetchModifications = useCallback(
+        () =>
+            fetchCompositeModificationContent(compositeModificationId)
+                .then((response) => {
+                    if (response) {
+                        setModifications(response);
+                    }
+                })
+                .catch((error) => {
+                    snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
+                }),
+        [compositeModificationId, snackError]
+    );
+
     useEffect(() => {
         setIsFetching(true);
-        fetchCompositeModificationContent(compositeModificationId)
-            .then((response) => {
-                if (response) {
-                    setModifications(response);
-                }
-            })
-            .catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
-            })
-            .finally(() => setIsFetching(false));
-    }, [compositeModificationId, name, snackError]);
+        fetchModifications().finally(() => setIsFetching(false));
+    }, [fetchModifications, name]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -869,6 +874,7 @@ export default function CompositeModificationDialog({
                 <ModificationDialog
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
+                    onUpdated={fetchModifications}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
