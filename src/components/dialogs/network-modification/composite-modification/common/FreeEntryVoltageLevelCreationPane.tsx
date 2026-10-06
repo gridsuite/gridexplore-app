@@ -62,8 +62,6 @@ export function FreeEntryVoltageLevelCreationPane({
             open={open}
             onClose={onClose}
             onSave={(form: DeepNullable<VoltageLevelCreationFormData>) => onCreateVoltageLevel(voltageLevelCreationFormToDto(form as VoltageLevelCreationFormData))}
-                onCreateVoltageLevel(voltageLevelCreationFormToDto(form as VoltageLevelCreationFormData));
-            }}
             onValidationError={useTabsReturn.onError}
             titleId="CreateVoltageLevel"
             formContext={{
