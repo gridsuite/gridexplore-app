@@ -181,6 +181,7 @@ import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
+import { FreeEntryVoltageLevelCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
 import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
@@ -208,6 +209,10 @@ const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDt
 
 const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageLevelModificationDto) => ({
     voltageLevelToModify: dto,
+});
+
+const getLineSplitWithVoltageLevelExtraFormProps = () => ({
+    NewVoltageLevelPane: FreeEntryVoltageLevelCreationPane,
 });
 
 const schema = yup.object().shape({
@@ -599,12 +604,12 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: lineSplitWithVoltageLevelCreationFormSchema,
                         dtoToForm: lineSplitWithVoltageLevelCreationDtoToForm,
-                        formToDto: (form, dto) =>
-                            lineSplitWithVoltageLevelCreationFormToDto(form, dto?.mayNewVoltageLevelInfos ?? null),
+                        formToDto: lineSplitWithVoltageLevelCreationFormToDto,
                         errorHeaderId: 'LineDivisionError',
                         titleId: 'LineSplitWithVoltageLevel',
                         ModificationForm: LineSplitWithVoltageLevelCreationForm,
                         subtitle: <LineSplitWithVoltageLevelIllustration />,
+                        getExtraFormProps: getLineSplitWithVoltageLevelExtraFormProps,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
