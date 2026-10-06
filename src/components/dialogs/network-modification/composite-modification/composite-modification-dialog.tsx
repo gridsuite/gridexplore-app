@@ -784,22 +784,31 @@ export default function CompositeModificationDialog({
 
     const fetchModifications = useCallback(
         () =>
-            fetchCompositeModificationContent(compositeModificationId)
-                .then((response) => {
-                    if (response) {
-                        setModifications(response);
-                    }
-                })
-                .catch((error) => {
-                    snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
-                }),
-        [compositeModificationId, snackError]
+            fetchCompositeModificationContent(compositeModificationId).then((response) => {
+                if (response) {
+                    setModifications(response);
+                }
+            }),
+        [compositeModificationId]
     );
+
+    const handleFetchModificationsError = useCallback(
+        (error: unknown) => {
+            snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
+        },
+        [snackError]
+    );
+
+    const refreshModifications = useCallback(() => {
+        fetchModifications().catch(handleFetchModificationsError);
+    }, [fetchModifications, handleFetchModificationsError]);
 
     useEffect(() => {
         setIsFetching(true);
-        fetchModifications().finally(() => setIsFetching(false));
-    }, [fetchModifications, name]);
+        fetchModifications()
+            .finally(() => setIsFetching(false))
+            .catch(handleFetchModificationsError);
+    }, [fetchModifications, handleFetchModificationsError, name]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -874,7 +883,7 @@ export default function CompositeModificationDialog({
                 <ModificationDialog
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
-                    onUpdated={fetchModifications}
+                    onUpdated={refreshModifications}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
