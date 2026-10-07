@@ -837,7 +837,7 @@ export default function CompositeModificationDialog({
                     setModifications(response);
                 }
             })
-            .catch((error: unknown) => {
+            .catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
             })
             .finally(() => setIsFetching(false));

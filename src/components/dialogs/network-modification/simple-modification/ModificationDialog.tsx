@@ -94,7 +94,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
         fetchNetworkModification(modificationUuid)
             .then((res) => res.json())
             .then((res) => setModificationData(removeNullFields(res)))
-            .catch((error: unknown) => {
+            .catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'ModificationReadError',
                 });
@@ -110,7 +110,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
                     body: JSON.stringify(formToDto(form, modificationData)),
                 })
                     .then(() => onUpdated?.())
-                    .catch((error: unknown) => {
+                    .catch((error) => {
                         snackWithFallback(snackError, error, { headerId: errorHeaderId });
                     });
             }
