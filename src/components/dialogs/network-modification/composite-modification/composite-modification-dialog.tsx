@@ -829,33 +829,23 @@ export default function CompositeModificationDialog({
         setSelectedModification(undefined);
     }, []);
 
-    const fetchModifications = useCallback(
-        () =>
-            fetchCompositeModificationContent(compositeModificationId).then((response) => {
+    const fetchModifications = useCallback(() => {
+        setIsFetching(true);
+        fetchCompositeModificationContent(compositeModificationId)
+            .then((response) => {
                 if (response) {
                     setModifications(response);
                 }
-            }),
-        [compositeModificationId]
-    );
-
-    const handleFetchModificationsError = useCallback(
-        (error: unknown) => {
-            snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
-        },
-        [snackError]
-    );
-
-    const refreshModifications = useCallback(() => {
-        fetchModifications().catch(handleFetchModificationsError);
-    }, [fetchModifications, handleFetchModificationsError]);
+            })
+            .catch((error: unknown) => {
+                snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
+            })
+            .finally(() => setIsFetching(false));
+    }, [compositeModificationId, snackError]);
 
     useEffect(() => {
-        setIsFetching(true);
-        fetchModifications()
-            .finally(() => setIsFetching(false))
-            .catch(handleFetchModificationsError);
-    }, [fetchModifications, handleFetchModificationsError, name]);
+        fetchModifications();
+    }, [fetchModifications, name]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -893,7 +883,6 @@ export default function CompositeModificationDialog({
                     removeOptional: true,
                 }}
                 disabledSave={isDisabledValidationButton(errors)}
-                isDataFetching={isFetching}
                 unscrollableFullHeight
                 sx={{
                     '.MuiDialog-paper': {
@@ -902,35 +891,33 @@ export default function CompositeModificationDialog({
                     },
                 }}
             >
-                {!isFetching && (
-                    <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                        <CompositeModificationForm />
-                        <NetworkModificationsTable
-                            handleCellClick={editModification}
-                            modifications={modifications}
-                            // the following values will be used when we enable composite editing in gridexplore
-                            onRowDragStart={() => {}}
-                            onRowDragEnd={() => {}}
-                            onSelectedRowsChange={() => {}}
-                            modificationUuidsToReset={[]}
-                            modificationToEditLabel={null}
-                            isRowDragDisabled
-                            isImpactedByNotification={() => false}
-                            notificationMessageId="notificationMessageId"
-                            isFetchingModifications={false}
-                            pendingState={false}
-                            columns={BASE_COLUMNS}
-                            highlightedModificationUuid={null}
-                            studyUuid={null}
-                        />
-                    </Box>
-                )}
+                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                    <CompositeModificationForm />
+                    <NetworkModificationsTable
+                        handleCellClick={editModification}
+                        modifications={modifications}
+                        // the following values will be used when we enable composite editing in gridexplore
+                        onRowDragStart={() => {}}
+                        onRowDragEnd={() => {}}
+                        onSelectedRowsChange={() => {}}
+                        modificationUuidsToReset={[]}
+                        modificationToEditLabel={null}
+                        isRowDragDisabled
+                        isImpactedByNotification={() => false}
+                        notificationMessageId="notificationMessageId"
+                        isFetchingModifications={isFetching}
+                        pendingState={false}
+                        columns={BASE_COLUMNS}
+                        highlightedModificationUuid={null}
+                        studyUuid={null}
+                    />
+                </Box>
             </CustomMuiDialog>
             {selectedModification && (
                 <ModificationDialog
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
-                    onUpdated={refreshModifications}
+                    onUpdated={fetchModifications}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
