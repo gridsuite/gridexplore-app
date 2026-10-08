@@ -66,6 +66,11 @@ import {
     lineSplitWithVoltageLevelCreationFormSchema,
     lineSplitWithVoltageLevelCreationFormToDto,
     LineSplitWithVoltageLevelIllustration,
+    lineAttachToVoltageLevelCreationDtoToForm,
+    LineAttachToVoltageLevelCreationForm,
+    lineAttachToVoltageLevelCreationFormSchema,
+    lineAttachToVoltageLevelCreationFormToDto,
+    LineAttachToVoltageLevelIllustration,
     shuntCompensatorModificationDtoToForm,
     ShuntCompensatorModificationForm,
     shuntCompensatorModificationFormSchema,
@@ -183,7 +188,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
-import { FreeEntryVoltageLevelCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
+import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
+import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
 import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
@@ -214,7 +220,13 @@ const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageL
 });
 
 const getLineSplitWithVoltageLevelExtraFormProps = () => ({
-    NewVoltageLevelPane: FreeEntryVoltageLevelCreationPane,
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+});
+
+const getLineAttachToVoltageLevelExtraFormProps = () => ({
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+    AttachmentPointPane: AttachmentPointCreationPane,
+    AttachedLinePane: FreeEntryLineCreationPane,
 });
 
 const schema = yup.object().shape({
@@ -650,6 +662,21 @@ export default function CompositeModificationDialog({
                         ModificationForm: LineSplitWithVoltageLevelCreationForm,
                         subtitle: <LineSplitWithVoltageLevelIllustration />,
                         getExtraFormProps: getLineSplitWithVoltageLevelExtraFormProps,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINE_ATTACH_TO_VOLTAGE_LEVEL,
+                    {
+                        formSchema: lineAttachToVoltageLevelCreationFormSchema,
+                        dtoToForm: lineAttachToVoltageLevelCreationDtoToForm,
+                        formToDto: lineAttachToVoltageLevelCreationFormToDto,
+                        errorHeaderId: 'LineAttachmentError',
+                        titleId: 'LineAttachToVoltageLevel',
+                        ModificationForm: LineAttachToVoltageLevelCreationForm,
+                        subtitle: <LineAttachToVoltageLevelIllustration />,
+                        getExtraFormProps: getLineAttachToVoltageLevelExtraFormProps,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },

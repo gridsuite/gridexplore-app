@@ -31,12 +31,13 @@ export interface FreeEntryVoltageLevelCreationPaneProps {
     editData: VoltageLevelCreationDto | null;
 }
 
-export function FreeEntryVoltageLevelCreationPane({
+function FreeEntryVoltageLevelCreationPane({
+    titleId,
     open,
     onClose,
     onCreateVoltageLevel,
     editData,
-}: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+}: Readonly<FreeEntryVoltageLevelCreationPaneProps & { titleId: string }>) {
     const intl = useIntl();
 
     const formMethods = useForm<DeepNullable<VoltageLevelCreationFormData>>({
@@ -65,7 +66,7 @@ export function FreeEntryVoltageLevelCreationPane({
                 onCreateVoltageLevel(voltageLevelCreationFormToDto(form as VoltageLevelCreationFormData))
             }
             onValidationError={useTabsReturn.onError}
-            titleId="CreateVoltageLevel"
+            titleId={titleId}
             formContext={{
                 ...formMethods,
                 validationSchema: voltageLevelCreationFormSchema,
@@ -75,4 +76,12 @@ export function FreeEntryVoltageLevelCreationPane({
             <VoltageLevelCreationForm substationOptions={[]} useTabsReturn={useTabsReturn} />
         </CustomMuiDialog>
     );
+}
+
+export function NewVoltageLevelCreationPane(props: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+    return <FreeEntryVoltageLevelCreationPane {...props} titleId="CreateVoltageLevel" />;
+}
+
+export function AttachmentPointCreationPane(props: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+    return <FreeEntryVoltageLevelCreationPane {...props} titleId="SpecifyAttachmentPoint" />;
 }
