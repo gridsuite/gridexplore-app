@@ -401,6 +401,7 @@ export default function DirectoryContent() {
                     onClose={handleCloseDirectoryMenu}
                     {...directoryMenuAnchorStates}
                     restrictMenuItems
+                    directoryWritable={directoryWritable}
                 />
             </Box>
             <DirectoryContentDialog

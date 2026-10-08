@@ -24,6 +24,7 @@ import {
     fetchRootFolders,
     type MuiStyles,
     NotificationsUrlKeys,
+    PermissionType,
     useNotificationsListener,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -48,6 +49,7 @@ import { AppState, ElementAttributesES, IDirectory, ITreeData, UploadingElement 
 import { buildPathToFromMap, updatedTree } from './treeview-utils';
 import { useExportNotification } from '../hooks/use-export-notification';
 import { useDirectoryPathLoader } from '../hooks/use-directory-path-loader';
+import { checkPermissionOnDirectory } from './menus/menus-utils';
 
 const initialMousePosition = {
     mouseX: null,
@@ -116,6 +118,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     uploadingElementsRef.current = uploadingElements;
     const currentChildren = useSelector((state: AppState) => state.currentChildren);
     const currentChildrenRef = useRef<ElementAttributes[] | undefined>(currentChildren);
+    const [directoryWritable, setDirectoryWritable] = useState(false);
 
     currentChildrenRef.current = currentChildren;
     const selectedDirectoryRef = useRef<ElementAttributes | null>(null);
@@ -713,6 +716,26 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         };
     }, [sourceItemUuid, treeData.initialized, loadPath, dispatch, snackError]);
 
+    useEffect(() => {
+        let isCurrent = true;
+        const directory = getActiveDirectory();
+        if (directory !== null) {
+            checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
+                if (isCurrent) {
+                    setDirectoryWritable(b);
+                }
+            });
+        } else {
+            setDirectoryWritable(false);
+        }
+        return () => {
+            isCurrent = false;
+        };
+        // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
+        // re-run this check.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [getActiveDirectory()?.elementUuid]);
+
     return (
         <>
             <Box style={styles.treeBox} onContextMenu={handleOnContextMenuBox}>
@@ -731,6 +754,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     anchorEl={anchorEl}
                     anchorOrigin={anchorOrigin}
                     restrictMenuItems={false}
+                    directoryWritable={directoryWritable}
                 />
             </Box>
         </>
