@@ -71,8 +71,7 @@ click [here](https://github.com/gridsuite/commons-ui) and follow instructions.
 
 ## Typescript config
 
-Files `tsconfig.json` and `src/react-app-env.d.ts` both result from the create-react-app typescript template (version 5).
-Some property values have been changed to meet the project needs (ex: target, baseUrl, ...).
+The project TypeScript settings are defined in `tsconfig.json`. Some compiler options are customized for project needs, such as `target` and `baseUrl`.
 
 ## License Headers and dependencies checking
 
