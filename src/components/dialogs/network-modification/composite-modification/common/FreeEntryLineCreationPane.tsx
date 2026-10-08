@@ -62,9 +62,9 @@ export function FreeEntryLineCreationPane({
         <CustomMuiDialog
             open={open}
             onClose={onClose}
-            onSave={(form: DeepNullable<LineCreationFormData>) => {
-                onCreateLine({ lineCreationInfos: lineCreationFormToDto(form as LineCreationFormData) });
-            }}
+            onSave={(form: DeepNullable<LineCreationFormData>) =>
+                onCreateLine({ lineCreationInfos: lineCreationFormToDto(form as LineCreationFormData) })
+            }
             onValidationError={useTabsReturn.onError}
             titleId="CreateLine"
             dialogWidth="xl"
