@@ -66,6 +66,11 @@ import {
     lineSplitWithVoltageLevelCreationFormSchema,
     lineSplitWithVoltageLevelCreationFormToDto,
     LineSplitWithVoltageLevelIllustration,
+    lineAttachToVoltageLevelCreationDtoToForm,
+    LineAttachToVoltageLevelCreationForm,
+    lineAttachToVoltageLevelCreationFormSchema,
+    lineAttachToVoltageLevelCreationFormToDto,
+    LineAttachToVoltageLevelIllustration,
     shuntCompensatorModificationDtoToForm,
     ShuntCompensatorModificationForm,
     shuntCompensatorModificationFormSchema,
@@ -167,6 +172,15 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    lccHvdcLineCreationFormSchema,
+    lccHvdcLineCreationDtoToForm,
+    lccHvdcLineCreationFormToDto,
+    LccHvdcLineDialogTab,
+    LccHvdcLineForm,
+    HVDC_LCC_LINE_TAB_FIELDS,
+    lccHvdcLineModificationFormSchema,
+    lccHvdcLineModificationDtoToForm,
+    lccHvdcLineModificationFormToDto,
     generationDispatchFormSchema,
     generationDispatchDtoToForm,
     generationDispatchFormToDto,
@@ -178,6 +192,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
+import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
+import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
 import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
@@ -205,6 +221,16 @@ const getVoltageLevelTopologyExtraFormProps = (dto: CreateVoltageLevelTopologyDt
 
 const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageLevelModificationDto) => ({
     voltageLevelToModify: dto,
+});
+
+const getLineSplitWithVoltageLevelExtraFormProps = () => ({
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+});
+
+const getLineAttachToVoltageLevelExtraFormProps = () => ({
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+    AttachmentPointPane: AttachmentPointCreationPane,
+    AttachedLinePane: FreeEntryLineCreationPane,
 });
 
 const schema = yup.object().shape({
@@ -367,6 +393,44 @@ export default function CompositeModificationDialog({
                         tabsProps: {
                             defaultTab: VscHvdcLineDialogTab.HVDC_LINE_TAB,
                             tabFields: HVDC_LINE_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
+                    ModificationType.LCC_CREATION,
+                    {
+                        formSchema: lccHvdcLineCreationFormSchema,
+                        dtoToForm: lccHvdcLineCreationDtoToForm,
+                        formToDto: lccHvdcLineCreationFormToDto,
+                        errorHeaderId: 'HvdcLccCreationError',
+                        titleId: 'CreateLcc',
+                        ModificationForm: LccHvdcLineForm,
+                        dialogWidth: 'md',
+                        unscrollableFullHeight: true,
+                        isModification: false,
+                        removeOptional: false,
+                        tabsProps: {
+                            defaultTab: LccHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LCC_LINE_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
+                    ModificationType.LCC_MODIFICATION,
+                    {
+                        formSchema: lccHvdcLineModificationFormSchema,
+                        dtoToForm: (lineDto) => lccHvdcLineModificationDtoToForm(lineDto, false),
+                        formToDto: lccHvdcLineModificationFormToDto,
+                        errorHeaderId: 'HvdcLccModificationError',
+                        titleId: 'ModifyLcc',
+                        ModificationForm: LccHvdcLineForm,
+                        dialogWidth: 'md',
+                        unscrollableFullHeight: true,
+                        isModification: true,
+                        removeOptional: true,
+                        tabsProps: {
+                            defaultTab: LccHvdcLineDialogTab.HVDC_LINE_TAB,
+                            tabFields: HVDC_LCC_LINE_TAB_FIELDS,
                         },
                     },
                 ],
@@ -609,12 +673,27 @@ export default function CompositeModificationDialog({
                     {
                         formSchema: lineSplitWithVoltageLevelCreationFormSchema,
                         dtoToForm: lineSplitWithVoltageLevelCreationDtoToForm,
-                        formToDto: (form, dto) =>
-                            lineSplitWithVoltageLevelCreationFormToDto(form, dto?.mayNewVoltageLevelInfos ?? null),
+                        formToDto: lineSplitWithVoltageLevelCreationFormToDto,
                         errorHeaderId: 'LineDivisionError',
                         titleId: 'LineSplitWithVoltageLevel',
                         ModificationForm: LineSplitWithVoltageLevelCreationForm,
                         subtitle: <LineSplitWithVoltageLevelIllustration />,
+                        getExtraFormProps: getLineSplitWithVoltageLevelExtraFormProps,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINE_ATTACH_TO_VOLTAGE_LEVEL,
+                    {
+                        formSchema: lineAttachToVoltageLevelCreationFormSchema,
+                        dtoToForm: lineAttachToVoltageLevelCreationDtoToForm,
+                        formToDto: lineAttachToVoltageLevelCreationFormToDto,
+                        errorHeaderId: 'LineAttachmentError',
+                        titleId: 'LineAttachToVoltageLevel',
+                        ModificationForm: LineAttachToVoltageLevelCreationForm,
+                        subtitle: <LineAttachToVoltageLevelIllustration />,
+                        getExtraFormProps: getLineAttachToVoltageLevelExtraFormProps,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
