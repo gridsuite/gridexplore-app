@@ -880,7 +880,7 @@ export default function CompositeModificationDialog({
         setSelectedModification(undefined);
     }, []);
 
-    useEffect(() => {
+    const fetchModifications = useCallback(() => {
         setIsFetching(true);
         fetchCompositeModificationContent(compositeModificationId)
             .then((response) => {
@@ -892,7 +892,11 @@ export default function CompositeModificationDialog({
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
             })
             .finally(() => setIsFetching(false));
-    }, [compositeModificationId, name, snackError]);
+    }, [compositeModificationId, snackError]);
+
+    useEffect(() => {
+        fetchModifications();
+    }, [fetchModifications, name]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -930,7 +934,6 @@ export default function CompositeModificationDialog({
                     removeOptional: true,
                 }}
                 disabledSave={isDisabledValidationButton(errors)}
-                isDataFetching={isFetching}
                 unscrollableFullHeight
                 sx={{
                     '.MuiDialog-paper': {
@@ -939,34 +942,33 @@ export default function CompositeModificationDialog({
                     },
                 }}
             >
-                {!isFetching && (
-                    <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                        <CompositeModificationForm />
-                        <NetworkModificationsTable
-                            handleCellClick={editModification}
-                            modifications={modifications}
-                            // the following values will be used when we enable composite editing in gridexplore
-                            onRowDragStart={() => {}}
-                            onRowDragEnd={() => {}}
-                            onSelectedRowsChange={() => {}}
-                            modificationUuidsToReset={[]}
-                            modificationToEditLabel={null}
-                            isRowDragDisabled
-                            isImpactedByNotification={() => false}
-                            notificationMessageId="notificationMessageId"
-                            isFetchingModifications={false}
-                            pendingState={false}
-                            columns={BASE_COLUMNS}
-                            highlightedModificationUuid={null}
-                            studyUuid={null}
-                        />
-                    </Box>
-                )}
+                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                    <CompositeModificationForm />
+                    <NetworkModificationsTable
+                        handleCellClick={editModification}
+                        modifications={modifications}
+                        // the following values will be used when we enable composite editing in gridexplore
+                        onRowDragStart={() => {}}
+                        onRowDragEnd={() => {}}
+                        onSelectedRowsChange={() => {}}
+                        modificationUuidsToReset={[]}
+                        modificationToEditLabel={null}
+                        isRowDragDisabled
+                        isImpactedByNotification={() => false}
+                        notificationMessageId="notificationMessageId"
+                        isFetchingModifications={isFetching}
+                        pendingState={false}
+                        columns={BASE_COLUMNS}
+                        highlightedModificationUuid={null}
+                        studyUuid={null}
+                    />
+                </Box>
             </CustomMuiDialog>
             {selectedModification && (
                 <ModificationDialog
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
+                    onUpdated={fetchModifications}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
