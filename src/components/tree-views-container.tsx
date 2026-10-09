@@ -720,6 +720,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         let isCurrent = true;
         const directory = getActiveDirectory();
         if (directory !== null) {
+            // Clear stale write permission before asynchronous check
+            setDirectoryWritable(false);
             checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
                 if (isCurrent) {
                     setDirectoryWritable(b);

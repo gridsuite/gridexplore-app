@@ -127,6 +127,7 @@ export default function DirectoryContent() {
 
     useEffect(() => {
         let isCurrent = true;
+        setPermissionsLoaded(false);
         if (selectedDirectory !== null) {
             Promise.all([
                 checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
@@ -147,6 +148,7 @@ export default function DirectoryContent() {
         } else {
             setDirectoryReadable(false);
             setDirectoryWritable(false);
+            setPermissionsLoaded(false);
         }
         return () => {
             isCurrent = false;
