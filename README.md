@@ -31,7 +31,6 @@ This app uses the [commons-ui](https://github.com/gridsuite/commons-ui) library 
 │ gridexplore-app  │──► explore-server            (directories, elements, studies, cases)
 │                  │──► study-config-server        (spreadsheet config collections, workspaces)
 │                  │──► user-admin-server          (users identities, current announcement)
-│                  │──► monitor-server             (fetch process config)
 │                  │
 │                  │◄── config-notification (websocket)           (user config changes)
 │                  │◄── config-notification/global (websocket)    (system-wide announcements, via commons-ui)
