@@ -148,7 +148,6 @@ export default function DirectoryContent() {
         } else {
             setDirectoryReadable(false);
             setDirectoryWritable(false);
-            setPermissionsLoaded(false);
         }
         return () => {
             isCurrent = false;
