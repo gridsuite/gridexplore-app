@@ -175,7 +175,7 @@ export default function DirectoryContent() {
 
     const handleCloseDirectoryMenu = useCallback(() => {
         setOpenDirectoryMenu(false);
-    }, [dispatch]);
+    }, []);
 
     const handleOpenDirectoryMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
         setOpenDirectoryMenu(true);
