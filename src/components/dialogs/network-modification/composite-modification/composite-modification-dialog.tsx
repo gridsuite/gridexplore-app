@@ -186,6 +186,11 @@ import {
     lccHvdcLineModificationFormSchema,
     lccHvdcLineModificationDtoToForm,
     lccHvdcLineModificationFormToDto,
+    linesAttachToSplittingLinesFormSchema,
+    linesAttachToSplittingLinesFormToDto,
+    LinesAttachToSplittingLinesForm,
+    LineAttachToSplitLinesIllustration,
+    linesAttachToSplittingLinesDtoToForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -848,6 +853,20 @@ export default function CompositeModificationDialog({
                         errorHeaderId: 'VoltageLevelSectionCreationError',
                         titleId: 'CreateVoltageLevelSection',
                         ModificationForm: VoltageLevelSectionCreationForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINES_ATTACH_TO_SPLIT_LINES,
+                    {
+                        formSchema: linesAttachToSplittingLinesFormSchema,
+                        dtoToForm: linesAttachToSplittingLinesDtoToForm,
+                        formToDto: linesAttachToSplittingLinesFormToDto,
+                        errorHeaderId: 'LinesAttachToSplitLinesError',
+                        titleId: 'LinesAttachToSplitLines',
+                        subtitle: <LineAttachToSplitLinesIllustration />,
+                        ModificationForm: LinesAttachToSplittingLinesForm,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
