@@ -410,7 +410,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                             message="renameElementMsg"
                             currentName={directory.elementName}
                             open
-                            onClick={(newName: string) => renameCB(directory.elementUuid, newName)}
+                            onClick={(newName: string) => renameCB(directory.elementUuid, directory.type, newName)}
                             onClose={handleCloseDialog}
                             title={intl.formatMessage({
                                 id: 'renameDirectoryDialogTitle',

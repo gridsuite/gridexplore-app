@@ -60,6 +60,7 @@ import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
 import { checkPermissionOnDirectory } from './menus-utils';
+import type { useDirectoryContent } from '../../hooks/useDirectoryContent';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -68,11 +69,21 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     broadcastChannel: BroadcastChannel;
+    childrenMetadata: ReturnType<typeof useDirectoryContent>[1];
 }
 
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
-    const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
-        props;
+    const {
+        activeElement,
+        selectedElements,
+        open,
+        onClose,
+        openDialog,
+        setOpenDialog,
+        broadcastChannel,
+        childrenMetadata,
+        ...others
+    } = props;
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -667,19 +678,30 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
     const renderDialog = () => {
         switch (openDialog) {
-            case DialogsId.RENAME:
+            case DialogsId.RENAME: {
+                let currentName = '';
+                if (activeElement) {
+                    if (childrenMetadata) {
+                        currentName = childrenMetadata[activeElement.elementUuid].elementName;
+                    } else {
+                        currentName = activeElement.elementName;
+                    }
+                }
                 return (
                     <RenameDialog
                         open
                         onClose={handleCloseDialog}
-                        onClick={(elementName) => renameCB(activeElement?.elementUuid, elementName)}
+                        onClick={(elementName) =>
+                            renameCB(activeElement?.elementUuid, activeElement?.type, elementName)
+                        }
                         title={intl.formatMessage({ id: 'renameElement' })}
                         message="renameElementMsg"
-                        currentName={activeElement ? activeElement.elementName : ''}
+                        currentName={currentName}
                         type={activeElement ? activeElement.type : ('' as ElementType)}
                         error={renameErrorMessage}
                     />
                 );
+            }
             case DialogsId.DELETE:
                 return (
                     <DeleteDialog
