@@ -44,7 +44,6 @@ const PREFIX_USER_ADMIN_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/us
 const PREFIX_EXPLORE_SERVER_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/explore`;
 const PREFIX_STUDY_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study`;
 const PREFIX_SPREADSHEET_CONFIG_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/study-config`;
-const PREFIX_MONITOR_QUERIES = `${import.meta.env.VITE_API_GATEWAY}/monitor`;
 
 export type KeyOfWithoutIndexSignature<T> = {
     // copy every declared property from T but remove index signatures
@@ -790,8 +789,8 @@ export function hasManagePermission(directoryUuid: UUID): Promise<boolean> {
 }
 
 export function fetchProcessConfig(processConfigUuid: UUID) {
-    console.info('Fetching process config from monitor server');
-    const url = `${PREFIX_MONITOR_QUERIES}/v1/process-configs/${processConfigUuid}`;
+    console.info('Fetching process config from explore server');
+    const url = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/process-configs/${processConfigUuid}`;
     return backendFetchJson(url, {
         method: 'get',
     });
@@ -803,7 +802,7 @@ export function updateProcessConfig<TProcessType extends ProcessType>(
     description: string,
     processConfig: ProcessConfigBackend<TProcessType>
 ) {
-    console.info('Updating process config from monitor server');
+    console.info('Updating process config on explore server');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('description', description);
     urlSearchParams.append('name', name);
