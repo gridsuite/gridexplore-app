@@ -191,6 +191,10 @@ import {
     LinesAttachToSplittingLinesForm,
     LineAttachToSplitLinesIllustration,
     linesAttachToSplittingLinesDtoToForm,
+    generationDispatchFormSchema,
+    generationDispatchDtoToForm,
+    generationDispatchFormToDto,
+    GenerationDispatchForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -313,6 +317,19 @@ export default function CompositeModificationDialog({
     const editableModificationDialogs = useMemo(
         () =>
             new Map<ModificationType, SpecificModificationDialogProps>([
+                [
+                    ModificationType.GENERATION_DISPATCH,
+                    {
+                        formSchema: generationDispatchFormSchema,
+                        dtoToForm: generationDispatchDtoToForm,
+                        formToDto: generationDispatchFormToDto,
+                        errorHeaderId: 'GenerationDispatchError',
+                        titleId: 'GenerationDispatch',
+                        ModificationForm: GenerationDispatchForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
                 [
                     ModificationType.EQUIPMENT_DELETION,
                     {
