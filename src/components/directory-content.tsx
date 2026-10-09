@@ -120,18 +120,32 @@ export default function DirectoryContent() {
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
     /** access write on current directory */
+
     const [directoryWritable, setDirectoryWritable] = useState(false);
+    const [directoryReadable, setDirectoryReadable] = useState(false);
+    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
 
     useEffect(() => {
         let isCurrent = true;
         if (selectedDirectory !== null) {
-            setDirectoryWritable(false);
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
+            Promise.all([
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryReadable(b);
+                    }
+                }),
+                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
+                    if (isCurrent) {
+                        setDirectoryWritable(b);
+                    }
+                }),
+            ]).finally(() => {
                 if (isCurrent) {
-                    setDirectoryWritable(b);
+                    setPermissionsLoaded(true);
                 }
             });
         } else {
+            setDirectoryReadable(false);
             setDirectoryWritable(false);
         }
         return () => {
@@ -161,7 +175,6 @@ export default function DirectoryContent() {
 
     const handleCloseDirectoryMenu = useCallback(() => {
         setOpenDirectoryMenu(false);
-        dispatch(setActiveDirectory(undefined));
     }, [dispatch]);
 
     const handleOpenDirectoryMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
@@ -391,6 +404,9 @@ export default function DirectoryContent() {
                         onClose={handleCloseContentMenu}
                         {...directoryMenuAnchorStates}
                         broadcastChannel={broadcastChannel}
+                        directoryWritable={directoryWritable}
+                        directoryReadable={directoryReadable}
+                        permissionsLoaded={permissionsLoaded}
                     />
                 )}
                 <DirectoryTreeContextualMenu

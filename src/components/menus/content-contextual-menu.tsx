@@ -6,7 +6,7 @@
  */
 
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
@@ -31,7 +31,6 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
-    PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -59,7 +58,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
-import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -68,19 +66,30 @@ interface ContentContextualMenuProps extends CommonContextualMenuProps {
     openDialog: string;
     setOpenDialog: (dialogId: string) => void;
     broadcastChannel: BroadcastChannel;
+    directoryWritable: boolean;
+    directoryReadable: boolean;
+    permissionsLoaded: boolean;
 }
 
 export default function ContentContextualMenu(props: Readonly<ContentContextualMenuProps>) {
-    const { activeElement, selectedElements, open, onClose, openDialog, setOpenDialog, broadcastChannel, ...others } =
-        props;
+    const {
+        activeElement,
+        selectedElements,
+        open,
+        onClose,
+        openDialog,
+        setOpenDialog,
+        broadcastChannel,
+        directoryWritable,
+        directoryReadable,
+        permissionsLoaded,
+        ...others
+    } = props;
     const intl = useIntl();
     const dispatch = useDispatch();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
-    const [directoryWritable, setDirectoryWritable] = useState(false);
-    const [directoryReadable, setDirectoryReadable] = useState(false);
-    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [isExportingStudy, setIsExportingStudy] = useState(false);
 
@@ -446,37 +455,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             setIsExportingStudy(false);
         }
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError, isExportingStudy]);
-
-    useEffect(() => {
-        let isCurrent = true;
-        if (selectedDirectory !== null) {
-            Promise.all([
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryReadable(b);
-                    }
-                }),
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryWritable(b);
-                    }
-                }),
-            ]).finally(() => {
-                if (isCurrent) {
-                    setPermissionsLoaded(true);
-                }
-            });
-        } else {
-            setDirectoryReadable(false);
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
-        // otherwise re-run these checks.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDirectory?.elementUuid]);
 
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
