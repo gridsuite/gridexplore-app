@@ -177,6 +177,14 @@ import {
     VOLTAGE_LEVEL_TAB_FIELDS,
     HVDC_LINE_TAB_FIELDS,
     VscHvdcLineDialogTab,
+    BalancesAdjustmentForm,
+    balancesAdjustmentDtoToForm,
+    balancesAdjustmentFormSchema,
+    balancesAdjustmentFormToDto,
+    BalancesAdjustmentTab,
+    BALANCES_ADJUSTMENT_TAB_FIELDS,
+    PARAM_LANGUAGE,
+    useLocalizedCountries,
     lccHvdcLineCreationFormSchema,
     lccHvdcLineCreationDtoToForm,
     lccHvdcLineCreationFormToDto,
@@ -215,6 +223,7 @@ import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
 import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
+import { useParameterState } from '../../use-parameters-dialog';
 
 type SpecificModificationDialogProps = Pick<
     ModificationDialogProps<any, any>,
@@ -304,6 +313,8 @@ export default function CompositeModificationDialog({
     broadcastChannel,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
+    const { countryCodes, translate } = useLocalizedCountries(languageLocal);
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
@@ -627,6 +638,24 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.BALANCES_ADJUSTMENT,
+                    {
+                        formSchema: balancesAdjustmentFormSchema(countryCodes),
+                        dtoToForm: balancesAdjustmentDtoToForm,
+                        formToDto: (form, dto) => balancesAdjustmentFormToDto(form, dto?.loadFlowParametersId ?? null),
+                        errorHeaderId: 'BalancesAdjustmentError',
+                        titleId: 'BalancesAdjustment',
+                        ModificationForm: BalancesAdjustmentForm,
+                        getExtraFormProps: () => ({ countryCodes, translate }),
+                        removeOptional: true,
+                        dialogWidth: 'md',
+                        tabsProps: {
+                            defaultTab: BalancesAdjustmentTab.AREAS_TAB,
+                            tabFields: BALANCES_ADJUSTMENT_TAB_FIELDS,
+                        },
+                    },
+                ],
+                [
                     ModificationType.VOLTAGE_LEVEL_MODIFICATION,
                     {
                         formSchema: voltageLevelModificationWithMeasurementsFormSchema,
@@ -923,7 +952,7 @@ export default function CompositeModificationDialog({
                     },
                 ],
             ]),
-        [intl]
+        [intl, countryCodes, translate]
     );
 
     const isModificationEditable = useCallback(
