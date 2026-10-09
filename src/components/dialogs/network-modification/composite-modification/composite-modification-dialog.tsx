@@ -66,6 +66,16 @@ import {
     lineSplitWithVoltageLevelCreationFormSchema,
     lineSplitWithVoltageLevelCreationFormToDto,
     LineSplitWithVoltageLevelIllustration,
+    deleteAttachingLineDtoToForm,
+    DeleteAttachingLineForm,
+    deleteAttachingLineFormSchema,
+    deleteAttachingLineFormToDto,
+    DeleteAttachingLineIllustration,
+    lineAttachToVoltageLevelCreationDtoToForm,
+    LineAttachToVoltageLevelCreationForm,
+    lineAttachToVoltageLevelCreationFormSchema,
+    lineAttachToVoltageLevelCreationFormToDto,
+    LineAttachToVoltageLevelIllustration,
     shuntCompensatorModificationDtoToForm,
     ShuntCompensatorModificationForm,
     shuntCompensatorModificationFormSchema,
@@ -188,7 +198,8 @@ import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
-import { FreeEntryVoltageLevelCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
+import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
+import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
 import { ModificationDialog, ModificationDialogProps } from '../simple-modification/ModificationDialog';
 import { TabularCreationForm, TabularModificationForm } from '../tabular/tabular-forms';
@@ -219,7 +230,13 @@ const getVoltageLevelTopologyModificationExtraFormProps = (dto: TopologyVoltageL
 });
 
 const getLineSplitWithVoltageLevelExtraFormProps = () => ({
-    NewVoltageLevelPane: FreeEntryVoltageLevelCreationPane,
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+});
+
+const getLineAttachToVoltageLevelExtraFormProps = () => ({
+    NewVoltageLevelPane: NewVoltageLevelCreationPane,
+    AttachmentPointPane: AttachmentPointCreationPane,
+    AttachedLinePane: FreeEntryLineCreationPane,
 });
 
 const schema = yup.object().shape({
@@ -660,6 +677,35 @@ export default function CompositeModificationDialog({
                     },
                 ],
                 [
+                    ModificationType.LINE_ATTACH_TO_VOLTAGE_LEVEL,
+                    {
+                        formSchema: lineAttachToVoltageLevelCreationFormSchema,
+                        dtoToForm: lineAttachToVoltageLevelCreationDtoToForm,
+                        formToDto: lineAttachToVoltageLevelCreationFormToDto,
+                        errorHeaderId: 'LineAttachmentError',
+                        titleId: 'LineAttachToVoltageLevel',
+                        ModificationForm: LineAttachToVoltageLevelCreationForm,
+                        subtitle: <LineAttachToVoltageLevelIllustration />,
+                        getExtraFormProps: getLineAttachToVoltageLevelExtraFormProps,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.DELETE_ATTACHING_LINE,
+                    {
+                        formSchema: deleteAttachingLineFormSchema,
+                        dtoToForm: deleteAttachingLineDtoToForm,
+                        formToDto: deleteAttachingLineFormToDto,
+                        errorHeaderId: 'DeleteAttachingLineError',
+                        titleId: 'DeleteAttachingLine',
+                        ModificationForm: DeleteAttachingLineForm,
+                        subtitle: <DeleteAttachingLineIllustration />,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
                     ModificationType.SHUNT_COMPENSATOR_MODIFICATION,
                     {
                         formSchema: shuntCompensatorModificationFormSchema,
@@ -853,7 +899,7 @@ export default function CompositeModificationDialog({
         setSelectedModification(undefined);
     }, []);
 
-    useEffect(() => {
+    const fetchModifications = useCallback(() => {
         setIsFetching(true);
         fetchCompositeModificationContent(compositeModificationId)
             .then((response) => {
@@ -865,7 +911,11 @@ export default function CompositeModificationDialog({
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
             })
             .finally(() => setIsFetching(false));
-    }, [compositeModificationId, name, snackError]);
+    }, [compositeModificationId, snackError]);
+
+    useEffect(() => {
+        fetchModifications();
+    }, [fetchModifications, name]);
 
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
@@ -903,7 +953,6 @@ export default function CompositeModificationDialog({
                     removeOptional: true,
                 }}
                 disabledSave={isDisabledValidationButton(errors)}
-                isDataFetching={isFetching}
                 unscrollableFullHeight
                 sx={{
                     '.MuiDialog-paper': {
@@ -912,34 +961,33 @@ export default function CompositeModificationDialog({
                     },
                 }}
             >
-                {!isFetching && (
-                    <Box sx={unscrollableDialogStyles.unscrollableContainer}>
-                        <CompositeModificationForm />
-                        <NetworkModificationsTable
-                            handleCellClick={editModification}
-                            modifications={modifications}
-                            // the following values will be used when we enable composite editing in gridexplore
-                            onRowDragStart={() => {}}
-                            onRowDragEnd={() => {}}
-                            onSelectedRowsChange={() => {}}
-                            modificationUuidsToReset={[]}
-                            modificationToEditLabel={null}
-                            isRowDragDisabled
-                            isImpactedByNotification={() => false}
-                            notificationMessageId="notificationMessageId"
-                            isFetchingModifications={false}
-                            pendingState={false}
-                            columns={BASE_COLUMNS}
-                            highlightedModificationUuid={null}
-                            studyUuid={null}
-                        />
-                    </Box>
-                )}
+                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                    <CompositeModificationForm />
+                    <NetworkModificationsTable
+                        handleCellClick={editModification}
+                        modifications={modifications}
+                        // the following values will be used when we enable composite editing in gridexplore
+                        onRowDragStart={() => {}}
+                        onRowDragEnd={() => {}}
+                        onSelectedRowsChange={() => {}}
+                        modificationUuidsToReset={[]}
+                        modificationToEditLabel={null}
+                        isRowDragDisabled
+                        isImpactedByNotification={() => false}
+                        notificationMessageId="notificationMessageId"
+                        isFetchingModifications={isFetching}
+                        pendingState={false}
+                        columns={BASE_COLUMNS}
+                        highlightedModificationUuid={null}
+                        studyUuid={null}
+                    />
+                </Box>
             </CustomMuiDialog>
             {selectedModification && (
                 <ModificationDialog
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
+                    onUpdated={fetchModifications}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated

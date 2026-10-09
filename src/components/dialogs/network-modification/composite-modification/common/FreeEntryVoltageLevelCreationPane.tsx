@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useIntl } from 'react-intl';
 import {
     CustomMuiDialog,
     DeepNullable,
+    FieldConstants,
     useTabs,
     VoltageLevelCreationDto,
     VoltageLevelCreationForm,
@@ -31,16 +32,35 @@ export interface FreeEntryVoltageLevelCreationPaneProps {
     editData: VoltageLevelCreationDto | null;
 }
 
-export function FreeEntryVoltageLevelCreationPane({
+// An attachment point is a voltage level reduced to just its substation: structure (busbar sections) and
+// nominal voltage are not meaningful for it, and it always needs a brand-new substation.
+const applyAttachmentPointOverrides = (formData: VoltageLevelCreationFormData): VoltageLevelCreationFormData => ({
+    ...formData,
+    [FieldConstants.HIDE_NOMINAL_VOLTAGE]: true,
+    [FieldConstants.HIDE_BUS_BAR_SECTION]: true,
+    [FieldConstants.ADD_SUBSTATION_CREATION]: true,
+});
+
+function FreeEntryVoltageLevelCreationPane({
+    titleId,
+    isAttachmentPoint,
     open,
     onClose,
     onCreateVoltageLevel,
     editData,
-}: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+}: Readonly<FreeEntryVoltageLevelCreationPaneProps & { titleId: string; isAttachmentPoint: boolean }>) {
     const intl = useIntl();
 
+    const defaultValues = useMemo(
+        () =>
+            isAttachmentPoint
+                ? applyAttachmentPointOverrides(voltageLevelCreationEmptyFormData)
+                : voltageLevelCreationEmptyFormData,
+        [isAttachmentPoint]
+    );
+
     const formMethods = useForm<DeepNullable<VoltageLevelCreationFormData>>({
-        defaultValues: voltageLevelCreationEmptyFormData,
+        defaultValues,
         resolver: yupResolver<DeepNullable<VoltageLevelCreationFormData>>(voltageLevelCreationFormSchema),
     });
 
@@ -53,9 +73,10 @@ export function FreeEntryVoltageLevelCreationPane({
 
     useEffect(() => {
         if (editData) {
-            reset(voltageLevelCreationDtoToForm(editData, intl, false));
+            const formData = voltageLevelCreationDtoToForm(editData, intl, false);
+            reset(isAttachmentPoint ? applyAttachmentPointOverrides(formData) : formData);
         }
-    }, [editData, intl, reset]);
+    }, [editData, intl, isAttachmentPoint, reset]);
 
     return (
         <CustomMuiDialog
@@ -65,14 +86,26 @@ export function FreeEntryVoltageLevelCreationPane({
                 onCreateVoltageLevel(voltageLevelCreationFormToDto(form as VoltageLevelCreationFormData))
             }
             onValidationError={useTabsReturn.onError}
-            titleId="CreateVoltageLevel"
+            titleId={titleId}
             formContext={{
                 ...formMethods,
                 validationSchema: voltageLevelCreationFormSchema,
                 removeOptional: false,
             }}
         >
-            <VoltageLevelCreationForm substationOptions={[]} useTabsReturn={useTabsReturn} />
+            <VoltageLevelCreationForm
+                substationOptions={[]}
+                showDeleteSubstationButton={!isAttachmentPoint}
+                useTabsReturn={useTabsReturn}
+            />
         </CustomMuiDialog>
     );
+}
+
+export function NewVoltageLevelCreationPane(props: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+    return <FreeEntryVoltageLevelCreationPane {...props} titleId="CreateVoltageLevel" isAttachmentPoint={false} />;
+}
+
+export function AttachmentPointCreationPane(props: Readonly<FreeEntryVoltageLevelCreationPaneProps>) {
+    return <FreeEntryVoltageLevelCreationPane {...props} titleId="SpecifyAttachmentPoint" isAttachmentPoint />;
 }
