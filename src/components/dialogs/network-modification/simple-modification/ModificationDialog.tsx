@@ -38,6 +38,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     getExtraFormProps?: (dto: ModificationData) => Record<string, unknown>;
     tabsProps?: UseTabsProps;
     subtitle?: ReactNode;
+    onUpdated?: () => void;
 }
 
 export type UseTabsProps = {
@@ -66,6 +67,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     unscrollableFullHeight = false,
     getExtraFormProps,
     subtitle,
+    onUpdated,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -92,7 +94,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
         fetchNetworkModification(modificationUuid)
             .then((res) => res.json())
             .then((res) => setModificationData(removeNullFields(res)))
-            .catch((error: unknown) => {
+            .catch((error) => {
                 snackWithFallback(snackError, error, {
                     headerId: 'ModificationReadError',
                 });
@@ -106,12 +108,14 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
                 updateModification({
                     modificationUuid: modificationData.uuid,
                     body: JSON.stringify(formToDto(form, modificationData)),
-                }).catch((error: unknown) => {
-                    snackWithFallback(snackError, error, { headerId: errorHeaderId });
-                });
+                })
+                    .then(() => onUpdated?.())
+                    .catch((error) => {
+                        snackWithFallback(snackError, error, { headerId: errorHeaderId });
+                    });
             }
         },
-        [modificationData, formToDto, snackError, errorHeaderId]
+        [modificationData, formToDto, snackError, errorHeaderId, onUpdated]
     );
 
     return (
