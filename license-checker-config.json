@@ -16,6 +16,5 @@
         "Artistic-2.0",
         "Python-2.0",
         "Unlicense"
-    ],
-    "excludePackages": ["esprima@1.2.2", "jackspeak@2.3.6", "path-scurry@1.10.2"]
+    ]
 }
