@@ -191,6 +191,23 @@ import {
     lccHvdcLineModificationFormSchema,
     lccHvdcLineModificationDtoToForm,
     lccHvdcLineModificationFormToDto,
+    linesAttachToSplittingLinesFormSchema,
+    linesAttachToSplittingLinesFormToDto,
+    LinesAttachToSplittingLinesForm,
+    LineAttachToSplitLinesIllustration,
+    linesAttachToSplittingLinesDtoToForm,
+    generationDispatchFormSchema,
+    generationDispatchDtoToForm,
+    generationDispatchFormToDto,
+    GenerationDispatchForm,
+    loadScalingFormSchema,
+    loadScalingDtoToForm,
+    loadScalingFormToDto,
+    LoadScalingForm,
+    GeneratorScalingForm,
+    generatorScalingFormSchema,
+    generatorScalingFormToDto,
+    generatorScalingDtoToForm,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -313,6 +330,19 @@ export default function CompositeModificationDialog({
     const editableModificationDialogs = useMemo(
         () =>
             new Map<ModificationType, SpecificModificationDialogProps>([
+                [
+                    ModificationType.GENERATION_DISPATCH,
+                    {
+                        formSchema: generationDispatchFormSchema,
+                        dtoToForm: generationDispatchDtoToForm,
+                        formToDto: generationDispatchFormToDto,
+                        errorHeaderId: 'GenerationDispatchError',
+                        titleId: 'GenerationDispatch',
+                        ModificationForm: GenerationDispatchForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
                 [
                     ModificationType.EQUIPMENT_DELETION,
                     {
@@ -867,6 +897,46 @@ export default function CompositeModificationDialog({
                         titleId: 'DeleteVoltageLevelOnLine',
                         subtitle: <DeleteVoltageLevelOnLineIllustration />,
                         ModificationForm: DeleteVoltageLevelOnLineForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.GENERATOR_SCALING,
+                    {
+                        formSchema: generatorScalingFormSchema,
+                        dtoToForm: generatorScalingDtoToForm,
+                        formToDto: generatorScalingFormToDto,
+                        errorHeaderId: 'GeneratorScalingError',
+                        titleId: 'GeneratorScaling',
+                        ModificationForm: GeneratorScalingForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LOAD_SCALING,
+                    {
+                        formSchema: loadScalingFormSchema,
+                        dtoToForm: loadScalingDtoToForm,
+                        formToDto: loadScalingFormToDto,
+                        errorHeaderId: 'LoadScalingError',
+                        titleId: 'LoadScaling',
+                        ModificationForm: LoadScalingForm,
+                        removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.LINES_ATTACH_TO_SPLIT_LINES,
+                    {
+                        formSchema: linesAttachToSplittingLinesFormSchema,
+                        dtoToForm: linesAttachToSplittingLinesDtoToForm,
+                        formToDto: linesAttachToSplittingLinesFormToDto,
+                        errorHeaderId: 'LinesAttachToSplitLinesError',
+                        titleId: 'LinesAttachToSplitLines',
+                        subtitle: <LineAttachToSplitLinesIllustration />,
+                        ModificationForm: LinesAttachToSplittingLinesForm,
                         removeOptional: false,
                         dialogWidth: 'md',
                     },
