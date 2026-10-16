@@ -248,8 +248,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.selectedDirectory && filteredTreeDataMapData[state.selectedDirectory?.elementUuid]) {
             state.selectedDirectory.elementName =
                 filteredTreeDataMapData[state.selectedDirectory?.elementUuid].elementName;
-            state.selectedDirectory.writePermission =
-                filteredTreeDataMapData[state.selectedDirectory?.elementUuid].writePermission;
         }
     });
 

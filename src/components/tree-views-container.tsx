@@ -530,9 +530,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-            console.log('processDirectoryUpdatedEvent2');
             if (directory.uuid != null) {
-                console.log('processDirectoryUpdatedEvent3');
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir
                 // else expanded or not then updateDirectoryTree
@@ -542,7 +540,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                         return; // break here
                     }
                 }
-                console.log('processDirectoryUpdatedEvent5');
                 updateDirectoryTree(directory.uuid, false, isDirectoryMoving);
             }
         }
