@@ -243,7 +243,7 @@ export const reducer = createReducer(initialState, (builder) => {
             mapData: filteredTreeDataMapData,
         };
 
-        // Keep the selected directory's name and permissions in sync with the refreshed tree.
+        // we must override selectedDirectory elementName because it could be the one to have changed
         // if it's the deleted one then it's not in filteredTreeDataMapData anymore then check
         if (state.selectedDirectory && filteredTreeDataMapData[state.selectedDirectory?.elementUuid]) {
             state.selectedDirectory.elementName =
