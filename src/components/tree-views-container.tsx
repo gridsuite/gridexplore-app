@@ -375,13 +375,19 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
     );
 
     const updateSelectedDirectory = useCallback(
-        (children: ElementAttributes[], nodeId: UUID | undefined) => {
-            if (!nodeId) {
+        (children: ElementAttributes[], selectedDirectoryUuid: UUID | undefined) => {
+            if (!selectedDirectoryUuid) {
                 return;
             }
-            const selectedDirectoryList = children.filter((child) => child.elementUuid === nodeId);
-            if (selectedDirectoryList.length > 0) {
-                dispatch(setSelectedDirectory(selectedDirectoryList[0]));
+            const updatedSelectedDirectory = children.find((child) => child.elementUuid === selectedDirectoryUuid);
+            const currentSelectedDirectory = selectedDirectoryRef.current;
+            if (
+                updatedSelectedDirectory &&
+                currentSelectedDirectory &&
+                (updatedSelectedDirectory.writePermission !== currentSelectedDirectory.writePermission ||
+                    updatedSelectedDirectory.elementName !== currentSelectedDirectory.elementName)
+            ) {
+                dispatch(setSelectedDirectory(updatedSelectedDirectory));
             }
         },
         [dispatch]
