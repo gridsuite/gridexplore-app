@@ -31,7 +31,6 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
-    PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -59,7 +58,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
-import { checkPermissionOnDirectory } from './menus-utils';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
     activeElement: ElementAttributes;
@@ -79,8 +77,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
     const [directoryWritable, setDirectoryWritable] = useState(false);
-    const [directoryReadable, setDirectoryReadable] = useState(false);
-    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [isExportingStudy, setIsExportingStudy] = useState(false);
 
@@ -397,8 +393,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [isStudyOrCase, uploadingInProgress]);
 
     const couldCopy = useCallback(() => {
-        return directoryReadable && isSingleElement;
-    }, [directoryReadable, isSingleElement]);
+        return isSingleElement;
+    }, [isSingleElement]);
 
     const allowsDuplicateOrCopy = useCallback(() => {
         return !(isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()));
@@ -448,35 +444,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError, isExportingStudy]);
 
     useEffect(() => {
-        let isCurrent = true;
-        if (selectedDirectory !== null) {
-            Promise.all([
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryReadable(b);
-                    }
-                }),
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryWritable(b);
-                    }
-                }),
-            ]).finally(() => {
-                if (isCurrent) {
-                    setPermissionsLoaded(true);
-                }
-            });
-        } else {
-            setDirectoryReadable(false);
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
-        // otherwise re-run these checks.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDirectory?.elementUuid]);
+        setDirectoryWritable(selectedDirectory?.writePermission ?? false);
+    }, [selectedDirectory]);
 
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
@@ -754,7 +723,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     };
     return (
         <>
-            {open && permissionsLoaded && (
+            {open && (
                 <CommonContextualMenu {...others} menuItems={buildMenu} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}

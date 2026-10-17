@@ -14,7 +14,6 @@ import {
     type ItemSelectionForCopy,
     type MuiStyles,
     NO_ITEM_SELECTION_FOR_COPY,
-    PermissionType,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
@@ -38,7 +37,6 @@ import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
-import { checkPermissionOnDirectory } from './menus/menus-utils';
 
 const circularProgressSize = '70px';
 
@@ -123,24 +121,8 @@ export default function DirectoryContent() {
     const [directoryWritable, setDirectoryWritable] = useState(false);
 
     useEffect(() => {
-        let isCurrent = true;
-        if (selectedDirectory !== null) {
-            setDirectoryWritable(false);
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                if (isCurrent) {
-                    setDirectoryWritable(b);
-                }
-            });
-        } else {
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: the permission only depends on the directory id, and `selectedDirectory`
-        // changes reference on every tree update, which would otherwise re-run this check.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDirectory?.elementUuid]);
+        setDirectoryWritable(selectedDirectory?.writePermission ?? false);
+    }, [selectedDirectory]);
 
     const columnDefinitions = useMemo(() => getColumnsDefinition(intl, theme), [intl, theme]);
 

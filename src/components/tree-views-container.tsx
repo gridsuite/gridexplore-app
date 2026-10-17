@@ -374,6 +374,25 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
         [dispatch, mergeCurrentAndUploading]
     );
 
+    const updateSelectedDirectory = useCallback(
+        (children: ElementAttributes[], selectedDirectoryUuid: UUID | undefined) => {
+            if (!selectedDirectoryUuid) {
+                return;
+            }
+            const updatedSelectedDirectory = children.find((child) => child.elementUuid === selectedDirectoryUuid);
+            const currentSelectedDirectory = selectedDirectoryRef.current;
+            if (
+                updatedSelectedDirectory &&
+                currentSelectedDirectory &&
+                (updatedSelectedDirectory.writePermission !== currentSelectedDirectory.writePermission ||
+                    updatedSelectedDirectory.elementName !== currentSelectedDirectory.elementName)
+            ) {
+                dispatch(setSelectedDirectory(updatedSelectedDirectory));
+            }
+        },
+        [dispatch]
+    );
+
     const updateDirectoryTreeAndContent = useCallback(
         (nodeId: UUID, isDirectoryMoving: boolean) => {
             fetchDirectoryContent(nodeId)
@@ -382,13 +401,14 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     updateCurrentChildren(childrenToBeInserted);
                     // Update Tree Map data
                     updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
+                    updateSelectedDirectory(childrenToBeInserted, selectedDirectoryRef.current?.elementUuid);
                 })
                 .catch((error) => {
                     console.warn(`Could not update subs (and content) of '${nodeId}' : ${error.message}`);
                     updateMapData(nodeId, [], false);
                 });
         },
-        [updateCurrentChildren, updateMapData]
+        [updateCurrentChildren, updateMapData, updateSelectedDirectory]
     );
 
     // add ghost studies or ghost cases as soon as possible (uploadingElements) and clean them if necessary
@@ -419,7 +439,8 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
 
             fetchDirectoryContent(nodeId)
                 .then((childrenToBeInserted) => {
-                    const navigatedTo = updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving); // Update Tree Map data
+                    const navigatedTo = updateMapData(nodeId, childrenToBeInserted, isDirectoryMoving);
+                    updateSelectedDirectory(childrenToBeInserted, selectedDirectoryRef.current?.elementUuid);
                     if (navigatedTo === nodeId) {
                         // We navigated here because the selected directory was deleted; its content was just
                         // fetched, so feed it and let the selection effect skip its own fetch.
@@ -432,7 +453,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     updateMapData(nodeId, [], false);
                 });
         },
-        [dispatch, updateCurrentChildren, updateMapData]
+        [dispatch, updateCurrentChildren, updateMapData, updateSelectedDirectory]
     );
 
     /* Manage Studies updating with Web Socket */
@@ -515,7 +536,6 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
-
             if (directory.uuid != null) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir

@@ -24,7 +24,6 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
-    PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -52,7 +51,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
-import { checkPermissionOnDirectory } from './menus-utils';
 import DirectoryPropertiesDialog from '../dialogs/directory-properties/directory-properties-dialog';
 import { FilterType } from '../../utils/elementType';
 import FilterBasedContingencyListDialog from '../dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
@@ -189,23 +187,8 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
     useEffect(() => {
-        let isCurrent = true;
-        if (directory !== null) {
-            checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
-                if (isCurrent) {
-                    setDirectoryWritable(b);
-                }
-            });
-        } else {
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
-        // re-run this check.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [directory?.elementUuid]);
+        setDirectoryWritable(directory?.writePermission ?? false);
+    }, [directory]);
 
     const buildMenu = () => {
         // build menuItems here
