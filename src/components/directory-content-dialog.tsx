@@ -313,7 +313,7 @@ function DirectoryContentDialog(
                     description={elementDescription}
                     onClose={handleDescDialogClose}
                     updateElement={(data: Record<string, string>) =>
-                        updateElement(activeElement.elementUuid, activeElement.type, data)
+                        updateElement(activeElement.elementUuid, data)
                     }
                 />
             );

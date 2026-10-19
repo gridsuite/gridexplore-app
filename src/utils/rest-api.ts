@@ -182,9 +182,9 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, elementType: string, element: unknown) {
+export function updateElement(elementUuid: UUID, element: unknown) {
     console.info(`Updating element info for ${elementUuid}`);
-    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/types/${elementType}`;
+    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
