@@ -186,14 +186,14 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
 export function updateElement(elementUuid: UUID, element: Partial<ElementAttributes>) {
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
-    element = {...element, elementUuid: elementUuid};
+    const elementToUpdate: Partial<ElementAttributes> = { ...element, elementUuid };
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(element),
+        body: JSON.stringify(elementToUpdate),
     });
 }
 
@@ -242,7 +242,7 @@ export function renameElement(elementUuid: UUID, newElementName: string) {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            elementUuid: elementUuid,
+            elementUuid,
             elementName: newElementName,
         }),
     });
