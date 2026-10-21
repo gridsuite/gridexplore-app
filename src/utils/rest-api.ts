@@ -9,6 +9,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    ElementAttributes,
     ElementType,
     fetchElementNames,
     fetchEnv,
@@ -182,9 +183,10 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, element: unknown) {
+export function updateElement(elementUuid: UUID, element: Partial<ElementAttributes>) {
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
+    element = {...element, elementUuid: elementUuid};
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
@@ -229,9 +231,9 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
     });
 }
 
-export function renameElement(elementUuid: UUID, elementType: string, newElementName: string) {
+export function renameElement(elementUuid: UUID, newElementName: string) {
     console.info(`Renaming element ${elementUuid}`);
-    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/types/${elementType}`;
+    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     console.debug(renameElementUrl);
     return backendFetch(renameElementUrl, {
         method: 'put',
@@ -240,6 +242,7 @@ export function renameElement(elementUuid: UUID, elementType: string, newElement
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+            elementUuid: elementUuid,
             elementName: newElementName,
         }),
     });

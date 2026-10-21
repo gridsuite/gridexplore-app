@@ -692,7 +692,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         open
                         onClose={handleCloseDialog}
                         onClick={(elementName) =>
-                            renameCB(activeElement?.elementUuid, activeElement?.type, elementName)
+                            renameCB(activeElement?.elementUuid, elementName)
                         }
                         title={intl.formatMessage({ id: 'renameElement' })}
                         message="renameElementMsg"
