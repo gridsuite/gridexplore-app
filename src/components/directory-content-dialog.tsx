@@ -234,10 +234,6 @@ function DirectoryContentDialog(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
-                if (!selectedDirectoryWritable) {
-                    /** no element can be opened */
-                    return;
-                }
                 if (event.colDef.field === DirectoryField.DESCRIPTION) {
                     /** open description dialog */
                     setActiveElement(event.data);
@@ -297,7 +293,6 @@ function DirectoryContentDialog(
             openParametersDialog,
             openProcessConfigDialog,
             selectedDirectoryElementUuid,
-            selectedDirectoryWritable,
             setActiveElement,
         ]
     );
@@ -310,6 +305,7 @@ function DirectoryContentDialog(
                     description={activeElement.description}
                     onClose={handleDescDialogClose}
                     updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, data)}
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }
@@ -323,6 +319,7 @@ function DirectoryContentDialog(
                     name={elementName}
                     description={elementDescription}
                     broadcastChannel={broadcastChannel}
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }
