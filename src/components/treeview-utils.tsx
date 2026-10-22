@@ -69,7 +69,8 @@ export function updatedTree(
             if (
                 n.elementName === pn.elementName &&
                 n.subdirectoriesCount === pn.subdirectoriesCount &&
-                nodeId === pn.parentUuid
+                nodeId === pn.parentUuid &&
+                n.writePermission === pn.writePermission
             ) {
                 // existing child, nothing has changed, keep existing one
                 return pn;
@@ -87,6 +88,7 @@ export function updatedTree(
                 elementName: n.elementName,
                 subdirectoriesCount: n.subdirectoriesCount,
                 parentUuid: nodeId,
+                writePermission: n.writePermission,
             };
         });
     const prevChildren = nodeId ? prevMap[nodeId]?.children : prevRoots;
