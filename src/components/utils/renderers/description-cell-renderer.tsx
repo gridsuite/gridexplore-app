@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import type { UUID } from 'node:crypto';
 import { Box, IconButton, Tooltip } from '@mui/material';
 import { EditNoteIcon, type ElementAttributes, type MuiStyles } from '@gridsuite/commons-ui';
 import type { DirectoryContentGridContext } from '../directory-content-utils';
@@ -25,11 +26,16 @@ const styles = {
 
 export type DescriptionCellRendererProps = { data: ElementAttributes; context: DirectoryContentGridContext };
 
+function getDisplayedDescription(data: ElementAttributes, childrenMetadata: Record<UUID, ElementAttributes>) {
+    const { description, elementUuid } = data;
+    return childrenMetadata[elementUuid]?.description ?? description;
+}
+
 export function DescriptionCellRenderer({
     data,
-    context: { directoryWritable },
+    context: { childrenMetadata, directoryWritable },
 }: Readonly<DescriptionCellRendererProps>) {
-    const { description } = data;
+    const description = getDisplayedDescription(data, childrenMetadata);
     const descriptionLines = description?.split('\n');
     if (descriptionLines?.length > 3) {
         descriptionLines[2] = '...';
