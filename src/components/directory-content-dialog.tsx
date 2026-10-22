@@ -452,6 +452,7 @@ function DirectoryContentDialog(
                         userProfile={userProfile}
                         activeDirectory={activeDirectory}
                         language={languageLocal}
+                        isDeveloperMode={isDeveloperMode}
                     />
                 );
             }
