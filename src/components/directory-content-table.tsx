@@ -124,7 +124,7 @@ export function DirectoryContentTable({
                 return cellData.data && !READ_ONLY_ELEMENTS.includes(cellData.data.type);
             };
 
-            if (editableElement()) {
+            if (context.directoryWritable ? editableElement() : cellData.data?.type === ElementType.MODIFICATION) {
                 style.cursor = 'pointer';
             }
             return {
@@ -132,7 +132,7 @@ export function DirectoryContentTable({
                 ...getRowStyle?.(cellData),
             };
         },
-        [getRowStyle]
+        [context.directoryWritable, getRowStyle]
     );
 
     const dispatch = useDispatch();
