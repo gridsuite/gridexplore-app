@@ -255,6 +255,11 @@ function DirectoryContentDialog(
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
 
+                    if (event.data.type !== ElementType.MODIFICATION && !selectedDirectoryWritable) {
+                        /** no element can be opened */
+                        return;
+                    }
+
                     switch (event.data.type) {
                         case ElementType.STUDY:
                             openStudyTab(elementId);
@@ -288,15 +293,16 @@ function DirectoryContentDialog(
         }),
         [
             childrenMetadata,
+            setActiveElement,
             dispatch,
+            selectedDirectoryElementUuid,
+            selectedDirectoryWritable,
             openStudyTab,
             openContingencyListDialog,
             openFilterDialog,
             openModificationDialog,
             openParametersDialog,
             openProcessConfigDialog,
-            selectedDirectoryElementUuid,
-            setActiveElement,
         ]
     );
 
