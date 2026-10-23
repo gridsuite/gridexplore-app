@@ -111,6 +111,7 @@ function DirectoryContentDialog(
     const handleDescDialogClose = useCallback(() => {
         setActiveElement(undefined);
         setOpenDescModificationDialog(false);
+        setElementDescription('');
     }, [setActiveElement]);
 
     const closeDialog = useCallback(() => {
@@ -234,16 +235,18 @@ function DirectoryContentDialog(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
+                const elementId = event.data.elementUuid;
+                const metadata = childrenMetadata[elementId];
+
                 if (event.colDef.field === DirectoryField.DESCRIPTION) {
                     /** open description dialog */
                     setActiveElement(event.data);
+                    setElementDescription(metadata?.description ?? event.data.description ?? '');
                     setOpenDescModificationDialog(true);
                     return;
                 }
 
                 /** open element */
-                const elementId = event.data.elementUuid;
-                const metadata = childrenMetadata[elementId];
                 if (metadata) {
                     setActiveElement(event.data);
                     setElementName(metadata.elementName);
@@ -302,7 +305,7 @@ function DirectoryContentDialog(
             return (
                 <DescriptionModificationDialog
                     open
-                    description={activeElement.description}
+                    description={elementDescription}
                     onClose={handleDescDialogClose}
                     updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, data)}
                     isReadOnly={!selectedDirectoryWritable}
