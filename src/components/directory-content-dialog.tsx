@@ -235,10 +235,6 @@ function DirectoryContentDialog(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
-                if (!selectedDirectoryWritable) {
-                    /** no element can be opened */
-                    return;
-                }
                 const elementId = event.data.elementUuid;
                 const metadata = childrenMetadata[elementId];
 
@@ -258,6 +254,11 @@ function DirectoryContentDialog(
                     const subtype = metadata.specificMetadata.type;
                     /** set active directory on the store because it will be used while editing the contingency name */
                     dispatch(setActiveDirectory(selectedDirectoryElementUuid));
+
+                    if (event.data.type !== ElementType.MODIFICATION && !selectedDirectoryWritable) {
+                        /** no element can be opened */
+                        return;
+                    }
 
                     switch (event.data.type) {
                         case ElementType.STUDY:
@@ -292,16 +293,16 @@ function DirectoryContentDialog(
         }),
         [
             childrenMetadata,
+            setActiveElement,
             dispatch,
+            selectedDirectoryElementUuid,
+            selectedDirectoryWritable,
             openStudyTab,
             openContingencyListDialog,
             openFilterDialog,
             openModificationDialog,
             openParametersDialog,
             openProcessConfigDialog,
-            selectedDirectoryElementUuid,
-            selectedDirectoryWritable,
-            setActiveElement,
         ]
     );
 
@@ -313,6 +314,7 @@ function DirectoryContentDialog(
                     description={elementDescription}
                     onClose={handleDescDialogClose}
                     updateElement={(data: Record<string, string>) => updateElement(activeElement.elementUuid, data)}
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }
@@ -326,6 +328,7 @@ function DirectoryContentDialog(
                     name={elementName}
                     description={elementDescription}
                     broadcastChannel={broadcastChannel}
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }

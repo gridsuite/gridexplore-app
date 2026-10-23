@@ -285,6 +285,7 @@ interface CompositeModificationDialogProps {
     name: string;
     description: string;
     broadcastChannel: BroadcastChannel;
+    isReadOnly?: boolean;
 }
 
 // Rename a (nested) composite modification. It is a network modification inside the parent composite
@@ -313,6 +314,7 @@ export default function CompositeModificationDialog({
     name,
     description,
     broadcastChannel,
+    isReadOnly = false,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
@@ -976,7 +978,7 @@ export default function CompositeModificationDialog({
     );
 
     const editModification = useCallback(
-        async (modification: NetworkModificationMetadata) => {
+        async (modification: ComposedModificationMetadata) => {
             if (!isDeveloperMode) {
                 return;
             }
@@ -1044,6 +1046,7 @@ export default function CompositeModificationDialog({
                     ...methods,
                     validationSchema: schema,
                     removeOptional: true,
+                    isReadOnly,
                 }}
                 disabledSave={isDisabledValidationButton(errors)}
                 unscrollableFullHeight
@@ -1081,6 +1084,7 @@ export default function CompositeModificationDialog({
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
                     onUpdated={fetchModifications}
+                    isReadOnly={isReadOnly}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
