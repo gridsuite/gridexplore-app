@@ -41,7 +41,7 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
-    renameElement,
+    updateElement,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';
@@ -94,7 +94,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         setDeleteError('');
     }, [onClose, setOpenDialog]);
 
-    const [renameCB, renameErrorMessage] = useDeferredFetch(renameElement, handleCloseDialog);
+    const [renameCB, renameErrorMessage] = useDeferredFetch(updateElement, handleCloseDialog);
 
     const [insertDirectoryCB, insertDirectoryErrorMessage] = useDeferredFetch(insertDirectory, handleCloseDialog);
 
@@ -410,7 +410,9 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
                             message="renameElementMsg"
                             currentName={directory.elementName}
                             open
-                            onClick={(newName: string) => renameCB(directory.elementUuid, newName)}
+                            onClick={(newName: string) =>
+                                renameCB(directory.elementUuid, ElementType.DIRECTORY, { elementName: newName })
+                            }
                             onClose={handleCloseDialog}
                             title={intl.formatMessage({
                                 id: 'renameDirectoryDialogTitle',
