@@ -187,7 +187,7 @@ export function updateElement(elementUuid: UUID, elementType: ElementType, eleme
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
     const elementToUpdate: Partial<ElementAttributes> = element;
-    if (elementType == ElementType.MODIFICATION) {
+    if (elementType === ElementType.MODIFICATION) {
         elementToUpdate.elementUuid = elementUuid;
     }
     return backendFetch(updateElementUrl, {
