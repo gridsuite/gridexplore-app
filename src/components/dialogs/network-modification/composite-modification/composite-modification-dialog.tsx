@@ -293,18 +293,20 @@ interface CompositeModificationDialogProps {
 const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
     updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
 
-const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
-    {
-        id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
-        header: NameHeaderRenderer,
-        cell: NameCellRenderer,
-        meta: {
-            cellStyle: networkModificationTableStyles.columnCell.modificationName,
-            onChange: renameCompositeModification,
+const getBaseColumns = (readOnly: boolean): ColumnDef<ComposedModificationMetadata>[] => {
+    return [
+        {
+            id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
+            header: NameHeaderRenderer,
+            cell: NameCellRenderer,
+            meta: {
+                cellStyle: networkModificationTableStyles.columnCell.modificationName,
+                onChange: readOnly ? undefined : renameCompositeModification,
+            },
+            minSize: 160,
         },
-        minSize: 160,
-    },
-];
+    ];
+};
 
 export default function CompositeModificationDialog({
     compositeModificationId,
@@ -324,7 +326,7 @@ export default function CompositeModificationDialog({
     const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const dispatch = useDispatch();
 
-    const [selectedModification, setSelectedModification] = useState<NetworkModificationMetadata>();
+    const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name, description),
@@ -1073,7 +1075,7 @@ export default function CompositeModificationDialog({
                         notificationMessageId="notificationMessageId"
                         isFetchingModifications={isFetching}
                         pendingState={false}
-                        columns={BASE_COLUMNS}
+                        columns={getBaseColumns(isReadOnly)}
                         highlightedModificationUuid={null}
                         studyUuid={null}
                     />
@@ -1084,7 +1086,7 @@ export default function CompositeModificationDialog({
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
                     onUpdated={fetchModifications}
-                    isReadOnly={isReadOnly}
+                    isReadOnly={isReadOnly || selectedModification.childFromReadOnlyShared}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
