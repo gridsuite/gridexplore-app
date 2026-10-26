@@ -183,10 +183,13 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, element: Partial<ElementAttributes>) {
+export function updateElement(elementUuid: UUID, elementType: ElementType, element: Partial<ElementAttributes>) {
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
-    const elementToUpdate: Partial<ElementAttributes> = { ...element, elementUuid };
+    const elementToUpdate: Partial<ElementAttributes> = element;
+    if (elementType == ElementType.MODIFICATION) {
+        elementToUpdate.elementUuid = elementUuid;
+    }
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
@@ -227,23 +230,6 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
         body: JSON.stringify({
             elementName: directoryName,
             owner: ownerId,
-        }),
-    });
-}
-
-export function renameElement(elementUuid: UUID, newElementName: string) {
-    console.info(`Renaming element ${elementUuid}`);
-    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
-    console.debug(renameElementUrl);
-    return backendFetch(renameElementUrl, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            elementUuid,
-            elementName: newElementName,
         }),
     });
 }
