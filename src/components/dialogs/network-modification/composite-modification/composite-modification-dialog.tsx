@@ -285,25 +285,13 @@ interface CompositeModificationDialogProps {
     name: string;
     description: string;
     broadcastChannel: BroadcastChannel;
+    isReadOnly?: boolean;
 }
 
 // Rename a (nested) composite modification. It is a network modification inside the parent composite
 // (not a directory element), so its metadata is updated directly on the network-modification-server.
 const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
     updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
-
-const BASE_COLUMNS: ColumnDef<ComposedModificationMetadata>[] = [
-    {
-        id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
-        header: NameHeaderRenderer,
-        cell: NameCellRenderer,
-        meta: {
-            cellStyle: networkModificationTableStyles.columnCell.modificationName,
-            onChange: renameCompositeModification,
-        },
-        minSize: 160,
-    },
-];
 
 export default function CompositeModificationDialog({
     compositeModificationId,
@@ -313,6 +301,7 @@ export default function CompositeModificationDialog({
     name,
     description,
     broadcastChannel,
+    isReadOnly = false,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
@@ -322,7 +311,7 @@ export default function CompositeModificationDialog({
     const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const dispatch = useDispatch();
 
-    const [selectedModification, setSelectedModification] = useState<NetworkModificationMetadata>();
+    const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
 
     const methods = useForm<FormData>({
         defaultValues: emptyFormData(name, description),
@@ -976,7 +965,7 @@ export default function CompositeModificationDialog({
     );
 
     const editModification = useCallback(
-        async (modification: NetworkModificationMetadata) => {
+        async (modification: ComposedModificationMetadata) => {
             if (!isDeveloperMode) {
                 return;
             }
@@ -1033,6 +1022,21 @@ export default function CompositeModificationDialog({
             });
     };
 
+    const baseColumns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
+        return [
+            {
+                id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
+                header: NameHeaderRenderer,
+                cell: NameCellRenderer,
+                meta: {
+                    cellStyle: networkModificationTableStyles.columnCell.modificationName,
+                    onChange: isReadOnly ? undefined : renameCompositeModification,
+                },
+                minSize: 160,
+            },
+        ];
+    }, [isReadOnly]);
+
     return (
         <>
             <CustomMuiDialog
@@ -1044,6 +1048,7 @@ export default function CompositeModificationDialog({
                     ...methods,
                     validationSchema: schema,
                     removeOptional: true,
+                    isReadOnly,
                 }}
                 disabledSave={isDisabledValidationButton(errors)}
                 unscrollableFullHeight
@@ -1070,7 +1075,7 @@ export default function CompositeModificationDialog({
                         notificationMessageId="notificationMessageId"
                         isFetchingModifications={isFetching}
                         pendingState={false}
-                        columns={BASE_COLUMNS}
+                        columns={baseColumns}
                         highlightedModificationUuid={null}
                         studyUuid={null}
                     />
@@ -1081,6 +1086,7 @@ export default function CompositeModificationDialog({
                     open={!!selectedModification}
                     onClose={handleModificationDialogClose}
                     onUpdated={fetchModifications}
+                    isReadOnly={isReadOnly || selectedModification.childFromReadOnlyShared}
                     modificationUuid={selectedModification.uuid}
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
