@@ -293,21 +293,6 @@ interface CompositeModificationDialogProps {
 const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
     updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
 
-const getBaseColumns = (readOnly: boolean): ColumnDef<ComposedModificationMetadata>[] => {
-    return [
-        {
-            id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
-            header: NameHeaderRenderer,
-            cell: NameCellRenderer,
-            meta: {
-                cellStyle: networkModificationTableStyles.columnCell.modificationName,
-                onChange: readOnly ? undefined : renameCompositeModification,
-            },
-            minSize: 160,
-        },
-    ];
-};
-
 export default function CompositeModificationDialog({
     compositeModificationId,
     open,
@@ -1037,6 +1022,21 @@ export default function CompositeModificationDialog({
             });
     };
 
+    const baseColumns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
+        return [
+            {
+                id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
+                header: NameHeaderRenderer,
+                cell: NameCellRenderer,
+                meta: {
+                    cellStyle: networkModificationTableStyles.columnCell.modificationName,
+                    onChange: isReadOnly ? undefined : renameCompositeModification,
+                },
+                minSize: 160,
+            },
+        ];
+    }, [isReadOnly]);
+
     return (
         <>
             <CustomMuiDialog
@@ -1075,7 +1075,7 @@ export default function CompositeModificationDialog({
                         notificationMessageId="notificationMessageId"
                         isFetchingModifications={isFetching}
                         pendingState={false}
-                        columns={getBaseColumns(isReadOnly)}
+                        columns={baseColumns}
                         highlightedModificationUuid={null}
                         studyUuid={null}
                     />
