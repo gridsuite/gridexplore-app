@@ -432,20 +432,6 @@ export function replaceAllSpreadsheetConfigsInCollection(
     });
 }
 
-export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, elementType?: ElementType) {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('elementName', elementName);
-    urlSearchParams.append('directoryUuid', directoryUuid ?? '');
-    if (elementType) {
-        urlSearchParams.append('elementType', elementType);
-    }
-    const existsElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/checkName?${urlSearchParams.toString()}`;
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then(
-        (response) => response.status !== 204 // HTTP 204 : No-content
-    );
-}
-
 export function getNameCandidate(directoryUuid: UUID, elementName: string, type: string) {
     const nameCandidateUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/${elementName}/newNameCandidate?type=${type}`;
     console.debug(nameCandidateUrl);
