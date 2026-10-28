@@ -235,8 +235,8 @@ function DirectoryContentDialog(
         refApi,
         () => ({
             handleClick: (event: CellClickedEvent) => {
-                if (!selectedDirectoryWritable) {
-                    /** no element can be opened */
+                if (event.data.type !== ElementType.MODIFICATION && !selectedDirectoryWritable) {
+                    /** no element can be opened but modifications with readOnly mode */
                     return;
                 }
                 const elementId = event.data.elementUuid;
@@ -292,16 +292,16 @@ function DirectoryContentDialog(
         }),
         [
             childrenMetadata,
+            setActiveElement,
             dispatch,
+            selectedDirectoryElementUuid,
+            selectedDirectoryWritable,
             openStudyTab,
             openContingencyListDialog,
             openFilterDialog,
             openModificationDialog,
             openParametersDialog,
             openProcessConfigDialog,
-            selectedDirectoryElementUuid,
-            selectedDirectoryWritable,
-            setActiveElement,
         ]
     );
 
@@ -315,6 +315,7 @@ function DirectoryContentDialog(
                     updateElement={(data: Record<string, string>) =>
                         updateElement(activeElement.elementUuid, activeElement.type, data)
                     }
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }
@@ -328,6 +329,7 @@ function DirectoryContentDialog(
                     name={elementName}
                     description={elementDescription}
                     broadcastChannel={broadcastChannel}
+                    isReadOnly={!selectedDirectoryWritable}
                 />
             );
         }
