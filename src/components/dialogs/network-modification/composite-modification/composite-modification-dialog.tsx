@@ -301,8 +301,6 @@ const renameCompositeModification = (
     return updateElement(compositeModificationId, {
         elementUuid: modification.uuid,
         elementName: newName,
-    }).catch((error: unknown) => {
-        snackWithFallback(snackError, error, { headerId: 'updateCompositeModificationNameError' });
     });
 };
 

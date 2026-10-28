@@ -225,6 +225,5 @@
     "exportStudyFailed": "Export study failed",
     "importStudy": "Import a study",
     "uploadStudyErrorMsg": "Please upload study archive (.zip)",
-    "studyImportError": "Error while importing study",
-    "updateCompositeModificationNameError": "Error while updating composite modification name"
+    "studyImportError": "Error while importing study"
 }
