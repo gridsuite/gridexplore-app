@@ -224,5 +224,6 @@
     "exportStudyFailed": "L'export de l'étude a échoué",
     "importStudy": "Importer une étude",
     "uploadStudyErrorMsg": "Veuillez télécharger l'étude (.zip)",
-    "studyImportError": "Erreur lors de l'importation de l'étude"
+    "studyImportError": "Erreur lors de l'importation de l'étude",
+    "updateCompositeModificationNameError": "Erreur lors de la mise à jour du nom de la modification composite"
 }
