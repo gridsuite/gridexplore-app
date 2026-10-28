@@ -214,7 +214,8 @@ import {
     generatorScalingFormSchema,
     generatorScalingFormToDto,
     generatorScalingDtoToForm,
-    updateElement, SnackInputs,
+    updateElement,
+    SnackInputs,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -295,7 +296,7 @@ const renameCompositeModification = (
     compositeModificationId: UUID,
     modification: ComposedModificationMetadata,
     newName: string,
-    snackError: (snackInputs: SnackInputs) => void,
+    snackError: (snackInputs: SnackInputs) => void
 ) => {
     updateElement(compositeModificationId, {
         elementUuid: modification.uuid,
