@@ -215,7 +215,6 @@ import {
     generatorScalingFormToDto,
     generatorScalingDtoToForm,
     updateElement,
-    SnackInputs,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -295,8 +294,7 @@ interface CompositeModificationDialogProps {
 const renameCompositeModification = (
     compositeModificationId: UUID,
     modification: ComposedModificationMetadata,
-    newName: string,
-    snackError: (snackInputs: SnackInputs) => void
+    newName: string
 ) => {
     return updateElement(compositeModificationId, {
         elementUuid: modification.uuid,
@@ -1044,12 +1042,12 @@ export default function CompositeModificationDialog({
                     onChange: isReadOnly
                         ? undefined
                         : (modification: ComposedModificationMetadata, newName: string) =>
-                              renameCompositeModification(compositeModificationId, modification, newName, snackError),
+                              renameCompositeModification(compositeModificationId, modification, newName),
                 },
                 minSize: 160,
             },
         ];
-    }, [isReadOnly, compositeModificationId, snackError]);
+    }, [isReadOnly, compositeModificationId]);
 
     return (
         <>
