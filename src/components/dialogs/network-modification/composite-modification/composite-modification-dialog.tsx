@@ -214,17 +214,13 @@ import {
     generatorScalingFormSchema,
     generatorScalingFormToDto,
     generatorScalingDtoToForm,
-    ElementType,
     updateElement,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
-import {
-    fetchCompositeModificationContent,
-    saveCompositeModification,
-} from '../../../../utils/rest-api';
+import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
 import CompositeModificationForm from './composite-modification-form';
 import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
 import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
@@ -1052,7 +1048,7 @@ export default function CompositeModificationDialog({
                 minSize: 160,
             },
         ];
-    }, [isReadOnly]);
+    }, [isReadOnly, compositeModificationId]);
 
     return (
         <>
