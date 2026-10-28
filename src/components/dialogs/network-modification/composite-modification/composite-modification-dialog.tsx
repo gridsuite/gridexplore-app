@@ -298,7 +298,7 @@ const renameCompositeModification = (
     newName: string,
     snackError: (snackInputs: SnackInputs) => void
 ) => {
-    updateElement(compositeModificationId, {
+    return updateElement(compositeModificationId, {
         elementUuid: modification.uuid,
         elementName: newName,
     }).catch((error: unknown) => {
