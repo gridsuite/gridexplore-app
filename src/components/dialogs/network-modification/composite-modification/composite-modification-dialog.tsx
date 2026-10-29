@@ -214,6 +214,10 @@ import {
     generatorScalingFormSchema,
     generatorScalingFormToDto,
     generatorScalingDtoToForm,
+    NetworkReductionForm,
+    networkReductionDtoToForm,
+    networkReductionFormToDto,
+    networkReductionFormSchema,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -950,6 +954,19 @@ export default function CompositeModificationDialog({
                         subtitle: <LineAttachToSplitLinesIllustration />,
                         ModificationForm: LinesAttachToSplittingLinesForm,
                         removeOptional: false,
+                        dialogWidth: 'md',
+                    },
+                ],
+                [
+                    ModificationType.NETWORK_REDUCTION,
+                    {
+                        formSchema: networkReductionFormSchema,
+                        dtoToForm: networkReductionDtoToForm,
+                        formToDto: networkReductionFormToDto,
+                        errorHeaderId: 'NetworkReductionError',
+                        titleId: 'NetworkReduction',
+                        ModificationForm: NetworkReductionForm,
+                        removeOptional: true,
                         dialogWidth: 'md',
                     },
                 ],
