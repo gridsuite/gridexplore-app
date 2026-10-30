@@ -9,9 +9,9 @@ import { ChangeEvent, ReactNode, useCallback, useEffect, useMemo, useState } fro
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputAdornment, TextField, TextFieldProps } from '@mui/material';
 import { Check as CheckIcon } from '@mui/icons-material';
-import { ElementType, type MuiStyles, NAME_EMPTY, useDebounce } from '@gridsuite/commons-ui';
+import { elementAlreadyExists, ElementType, type MuiStyles, NAME_EMPTY, useDebounce } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
-import { elementExists, rootDirectoryExists } from '../../utils/rest-api';
+import { rootDirectoryExists } from '../../utils/rest-api';
 
 const styles = {
     helperText: {
@@ -99,7 +99,7 @@ export const useNameField = ({
         (name: string) =>
             elementType === ElementType.DIRECTORY && !parentDirectoryId
                 ? rootDirectoryExists(name)
-                : elementExists(parentDirectoryId, name, elementType),
+                : elementAlreadyExists(null, parentDirectoryId, name, elementType),
         [elementType, parentDirectoryId]
     );
 
