@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -28,7 +29,6 @@ import {
     NetworkModificationMetadata,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
-    updateNetworkModificationsMetadata,
     byFilterDeletionDtoToForm,
     byFilterDeletionFormSchema,
     byFilterDeletionFormToDto,
@@ -214,6 +214,7 @@ import {
     generatorScalingFormSchema,
     generatorScalingFormToDto,
     generatorScalingDtoToForm,
+    updateElement,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -278,7 +279,7 @@ interface FormData {
 }
 
 interface CompositeModificationDialogProps {
-    compositeModificationId: string;
+    compositeModificationId: UUID;
     open: boolean;
     onClose: () => void;
     titleId: string;
@@ -290,8 +291,16 @@ interface CompositeModificationDialogProps {
 
 // Rename a (nested) composite modification. It is a network modification inside the parent composite
 // (not a directory element), so its metadata is updated directly on the network-modification-server.
-const renameCompositeModification = (modification: ComposedModificationMetadata, newName: string) =>
-    updateNetworkModificationsMetadata([modification.uuid], { name: newName, type: modification.type });
+const renameCompositeModification = (
+    compositeModificationId: UUID,
+    modification: ComposedModificationMetadata,
+    newName: string
+) => {
+    return updateElement(compositeModificationId, {
+        elementUuid: modification.uuid,
+        elementName: newName,
+    });
+};
 
 export default function CompositeModificationDialog({
     compositeModificationId,
@@ -308,7 +317,6 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
@@ -966,15 +974,12 @@ export default function CompositeModificationDialog({
 
     const editModification = useCallback(
         async (modification: ComposedModificationMetadata) => {
-            if (!isDeveloperMode) {
-                return;
-            }
             if (!isModificationEditable(modification.type)) {
                 return;
             }
             setSelectedModification(modification);
         },
-        [isDeveloperMode, isModificationEditable]
+        [isModificationEditable]
     );
 
     const handleModificationDialogClose = useCallback(() => {
@@ -1030,12 +1035,15 @@ export default function CompositeModificationDialog({
                 cell: NameCellRenderer,
                 meta: {
                     cellStyle: networkModificationTableStyles.columnCell.modificationName,
-                    onChange: isReadOnly ? undefined : renameCompositeModification,
+                    onChange: isReadOnly
+                        ? undefined
+                        : (modification: ComposedModificationMetadata, newName: string) =>
+                              renameCompositeModification(compositeModificationId, modification, newName),
                 },
                 minSize: 160,
             },
         ];
-    }, [isReadOnly]);
+    }, [isReadOnly, compositeModificationId]);
 
     return (
         <>
