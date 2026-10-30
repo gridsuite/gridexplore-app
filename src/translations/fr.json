@@ -224,5 +224,6 @@
     "exportStudyFailed": "L'export de l'étude a échoué",
     "importStudy": "Importer une étude",
     "uploadStudyErrorMsg": "Veuillez télécharger l'étude (.zip)",
-    "studyImportError": "Erreur lors de l'importation de l'étude"
+    "studyImportError": "Erreur lors de l'importation de l'étude",
+    "infoContingencyCoupler": "DJ de couplages, omnibus, tronçonnements : BREAKER ou LOAD_BREAKER non fictifs, ouverts ou fermés reliant uniquement des sections de barre entre elles"
 }
