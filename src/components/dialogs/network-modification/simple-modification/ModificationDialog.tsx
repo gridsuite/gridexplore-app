@@ -39,6 +39,7 @@ export interface ModificationDialogProps<FormData extends FieldValues, Modificat
     tabsProps?: UseTabsProps;
     subtitle?: ReactNode;
     onUpdated?: () => void;
+    isReadOnly?: boolean;
 }
 
 export type UseTabsProps = {
@@ -68,6 +69,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
     getExtraFormProps,
     subtitle,
     onUpdated,
+    isReadOnly = false,
 }: Readonly<ModificationDialogProps<FormData, ModificationData>>) {
     const { snackError } = useSnackMessage();
     const [modificationData, setModificationData] = useState<ModificationData>();
@@ -125,6 +127,7 @@ export function ModificationDialog<FormData extends FieldValues, ModificationDat
                 ...formMethods,
                 validationSchema: formSchema,
                 removeOptional,
+                isReadOnly,
             }}
             onClose={onClose}
             onSave={onSubmit}
