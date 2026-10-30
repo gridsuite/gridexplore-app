@@ -184,7 +184,13 @@ function EquipmentTypesByFilters({
                                                                         gap: 0.5,
                                                                     }}
                                                                 >
-                                                                    <FormattedMessage id={equipmentRow.label} />
+                                                                    <FormattedMessage
+                                                                        id={
+                                                                            equipmentRow.id !== EquipmentType.SWITCH
+                                                                                ? equipmentRow.label
+                                                                                : 'CouplingSwitches'
+                                                                        }
+                                                                    />
                                                                     {equipmentRow.id === EquipmentType.SWITCH && (
                                                                         <Tooltip
                                                                             title={
