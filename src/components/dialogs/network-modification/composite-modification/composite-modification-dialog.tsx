@@ -321,7 +321,6 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const isDeveloperMode = useSelector((state: AppState) => state.isDeveloperMode);
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
@@ -992,15 +991,12 @@ export default function CompositeModificationDialog({
 
     const editModification = useCallback(
         async (modification: ComposedModificationMetadata) => {
-            if (!isDeveloperMode) {
-                return;
-            }
             if (!isModificationEditable(modification.type)) {
                 return;
             }
             setSelectedModification(modification);
         },
-        [isDeveloperMode, isModificationEditable]
+        [isModificationEditable]
     );
 
     const handleModificationDialogClose = useCallback(() => {

@@ -87,7 +87,6 @@ import {
     equipmentTypesFr,
     processConfigEn,
     processConfigFr,
-    DARK_THEME,
 } from '@gridsuite/commons-ui';
 import { IntlConfig, IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router';
@@ -151,32 +150,6 @@ const lightTheme = createTheme({
     },
 });
 
-const darkScrollbarStyles = (theme: Theme) => {
-    const trackColor = theme.palette.grey[800];
-    const thumbColor = theme.palette.grey[500];
-
-    return {
-        '*': {
-            scrollbarColor: `${thumbColor} ${trackColor}`,
-
-            '&::-webkit-scrollbar': {
-                width: '12px',
-                height: '12px',
-            },
-
-            '&::-webkit-scrollbar-track': {
-                backgroundColor: trackColor,
-            },
-
-            '&::-webkit-scrollbar-thumb': {
-                backgroundColor: thumbColor,
-                borderRadius: '8px',
-                border: `3px solid ${trackColor}`,
-            },
-        },
-    };
-};
-
 const darkTheme = createTheme({
     palette: {
         mode: 'dark',
@@ -235,9 +208,6 @@ function createThemeWithComponents(baseTheme: Theme, ...args: object[]) {
                         color: 'cancelButtonColor',
                     },
                 },
-                ...(baseTheme.palette.mode === DARK_THEME.toLowerCase()
-                    ? { MuiCssBaseline: { styleOverrides: darkScrollbarStyles } }
-                    : {}),
             },
         },
         ...args
@@ -345,7 +315,7 @@ function AppWrapperWithRedux() {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
-                            <CssBaseline />
+                            <CssBaseline enableColorScheme />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>
                                     <App />
