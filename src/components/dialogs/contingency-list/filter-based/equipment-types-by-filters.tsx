@@ -7,7 +7,6 @@
 import {
     CONTINGENCY_LIST_EQUIPMENTS,
     ContingencyListEquipment,
-    EquipmentType,
     OverflowableTableCell,
     OverflowableTableCellWithCheckbox,
 } from '@gridsuite/commons-ui';
@@ -22,14 +21,13 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Tooltip,
     useMediaQuery,
     useTheme,
 } from '@mui/material';
-import { Info } from '@mui/icons-material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import EquipmentTypeLabel from './equipment-type-label';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 
 interface EquipmentTypesByFiltersProps {
@@ -176,32 +174,7 @@ function EquipmentTypesByFilters({
                                                     >
                                                         <OverflowableTableCellWithCheckbox
                                                             checked={isEquipmentSelected}
-                                                            text={
-                                                                <Box
-                                                                    sx={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        gap: 0.5,
-                                                                    }}
-                                                                >
-                                                                    <FormattedMessage
-                                                                        id={
-                                                                            equipmentRow.id !== EquipmentType.SWITCH
-                                                                                ? equipmentRow.label
-                                                                                : 'CouplingSwitches'
-                                                                        }
-                                                                    />
-                                                                    {equipmentRow.id === EquipmentType.SWITCH && (
-                                                                        <Tooltip
-                                                                            title={
-                                                                                <FormattedMessage id="infoContingencyCoupler" />
-                                                                            }
-                                                                        >
-                                                                            <Info fontSize="small" color="info" />
-                                                                        </Tooltip>
-                                                                    )}
-                                                                </Box>
-                                                            }
+                                                            text={<EquipmentTypeLabel equipment={equipmentRow} />}
                                                         />
                                                     </TableRow>
                                                 );

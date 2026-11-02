@@ -226,5 +226,5 @@
     "importStudy": "Import a study",
     "uploadStudyErrorMsg": "Please upload study archive (.zip)",
     "studyImportError": "Error while importing study",
-    "infoContingencyCoupler": "Non-fictitious, open or close, BREAKER and LOAD BREAKER switches that exclusively connect busbar section together"
+    "infoContingencyCoupler": "Non-fictitious, open or closed, BREAKER and LOAD BREAKER switches that exclusively connect busbar sections together"
 }
