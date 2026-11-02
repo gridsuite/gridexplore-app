@@ -246,7 +246,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
                         activeElement.elementUuid,
                         undefined,
                         activeElement.type,
-                        activeElement.specificMetadata.type
+                        activeElement.type
                     ).catch(snackDuplicateError);
                     break;
                 case ElementType.VOLTAGE_INIT_PARAMETERS:
