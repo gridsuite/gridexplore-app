@@ -206,9 +206,11 @@ export default function DirectoryContent() {
                 if (cellEvent.data.type !== 'DIRECTORY') {
                     dispatch(setActiveDirectory(selectedDirectory?.elementUuid));
                     setActiveElement({
-                        hasMetadata: childrenMetadata[cellEvent.data.elementUuid] !== undefined,
-                        specificMetadata: childrenMetadata[cellEvent.data.elementUuid]?.specificMetadata,
                         ...cellEvent.data,
+                        hasMetadata: childrenMetadata[cellEvent.data.elementUuid] !== undefined,
+                        specificMetadata:
+                            childrenMetadata[cellEvent.data.elementUuid]?.specificMetadata ??
+                            cellEvent.data.specificMetadata,
                     });
                     if (isRowUnchecked(cellEvent.data, checkedRows)) {
                         // If some elements were already selected, we add the active element to the selected list if not already in it.
