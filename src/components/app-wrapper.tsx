@@ -315,7 +315,7 @@ function AppWrapperWithRedux() {
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={themeCompiled}>
                         <SnackbarProvider hideIconVariant={false}>
-                            <CssBaseline />
+                            <CssBaseline enableColorScheme />
                             <CardErrorBoundary>
                                 <NotificationsProvider urls={urlMapper}>
                                     <App />

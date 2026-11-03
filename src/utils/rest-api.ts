@@ -9,6 +9,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    ElementAttributes,
     ElementType,
     fetchElementNames,
     fetchEnv,
@@ -182,16 +183,20 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, element: unknown) {
+export function updateElement(elementUuid: UUID, elementType: ElementType, element: Partial<ElementAttributes>) {
     console.info(`Updating element info for ${elementUuid}`);
     const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
+    const elementToUpdate: Partial<ElementAttributes> = element;
+    if (elementType === ElementType.MODIFICATION) {
+        elementToUpdate.elementUuid = elementUuid;
+    }
     return backendFetch(updateElementUrl, {
         method: 'put',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(element),
+        body: JSON.stringify(elementToUpdate),
     });
 }
 
@@ -225,22 +230,6 @@ export function insertRootDirectory(directoryName: string, ownerId: string) {
         body: JSON.stringify({
             elementName: directoryName,
             owner: ownerId,
-        }),
-    });
-}
-
-export function renameElement(elementUuid: UUID, newElementName: string) {
-    console.info(`Renaming element ${elementUuid}`);
-    const renameElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
-    console.debug(renameElementUrl);
-    return backendFetch(renameElementUrl, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            elementName: newElementName,
         }),
     });
 }
@@ -441,15 +430,6 @@ export function replaceAllSpreadsheetConfigsInCollection(
         body: JSON.stringify(configUuidList),
         headers: { 'Content-Type': 'application/json' },
     });
-}
-
-export function elementExists(directoryUuid: UUID | null | undefined, elementName: string, type: string) {
-    const elementNameEncoded = encodeURIComponent(elementName);
-    const existsElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${directoryUuid}/elements/${elementNameEncoded}/types/${type}`;
-    console.debug(existsElementUrl);
-    return backendFetch(existsElementUrl, { method: 'head' }).then(
-        (response) => response.status !== 204 // HTTP 204 : No-content
-    );
 }
 
 export function getNameCandidate(directoryUuid: UUID, elementName: string, type: string) {

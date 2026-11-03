@@ -22,6 +22,7 @@ import {
     lineCreationFormToDto,
     LineDialogTab,
     LINE_TAB_FIELDS,
+    useCustomFormContext,
 } from '@gridsuite/commons-ui';
 
 export interface FreeEntryLineCreationPaneProps {
@@ -44,6 +45,7 @@ export function FreeEntryLineCreationPane({
         defaultValues: lineCreationEmptyFormData,
         resolver: yupResolver<DeepNullable<LineCreationFormData>>(schema),
     });
+    const { isReadOnly } = useCustomFormContext();
 
     const { reset, formState } = formMethods;
     const useTabsReturn = useTabs<LineDialogTab>({
@@ -73,6 +75,7 @@ export function FreeEntryLineCreationPane({
                 ...formMethods,
                 validationSchema: schema,
                 removeOptional: false,
+                isReadOnly,
             }}
         >
             {/* voltageLevelOptions/fetchBusesOrBusbarSections are required props but unused once withConnectivity is false */}

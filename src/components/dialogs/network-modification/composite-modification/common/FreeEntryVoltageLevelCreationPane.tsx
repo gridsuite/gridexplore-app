@@ -23,6 +23,7 @@ import {
     voltageLevelCreationFormToDto,
     VoltageLevelTab,
     VOLTAGE_LEVEL_TAB_FIELDS,
+    useCustomFormContext,
 } from '@gridsuite/commons-ui';
 
 export interface FreeEntryVoltageLevelCreationPaneProps {
@@ -50,6 +51,7 @@ function FreeEntryVoltageLevelCreationPane({
     editData,
 }: Readonly<FreeEntryVoltageLevelCreationPaneProps & { titleId: string; isAttachmentPoint: boolean }>) {
     const intl = useIntl();
+    const { isReadOnly } = useCustomFormContext();
 
     const defaultValues = useMemo(
         () =>
@@ -91,6 +93,7 @@ function FreeEntryVoltageLevelCreationPane({
                 ...formMethods,
                 validationSchema: voltageLevelCreationFormSchema,
                 removeOptional: false,
+                isReadOnly,
             }}
         >
             <VoltageLevelCreationForm
