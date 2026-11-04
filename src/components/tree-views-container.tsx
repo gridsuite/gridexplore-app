@@ -536,6 +536,7 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                     return;
                 }
             }
+
             if (directory.uuid != null) {
                 // Remark : It could be an Uuid of a rootDirectory if we need to update it because its content update
                 // if dir is actually selected then call updateDirectoryTreeAndContent of this dir

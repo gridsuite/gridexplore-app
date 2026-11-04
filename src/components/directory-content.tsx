@@ -117,18 +117,11 @@ export default function DirectoryContent() {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
-    /** access write on current directory */
-    const [directoryWritable, setDirectoryWritable] = useState(false);
-
-    useEffect(() => {
-        setDirectoryWritable(selectedDirectory?.writePermission ?? false);
-    }, [selectedDirectory]);
-
     const columnDefinitions = useMemo(() => getColumnsDefinition(intl, theme), [intl, theme]);
 
     const gridContext = useMemo<DirectoryContentGridContext>(
-        () => ({ childrenMetadata, directoryWritable }),
-        [childrenMetadata, directoryWritable]
+        () => ({ childrenMetadata, directoryWritable: selectedDirectory?.writePermission ?? false }),
+        [childrenMetadata, selectedDirectory?.writePermission]
     );
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
@@ -335,7 +328,7 @@ export default function DirectoryContent() {
                         <ContentToolbar
                             selectedElements={checkedRows}
                             selectedDirectory={selectedDirectory}
-                            selectedDirectoryWritable={directoryWritable}
+                            selectedDirectoryWritable={selectedDirectory?.writePermission ?? false}
                         />
                         <Button
                             variant="contained"
@@ -395,7 +388,7 @@ export default function DirectoryContent() {
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}
                 selectedDirectoryElementUuid={selectedDirectory?.elementUuid}
-                selectedDirectoryWritable={directoryWritable}
+                selectedDirectoryWritable={selectedDirectory?.writePermission ?? false}
                 childrenMetadata={childrenMetadata}
             />
         </>

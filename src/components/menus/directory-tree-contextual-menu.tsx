@@ -75,7 +75,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const treeData = useSelector((state: AppState) => state.treeData);
-    const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -186,10 +185,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    useEffect(() => {
-        setDirectoryWritable(directory?.writePermission ?? false);
-    }, [directory]);
-
     const buildMenu = () => {
         // build menuItems here
         const menuItems: MenuItemType[] = [];
@@ -203,7 +198,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             return menuItems;
         }
 
-        if (directory && directoryWritable) {
+        if (directory && directory.writePermission) {
             menuItems.push({
                 messageDescriptorId: 'createNewStudy',
                 callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
@@ -260,7 +255,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         }
 
         if (!restrictMenuItems) {
-            if (directory && directoryWritable) {
+            if (directory && directory.writePermission) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -284,7 +279,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             }
         }
 
-        if (directory && directoryWritable) {
+        if (directory && directory.writePermission) {
             menuItems.push(
                 {
                     messageDescriptorId: 'paste',
