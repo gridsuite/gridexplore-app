@@ -27,6 +27,7 @@ import {
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
+import EquipmentTypeLabel from './equipment-type-label';
 import { ContingencyFieldConstants, FilterElement, FilterSubEquipments } from '../../../../utils/contingency-list.type';
 
 interface EquipmentTypesByFiltersProps {
@@ -173,7 +174,7 @@ function EquipmentTypesByFilters({
                                                     >
                                                         <OverflowableTableCellWithCheckbox
                                                             checked={isEquipmentSelected}
-                                                            text={<FormattedMessage id={equipmentRow.label} />}
+                                                            text={<EquipmentTypeLabel equipment={equipmentRow} />}
                                                         />
                                                     </TableRow>
                                                 );
