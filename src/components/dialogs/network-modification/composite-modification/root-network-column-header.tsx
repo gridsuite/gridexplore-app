@@ -7,7 +7,7 @@
 import { Box, Checkbox, IconButton, Typography } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import type { ColumnDef, HeaderContext } from '@tanstack/react-table';
+import type { HeaderContext } from '@tanstack/react-table';
 import type { ComposedModificationMetadata } from '@gridsuite/commons-ui';
 import { useRootNetworkColumnSelection } from './use-root-network-column-selection';
 
@@ -15,14 +15,10 @@ const styles = {
     container: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
     checkbox: { padding: '2px' },
     tag: { fontWeight: 'inherit', whiteSpace: 'nowrap' },
-    // fits in the 30px of the column, minus the padding of the header cell
     deleteButton: { padding: '3px' },
 };
 
-/**
- * The column id is the tag: a single component for all the columns, so that rebuilding the columns doesn't remount the
- * headers, which would make the checkbox being clicked lose the focus.
- */
+// One component for all the columns (the column id is the tag), so that rebuilding the columns doesn't remount it
 export default function RootNetworkColumnHeader({
     column,
 }: Readonly<HeaderContext<ComposedModificationMetadata, unknown>>) {
@@ -44,9 +40,6 @@ export default function RootNetworkColumnHeader({
     );
 }
 
-/**
- * The header of the sticky column deleting the selected root networks, shown only when some are selected.
- */
 export function DeleteSelectedRootNetworksHeader() {
     const intl = useIntl();
     return (
@@ -63,31 +56,3 @@ export function DeleteSelectedRootNetworksHeader() {
         </Box>
     );
 }
-
-// Stuck on the right so that the delete button stays visible when the table scrolls horizontally. The chips scroll
-// beneath it, so it has to be opaque while keeping the background of its row (composite, hovered...), which may be
-// translucent: the row color, inherited, is painted by ::after over the paper painted by ::before.
-const deleteColumnCellStyle = {
-    position: 'sticky',
-    right: 0,
-    zIndex: 0,
-    backgroundColor: 'inherit',
-    '&::before, &::after': {
-        content: '""',
-        position: 'absolute',
-        inset: 0,
-        zIndex: -1,
-    },
-    '&::before': { backgroundColor: 'background.paper' },
-    '&::after': { backgroundColor: 'inherit' },
-};
-
-const DELETE_COLUMN_SIZE = 30;
-
-export const deleteSelectedRootNetworksColumn: ColumnDef<ComposedModificationMetadata> = {
-    id: 'deleteSelectedRootNetworks',
-    header: DeleteSelectedRootNetworksHeader,
-    size: DELETE_COLUMN_SIZE,
-    minSize: DELETE_COLUMN_SIZE,
-    meta: { cellStyle: deleteColumnCellStyle },
-};

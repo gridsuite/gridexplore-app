@@ -11,10 +11,7 @@ interface RootNetworkColumnSelection {
     toggleTag: (tag: string) => void;
 }
 
-/**
- * The headers read the selection from this context rather than from the column definitions, which would otherwise be
- * rebuilt at each change.
- */
+// Read by the headers through a context, so that the columns are not rebuilt at each selection change
 export const RootNetworkColumnSelectionContext = createContext<RootNetworkColumnSelection>({
     selectedTags: [],
     toggleTag: () => {},
@@ -22,9 +19,6 @@ export const RootNetworkColumnSelectionContext = createContext<RootNetworkColumn
 
 export const useRootNetworkColumnSelection = () => useContext(RootNetworkColumnSelectionContext);
 
-/**
- * @return the state of the selection, to provide through RootNetworkColumnSelectionContext
- */
 export function useRootNetworkColumnSelectionState(): RootNetworkColumnSelection {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const toggleTag = useCallback((tag: string) => {

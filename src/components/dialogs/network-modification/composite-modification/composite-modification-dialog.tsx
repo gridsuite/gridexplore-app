@@ -231,10 +231,14 @@ import {
     updateModificationsActivation,
     updateRootNetworkApplicability,
 } from '../../../../utils/rest-api';
-import { collectRootNetworkTags, computeDialogWidth } from './composite-modification-applicability.utils';
+import {
+    collectRootNetworkTags,
+    computeDialogWidth,
+    deleteSelectedRootNetworksColumn,
+} from './composite-modification-applicability.utils';
 import CompositeModificationForm from './composite-modification-form';
 import RootNetworksSummary from './root-networks-summary';
-import RootNetworkColumnHeader, { deleteSelectedRootNetworksColumn } from './root-network-column-header';
+import RootNetworkColumnHeader from './root-network-column-header';
 import {
     RootNetworkColumnSelectionContext,
     useRootNetworkColumnSelectionState,
@@ -306,21 +310,16 @@ interface CompositeModificationDialogProps {
     isReadOnly?: boolean;
 }
 
-// On a narrow window, the indentation of the nested modifications is halved to leave room for their names. NameCell
-// renders a root box holding one box per depth level then a row with the expand button, if any, and the label. The
-// selectors are restricted to the body since the header cell shares this style.
+// On a narrow window, halves the indentation of the nested modifications to leave room for their names
 const nameColumnCellStyle = {
     ...networkModificationTableStyles.columnCell.modificationName,
     '@media (max-width: 600px)': {
-        // the depth boxes, 16px each
         '.MuiTableBody-root & > div > div:not(:last-child)': { width: '8px' },
-        // the box of the expand button, 32px
         '.MuiTableBody-root & > div > div:last-child > div:not(:last-child)': { width: '20px', flexShrink: 0 },
         '.MuiTableBody-root & .MuiIconButton-root': { width: '20px', height: '20px', padding: 0 },
     },
 };
 
-// wide enough for the title of the column
 const SWITCH_COLUMN_SIZE = 104;
 
 function ActiveInactiveHeader() {
@@ -355,7 +354,6 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    // The composite itself, for its applicabilities: `modifications` only holds its content
     const [composite, setComposite] = useState<NetworkModificationMetadata>();
     const [studyCountByTag, setStudyCountByTag] = useState<Record<string, number>>({});
     const rootNetworkColumnSelection = useRootNetworkColumnSelectionState();
@@ -1034,7 +1032,6 @@ export default function CompositeModificationDialog({
         Promise.all([
             fetchCompositeModificationContent(compositeModificationId),
             fetchNetworkModification(compositeModificationId).then((response) => response.json()),
-            // the content of the composite remains usable without these numbers
             fetchRootNetworkTagsStudyCount(compositeModificationId).catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'retrieveRootNetworksStudyCountError' });
                 return {};
@@ -1113,13 +1110,11 @@ export default function CompositeModificationDialog({
                 size: SWITCH_COLUMN_SIZE,
                 minSize: SWITCH_COLUMN_SIZE,
             },
-            // a checkbox in each header selects the root network, to delete the selected ones
             ...createRootNetworksColumns(rootNetworks, RootNetworkColumnHeader),
             ...(hasSelectedRootNetworks ? [deleteSelectedRootNetworksColumn] : []),
         ];
     }, [isReadOnly, compositeModificationId, rootNetworks, hasSelectedRootNetworks]);
 
-    // Out of any study, the activations are saved on the modifications themselves, through the composite holding them
     const saveActivation = useCallback(
         (modification: ComposedModificationMetadata, activated: boolean) =>
             updateModificationsActivation(compositeModificationId, [modification.uuid], activated, modification.type),
@@ -1131,8 +1126,6 @@ export default function CompositeModificationDialog({
         [compositeModificationId]
     );
 
-    // A shared modification may hold many root networks: the dialog grows to show them, and on a screen too small for
-    // that the rows have to span the width of their columns for the table to scroll horizontally as a whole.
     const tableMinWidth = useMemo(() => columns.reduce((width, { minSize }) => width + (minSize ?? 0), 0), [columns]);
     const dialogWidth = computeDialogWidth(tableMinWidth);
 
@@ -1184,7 +1177,6 @@ export default function CompositeModificationDialog({
                             columns={columns}
                             highlightedModificationUuid={null}
                             studyUuid={null}
-                            // GridExplore has no study: the tags stand for the root networks
                             rootNetworks={rootNetworks}
                             isDisabled={isReadOnly}
                             saveActivation={saveActivation}

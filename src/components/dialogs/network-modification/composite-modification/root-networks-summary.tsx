@@ -18,9 +18,6 @@ interface RootNetworksSummaryProps {
     studyCountByTag: Record<string, number>;
 }
 
-/**
- * The root networks of the composite modification, each with the number of studies using it.
- */
 export default function RootNetworksSummary({ tags, studyCountByTag }: Readonly<RootNetworksSummaryProps>) {
     if (tags.length === 0) {
         return null;

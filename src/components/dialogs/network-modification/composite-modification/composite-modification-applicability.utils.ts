@@ -4,20 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import type { NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import type { ColumnDef } from '@tanstack/react-table';
+import type { ComposedModificationMetadata, NetworkModificationMetadata } from '@gridsuite/commons-ui';
+import { DeleteSelectedRootNetworksHeader } from './root-network-column-header';
 
-// What surrounds the table in the dialog: paddings of the content, margins and border of the table, vertical scrollbar
+// paddings, margins, border and vertical scrollbar around the table
 const TABLE_SURROUNDINGS_WIDTH = 82;
-// Beyond its minimum size, so that the names of the nested modifications stay readable when the dialog can grow
 const NAME_COLUMN_EXTRA_WIDTH = 160;
-// The default margins of a MUI dialog
 const DIALOG_MARGINS_WIDTH = 64;
 
 /**
- * The dialog takes 75% of the screen, and more when its columns need it, as far as the screen allows. On a screen too
- * small for them, the table scrolls horizontally.
- * @param tableMinWidth the sum of the minimum sizes of the columns
- * @return the CSS width of the dialog
+ * 75% of the screen, more when the columns need it, within the screen
  */
 export function computeDialogWidth(tableMinWidth: number) {
     const neededWidth = tableMinWidth + NAME_COLUMN_EXTRA_WIDTH + TABLE_SURROUNDINGS_WIDTH;
@@ -25,11 +22,7 @@ export function computeDialogWidth(tableMinWidth: number) {
 }
 
 /**
- * GridExplore has no study, hence no list of root networks: the only ones it knows of are the tags the modifications
- * hold an applicability for, in the whole tree since a shared modification may come with tags of its own, and those of
- * the studies using the modification.
- * @param extraTags the tags known from elsewhere than the modifications
- * @return these tags, sorted
+ * Out of a study, the root networks are the tags found in the whole modification tree, plus the extra ones, sorted
  */
 export function collectRootNetworkTags(
     modifications: NetworkModificationMetadata[],
@@ -46,3 +39,29 @@ export function collectRootNetworkTags(
     modifications.forEach(collect);
     return [...tags].sort((tag1, tag2) => tag1.localeCompare(tag2));
 }
+
+// Sticky on the right, opaque over the scrolling chips while keeping the (possibly translucent) row background
+const deleteColumnCellStyle = {
+    position: 'sticky',
+    right: 0,
+    zIndex: 0,
+    backgroundColor: 'inherit',
+    '&::before, &::after': {
+        content: '""',
+        position: 'absolute',
+        inset: 0,
+        zIndex: -1,
+    },
+    '&::before': { backgroundColor: 'background.paper' },
+    '&::after': { backgroundColor: 'inherit' },
+};
+
+const DELETE_COLUMN_SIZE = 30;
+
+export const deleteSelectedRootNetworksColumn: ColumnDef<ComposedModificationMetadata> = {
+    id: 'deleteSelectedRootNetworks',
+    header: DeleteSelectedRootNetworksHeader,
+    size: DELETE_COLUMN_SIZE,
+    minSize: DELETE_COLUMN_SIZE,
+    meta: { cellStyle: deleteColumnCellStyle },
+};
