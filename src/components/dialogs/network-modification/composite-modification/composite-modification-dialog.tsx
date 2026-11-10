@@ -26,7 +26,9 @@ import {
     loadModificationFormToDto,
     LoadForm,
     ModificationType,
+    fetchNetworkModification,
     NetworkModificationMetadata,
+    RootNetworkRowInfo,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
     byFilterDeletionDtoToForm,
@@ -220,8 +222,19 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
-import { fetchCompositeModificationContent, saveCompositeModification } from '../../../../utils/rest-api';
+import {
+    fetchCompositeModificationContent,
+    fetchRootNetworkTagsStudyCount,
+    saveCompositeModification,
+} from '../../../../utils/rest-api';
+import { createApplicabilityColumns } from './composite-modification-applicability-columns';
+import { collectRootNetworkTags, computeDialogWidth } from './composite-modification-applicability.utils';
 import CompositeModificationForm from './composite-modification-form';
+import {
+    RootNetworkColumnSelectionContext,
+    useRootNetworkColumnSelectionState,
+} from './use-root-network-column-selection';
+import RootNetworksSummary from './root-networks-summary';
 import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
 import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
@@ -291,6 +304,20 @@ interface CompositeModificationDialogProps {
 
 // Rename a (nested) composite modification. It is a network modification inside the parent composite
 // (not a directory element), so its metadata is updated directly on the network-modification-server.
+// On a narrow window, the indentation of the nested modifications is halved to leave room for their names. NameCell
+// renders a root box holding one box per depth level then a row with the expand button, if any, and the label. The
+// selectors are restricted to the body since the header cell shares this style.
+const nameColumnCellStyle = {
+    ...networkModificationTableStyles.columnCell.modificationName,
+    '@media (max-width: 600px)': {
+        // the depth boxes, 16px each
+        '.MuiTableBody-root & > div > div:not(:last-child)': { width: '8px' },
+        // the box of the expand button, 32px
+        '.MuiTableBody-root & > div > div:last-child > div:not(:last-child)': { width: '20px', flexShrink: 0 },
+        '.MuiTableBody-root & .MuiIconButton-root': { width: '20px', height: '20px', padding: 0 },
+    },
+};
+
 const renameCompositeModification = (
     compositeModificationId: UUID,
     modification: ComposedModificationMetadata,
@@ -317,6 +344,11 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
+    // The composite itself, for its applicabilities: `modifications` only holds its content
+    const [composite, setComposite] = useState<NetworkModificationMetadata>();
+    const [studyCountByTag, setStudyCountByTag] = useState<Record<string, number>>({});
+    const rootNetworkColumnSelection = useRootNetworkColumnSelectionState();
+    const hasSelectedRootNetworks = rootNetworkColumnSelection.selectedTags.length > 0;
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
@@ -988,11 +1020,21 @@ export default function CompositeModificationDialog({
 
     const fetchModifications = useCallback(() => {
         setIsFetching(true);
-        fetchCompositeModificationContent(compositeModificationId)
-            .then((response) => {
-                if (response) {
-                    setModifications(response);
+        Promise.all([
+            fetchCompositeModificationContent(compositeModificationId),
+            fetchNetworkModification(compositeModificationId).then((response) => response.json()),
+            // the content of the composite remains usable without these numbers
+            fetchRootNetworkTagsStudyCount(compositeModificationId).catch((error) => {
+                snackWithFallback(snackError, error, { headerId: 'retrieveRootNetworksStudyCountError' });
+                return {};
+            }),
+        ])
+            .then(([content, compositeInfos, studyCounts]) => {
+                if (content) {
+                    setModifications(content);
                 }
+                setComposite(compositeInfos);
+                setStudyCountByTag(studyCounts);
             })
             .catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
@@ -1027,14 +1069,25 @@ export default function CompositeModificationDialog({
             });
     };
 
-    const baseColumns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
+    const rootNetworkTags = useMemo(
+        () => (composite ? collectRootNetworkTags([composite, ...modifications], Object.keys(studyCountByTag)) : []),
+        [composite, modifications, studyCountByTag]
+    );
+
+    const rootNetworks = useMemo(
+        (): RootNetworkRowInfo[] =>
+            rootNetworkTags.map((tag) => ({ rootNetworkUuid: tag as UUID, tag, name: tag, isCreating: false })),
+        [rootNetworkTags]
+    );
+
+    const columns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
         return [
             {
                 id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
                 header: NameHeaderRenderer,
                 cell: NameCellRenderer,
                 meta: {
-                    cellStyle: networkModificationTableStyles.columnCell.modificationName,
+                    cellStyle: nameColumnCellStyle,
                     onChange: isReadOnly
                         ? undefined
                         : (modification: ComposedModificationMetadata, newName: string) =>
@@ -1042,8 +1095,14 @@ export default function CompositeModificationDialog({
                 },
                 minSize: 160,
             },
+            ...(composite ? createApplicabilityColumns(composite, rootNetworkTags, hasSelectedRootNetworks) : []),
         ];
-    }, [isReadOnly, compositeModificationId]);
+    }, [isReadOnly, compositeModificationId, composite, rootNetworkTags, hasSelectedRootNetworks]);
+
+    // A shared modification may hold many root networks: the dialog grows to show them, and on a screen too small for
+    // that the rows have to span the width of their columns for the table to scroll horizontally as a whole.
+    const tableMinWidth = useMemo(() => columns.reduce((width, { minSize }) => width + (minSize ?? 0), 0), [columns]);
+    const dialogWidth = computeDialogWidth(tableMinWidth);
 
     return (
         <>
@@ -1062,31 +1121,42 @@ export default function CompositeModificationDialog({
                 unscrollableFullHeight
                 sx={{
                     '.MuiDialog-paper': {
-                        width: '75vw',
-                        maxWidth: '75vw',
+                        width: dialogWidth,
+                        maxWidth: dialogWidth,
                     },
                 }}
             >
-                <Box sx={unscrollableDialogStyles.unscrollableContainer}>
+                <Box
+                    sx={{
+                        ...unscrollableDialogStyles.unscrollableContainer,
+                        '& .MuiTable-root': { minWidth: `${tableMinWidth}px` },
+                    }}
+                >
                     <CompositeModificationForm />
-                    <NetworkModificationsTable
-                        handleCellClick={editModification}
-                        modifications={modifications}
-                        // the following values will be used when we enable composite editing in gridexplore
-                        onRowDragStart={() => {}}
-                        onRowDragEnd={() => {}}
-                        onSelectedRowsChange={() => {}}
-                        modificationUuidsToReset={[]}
-                        modificationToEditLabel={null}
-                        isRowDragDisabled
-                        isImpactedByNotification={() => false}
-                        notificationMessageId="notificationMessageId"
-                        isFetchingModifications={isFetching}
-                        pendingState={false}
-                        columns={baseColumns}
-                        highlightedModificationUuid={null}
-                        studyUuid={null}
-                    />
+                    <RootNetworksSummary tags={rootNetworkTags} studyCountByTag={studyCountByTag} />
+                    <RootNetworkColumnSelectionContext.Provider value={rootNetworkColumnSelection}>
+                        <NetworkModificationsTable
+                            handleCellClick={editModification}
+                            modifications={modifications}
+                            // the following values will be used when we enable composite editing in gridexplore
+                            onRowDragStart={() => {}}
+                            onRowDragEnd={() => {}}
+                            onSelectedRowsChange={() => {}}
+                            modificationUuidsToReset={[]}
+                            modificationToEditLabel={null}
+                            isRowDragDisabled
+                            isImpactedByNotification={() => false}
+                            notificationMessageId="notificationMessageId"
+                            isFetchingModifications={isFetching}
+                            pendingState={false}
+                            columns={columns}
+                            highlightedModificationUuid={null}
+                            studyUuid={null}
+                            // GridExplore has no study: the tags stand for the root networks
+                            rootNetworks={rootNetworks}
+                            isDisabled={isReadOnly}
+                        />
+                    </RootNetworkColumnSelectionContext.Provider>
                 </Box>
             </CustomMuiDialog>
             {selectedModification && (
