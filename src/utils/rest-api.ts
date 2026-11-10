@@ -572,6 +572,58 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
+/**
+ * Get, for each root network tag, the number of studies using a network modification which have that tag
+ */
+export function fetchRootNetworkTagsStudyCount(id: string): Promise<Record<string, number>> {
+    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/network-modifications/${id}/root-network-tags/study-count`, {
+        method: 'get',
+    });
+}
+
+/**
+ * Out of any study: the activation is held by the modification, hence shared by every study using it
+ * @param compositeModificationId the composite holding the modifications, on which the user must have write access
+ * @param type the type of the modifications, required by the network modification server to read the metadata
+ */
+export function updateModificationsActivation(
+    compositeModificationId: UUID,
+    modificationUuids: UUID[],
+    activated: boolean,
+    type: string
+) {
+    const urlSearchParams = new URLSearchParams();
+    modificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    return backendFetch(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/network-modifications/metadata?${urlSearchParams.toString()}`,
+        {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ activated, type }),
+        }
+    );
+}
+
+/**
+ * Out of any study: the applicability is held by the modification, hence shared by every study using it
+ * @param compositeModificationId the composite holding the modifications, on which the user must have write access
+ */
+export function updateRootNetworkApplicability(
+    compositeModificationId: UUID,
+    modificationUuids: UUID[],
+    rootNetworkTag: string,
+    activated: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    modificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('rootNetworkTag', rootNetworkTag);
+    urlSearchParams.append('applicable', String(activated));
+    return backendFetch(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/root-network-applicability?${urlSearchParams.toString()}`,
+        { method: 'put' }
+    );
+}
+
 export function saveCompositeModification(id: string, moidificationUuids: UUID[], name: string, description?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
