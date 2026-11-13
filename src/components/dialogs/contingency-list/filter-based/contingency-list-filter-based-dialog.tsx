@@ -9,8 +9,10 @@ import {
     CustomMuiDialog,
     FieldConstants,
     isDisabledValidationButton,
+    isOnlyNameOrDescriptionModified,
     MAX_CHAR_DESCRIPTION,
     snackWithFallback,
+    updateElement,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
@@ -140,19 +142,23 @@ export default function FilterBasedContingencyListDialog({
             };
 
             if (id) {
-                saveFilterBasedContingencyList(
-                    id,
-                    data[FieldConstants.NAME],
-                    data[FieldConstants.DESCRIPTION] ?? '',
-                    filterBaseContingencyList
-                )
-                    .then(() => closeAndClear())
-                    .catch((error) => {
-                        snackWithFallback(snackError, error, {
-                            headerId: 'contingencyListEditingError',
-                            headerValues: { name: data[FieldConstants.NAME] },
-                        });
+                const save = isOnlyNameOrDescriptionModified(methods.getValues(), methods.formState.defaultValues)
+                    ? updateElement(id, {
+                          elementName: data[FieldConstants.NAME],
+                          description: data[FieldConstants.DESCRIPTION] ?? '',
+                      })
+                    : saveFilterBasedContingencyList(
+                          id,
+                          data[FieldConstants.NAME],
+                          data[FieldConstants.DESCRIPTION] ?? '',
+                          filterBaseContingencyList
+                      );
+                save.then(() => closeAndClear()).catch((error) => {
+                    snackWithFallback(snackError, error, {
+                        headerId: 'contingencyListEditingError',
+                        headerValues: { name: data[FieldConstants.NAME] },
                     });
+                });
             } else {
                 createFilterBasedContingency(
                     data[FieldConstants.NAME],
@@ -169,7 +175,7 @@ export default function FilterBasedContingencyListDialog({
                     });
             }
         },
-        [activeDirectory, closeAndClear, id, snackError]
+        [activeDirectory, closeAndClear, id, methods, snackError]
     );
 
     return (
