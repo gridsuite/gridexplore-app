@@ -572,11 +572,14 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
-// for each root network tag, the number of studies using the modification with that tag
-export function fetchRootNetworkTagsStudyCount(id: string): Promise<Record<string, number>> {
-    return backendFetchJson(`${PREFIX_STUDY_QUERIES}/v1/network-modifications/${id}/root-network-tags/study-count`, {
-        method: 'get',
-    });
+// for each root network tag, the number of studies using the shared element with that tag
+export function fetchRootNetworkTagsStudyCount(elementUuid: string): Promise<Record<string, number>> {
+    return backendFetchJson(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/root-network-tags/study-count`,
+        {
+            method: 'get',
+        }
+    );
 }
 
 export function updateModificationsActivation(
