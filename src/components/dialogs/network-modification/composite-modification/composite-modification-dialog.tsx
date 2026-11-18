@@ -1134,20 +1134,26 @@ export default function CompositeModificationDialog({
         ];
     }, [isReadOnly, rootNetworksInfos, selectedTags, compositeModificationId, toggleTag]);
 
-    const saveActivation = useCallback(
-        (modification: ComposedModificationMetadata, activated: boolean) =>
-            updateCompositeModificationActivation(compositeModificationId, [modification.uuid], activated),
+    const updateModificationActivation = useCallback(
+        (modificationUuid: UUID, active: boolean) =>
+            updateCompositeModificationActivation(compositeModificationId, [modificationUuid], active),
         [compositeModificationId]
     );
-    const saveApplicability = useCallback(
-        (modification: ComposedModificationMetadata, rootNetwork: RootNetworkRowInfo, applicable: boolean) =>
-            updateCompositeModificationApplicability(
+    const updateModificationApplicabilityByRootNetwork = useCallback(
+        (rootNetworkUuid: UUID, modificationUuid: UUID, applicable: boolean) => {
+            // the root network uuids are derived from the tags, which are what the composite stores
+            const tag = rootNetworksInfos.find((info) => info.rootNetworkUuid === rootNetworkUuid)?.tag;
+            if (!tag) {
+                return Promise.reject(new Error(`Unknown root network ${rootNetworkUuid}`));
+            }
+            return updateCompositeModificationApplicability(
                 compositeModificationId,
-                [modification.uuid],
-                rootNetwork.tag,
+                [modificationUuid],
+                tag,
                 applicable
-            ),
-        [compositeModificationId]
+            );
+        },
+        [compositeModificationId, rootNetworksInfos]
     );
 
     const tableMinWidth = useMemo(() => columns.reduce((width, { minSize }) => width + (minSize ?? 0), 0), [columns]);
@@ -1198,12 +1204,11 @@ export default function CompositeModificationDialog({
                         isFetchingModifications={isFetching}
                         pendingState={false}
                         columns={columns}
-                        highlightedModificationUuid={null}
-                        studyUuid={null}
                         rootNetworks={rootNetworksInfos}
+                        highlightedModificationUuid={null}
                         isDisabled={isReadOnly}
-                        saveActivation={saveActivation}
-                        saveApplicability={saveApplicability}
+                        onUpdateModificationActivation={updateModificationActivation}
+                        onUpdateModificationApplicabilityByRootNetwork={updateModificationApplicabilityByRootNetwork}
                     />
                 </Box>
             </CustomMuiDialog>
