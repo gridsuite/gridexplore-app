@@ -582,21 +582,17 @@ export function fetchRootNetworkTagsStudyCount(compositeModificationId: UUID): P
     );
 }
 
-export function updateModificationsActivation(
+export function updateCompositeModificationActivation(
     compositeModificationId: UUID,
-    modificationUuids: UUID[],
-    activated: boolean,
-    type: string
+    childrenModificationUuids: UUID[],
+    active: boolean
 ) {
     const urlSearchParams = new URLSearchParams();
-    modificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    childrenModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('active', String(active));
     return backendFetch(
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/network-modifications/metadata?${urlSearchParams.toString()}`,
-        {
-            method: 'put',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ activated, type }),
-        }
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/network-modifications/activation?${urlSearchParams.toString()}`,
+        { method: 'put' }
     );
 }
 
