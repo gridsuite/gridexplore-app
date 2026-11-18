@@ -58,10 +58,12 @@ const deleteColumnCellStyle = {
 
 const DELETE_COLUMN_SIZE = 30;
 
-export const deleteSelectedRootNetworksColumn: ColumnDef<ComposedModificationMetadata> = {
+export const createDeleteSelectedRootNetworksColumn = (
+    selectedTags: string[]
+): ColumnDef<ComposedModificationMetadata> => ({
     id: 'deleteSelectedRootNetworks',
-    header: DeleteSelectedRootNetworksHeader,
+    header: () => <DeleteSelectedRootNetworksHeader selectedTags={selectedTags} />,
     size: DELETE_COLUMN_SIZE,
     minSize: DELETE_COLUMN_SIZE,
     meta: { cellStyle: deleteColumnCellStyle },
-};
+});

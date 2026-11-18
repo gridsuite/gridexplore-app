@@ -118,7 +118,6 @@
     "contingencyListEditingError": "An error occurred while editing the contingency list: {name}",
     "activeInactive": "Active/Inactive",
     "rootNetworks": "Root networks",
-    "retrieveRootNetworksStudyCountError": "An error occurred while retrieving the number of studies using the root networks",
     "activateModification": "Activate network modification",
     "deactivateModification": "Deactivate network modification",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",

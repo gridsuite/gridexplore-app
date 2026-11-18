@@ -7,9 +7,6 @@
 import { Box, Checkbox, IconButton, Typography } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
-import type { HeaderContext } from '@tanstack/react-table';
-import type { ComposedModificationMetadata } from '@gridsuite/commons-ui';
-import { useRootNetworkColumnSelection } from './use-root-network-column-selection';
 
 const styles = {
     container: { width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
@@ -18,12 +15,17 @@ const styles = {
     deleteButton: { padding: '3px' },
 };
 
-// One component for all the columns (the column id is the tag), so that rebuilding the columns doesn't remount it
+interface RootNetworkColumnHeaderProps {
+    tag: string;
+    selectedTags: string[];
+    toggleTag: (tag: string) => void;
+}
+
 export default function RootNetworkColumnHeader({
-    column,
-}: Readonly<HeaderContext<ComposedModificationMetadata, unknown>>) {
-    const tag = column.id;
-    const { selectedTags, toggleTag } = useRootNetworkColumnSelection();
+    tag,
+    selectedTags,
+    toggleTag,
+}: Readonly<RootNetworkColumnHeaderProps>) {
     return (
         <Box sx={styles.container}>
             <Checkbox
@@ -40,7 +42,11 @@ export default function RootNetworkColumnHeader({
     );
 }
 
-export function DeleteSelectedRootNetworksHeader() {
+interface DeleteSelectedRootNetworksHeaderProps {
+    selectedTags: string[];
+}
+
+export function DeleteSelectedRootNetworksHeader({ selectedTags }: Readonly<DeleteSelectedRootNetworksHeaderProps>) {
     const intl = useIntl();
     return (
         <Box sx={styles.container}>
@@ -48,7 +54,9 @@ export function DeleteSelectedRootNetworksHeader() {
                 size="small"
                 sx={styles.deleteButton}
                 // TODO remove the selected root networks once the backend allows it
-                onClick={() => {}}
+                onClick={() => {
+                    console.log('Delete selected root networks', selectedTags);
+                }}
                 aria-label={intl.formatMessage({ id: 'delete' })}
             >
                 <Delete fontSize="small" />

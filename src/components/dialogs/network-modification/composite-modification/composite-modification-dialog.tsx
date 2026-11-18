@@ -6,6 +6,7 @@
  */
 import type { UUID } from 'node:crypto';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { v5 as uuidv5 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useForm } from 'react-hook-form';
@@ -26,7 +27,6 @@ import {
     loadModificationFormToDto,
     LoadForm,
     ModificationType,
-    fetchNetworkModification,
     NetworkModificationMetadata,
     RootNetworkRowInfo,
     NO_ITEM_SELECTION_FOR_COPY,
@@ -235,18 +235,10 @@ import {
     updateCompositeModificationActivation,
     updateCompositeModificationApplicability,
 } from '../../../../utils/rest-api';
-import {
-    collectRootNetworkTags,
-    computeDialogWidth,
-    deleteSelectedRootNetworksColumn,
-} from './composite-modification-applicability.utils';
+import { collectRootNetworkTags, computeDialogWidth, createDeleteSelectedRootNetworksColumn } from './utils';
 import CompositeModificationForm from './composite-modification-form';
 import RootNetworksTags from './root-networks-tags';
 import RootNetworkColumnHeader from './root-network-column-header';
-import {
-    RootNetworkColumnSelectionContext,
-    useRootNetworkColumnSelectionState,
-} from './use-root-network-column-selection';
 import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
 import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
@@ -358,10 +350,12 @@ export default function CompositeModificationDialog({
     const { snackError } = useSnackMessage();
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
-    const [composite, setComposite] = useState<NetworkModificationMetadata>();
     const [studyCountByTag, setStudyCountByTag] = useState<Record<string, number>>({});
-    const rootNetworkColumnSelection = useRootNetworkColumnSelectionState();
-    const hasSelectedRootNetworks = rootNetworkColumnSelection.selectedTags.length > 0;
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+    const toggleTag = useCallback((tag: string) => {
+        setSelectedTags((tags) => (tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag]));
+    }, []);
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
@@ -1048,17 +1042,12 @@ export default function CompositeModificationDialog({
         setIsFetching(true);
         Promise.all([
             fetchCompositeModificationContent(compositeModificationId),
-            fetchNetworkModification(compositeModificationId).then((response) => response.json()),
-            fetchRootNetworkTagsStudyCount(compositeModificationId).catch((error) => {
-                snackWithFallback(snackError, error, { headerId: 'retrieveRootNetworksStudyCountError' });
-                return {};
-            }),
+            fetchRootNetworkTagsStudyCount(compositeModificationId),
         ])
-            .then(([content, compositeInfos, studyCounts]) => {
+            .then(([content, studyCounts]) => {
                 if (content) {
                     setModifications(content);
                 }
-                setComposite(compositeInfos);
                 setStudyCountByTag(studyCounts);
             })
             .catch((error) => {
@@ -1094,15 +1083,19 @@ export default function CompositeModificationDialog({
             });
     };
 
-    const rootNetworkTags = useMemo(
-        () => (composite ? collectRootNetworkTags([composite, ...modifications], Object.keys(studyCountByTag)) : []),
-        [composite, modifications, studyCountByTag]
+    const rootNetworksTags = useMemo(
+        () => collectRootNetworkTags(modifications, Object.keys(studyCountByTag)),
+        [modifications, studyCountByTag]
     );
 
-    const rootNetworks = useMemo(
+    // the same tag always gives the same uuid, so that the columns and the pending applicabilities keep their id
+    const rootNetworksInfos = useMemo(
         (): RootNetworkRowInfo[] =>
-            rootNetworkTags.map((tag) => ({ rootNetworkUuid: tag as UUID, tag, name: tag, isCreating: false })),
-        [rootNetworkTags]
+            rootNetworksTags.map((tag) => ({
+                rootNetworkUuid: uuidv5(tag, uuidv5.URL) as UUID,
+                tag,
+            })),
+        [rootNetworksTags]
     );
 
     const columns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
@@ -1127,10 +1120,19 @@ export default function CompositeModificationDialog({
                 size: SWITCH_COLUMN_SIZE,
                 minSize: SWITCH_COLUMN_SIZE,
             },
-            ...createRootNetworksColumns(rootNetworks, RootNetworkColumnHeader),
-            ...(hasSelectedRootNetworks ? [deleteSelectedRootNetworksColumn] : []),
+            ...createRootNetworksColumns(rootNetworksInfos, ({ column }) => (
+                <RootNetworkColumnHeader
+                    tag={
+                        rootNetworksInfos.find((rootNetworkRowInfo) => rootNetworkRowInfo.rootNetworkUuid === column.id)
+                            ?.tag ?? ''
+                    }
+                    selectedTags={selectedTags}
+                    toggleTag={toggleTag}
+                />
+            )),
+            ...(selectedTags.length > 0 ? [createDeleteSelectedRootNetworksColumn(selectedTags)] : []),
         ];
-    }, [isReadOnly, compositeModificationId, rootNetworks, hasSelectedRootNetworks]);
+    }, [isReadOnly, rootNetworksInfos, selectedTags, compositeModificationId, toggleTag]);
 
     const saveActivation = useCallback(
         (modification: ComposedModificationMetadata, activated: boolean) =>
@@ -1180,31 +1182,29 @@ export default function CompositeModificationDialog({
                     }}
                 >
                     <CompositeModificationForm />
-                    <RootNetworksTags tags={rootNetworkTags} studyCountByTag={studyCountByTag} />
-                    <RootNetworkColumnSelectionContext.Provider value={rootNetworkColumnSelection}>
-                        <NetworkModificationsTable
-                            handleCellClick={editModification}
-                            modifications={modifications}
-                            // the following values will be used when we enable composite editing in gridexplore
-                            onRowDragStart={() => {}}
-                            onRowDragEnd={() => {}}
-                            onSelectedRowsChange={() => {}}
-                            modificationUuidsToReset={[]}
-                            modificationToEditLabel={null}
-                            isRowDragDisabled
-                            isImpactedByNotification={() => false}
-                            notificationMessageId="notificationMessageId"
-                            isFetchingModifications={isFetching}
-                            pendingState={false}
-                            columns={columns}
-                            highlightedModificationUuid={null}
-                            studyUuid={null}
-                            rootNetworks={rootNetworks}
-                            isDisabled={isReadOnly}
-                            saveActivation={saveActivation}
-                            saveApplicability={saveApplicability}
-                        />
-                    </RootNetworkColumnSelectionContext.Provider>
+                    <RootNetworksTags tags={rootNetworksTags} studyCountByTag={studyCountByTag} />
+                    <NetworkModificationsTable
+                        handleCellClick={editModification}
+                        modifications={modifications}
+                        // the following values will be used when we enable composite editing in gridexplore
+                        onRowDragStart={() => {}}
+                        onRowDragEnd={() => {}}
+                        onSelectedRowsChange={() => {}}
+                        modificationUuidsToReset={[]}
+                        modificationToEditLabel={null}
+                        isRowDragDisabled
+                        isImpactedByNotification={() => false}
+                        notificationMessageId="notificationMessageId"
+                        isFetchingModifications={isFetching}
+                        pendingState={false}
+                        columns={columns}
+                        highlightedModificationUuid={null}
+                        studyUuid={null}
+                        rootNetworks={rootNetworksInfos}
+                        isDisabled={isReadOnly}
+                        saveActivation={saveActivation}
+                        saveApplicability={saveApplicability}
+                    />
                 </Box>
             </CustomMuiDialog>
             {selectedModification && (
