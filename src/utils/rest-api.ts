@@ -572,10 +572,10 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
-// for each root network tag, the number of studies using the shared element with that tag
-export function fetchRootNetworkTagsStudyCount(elementUuid: string): Promise<Record<string, number>> {
+// for each root network tag, the number of studies using the composite modification with that tag
+export function fetchRootNetworkTagsStudyCount(compositeModificationId: UUID): Promise<Record<string, number>> {
     return backendFetchJson(
-        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}/root-network-tags/study-count`,
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/root-network-tags/study-count`,
         {
             method: 'get',
         }
@@ -600,14 +600,14 @@ export function updateModificationsActivation(
     );
 }
 
-export function updateRootNetworkApplicability(
+export function updateCompositeModificationApplicability(
     compositeModificationId: UUID,
-    modificationUuids: UUID[],
+    childrenModificationUuids: UUID[],
     rootNetworkTag: string,
     applicable: boolean
 ) {
     const urlSearchParams = new URLSearchParams();
-    modificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    childrenModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
     urlSearchParams.append('rootNetworkTag', rootNetworkTag);
     urlSearchParams.append('applicable', String(applicable));
     return backendFetch(

@@ -232,8 +232,8 @@ import {
     fetchCompositeModificationContent,
     fetchRootNetworkTagsStudyCount,
     saveCompositeModification,
+    updateCompositeModificationApplicability,
     updateModificationsActivation,
-    updateRootNetworkApplicability,
 } from '../../../../utils/rest-api';
 import {
     collectRootNetworkTags,
@@ -1139,7 +1139,12 @@ export default function CompositeModificationDialog({
     );
     const saveApplicability = useCallback(
         (modification: ComposedModificationMetadata, rootNetwork: RootNetworkRowInfo, applicable: boolean) =>
-            updateRootNetworkApplicability(compositeModificationId, [modification.uuid], rootNetwork.tag, applicable),
+            updateCompositeModificationApplicability(
+                compositeModificationId,
+                [modification.uuid],
+                rootNetwork.tag,
+                applicable
+            ),
         [compositeModificationId]
     );
 
