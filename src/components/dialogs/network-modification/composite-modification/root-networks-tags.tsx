@@ -13,12 +13,12 @@ const styles = {
     chips: { display: 'flex', flexWrap: 'wrap', gap: 0.5 },
 };
 
-interface RootNetworksSummaryProps {
+interface RootNetworksTagsProps {
     tags: string[];
     studyCountByTag: Record<string, number>;
 }
 
-export default function RootNetworksSummary({ tags, studyCountByTag }: Readonly<RootNetworksSummaryProps>) {
+export default function RootNetworksTags({ tags, studyCountByTag }: Readonly<RootNetworksTagsProps>) {
     if (tags.length === 0) {
         return null;
     }

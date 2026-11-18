@@ -241,7 +241,7 @@ import {
     deleteSelectedRootNetworksColumn,
 } from './composite-modification-applicability.utils';
 import CompositeModificationForm from './composite-modification-form';
-import RootNetworksSummary from './root-networks-summary';
+import RootNetworksTags from './root-networks-tags';
 import RootNetworkColumnHeader from './root-network-column-header';
 import {
     RootNetworkColumnSelectionContext,
@@ -1180,7 +1180,7 @@ export default function CompositeModificationDialog({
                     }}
                 >
                     <CompositeModificationForm />
-                    <RootNetworksSummary tags={rootNetworkTags} studyCountByTag={studyCountByTag} />
+                    <RootNetworksTags tags={rootNetworkTags} studyCountByTag={studyCountByTag} />
                     <RootNetworkColumnSelectionContext.Provider value={rootNetworkColumnSelection}>
                         <NetworkModificationsTable
                             handleCellClick={editModification}
