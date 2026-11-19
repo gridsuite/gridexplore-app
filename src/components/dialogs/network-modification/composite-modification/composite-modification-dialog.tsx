@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import type { UUID } from 'node:crypto';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { v5 as uuidv5 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -226,7 +226,7 @@ import {
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ColumnDef } from '@tanstack/react-table';
+import { CellContext, ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import {
     fetchCompositeModificationContent,
@@ -1123,13 +1123,37 @@ export default function CompositeModificationDialog({
         [rootNetworksTags]
     );
 
+    // the composite root row is expanded when the dialog opens, so that its content is shown right away; afterwards
+    // the user can collapse and expand it freely
+    const isCompositeRowInitiallyExpandedRef = useRef(false);
+    const CompositeNameCellRenderer = useCallback(
+        function CompositeNameCell(context: CellContext<ComposedModificationMetadata, unknown>) {
+            const { row } = context;
+            const isCompositeRow = row.original.uuid === compositeModificationId;
+            const isExpanded = row.getIsExpanded();
+            useEffect(() => {
+                if (!isCompositeRow || isCompositeRowInitiallyExpandedRef.current) {
+                    return;
+                }
+                // only considered done once actually expanded, in case the table resets its expanded state meanwhile
+                if (isExpanded) {
+                    isCompositeRowInitiallyExpandedRef.current = true;
+                } else {
+                    row.toggleExpanded(true);
+                }
+            }, [isCompositeRow, isExpanded, row]);
+            return <NameCellRenderer {...context} />;
+        },
+        [compositeModificationId]
+    );
+
     const columns = useMemo((): ColumnDef<ComposedModificationMetadata>[] => {
         return [
             {
                 id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
                 // no header: the composite is the only root row, a modification count would say nothing
                 header: () => null,
-                cell: NameCellRenderer,
+                cell: CompositeNameCellRenderer,
                 meta: {
                     cellStyle: nameColumnCellStyle,
                     onChange: isReadOnly
@@ -1164,7 +1188,15 @@ export default function CompositeModificationDialog({
             )),
             ...(selectedTags.length > 0 ? [createDeleteSelectedRootNetworksColumn(selectedTags)] : []),
         ];
-    }, [isReadOnly, rootNetworksInfos, selectedTags, compositeModificationId, toggleTag, methods]);
+    }, [
+        isReadOnly,
+        rootNetworksInfos,
+        selectedTags,
+        compositeModificationId,
+        toggleTag,
+        methods,
+        CompositeNameCellRenderer,
+    ]);
 
     const updateModificationActivation = useCallback(
         (modificationUuid: UUID, active: boolean) =>
