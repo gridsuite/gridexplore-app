@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { v5 as uuidv5 } from 'uuid';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     BASE_MODIFICATION_TABLE_COLUMNS,
@@ -54,7 +54,6 @@ import {
     voltageLevelCreationFormSchema,
     voltageLevelCreationFormToDto,
     NameCellRenderer,
-    NameHeaderRenderer,
     SwitchCellRenderer,
     createRootNetworksColumns,
     VoltageLevelModificationForm,
@@ -223,6 +222,7 @@ import {
     networkReductionFormToDto,
     networkReductionFormSchema,
     updateElement,
+    fetchNetworkModification,
 } from '@gridsuite/commons-ui';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -351,6 +351,8 @@ export default function CompositeModificationDialog({
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const [modifications, setModifications] = useState<NetworkModificationMetadata[]>([]);
     const [studyCountByTag, setStudyCountByTag] = useState<Record<string, number>>({});
+    // the composite itself, with its own applicabilities and those of its children at any depth
+    const [compositeModification, setCompositeModification] = useState<NetworkModificationMetadata>();
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const toggleTag = useCallback((tag: string) => {
@@ -364,6 +366,7 @@ export default function CompositeModificationDialog({
         defaultValues: emptyFormData(name, description),
         resolver: yupResolver(schema),
     });
+    const compositeName = useWatch({ control: methods.control, name: FieldConstants.NAME });
 
     const {
         formState: { errors },
@@ -1043,12 +1046,16 @@ export default function CompositeModificationDialog({
         Promise.all([
             fetchCompositeModificationContent(compositeModificationId),
             fetchRootNetworkTagsStudyCount(compositeModificationId),
+            fetchNetworkModification(compositeModificationId).then((response): Promise<NetworkModificationMetadata> =>
+                response.json()
+            ),
         ])
-            .then(([content, studyCounts]) => {
+            .then(([content, studyCounts, composite]) => {
                 if (content) {
                     setModifications(content);
                 }
                 setStudyCountByTag(studyCounts);
+                setCompositeModification(composite);
             })
             .catch((error) => {
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
@@ -1083,9 +1090,27 @@ export default function CompositeModificationDialog({
             });
     };
 
+    // the composite itself is the root row, with its own activation and applicabilities, its content below it
+    const compositeRow = useMemo(
+        (): (NetworkModificationMetadata & { name: string }) | undefined =>
+            compositeModification && {
+                ...compositeModification,
+                name: compositeName,
+                // the full composite fetched carries no message, which the label is computed from
+                messageType: ModificationType.COMPOSITE_MODIFICATION,
+                messageValues: JSON.stringify({ name: compositeName }),
+                modificationsInfos: modifications,
+            },
+        [compositeModification, compositeName, modifications]
+    );
+    const tableModifications = useMemo(
+        () => (compositeRow ? [compositeRow] : modifications),
+        [compositeRow, modifications]
+    );
+
     const rootNetworksTags = useMemo(
-        () => collectRootNetworkTags(modifications, Object.keys(studyCountByTag)),
-        [modifications, studyCountByTag]
+        () => collectRootNetworkTags(tableModifications, Object.keys(studyCountByTag)),
+        [tableModifications, studyCountByTag]
     );
 
     // the same tag always gives the same uuid, so that the columns and the pending applicabilities keep their id
@@ -1102,14 +1127,21 @@ export default function CompositeModificationDialog({
         return [
             {
                 id: BASE_MODIFICATION_TABLE_COLUMNS.NAME.id,
-                header: NameHeaderRenderer,
+                // no header: the composite is the only root row, a modification count would say nothing
+                header: () => null,
                 cell: NameCellRenderer,
                 meta: {
                     cellStyle: nameColumnCellStyle,
                     onChange: isReadOnly
                         ? undefined
-                        : (modification: ComposedModificationMetadata, newName: string) =>
-                              renameCompositeModification(compositeModificationId, modification, newName),
+                        : (modification: ComposedModificationMetadata, newName: string) => {
+                              // the composite itself is the directory element: its name is the one of the form
+                              if (modification.uuid === compositeModificationId) {
+                                  methods.setValue(FieldConstants.NAME, newName, { shouldDirty: true });
+                                  return Promise.resolve();
+                              }
+                              return renameCompositeModification(compositeModificationId, modification, newName);
+                          },
                 },
                 minSize: 160,
             },
@@ -1132,7 +1164,7 @@ export default function CompositeModificationDialog({
             )),
             ...(selectedTags.length > 0 ? [createDeleteSelectedRootNetworksColumn(selectedTags)] : []),
         ];
-    }, [isReadOnly, rootNetworksInfos, selectedTags, compositeModificationId, toggleTag]);
+    }, [isReadOnly, rootNetworksInfos, selectedTags, compositeModificationId, toggleTag, methods]);
 
     const updateModificationActivation = useCallback(
         (modificationUuid: UUID, active: boolean) =>
@@ -1191,7 +1223,7 @@ export default function CompositeModificationDialog({
                     <RootNetworksTags tags={rootNetworksTags} studyCountByTag={studyCountByTag} />
                     <NetworkModificationsTable
                         handleCellClick={editModification}
-                        modifications={modifications}
+                        modifications={tableModifications}
                         // the following values will be used when we enable composite editing in gridexplore
                         onRowDragStart={() => {}}
                         onRowDragEnd={() => {}}

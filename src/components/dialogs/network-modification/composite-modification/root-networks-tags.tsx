@@ -29,12 +29,7 @@ export default function RootNetworksTags({ tags, studyCountByTag }: Readonly<Roo
             </Typography>
             <Box sx={styles.chips}>
                 {tags.map((tag) => (
-                    <Chip
-                        key={tag}
-                        size="small"
-                        color="primary"
-                        label={studyCountByTag[tag] ? `${tag} (${studyCountByTag[tag]})` : tag}
-                    />
+                    <Chip key={tag} size="small" color="primary" label={`${tag} (${studyCountByTag[tag] ?? 0})`} />
                 ))}
             </Box>
         </Box>
