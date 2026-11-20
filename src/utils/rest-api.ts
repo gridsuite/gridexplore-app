@@ -572,6 +572,46 @@ export function fetchCompositeModificationContent(id: string) {
     });
 }
 
+// for each root network tag, the number of studies using the composite modification with that tag
+export function fetchRootNetworkTagsStudyCount(compositeModificationId: UUID): Promise<Record<string, number>> {
+    return backendFetchJson(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/root-network-tags/study-count`,
+        {
+            method: 'get',
+        }
+    );
+}
+
+export function updateCompositeModificationActivation(
+    compositeModificationId: UUID,
+    childrenModificationUuids: UUID[],
+    active: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    childrenModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('active', String(active));
+    return backendFetch(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/network-modifications/activation?${urlSearchParams.toString()}`,
+        { method: 'put' }
+    );
+}
+
+export function updateCompositeModificationApplicability(
+    compositeModificationId: UUID,
+    childrenModificationUuids: UUID[],
+    rootNetworkTag: string,
+    applicable: boolean
+) {
+    const urlSearchParams = new URLSearchParams();
+    childrenModificationUuids.forEach((uuid) => urlSearchParams.append('uuids', uuid));
+    urlSearchParams.append('rootNetworkTag', rootNetworkTag);
+    urlSearchParams.append('applicable', String(applicable));
+    return backendFetch(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/root-network-applicability?${urlSearchParams.toString()}`,
+        { method: 'put' }
+    );
+}
+
 export function saveCompositeModification(id: string, moidificationUuids: UUID[], name: string, description?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
