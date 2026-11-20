@@ -31,7 +31,6 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
-    PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -59,7 +58,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import CreateSpreadsheetCollectionDialog from '../dialogs/spreadsheet-collection-creation-dialog';
 import SharingLinksDialog from '../dialogs/sharing-links/sharing-links-dialog';
-import { checkPermissionOnDirectory } from './menus-utils';
 import type { useDirectoryContent } from '../../hooks/useDirectoryContent';
 
 interface ContentContextualMenuProps extends CommonContextualMenuProps {
@@ -89,9 +87,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     const itemSelectionForCopy = useSelector((state: AppState) => state.itemSelectionForCopy);
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const [deleteError, setDeleteError] = useState('');
-    const [directoryWritable, setDirectoryWritable] = useState(false);
-    const [directoryReadable, setDirectoryReadable] = useState(false);
-    const [permissionsLoaded, setPermissionsLoaded] = useState(false);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [isExportingStudy, setIsExportingStudy] = useState(false);
 
@@ -357,8 +352,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
 
         const isAllowedType = allowedTypes.includes(selectedElements[0]?.type);
 
-        return isSingleElement && isAllowedType && directoryWritable;
-    }, [selectedElements, isSingleElement, directoryWritable]);
+        return isSingleElement && isAllowedType && (selectedDirectory?.writePermission ?? false);
+    }, [selectedElements, isSingleElement, selectedDirectory?.writePermission]);
 
     const couldCreateNewStudyFromCase = useCallback(
         () => isSingleElement && selectedElements[0].type === ElementType.CASE && selectedElements[0].hasMetadata,
@@ -370,8 +365,8 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             isSingleElement &&
             selectedElements[0].type === ElementType.FILTER &&
             selectedElements[0].subtype !== FilterType.EXPLICIT_NAMING.id &&
-            directoryWritable,
-        [isSingleElement, selectedElements, directoryWritable]
+            (selectedDirectory?.writePermission ?? false),
+        [isSingleElement, selectedElements, selectedDirectory?.writePermission]
     );
 
     const couldDownload = useCallback(() => {
@@ -399,25 +394,21 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return selectedElements.every((element) => ElementType.SPREADSHEET_CONFIG === element.type);
     }, [selectedElements]);
 
-    const couldRenameOrMove = useCallback(() => {
-        return isSingleElement && directoryWritable;
-    }, [directoryWritable, isSingleElement]);
+    const couldRenameOrMoveOrDelete = useCallback(() => {
+        return isSingleElement && (selectedDirectory?.writePermission ?? false);
+    }, [selectedDirectory?.writePermission, isSingleElement]);
 
     const allowsRenameOrMoveOrCopy = useCallback(() => {
         return !(isStudyOrCase() && uploadingInProgress());
     }, [isStudyOrCase, uploadingInProgress]);
 
     const couldCopy = useCallback(() => {
-        return directoryReadable && isSingleElement;
-    }, [directoryReadable, isSingleElement]);
+        return isSingleElement;
+    }, [isSingleElement]);
 
     const allowsDuplicateOrCopy = useCallback(() => {
         return !(isStudyOrCase() && (!noCreationInProgress() || uploadingInProgress()));
     }, [isStudyOrCase, noCreationInProgress, uploadingInProgress]);
-
-    const couldDelete = useCallback(() => {
-        return isSingleElement && directoryWritable;
-    }, [directoryWritable, isSingleElement]);
 
     const couldDisplaySharingLinks = useCallback(() => {
         return (
@@ -458,37 +449,6 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         }
     }, [activeElement, handleCloseDialog, intl, snackInfo, snackError, isExportingStudy]);
 
-    useEffect(() => {
-        let isCurrent = true;
-        if (selectedDirectory !== null) {
-            Promise.all([
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.READ).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryReadable(b);
-                    }
-                }),
-                checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                    if (isCurrent) {
-                        setDirectoryWritable(b);
-                    }
-                }),
-            ]).finally(() => {
-                if (isCurrent) {
-                    setPermissionsLoaded(true);
-                }
-            });
-        } else {
-            setDirectoryReadable(false);
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: `selectedDirectory` changes reference on every tree update, which would
-        // otherwise re-run these checks.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDirectory?.elementUuid]);
-
     const buildMenu = useMemo(() => {
         if (selectedElements.length === 0) {
             return undefined;
@@ -497,7 +457,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         // build menuItems here in order
         const menuItems: MenuItemType[] = [];
 
-        if (couldRenameOrMove()) {
+        if (couldRenameOrMoveOrDelete()) {
             menuItems.push({
                 messageDescriptorId: 'rename',
                 callback: () => {
@@ -590,7 +550,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
             });
         }
 
-        if (couldDelete()) {
+        if (couldRenameOrMoveOrDelete()) {
             menuItems.push({
                 messageDescriptorId: 'delete',
                 callback: () => {
@@ -651,13 +611,12 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
         return menuItems;
     }, [
         selectedElements,
-        couldRenameOrMove,
+        couldRenameOrMoveOrDelete,
         couldCreateNewStudyFromCase,
         couldDuplicate,
         couldCopy,
         couldDisplaySharingLinks,
         couldExportStudy,
-        couldDelete,
         couldDownload,
         isDeveloperMode,
         couldExportCase,
@@ -776,7 +735,7 @@ export default function ContentContextualMenu(props: Readonly<ContentContextualM
     };
     return (
         <>
-            {open && permissionsLoaded && (
+            {open && (
                 <CommonContextualMenu {...others} menuItems={buildMenu} open={open && !hideMenu} onClose={onClose} />
             )}
             {renderDialog()}

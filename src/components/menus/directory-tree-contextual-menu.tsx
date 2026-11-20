@@ -24,7 +24,6 @@ import {
     FilterCreationDialog,
     PARAM_DEVELOPER_MODE,
     PARAM_LANGUAGE,
-    PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -52,7 +51,6 @@ import { useParameterState } from '../dialogs/use-parameters-dialog';
 import { AppState } from '../../redux/types';
 import MoveDialog from '../dialogs/move-dialog';
 import { buildPathToFromMap } from '../treeview-utils';
-import { checkPermissionOnDirectory } from './menus-utils';
 import DirectoryPropertiesDialog from '../dialogs/directory-properties/directory-properties-dialog';
 import { FilterType } from '../../utils/elementType';
 import FilterBasedContingencyListDialog from '../dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
@@ -77,7 +75,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     const { snackError } = useSnackMessage();
     const activeDirectory = useSelector((state: AppState) => state.activeDirectory);
     const treeData = useSelector((state: AppState) => state.treeData);
-    const [directoryWritable, setDirectoryWritable] = useState(false);
 
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [isDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
@@ -188,25 +185,6 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
     // Allowance
     const showMenuFromEmptyZone = useCallback(() => !directory, [directory]);
 
-    useEffect(() => {
-        let isCurrent = true;
-        if (directory !== null) {
-            checkPermissionOnDirectory(directory, PermissionType.WRITE).then((b) => {
-                if (isCurrent) {
-                    setDirectoryWritable(b);
-                }
-            });
-        } else {
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: `directory` changes reference on every tree update, which would otherwise
-        // re-run this check.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [directory?.elementUuid]);
-
     const buildMenu = () => {
         // build menuItems here
         const menuItems: MenuItemType[] = [];
@@ -220,7 +198,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             return menuItems;
         }
 
-        if (directory && directoryWritable) {
+        if (directory && directory.writePermission) {
             menuItems.push({
                 messageDescriptorId: 'createNewStudy',
                 callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
@@ -277,7 +255,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         }
 
         if (!restrictMenuItems) {
-            if (directory && directoryWritable) {
+            if (directory && directory.writePermission) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -301,7 +279,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             }
         }
 
-        if (directory && directoryWritable) {
+        if (directory && directory.writePermission) {
             menuItems.push(
                 {
                     messageDescriptorId: 'paste',
