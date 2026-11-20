@@ -1102,7 +1102,6 @@ export default function CompositeModificationDialog({
                         pendingState={false}
                         columns={baseColumns}
                         highlightedModificationUuid={null}
-                        studyUuid={null}
                     />
                 </Box>
             </CustomMuiDialog>
