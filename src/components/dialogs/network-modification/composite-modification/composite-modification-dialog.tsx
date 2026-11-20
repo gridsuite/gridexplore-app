@@ -304,6 +304,8 @@ interface CompositeModificationDialogProps {
     description: string;
     broadcastChannel: BroadcastChannel;
     isReadOnly?: boolean;
+    // true when the composite modification is referenced
+    isShared?: boolean;
 }
 
 // On a narrow window, halves the indentation of the nested modifications to leave room for their names
@@ -344,6 +346,7 @@ export default function CompositeModificationDialog({
     description,
     broadcastChannel,
     isReadOnly = false,
+    isShared = false,
 }: Readonly<CompositeModificationDialogProps>) {
     const intl = useIntl();
     const [isFetching, setIsFetching] = useState(!!compositeModificationId);
@@ -1045,7 +1048,8 @@ export default function CompositeModificationDialog({
         setIsFetching(true);
         Promise.all([
             fetchCompositeModificationContent(compositeModificationId),
-            fetchRootNetworkTagsStudyCount(compositeModificationId),
+            // the study count is only displayed for a shared composite modification
+            isShared ? fetchRootNetworkTagsStudyCount(compositeModificationId) : Promise.resolve({}),
             fetchNetworkModification(compositeModificationId).then((response): Promise<NetworkModificationMetadata> =>
                 response.json()
             ),
@@ -1061,7 +1065,7 @@ export default function CompositeModificationDialog({
                 snackWithFallback(snackError, error, { headerId: 'retrieveCompositeModificationError' });
             })
             .finally(() => setIsFetching(false));
-    }, [compositeModificationId, snackError]);
+    }, [compositeModificationId, isShared, snackError]);
 
     useEffect(() => {
         fetchModifications();
@@ -1252,7 +1256,7 @@ export default function CompositeModificationDialog({
                     }}
                 >
                     <CompositeModificationForm />
-                    <RootNetworksTags tags={rootNetworksTags} studyCountByTag={studyCountByTag} />
+                    {isShared && <RootNetworksTags tags={rootNetworksTags} studyCountByTag={studyCountByTag} />}
                     <NetworkModificationsTable
                         handleCellClick={editModification}
                         modifications={tableModifications}
