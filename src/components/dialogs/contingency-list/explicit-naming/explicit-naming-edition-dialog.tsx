@@ -9,12 +9,15 @@ import {
     CustomMuiDialog,
     FieldConstants,
     isDisabledValidationButton,
+    isOnlyNameOrDescriptionModified,
     MAX_CHAR_DESCRIPTION,
     NAME_EMPTY,
     NO_ITEM_SELECTION_FOR_COPY,
     snackWithFallback,
+    updateElement,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import type { UUID } from 'node:crypto';
 import * as yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -111,20 +114,24 @@ export default function ExplicitNamingEditionDialog({
     };
 
     const onSubmit = (contingencyList: ExplicitNamingEditionFormData) => {
-        editContingencyList(contingencyListId, contingencyList)
-            .then(() => {
-                if (itemSelectionForCopy.sourceItemUuid === contingencyListId) {
-                    dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
-                    broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
-                }
-                closeAndClear();
-            })
-            .catch((errorMessage) => {
-                snackWithFallback(snackError, errorMessage, {
-                    headerId: 'contingencyListEditingError',
-                    headerValues: { name },
-                });
+        const save = isOnlyNameOrDescriptionModified(methods.getValues(), methods.formState.defaultValues)
+            ? updateElement(contingencyListId as UUID, {
+                  elementName: contingencyList[FieldConstants.NAME],
+                  description: contingencyList[FieldConstants.DESCRIPTION] ?? '',
+              })
+            : editContingencyList(contingencyListId, contingencyList);
+        save.then(() => {
+            if (itemSelectionForCopy.sourceItemUuid === contingencyListId) {
+                dispatch(setItemSelectionForCopy(NO_ITEM_SELECTION_FOR_COPY));
+                broadcastChannel.postMessage({ NO_ITEM_SELECTION_FOR_COPY });
+            }
+            closeAndClear();
+        }).catch((errorMessage) => {
+            snackWithFallback(snackError, errorMessage, {
+                headerId: 'contingencyListEditingError',
+                headerValues: { name },
             });
+        });
     };
 
     return (
