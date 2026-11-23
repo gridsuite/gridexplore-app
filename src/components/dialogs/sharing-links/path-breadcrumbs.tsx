@@ -4,8 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import type { MouseEventHandler } from 'react';
+import { Link } from 'react-router';
 import { Breadcrumbs, Chip, Tooltip } from '@mui/material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
+import type { PathElement } from '../../../utils/referencing-element-infos.type';
 
 const styles = {
     breadcrumbs: (theme) => ({
@@ -28,20 +31,30 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface PathBreadcrumbsProps {
-    path: string[];
+    path: PathElement[];
+    onLinkClick?: MouseEventHandler;
 }
 
 /**
  * Renders an element path as a MUI Breadcrumbs.
  * When the path has more than two segments, the condensed
  * form is truncated in the middle: "Element 1 / ... / Element N".
+ * Each segment links to its directory.
  */
-export default function PathBreadcrumbs({ path }: Readonly<PathBreadcrumbsProps>) {
+export default function PathBreadcrumbs({ path, onLinkClick }: Readonly<PathBreadcrumbsProps>) {
     return (
         <Breadcrumbs aria-label="breadcrumb" maxItems={2} sx={styles.breadcrumbs}>
-            {path.map((segment, index) => (
-                <Tooltip key={path.slice(0, index + 1).join('/')} title={segment}>
-                    <Chip label={segment} size="small" sx={styles.chip} />
+            {path.map(({ elementUuid, elementName }) => (
+                <Tooltip key={elementUuid} title={elementName}>
+                    <Chip
+                        label={elementName}
+                        size="small"
+                        sx={styles.chip}
+                        component={Link}
+                        to={`/elements/${elementUuid}`}
+                        onClick={onLinkClick}
+                        clickable
+                    />
                 </Tooltip>
             ))}
         </Breadcrumbs>

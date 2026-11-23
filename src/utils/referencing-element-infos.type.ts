@@ -5,7 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'node:crypto';
 import { ElementType } from '@gridsuite/commons-ui';
+
+/**
+ * A parent directory of a referencing element.
+ */
+export type PathElement = {
+    elementUuid: UUID;
+    elementName: string;
+};
 
 /**
  * One element using a shared element, as returned by the explore-server.
@@ -14,9 +23,15 @@ import { ElementType } from '@gridsuite/commons-ui';
 export type ReferencingElementInfos = {
     elementName: string;
     type: ElementType;
-    path: string[]; // parent directories
+    path: PathElement[]; // parent directories, from the root
     node?: string; // study node carrying the modification, only relevant for in-study sharing
     ownerLabel?: string;
     lastModificationDate: string;
     lastModifiedByLabel?: string;
 };
+
+/**
+ * A row of the sharing links table. Two rows can be strictly identical when a same node references
+ * the shared element twice, hence the generated id.
+ */
+export type ReferencingElement = ReferencingElementInfos & { id: string };
