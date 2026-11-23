@@ -47,6 +47,7 @@ import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 import { DirectoryField } from './utils/directory-content-utils';
+import { isElementShared } from '../utils/element-utils';
 
 export type DirectoryContentDialogApi = {
     handleClick: (event: CellClickedEvent) => void;
@@ -330,6 +331,7 @@ function DirectoryContentDialog(
                     description={elementDescription}
                     broadcastChannel={broadcastChannel}
                     isReadOnly={!selectedDirectoryWritable}
+                    isShared={isElementShared(activeElement)}
                 />
             );
         }
