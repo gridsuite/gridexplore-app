@@ -185,7 +185,9 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
 
 export function updateElement(elementUuid: UUID, elementType: ElementType, element: Partial<ElementAttributes>) {
     console.info(`Updating element info for ${elementUuid}`);
-    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}`;
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('type', elementType);
+    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}?${urlSearchParams.toString()}`;
     const elementToUpdate: Partial<ElementAttributes> = element;
     if (elementType === ElementType.MODIFICATION) {
         elementToUpdate.elementUuid = elementUuid;
