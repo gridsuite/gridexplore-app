@@ -8,7 +8,7 @@ import type { MouseEventHandler } from 'react';
 import { Link } from 'react-router';
 import { Breadcrumbs, Chip, Tooltip } from '@mui/material';
 import type { MuiStyles } from '@gridsuite/commons-ui';
-import type { PathElement } from '../../../utils/referencing-element-infos.type';
+import type { ReferencingElementInfos } from '../../../utils/referencing-element-infos.type';
 
 const styles = {
     breadcrumbs: (theme) => ({
@@ -48,7 +48,7 @@ const styles = {
 } as const satisfies MuiStyles;
 
 export interface PathBreadcrumbsProps {
-    path: PathElement[];
+    path: ReferencingElementInfos['path'];
     onLinkClick?: MouseEventHandler;
 }
 

@@ -12,14 +12,14 @@ import {
     type CustomAggridAutocompleteFilterParams,
     CustomAggridComparatorFilter,
     FilterDataTypes,
-    FilterTextComparators,
     makeAgGridCustomHeaderColumn,
     type SortParams,
     TableType,
+    textFilterParams,
 } from '@gridsuite/commons-ui';
 import { DateCellRenderer } from '../../utils/renderers/date-cell-renderer';
 import { UserCellRenderer } from '../../utils/renderers/user-cell-renderer';
-import { getElementTypeTranslation } from '../../utils/translation-utils';
+import { getElementTypeLabel } from '../../utils/translation-utils';
 import type { ReferencingElement } from '../../../utils/referencing-element-infos.type';
 import { PathCellRenderer } from './path-cell-renderer';
 import { ElementNameCellRenderer } from './element-name-cell-renderer';
@@ -34,10 +34,7 @@ const textColumnContext = {
     sortParams,
     filterComponent: CustomAggridComparatorFilter,
     filterComponentParams: {
-        filterParams: {
-            ...filterParams,
-            comparators: [FilterTextComparators.STARTS_WITH, FilterTextComparators.CONTAINS],
-        },
+        filterParams: { ...filterParams, ...textFilterParams },
     },
 };
 
@@ -74,7 +71,7 @@ export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
         headerName: intl.formatMessage({ id: 'directoryContent.column.type' }),
         colId: 'type',
         valueGetter: ({ data }: ValueGetterParams<ReferencingElement>) =>
-            data ? getElementTypeTranslation(data.type, null, null, intl) : '',
+            data ? getElementTypeLabel(data.type, undefined, intl) : '',
         ...enumColumn,
     }),
     makeAgGridCustomHeaderColumn({
