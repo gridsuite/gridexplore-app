@@ -21,7 +21,6 @@ import {
     ElementType,
     ExpertFilterEditionDialog,
     ExplicitNamingFilterEditionDialog,
-    isStudyMetadata,
     LoadFlowParametersEditionDialog,
     NetworkVisualizationsParametersEditionDialog,
     PARAM_LANGUAGE,
@@ -45,6 +44,7 @@ import * as constants from '../utils/UIconstants';
 import type { AppState } from '../redux/types';
 import { useParameterState } from './dialogs/use-parameters-dialog';
 import type { useDirectoryContent } from '../hooks/useDirectoryContent';
+import { useStudyUrl } from '../hooks/use-study-url';
 import FilterBasedContingencyListDialog from './dialogs/contingency-list/filter-based/contingency-list-filter-based-dialog';
 import { DirectoryField } from './utils/directory-content-utils';
 import { isElementShared } from '../utils/element-utils';
@@ -91,22 +91,7 @@ function DirectoryContentDialog(
     const [elementName, setElementName] = useState('');
     const [elementDescription, setElementDescription] = useState('');
 
-    const appsAndUrls = useSelector((state: AppState) => state.appsAndUrls);
-    const getStudyUrl = useCallback(
-        (elementUuid: string) => {
-            const appStudy = appsAndUrls.find(isStudyMetadata);
-            if (appStudy) {
-                const studyResource = appStudy.resources?.find((resource) =>
-                    resource.types.includes(ElementType.STUDY)
-                );
-                if (studyResource) {
-                    return appStudy.url + studyResource.path.replace('{elementUuid}', elementUuid);
-                }
-            }
-            return null;
-        },
-        [appsAndUrls]
-    );
+    const getStudyUrl = useStudyUrl();
 
     const [openDescModificationDialog, setOpenDescModificationDialog] = useState(false);
     const handleDescDialogClose = useCallback(() => {

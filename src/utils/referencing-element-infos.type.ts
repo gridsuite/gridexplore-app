@@ -21,6 +21,7 @@ export type PathElement = {
  * There is one entry per reference, so a same element appears once per node referencing it.
  */
 export type ReferencingElementInfos = {
+    elementUuid: UUID;
     elementName: string;
     type: ElementType;
     path: PathElement[]; // parent directories, from the root

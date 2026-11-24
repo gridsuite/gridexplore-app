@@ -32,6 +32,10 @@ export interface SharingLinksDialogProps {
     open: boolean;
     onClose: () => void;
     element: Pick<ElementAttributes, 'elementUuid' | 'elementName'>; // the inspected (shared) element
+    /**
+     * Called when a link navigates in the current tab, onClose by default.
+     * When opened from another dialog, it should close that dialog too.
+     */
     onNavigate?: () => void;
 }
 

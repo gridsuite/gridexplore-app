@@ -22,6 +22,7 @@ import { UserCellRenderer } from '../../utils/renderers/user-cell-renderer';
 import { getElementTypeTranslation } from '../../utils/translation-utils';
 import type { ReferencingElement } from '../../../utils/referencing-element-infos.type';
 import { PathCellRenderer } from './path-cell-renderer';
+import { ElementNameCellRenderer } from './element-name-cell-renderer';
 
 const SHARING_LINKS_TAB = 'sharingLinks';
 
@@ -63,14 +64,15 @@ export const defaultColumnDefinition: ColDef<ReferencingElement> = {
 };
 
 export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
-    makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'elementName' }),
+    makeAgGridCustomHeaderColumn<CustomAggridAutocompleteFilterParams>({
+        headerName: intl.formatMessage({ id: 'directoryContent.column.name' }),
         colId: 'elementName',
         field: 'elementName',
-        context: textColumnContext,
+        cellRenderer: ElementNameCellRenderer,
+        ...enumColumn,
     }),
     makeAgGridCustomHeaderColumn<CustomAggridAutocompleteFilterParams>({
-        headerName: intl.formatMessage({ id: 'type' }),
+        headerName: intl.formatMessage({ id: 'directoryContent.column.type' }),
         colId: 'type',
         valueGetter: ({ data }: ValueGetterParams<ReferencingElement>) =>
             data ? getElementTypeTranslation(data.type, null, null, intl) : '',
@@ -93,21 +95,21 @@ export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
         context: textColumnContext,
     }),
     makeAgGridCustomHeaderColumn<CustomAggridAutocompleteFilterParams>({
-        headerName: intl.formatMessage({ id: 'creator' }),
+        headerName: intl.formatMessage({ id: 'directoryContent.column.creator' }),
         colId: 'ownerLabel',
         field: 'ownerLabel',
         cellRenderer: UserCellRenderer,
         ...enumColumn,
     }),
     makeAgGridCustomHeaderColumn({
-        headerName: intl.formatMessage({ id: 'modified' }),
+        headerName: intl.formatMessage({ id: 'directoryContent.column.modified' }),
         colId: 'lastModificationDate',
         field: 'lastModificationDate',
         cellRenderer: DateCellRenderer,
         context: { sortParams },
     }),
     makeAgGridCustomHeaderColumn<CustomAggridAutocompleteFilterParams>({
-        headerName: intl.formatMessage({ id: 'modifiedBy' }),
+        headerName: intl.formatMessage({ id: 'directoryContent.column.modifiedBy' }),
         colId: 'lastModifiedByLabel',
         field: 'lastModifiedByLabel',
         cellRenderer: UserCellRenderer,
