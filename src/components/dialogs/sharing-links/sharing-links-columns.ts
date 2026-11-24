@@ -60,7 +60,6 @@ export const defaultColumnDefinition: ColDef<ReferencingElement> = {
     wrapHeaderText: true,
     autoHeaderHeight: true,
     flex: 1,
-    cellStyle: { display: 'flex', alignItems: 'center' },
 };
 
 export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
