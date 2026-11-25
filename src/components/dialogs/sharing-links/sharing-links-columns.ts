@@ -38,7 +38,6 @@ const textColumnContext = {
     },
 };
 
-// the options of the filter are the distinct values of the column
 const enumColumn = {
     filterParams: createMultiEnumFilterParams(),
     context: {
@@ -49,7 +48,6 @@ const enumColumn = {
 };
 
 export const defaultColumnDefinition: ColDef<ReferencingElement> = {
-    // the native sort and filter are driven by the custom headers
     sortable: true,
     filter: true,
     resizable: true,
@@ -77,7 +75,6 @@ export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'path' }),
         colId: 'path',
-        // the joined path is used for sorting and filtering
         valueGetter: ({ data }: ValueGetterParams<ReferencingElement>) =>
             data?.path.map(({ elementName }) => elementName).join('/') ?? '',
         cellRenderer: PathCellRenderer,

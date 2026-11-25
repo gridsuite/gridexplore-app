@@ -32,10 +32,6 @@ export interface SharingLinksDialogProps {
     open: boolean;
     onClose: () => void;
     element: Pick<ElementAttributes, 'elementUuid' | 'elementName'>; // the inspected (shared) element
-    /**
-     * Called when a link navigates in the current tab, onClose by default.
-     * When opened from another dialog, it should close that dialog too.
-     */
     onNavigate?: () => void;
 }
 
@@ -66,10 +62,12 @@ export default function SharingLinksDialog({
             });
     }, [element.elementUuid, snackError]);
 
-    // Only a plain left click navigates in the current tab: the other ones open a new tab, so the dialog stays open
     const onLinkClick = useCallback(
         (event: MouseEvent) => {
-            if (isPlainLeftClick(event)) {
+            if (event.altKey || event.getModifierState('AltGraph')) {
+                event.preventDefault();
+                window.open(event.currentTarget.getAttribute('href') ?? undefined, '_blank');
+            } else if (isPlainLeftClick(event)) {
                 onNavigate();
             }
         },
@@ -97,7 +95,6 @@ export default function SharingLinksDialog({
                         context={context}
                         loading={referencingElements === undefined}
                         overrideLocales={AGGRID_LOCALES}
-                        // the dialog fits its content, like a regular table
                         domLayout="autoHeight"
                     />
                 </CustomAggridLocalStateProvider>
