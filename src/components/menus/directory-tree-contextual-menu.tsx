@@ -27,6 +27,7 @@ import {
     PermissionType,
     snackWithFallback,
     TreeViewFinderNodeProps,
+    updateElement,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import type { UUID } from 'node:crypto';
@@ -41,7 +42,6 @@ import {
     insertDirectory,
     insertRootDirectory,
     moveElementsToDirectory,
-    updateElement,
 } from '../../utils/rest-api';
 
 import CommonContextualMenu, { CommonContextualMenuProps, MenuItemType } from './common-contextual-menu';

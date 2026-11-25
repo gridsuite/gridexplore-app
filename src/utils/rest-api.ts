@@ -183,25 +183,6 @@ export function moveElementsToDirectory(elementsUuids: UUID[], targetDirectoryUu
     });
 }
 
-export function updateElement(elementUuid: UUID, elementType: ElementType, element: Partial<ElementAttributes>) {
-    console.info(`Updating element info for ${elementUuid}`);
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('type', elementType);
-    const updateElementUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/elements/${elementUuid}?${urlSearchParams.toString()}`;
-    const elementToUpdate: Partial<ElementAttributes> = element;
-    if (elementType === ElementType.MODIFICATION) {
-        elementToUpdate.elementUuid = elementUuid;
-    }
-    return backendFetch(updateElementUrl, {
-        method: 'put',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(elementToUpdate),
-    });
-}
-
 export function insertDirectory(directoryName: string, parentUuid: UUID, ownerId: string) {
     console.info("Inserting a new folder '%s'", directoryName);
     const insertDirectoryUrl = `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/directories/${parentUuid}/directories`;
