@@ -22,6 +22,7 @@ const BackendLocaleFr = {
     SECURITY_ANALYSIS_PROCESS_CONFIG: 'Configuration de chaînes (Analyse de sécurité)',
     LOADFLOW_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de répartition)',
     SHORT_CIRCUIT_PROCESS_CONFIG: 'Configuration de chaînes (Calcul de court-circuit)',
+    PCC_MIN_PROCESS_CONFIG: "Configuration de chaînes (Calcul d'Icc minimale sous aléas)",
 
     // spreadsheet config metadata
     Load: 'Consommation',
