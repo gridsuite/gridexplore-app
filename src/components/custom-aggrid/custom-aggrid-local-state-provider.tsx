@@ -17,9 +17,7 @@ import {
 } from '@gridsuite/commons-ui';
 
 export type CustomAggridLocalStateProviderProps = PropsWithChildren<{
-    gridApi: GridApi | undefined; // given once the grid is ready, to apply the initial state
-    // the filters to start with, which replace the current ones whenever they change: when they are computed from
-    // data loaded afterwards, they are applied along with that data, without remounting the grid
+    gridApi: GridApi | undefined;
     initialFilters?: FilterConfig[];
 }>;
 
