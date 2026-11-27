@@ -14,7 +14,6 @@ import {
     type ItemSelectionForCopy,
     type MuiStyles,
     NO_ITEM_SELECTION_FOR_COPY,
-    PermissionType,
 } from '@gridsuite/commons-ui';
 import { Add as AddIcon } from '@mui/icons-material';
 import { AgGridReact } from 'ag-grid-react';
@@ -38,7 +37,6 @@ import EmptyDirectory, { type EmptyDirectoryProps } from './empty-directory';
 import { AppState } from '../redux/types';
 import DirectoryContentDialog, { type DirectoryContentDialogApi } from './directory-content-dialog';
 import { AnchorStatesType, defaultAnchorStates } from './menus/anchor-utils';
-import { checkPermissionOnDirectory } from './menus/menus-utils';
 
 const circularProgressSize = '70px';
 
@@ -119,34 +117,11 @@ export default function DirectoryContent() {
     const [openDirectoryMenu, setOpenDirectoryMenu] = useState(false);
     const [openContentMenu, setOpenContentMenu] = useState(false);
 
-    /** access write on current directory */
-    const [directoryWritable, setDirectoryWritable] = useState(false);
-
-    useEffect(() => {
-        let isCurrent = true;
-        if (selectedDirectory !== null) {
-            setDirectoryWritable(false);
-            checkPermissionOnDirectory(selectedDirectory, PermissionType.WRITE).then((b) => {
-                if (isCurrent) {
-                    setDirectoryWritable(b);
-                }
-            });
-        } else {
-            setDirectoryWritable(false);
-        }
-        return () => {
-            isCurrent = false;
-        };
-        // Keyed on the uuid: the permission only depends on the directory id, and `selectedDirectory`
-        // changes reference on every tree update, which would otherwise re-run this check.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDirectory?.elementUuid]);
-
     const columnDefinitions = useMemo(() => getColumnsDefinition(intl, theme), [intl, theme]);
 
     const gridContext = useMemo<DirectoryContentGridContext>(
-        () => ({ childrenMetadata, directoryWritable }),
-        [childrenMetadata, directoryWritable]
+        () => ({ childrenMetadata, directoryWritable: selectedDirectory?.writePermission ?? false }),
+        [childrenMetadata, selectedDirectory?.writePermission]
     );
 
     const handleOpenContentMenu = useCallback((event: MouseEvent<HTMLDivElement>) => {
@@ -353,7 +328,7 @@ export default function DirectoryContent() {
                         <ContentToolbar
                             selectedElements={checkedRows}
                             selectedDirectory={selectedDirectory}
-                            selectedDirectoryWritable={directoryWritable}
+                            selectedDirectoryWritable={selectedDirectory?.writePermission ?? false}
                         />
                         <Button
                             variant="contained"
@@ -413,7 +388,7 @@ export default function DirectoryContent() {
                 setActiveElement={setActiveElement}
                 setOpenDialog={setOpenDialog}
                 selectedDirectoryElementUuid={selectedDirectory?.elementUuid}
-                selectedDirectoryWritable={directoryWritable}
+                selectedDirectoryWritable={selectedDirectory?.writePermission ?? false}
                 childrenMetadata={childrenMetadata}
             />
         </>
