@@ -22,6 +22,7 @@ const BackendLocaleEn = {
     SECURITY_ANALYSIS_PROCESS_CONFIG: 'Process configuration (Security analysis)',
     LOADFLOW_PROCESS_CONFIG: 'Process configuration (Loadflow)',
     SHORT_CIRCUIT_PROCESS_CONFIG: 'Process configuration (Short circuit)',
+    PCC_MIN_PROCESS_CONFIG: 'Process configuration (Pcc min N-1)',
 
     // spreadsheet config metadata
     Load: 'Load',
