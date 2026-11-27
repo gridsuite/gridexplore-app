@@ -6,9 +6,8 @@
  */
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { type MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { AgGridReact } from 'ag-grid-react';
-import type { GetRowIdParams } from 'ag-grid-community';
+import { type MouseEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import type { GetRowIdParams, GridApi, GridReadyEvent } from 'ag-grid-community';
 import {
     CloseButton,
     CustomAGGrid,
@@ -20,7 +19,7 @@ import { fetchReferencingElementInfos } from '../../../utils/rest-api';
 import type { ReferencingElement } from '../../../utils/referencing-element-infos.type';
 import { AGGRID_LOCALES } from '../../../translations/not-intl/aggrid-locales';
 import { CustomAggridLocalStateProvider } from '../../custom-aggrid/custom-aggrid-local-state-provider';
-import { defaultColumnDefinition, getColumnsDefinition } from './sharing-links-columns';
+import { createElementNamesFilter, defaultColumnDefinition, getColumnsDefinition } from './sharing-links-columns';
 import type { PathCellRendererContext } from './path-cell-renderer';
 
 const getRowId = (params: GetRowIdParams<ReferencingElement>) => params.data.id;
@@ -33,6 +32,7 @@ export interface SharingLinksDialogProps {
     onClose: () => void;
     element: Pick<ElementAttributes, 'elementUuid' | 'elementName'>; // the inspected (shared) element
     onNavigate?: () => void;
+    rootNetworkTags?: string[]; // when given, the studies having one of these root network tags are initially filtered
 }
 
 /**
@@ -43,10 +43,11 @@ export default function SharingLinksDialog({
     onClose,
     element,
     onNavigate = onClose,
+    rootNetworkTags,
 }: Readonly<SharingLinksDialogProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
-    const gridRef = useRef<AgGridReact<ReferencingElement>>(null);
+    const [gridApi, setGridApi] = useState<GridApi<ReferencingElement>>();
 
     const [referencingElements, setReferencingElements] = useState<ReferencingElement[]>();
 
@@ -61,6 +62,19 @@ export default function SharingLinksDialog({
                 snackWithFallback(snackError, error, { headerId: 'sharingLinksError' });
             });
     }, [element.elementUuid, snackError]);
+
+    // known once the referencing elements are loaded, and then applied along with them
+    const initialFilters = useMemo(() => {
+        if (!rootNetworkTags || !referencingElements) {
+            return undefined;
+        }
+        const studyNames = referencingElements
+            .filter((referencingElement) =>
+                referencingElement.rootNetworkTags.some((tag) => rootNetworkTags.includes(tag))
+            )
+            .map((referencingElement) => referencingElement.elementName);
+        return [createElementNamesFilter([...new Set(studyNames)])];
+    }, [referencingElements, rootNetworkTags]);
 
     const onLinkClick = useCallback(
         (event: MouseEvent) => {
@@ -85,9 +99,9 @@ export default function SharingLinksDialog({
                 {` ${element.elementName}`}
             </DialogTitle>
             <DialogContent>
-                <CustomAggridLocalStateProvider gridRef={gridRef}>
+                <CustomAggridLocalStateProvider gridApi={gridApi} initialFilters={initialFilters}>
                     <CustomAGGrid
-                        ref={gridRef}
+                        onGridReady={({ api }: GridReadyEvent<ReferencingElement>) => setGridApi(api)}
                         rowData={referencingElements}
                         getRowId={getRowId}
                         columnDefs={columnDefs}

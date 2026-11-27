@@ -118,6 +118,7 @@
     "deactivateModification": "Deactivate network modification",
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
     "modificationActivationByRootNetworkError": "An error occurred while enabling / disabling modification by root network",
+    "rootNetworksDeletionError": "An error occurred while deleting the root networks",
     "compositeModificationEditingError": "An error occurred while editing the composite modification: {name}",
     "networkModificationRenamingError": "An error occurred while renaming the modification",
     "contingencyListCreation": "contingencyListCreation",

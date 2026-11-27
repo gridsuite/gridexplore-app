@@ -229,6 +229,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { CellContext, ColumnDef } from '@tanstack/react-table';
 import { AppState } from '../../../../redux/types';
 import {
+    deleteCompositeModificationRootNetworkTags,
     fetchCompositeModificationContent,
     fetchRootNetworkTagsStudyCount,
     saveCompositeModification,
@@ -239,6 +240,7 @@ import { collectRootNetworkTags, computeDialogWidth, createDeleteSelectedRootNet
 import CompositeModificationForm from './composite-modification-form';
 import RootNetworksTags from './root-networks-tags';
 import RootNetworkColumnHeader from './root-network-column-header';
+import SharingLinksDialog from '../../sharing-links/sharing-links-dialog';
 import { NewVoltageLevelCreationPane, AttachmentPointCreationPane } from './common/FreeEntryVoltageLevelCreationPane';
 import { FreeEntryLineCreationPane } from './common/FreeEntryLineCreationPane';
 import { setItemSelectionForCopy } from '../../../../redux/actions';
@@ -361,6 +363,8 @@ export default function CompositeModificationDialog({
     const toggleTag = useCallback((tag: string) => {
         setSelectedTags((tags) => (tags.includes(tag) ? tags.filter((t) => t !== tag) : [...tags, tag]));
     }, []);
+    // the selected tags still used by studies, whose sharing links are displayed instead of deleting them
+    const [tagsInUse, setTagsInUse] = useState<string[]>();
     const dispatch = useDispatch();
 
     const [selectedModification, setSelectedModification] = useState<ComposedModificationMetadata>();
@@ -1071,6 +1075,26 @@ export default function CompositeModificationDialog({
         fetchModifications();
     }, [fetchModifications, name]);
 
+    // the studies may have changed meanwhile (opened from the sharing links in another tab): the counts are refreshed
+    const closeSharingLinks = useCallback(() => {
+        setTagsInUse(undefined);
+        fetchModifications();
+    }, [fetchModifications]);
+
+    // the root networks still used by studies are not deleted: their sharing links are displayed instead
+    const deleteSelectedRootNetworks = useCallback(() => {
+        const selectedTagsInUse = selectedTags.filter((tag) => (studyCountByTag[tag] ?? 0) > 0);
+        if (selectedTagsInUse.length > 0) {
+            setTagsInUse(selectedTagsInUse);
+            return;
+        }
+        deleteCompositeModificationRootNetworkTags(compositeModificationId, selectedTags)
+            .then(() => setSelectedTags([]))
+            .catch((error) => snackWithFallback(snackError, error, { headerId: 'rootNetworksDeletionError' }))
+            // also refreshes the study counts, in case a study started using a root network meanwhile
+            .finally(fetchModifications);
+    }, [compositeModificationId, fetchModifications, selectedTags, snackError, studyCountByTag]);
+
     const onSubmit = (formData: FormData) => {
         const modificationUuids = modifications.map((modification) => modification.uuid);
         saveCompositeModification(
@@ -1190,12 +1214,13 @@ export default function CompositeModificationDialog({
                     toggleTag={toggleTag}
                 />
             )),
-            ...(selectedTags.length > 0 ? [createDeleteSelectedRootNetworksColumn(selectedTags)] : []),
+            ...(selectedTags.length > 0 ? [createDeleteSelectedRootNetworksColumn(deleteSelectedRootNetworks)] : []),
         ];
     }, [
         isReadOnly,
         rootNetworksInfos,
         selectedTags,
+        deleteSelectedRootNetworks,
         compositeModificationId,
         toggleTag,
         methods,
@@ -1290,6 +1315,16 @@ export default function CompositeModificationDialog({
                     // We can force to not undefined because if there is a selectedModification it means it is editable
                     // and then a configuration will be associated
                     {...editableModificationDialogs.get(selectedModification.type)!}
+                />
+            )}
+            {tagsInUse && (
+                <SharingLinksDialog
+                    open
+                    onClose={closeSharingLinks}
+                    // navigating leaves the composite modification dialog too
+                    onNavigate={onClose}
+                    element={{ elementUuid: compositeModificationId, elementName: name }}
+                    rootNetworkTags={tagsInUse}
                 />
             )}
         </>

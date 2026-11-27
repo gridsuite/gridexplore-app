@@ -43,20 +43,17 @@ export default function RootNetworkColumnHeader({
 }
 
 interface DeleteSelectedRootNetworksHeaderProps {
-    selectedTags: string[];
+    onDelete: () => void;
 }
 
-export function DeleteSelectedRootNetworksHeader({ selectedTags }: Readonly<DeleteSelectedRootNetworksHeaderProps>) {
+export function DeleteSelectedRootNetworksHeader({ onDelete }: Readonly<DeleteSelectedRootNetworksHeaderProps>) {
     const intl = useIntl();
     return (
         <Box sx={styles.container}>
             <IconButton
                 size="small"
                 sx={styles.deleteButton}
-                // TODO remove the selected root networks once the backend allows it
-                onClick={() => {
-                    console.log('Delete selected root networks', selectedTags);
-                }}
+                onClick={onDelete}
                 aria-label={intl.formatMessage({ id: 'delete' })}
             >
                 <Delete fontSize="small" />
