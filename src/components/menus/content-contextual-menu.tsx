@@ -33,6 +33,7 @@ import {
     PARAM_LANGUAGE,
     snackWithFallback,
     TreeViewFinderNodeProps,
+    updateElement,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import RenameDialog from '../dialogs/rename-dialog';
@@ -44,7 +45,6 @@ import {
     duplicateElement,
     exportStudy,
     moveElementsToDirectory,
-    updateElement,
 } from '../../utils/rest-api';
 import { FilterType } from '../../utils/elementType';
 import { isElementShared } from '../../utils/element-utils';
