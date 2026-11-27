@@ -198,7 +198,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             return menuItems;
         }
 
-        if (directory && directory.writePermission) {
+        if (directory?.writePermission) {
             menuItems.push({
                 messageDescriptorId: 'createNewStudy',
                 callback: () => handleOpenDialog(DialogsId.ADD_NEW_STUDY),
@@ -255,7 +255,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
         }
 
         if (!restrictMenuItems) {
-            if (directory && directory.writePermission) {
+            if (directory?.writePermission) {
                 menuItems.push(
                     {
                         messageDescriptorId: 'renameFolder',
@@ -279,7 +279,7 @@ export default function DirectoryTreeContextualMenu(props: Readonly<DirectoryTre
             }
         }
 
-        if (directory && directory.writePermission) {
+        if (directory?.writePermission) {
             menuItems.push(
                 {
                     messageDescriptorId: 'paste',
