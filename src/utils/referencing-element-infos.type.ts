@@ -17,6 +17,7 @@ export type ReferencingElementInfos = Pick<
 > & {
     path: Pick<ElementAttributes, 'elementUuid' | 'elementName'>[]; // parent directories, from the root
     node?: string; // study node carrying the modification, only relevant for in-study sharing
+    rootNetworkTags: string[]; // root network tags of the study
 };
 
 /**

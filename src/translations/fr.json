@@ -117,6 +117,7 @@
     "deactivateModification": "Désactiver la modification réseau",
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
     "modificationActivationByRootNetworkError": "Une erreur est survenue lors de l'activation / désactivation de la modification par réseau racine",
+    "rootNetworksDeletionError": "Une erreur est survenue lors de la suppression des réseaux racines",
     "compositeModificationEditingError": "Une erreur est survenue lors de l'édition de la modification composite : {name}",
     "networkModificationRenamingError": "Une erreur est survenue lors du renommage de la modification",
     "contingencyListCreation": "creationListeAleas",

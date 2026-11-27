@@ -612,6 +612,15 @@ export function updateCompositeModificationApplicability(
     );
 }
 
+export function deleteCompositeModificationRootNetworkTags(compositeModificationId: UUID, rootNetworkTags: string[]) {
+    const urlSearchParams = new URLSearchParams();
+    rootNetworkTags.forEach((tag) => urlSearchParams.append('rootNetworkTags', tag));
+    return backendFetch(
+        `${PREFIX_EXPLORE_SERVER_QUERIES}/v1/explore/composite-modifications/${compositeModificationId}/root-network-tags?${urlSearchParams.toString()}`,
+        { method: 'delete' }
+    );
+}
+
 export function saveCompositeModification(id: string, moidificationUuids: UUID[], name: string, description?: string) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);

@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { type PropsWithChildren, type RefObject, useEffect, useMemo, useState } from 'react';
-import type { AgGridReact } from 'ag-grid-react';
+import { type PropsWithChildren, useEffect, useLayoutEffect, useMemo, useState } from 'react';
+import type { GridApi } from 'ag-grid-community';
 import {
     CustomAggridFilterContext,
     type CustomAggridFilterContextValue,
@@ -17,24 +17,44 @@ import {
 } from '@gridsuite/commons-ui';
 
 export type CustomAggridLocalStateProviderProps = PropsWithChildren<{
-    gridRef: RefObject<AgGridReact | null>;
+    gridApi: GridApi | undefined; // given once the grid is ready, to apply the initial state
+    // the filters to start with, which replace the current ones whenever they change: when they are computed from
+    // data loaded afterwards, they are applied along with that data, without remounting the grid
+    initialFilters?: FilterConfig[];
 }>;
 
 /**
  * Provides the sort and the filters of the commons-ui custom headers for a single grid, and applies them to it.
  * They are kept in a local state, so they only live as long as the provider.
  */
-export function CustomAggridLocalStateProvider({ gridRef, children }: Readonly<CustomAggridLocalStateProviderProps>) {
+const NO_FILTERS: FilterConfig[] = [];
+
+export function CustomAggridLocalStateProvider({
+    gridApi,
+    initialFilters = NO_FILTERS,
+    children,
+}: Readonly<CustomAggridLocalStateProviderProps>) {
     const [sortConfig, setSortConfig] = useState<SortConfig[]>([]);
-    const [filters, setFilters] = useState<FilterConfig[]>([]);
+    const [filters, setFilters] = useState<FilterConfig[]>(initialFilters);
+    const [previousInitialFilters, setPreviousInitialFilters] = useState(initialFilters);
+    if (initialFilters !== previousInitialFilters) {
+        // adjusted while rendering, so that they are applied in the same commit as what changed them
+        setPreviousInitialFilters(initialFilters);
+        setFilters(initialFilters);
+    }
 
     useEffect(() => {
-        gridRef.current?.api?.applyColumnState({ state: sortConfig, defaultState: { sort: null } });
-    }, [gridRef, sortConfig]);
+        if (gridApi && !gridApi.isDestroyed()) {
+            gridApi.applyColumnState({ state: sortConfig, defaultState: { sort: null } });
+        }
+    }, [gridApi, sortConfig]);
 
-    useEffect(() => {
-        updateAgGridFilters(gridRef.current?.api, filters);
-    }, [gridRef, filters]);
+    // before the browser paints, so that the rows are never shown unfiltered
+    useLayoutEffect(() => {
+        if (gridApi && !gridApi.isDestroyed()) {
+            updateAgGridFilters(gridApi, filters);
+        }
+    }, [gridApi, filters]);
 
     const sortContext = useMemo<CustomAggridSortContextValue>(
         () => ({

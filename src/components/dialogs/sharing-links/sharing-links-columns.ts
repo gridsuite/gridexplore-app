@@ -11,7 +11,9 @@ import {
     CustomAggridAutocompleteFilter,
     type CustomAggridAutocompleteFilterParams,
     CustomAggridComparatorFilter,
+    type FilterConfig,
     FilterDataTypes,
+    FilterTextComparators,
     makeAgGridCustomHeaderColumn,
     type SortParams,
     TableType,
@@ -47,6 +49,15 @@ const enumColumn = {
     },
 };
 
+const NAME_COLUMN = 'elementName';
+
+export const createElementNamesFilter = (elementNames: string[]): FilterConfig => ({
+    column: NAME_COLUMN,
+    dataType: FilterDataTypes.TEXT,
+    type: FilterTextComparators.EQUALS,
+    value: elementNames,
+});
+
 export const defaultColumnDefinition: ColDef<ReferencingElement> = {
     sortable: true,
     filter: true,
@@ -60,7 +71,7 @@ export const defaultColumnDefinition: ColDef<ReferencingElement> = {
 export const getColumnsDefinition = (intl: IntlShape): ColDef[] => [
     makeAgGridCustomHeaderColumn<CustomAggridAutocompleteFilterParams>({
         headerName: intl.formatMessage({ id: 'directoryContent.column.name' }),
-        colId: 'elementName',
+        colId: NAME_COLUMN,
         field: 'elementName',
         cellRenderer: ElementNameCellRenderer,
         ...enumColumn,
