@@ -32,14 +32,15 @@ type AgGridData = {
 const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) => {
     const { name, node, colDef, api, sideActionCallback } = props;
     const { control, getValues } = useFormContext();
+    const rows = (getValues(name) ?? []) as AgGridData[];
 
-    const getIndexInFormData = (nodeData: AgGridData | undefined) =>
-        getValues(name).findIndex(
-            (row: AgGridData) =>
-                nodeData && row[FieldConstants.AG_GRID_ROW_UUID] === nodeData[FieldConstants.AG_GRID_ROW_UUID]
-        );
-
-    const cellName = `${name}.${getIndexInFormData(node.data)}.${colDef.field}`;
+    const indexByUuid = rows.findIndex(
+        (row) => row[FieldConstants.AG_GRID_ROW_UUID] === node.data?.[FieldConstants.AG_GRID_ROW_UUID]
+    );
+    // AG Grid can briefly retain stale row data after a field-array replacement.
+    const candidateIndex = indexByUuid !== -1 ? indexByUuid : node.sourceRowIndex;
+    const rowIndex = candidateIndex >= 0 && candidateIndex < rows.length ? candidateIndex : -1;
+    const cellName = `${name}.${rowIndex}.${colDef.field}`;
 
     const valuesInChips = useWatch({ control, name: cellName, exact: true });
 
@@ -47,7 +48,7 @@ const ChipsArrayEditor = forwardRef(({ ...props }: ChipsArrayEditorProps, ref) =
         sideActionCallback({ api, node });
     }, [valuesInChips, sideActionCallback, api, node]);
 
-    return (
+    return rowIndex < 0 ? null : (
         <TableCellWrapper ref={ref} name={cellName}>
             <MultipleAutocompleteInput
                 name={cellName}
