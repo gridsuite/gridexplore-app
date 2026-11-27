@@ -216,6 +216,18 @@ export default function TreeViewsContainer({ sourceItemUuid }: { readonly source
                         initialized: true,
                     })
                 );
+                const currentSelectedDirectory = selectedDirectoryRef.current;
+                const updatedSelectedRoot = (data as ElementAttributes[]).find(
+                    (root) => root.elementUuid === currentSelectedDirectory?.elementUuid
+                );
+                if (
+                    updatedSelectedRoot &&
+                    currentSelectedDirectory &&
+                    (updatedSelectedRoot.writePermission !== currentSelectedDirectory.writePermission ||
+                        updatedSelectedRoot.elementName !== currentSelectedDirectory.elementName)
+                ) {
+                    dispatch(setSelectedDirectory(updatedSelectedRoot));
+                }
             })
             .catch((error) => console.warn(`Could not fetch roots ${error.message}`));
     }, [dispatch]);
